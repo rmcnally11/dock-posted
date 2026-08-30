@@ -1,7 +1,7 @@
 import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
 import { SiteFooter } from "@/components/site-footer";
-import { boardHref, viewLabel, type BoardHref, type BoardQuery } from "@/lib/board-query";
+import { boardHref, dockPath, viewLabel, type BoardHref, type BoardQuery } from "@/lib/board-query";
 import { COAST_JUMPS, type Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -155,7 +155,7 @@ export function DockBoard({
                 key={dock.id}
                 dock={dock}
                 selected={dock.id === query.dock}
-                href={boardHref({ ...query, dock: dock.id })}
+                href={dockPath(dock.id)}
               />
             ))
           )}

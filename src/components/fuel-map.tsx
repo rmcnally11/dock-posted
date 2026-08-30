@@ -85,6 +85,36 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
       <p className="pointer-events-none absolute bottom-2 left-2 z-[2] rounded-md bg-[color:var(--cream)]/90 px-1.5 py-0.5 font-mono text-[10px] text-[color:var(--ink)]/55">
         {view.center[1].toFixed(2)}N {Math.abs(view.center[0]).toFixed(2)}W · z{zoom} · © OpenStreetMap
       </p>
+      <div
+        data-testid="pin-legend"
+        aria-label="Posted and Call"
+        className="pointer-events-none absolute bottom-2 right-2 z-[2] max-w-[11rem] rounded-md bg-[color:var(--cream)]/90 px-1.5 py-1 font-mono text-[10px] leading-4 text-[color:var(--ink)]/70"
+      >
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
+            Call
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
+            Posted
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--gold)]" />
+            Last seen
+          </span>
+        </p>
+        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
+            Diesel
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
+            Gas
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

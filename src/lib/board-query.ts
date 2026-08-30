@@ -70,6 +70,12 @@ export function parseBoardQuery(params: {
 
 export type BoardHref = "/#board" | `/?${string}#board`;
 
+export type DockHref = `/docks/${string}`;
+
+export function dockPath(id: string): DockHref {
+  return `/docks/${id}`;
+}
+
 export function boardHref(query: BoardQuery): BoardHref {
   const params = new URLSearchParams();
   if (query.corridor) params.set("corridor", query.corridor);
