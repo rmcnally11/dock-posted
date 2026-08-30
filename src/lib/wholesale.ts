@@ -470,7 +470,7 @@ export function postedVsDapCents(posted: Cents, dap: Cents): Cents {
 
 export function computeProductNetback(
   product: WholesaleProduct,
-  input: ProductInputs,
+  input: Partial<ProductInputs>,
   tax: TaxInputs,
   context: NetbackContext = {},
 ): ProductNetback {
