@@ -18,7 +18,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
   return (
     <form action={submitPriceReport} autoComplete="off" className="space-y-5">
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-harbor/80">Marina</legend>
+        <legend className="text-sm font-medium text-[color:var(--cream)]/80">Marina</legend>
         <Label htmlFor="marina" className="sr-only">
           Marina
         </Label>
@@ -26,7 +26,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
           id="marina"
           name="marina"
           defaultValue={startingDock}
-          className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
+          className="h-11 w-full rounded-md border border-[color:var(--line)] bg-white px-3 text-base md:text-sm"
         >
           {grouped.map((group) => (
             <optgroup key={group.state} label={stateLabel(group.state)}>
@@ -39,7 +39,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
           ))}
         </select>
         {selected ? (
-          <p data-testid="reporting-for" className="text-xs text-harbor/55">
+          <p data-testid="reporting-for" className="text-xs text-[color:var(--cream)]/55">
             {selected.name}, {selected.city} {selected.state}
             {selected.phone ? ` · ${selected.phone}` : ""}
           </p>
@@ -53,7 +53,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
             id="product"
             name="product"
             defaultValue="90"
-            className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
+            className="h-11 w-full rounded-md border border-[color:var(--line)] bg-white px-3 text-base md:text-sm"
           >
             {PRODUCTS.map((item) => (
               <option key={item} value={item}>
@@ -68,7 +68,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
             id="ethanol"
             name="ethanol"
             defaultValue="E0"
-            className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
+            className="h-11 w-full rounded-md border border-[color:var(--line)] bg-white px-3 text-base md:text-sm"
           >
             {ETHANOLS.map((item) => (
               <option key={item} value={item}>
@@ -97,7 +97,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
       </div>
 
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-harbor/80">Who posts</legend>
+        <legend className="text-sm font-medium text-[color:var(--cream)]/80">Who posts</legend>
         <label className="flex items-center gap-2 text-sm">
           <input type="radio" name="who" value="boater" defaultChecked />
           I fueled here
@@ -106,7 +106,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
           <input type="radio" name="who" value="marina" />
           I run this dock
         </label>
-        <p className="text-xs text-harbor/50">
+        <p className="text-xs text-[color:var(--cream)]/50">
           Truck day, or when you change the board. Not every morning.
         </p>
       </fieldset>
@@ -122,7 +122,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
             id="pay"
             name="pay"
             defaultValue=""
-            className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
+            className="h-11 w-full rounded-md border border-[color:var(--line)] bg-white px-3 text-base md:text-sm"
           >
             <option value="">Call</option>
             <option value="cash">Cash</option>
@@ -158,10 +158,10 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
         <Input id="company" name="website_url" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <Button type="submit" data-testid="post-price" className="w-full rounded-none sm:w-auto">
+      <Button type="submit" data-testid="post-price" className="w-full sm:w-auto">
         Post what you saw
       </Button>
-      <p className="text-xs text-harbor/50">
+      <p className="text-xs text-[color:var(--cream)]/50">
         The number on the pump. A marina owns a verified pin. If they did not post, it stays Call.
       </p>
     </form>

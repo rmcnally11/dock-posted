@@ -8,10 +8,10 @@ export function FreshnessBadge({ dock }: { dock: Dock }) {
   return (
     <span
       className={cn(
-        "shrink-0 text-[11px] font-medium",
-        label === "Verified" && "text-fresh",
-        (label === "Last seen" || label === "Stale") && "text-amber",
-        trust === "unverified" && "text-rust",
+        "shrink-0 font-mono text-[11px] font-medium uppercase tracking-[0.12em]",
+        label === "Verified" && "text-[color:var(--sea)]",
+        (label === "Last seen" || label === "Stale") && "text-[color:var(--gold)]",
+        trust === "unverified" && "text-[color:var(--copper)]",
       )}
     >
       {label}

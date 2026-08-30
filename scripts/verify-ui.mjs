@@ -44,6 +44,10 @@ try {
   const headerCopy = await page.$eval("header", (el) => el.textContent ?? "");
   check("distinct wordmark", wordmark === "Dock Posted", wordmark);
   check("header is not a family lockup", !/what the dock posted/i.test(headerCopy), headerCopy);
+  check("nav the board", /The board/.test(headerCopy));
+  check("nav named storm", /Named storm/.test(headerCopy) && !/Haul-out/.test(headerCopy));
+  check("nav post a number", /Post a number/.test(headerCopy));
+  check("nav e15", /E15/.test(headerCopy));
 
   const cardFields = await page.$$eval(
     "[data-testid=dock-card-marina-bay-harbor] dt",
@@ -95,7 +99,7 @@ try {
     "[data-testid=dock-card-lakewood-yacht-club]",
     (el) => el.textContent ?? "",
   );
-  check("lakewood is club only", /club only/i.test(lycCard));
+  check("lakewood is members dock", /members. dock/i.test(lycCard));
   check(
     "clear lake 3 south shore",
     texasNames[2] === "South Shore Harbour Fuel Pier",
@@ -117,7 +121,8 @@ try {
   check("no sine-wave costume", (await page.$$("svg")).length === 0 || !homeCopy.includes("sine"));
   check("no waterdog mark", !/waterdog/i.test(homeCopy));
   check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
-  check("call ahead empty", /call ahead/i.test(homeCopy));
+  check("call the dock action", /call the dock/i.test(homeCopy));
+  check("no call ahead", !/call ahead/i.test(homeCopy));
   check("verified vs last seen", /verified|last seen/i.test(homeCopy));
   check("claim path", /claim this pin/i.test(homeCopy));
   check("no bargain", !/cheapest|savings|bargain/i.test(homeCopy));
@@ -137,7 +142,7 @@ try {
   check("keys islamorada caption", /islamorada is a different run/i.test(keysCopy));
   check("keys first light e0", /e0 still pumping at first light/i.test(keysCopy));
   check("keys does not lump islamorada", !keysNames.some((name) => /islamarina|plantation yacht|bud.n.mary/i.test(name ?? "")));
-  check("keys members honesty", /members only/i.test(keysCopy));
+  check("keys members honesty", /members. dock/i.test(keysCopy));
 
   await page.goto(`${base}/?state=TX`, { waitUntil: "networkidle0" });
   const texasState = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
@@ -193,6 +198,16 @@ try {
   check("safe fuel", /E15 is not for boats/i.test(safe));
   check("safe fuel is a warning", /walk away/i.test(safe) && !/save|deal|cheap/i.test(safe));
   check("safe fuel no waterdog", !/waterdog|opis|argus|platts|invoice/i.test(safe));
+
+  await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
+  const haulHow = await page.$eval("[data-testid=how-it-works]", (el) => el.textContent ?? "");
+  const haulCopy = await page.$eval("main", (el) => el.textContent ?? "");
+  check("how it works kicker", /how it works/i.test(haulHow));
+  check("four doors headline", /Four doors\. One cone\./.test(haulHow));
+  check("no kill word", !/\bKill\b/.test(haulCopy));
+  check("five yards line", /Five yards still have not said what.s left/.test(haulCopy));
+  check("all leftover call", /All leftover seats are Call/.test(haulCopy));
+  check("no stripe", !/stripe/i.test(haulCopy));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));
   console.error(error);

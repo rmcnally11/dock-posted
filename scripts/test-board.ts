@@ -127,7 +127,7 @@ assert.equal(blueMarlin.flags?.includes("last-pump"), true);
 assert.equal(blueMarlin.flags?.includes("west-of-146"), true);
 assert.equal(blueMarlin.flags?.includes("still-open"), false);
 assert.equal(blueMarlin.ethanol, "E0");
-assert.equal(freshnessLabel(blueMarlin), "Call ahead");
+assert.equal(freshnessLabel(blueMarlin), "Call the dock");
 assert.ok(blueMarlin.quotes.every((quote) => quote.pricePerGallon == null));
 assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)), "Call");
 assert.equal(blueMarlin.lastVerifiedAt, "2026-08-28");
@@ -175,7 +175,7 @@ const houstonYacht = docks.find((dock) => dock.id === "houston-yacht-club");
 assert.ok(houstonYacht);
 assert.equal(formatQuote(houstonYacht.quotes.find((quote) => quote.product === "89") ?? null), "Call");
 assert.equal(freshness(houstonYacht), "never");
-assert.equal(freshnessLabel(houstonYacht), "Call ahead");
+assert.equal(freshnessLabel(houstonYacht), "Call the dock");
 assert.equal(pinTrust(houstonYacht), "unverified");
 assert.equal(houstonYacht.access, "members");
 
@@ -221,6 +221,21 @@ for (const file of [
 const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-header.tsx"), "utf8");
 assert.match(headerSource, /Dock Posted/);
 assert.doesNotMatch(headerSource, /What the dock posted/);
+assert.match(headerSource, /The board/);
+assert.match(headerSource, /Named storm/);
+assert.match(headerSource, /Post a number/);
+assert.doesNotMatch(headerSource, />Haul-out</);
+assert.doesNotMatch(headerSource, />Board</);
+assert.doesNotMatch(headerSource, />Report</);
+
+const haulSource = readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8");
+assert.match(haulSource, /Four doors\. One cone\./);
+assert.match(haulSource, /File the boat/);
+assert.match(haulSource, /Two yards that fit/);
+assert.match(haulSource, /The cone gets a name/);
+assert.match(haulSource, /You call the yard/);
+assert.doesNotMatch(haulSource, /\bKill\b/);
+assert.match(haulSource, /Five yards still have not said/);
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /What the dock posted/);

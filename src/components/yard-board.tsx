@@ -12,7 +12,7 @@ export function YardBoard({ yards }: { yards: HaulYard[] }) {
     <div className="overflow-x-auto" data-testid="yard-board">
       <table className="w-full min-w-[36rem] text-left text-sm">
         <thead>
-          <tr className="border-b border-harbor/10 text-[11px] uppercase tracking-[0.14em] text-harbor/50">
+          <tr className="border-b border-[color:var(--line)] text-[11px] uppercase tracking-[0.14em] text-[color:var(--cream)]/50">
             <th className="py-2 pr-3 font-medium">Yard</th>
             <th className="py-2 pr-3 font-medium">Area</th>
             <th className="py-2 pr-3 font-medium">Indoor</th>
@@ -24,9 +24,9 @@ export function YardBoard({ yards }: { yards: HaulYard[] }) {
         </thead>
         <tbody>
           {yards.map((yard) => (
-            <tr key={yard.id} className="border-b border-harbor/8" data-testid={`yard-row-${yard.id}`}>
-              <td className="py-2.5 pr-3 font-medium text-harbor">{yard.name}</td>
-              <td className="py-2.5 pr-3 text-harbor/70">
+            <tr key={yard.id} className="border-b border-[color:var(--line)]" data-testid={`yard-row-${yard.id}`}>
+              <td className="py-2.5 pr-3 font-medium text-[color:var(--cream)]">{yard.name}</td>
+              <td className="py-2.5 pr-3 text-[color:var(--cream)]/70">
                 {yard.city ? YARD_AREA_LABEL[yard.area] : "Call"}
               </td>
               <td className="py-2.5 pr-3" data-testid={`yard-indoor-${yard.id}`}>

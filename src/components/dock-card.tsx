@@ -5,8 +5,7 @@ import type { Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function accessLabel(dock: Dock): string | null {
-  if (dock.access === "members") return "Members only";
-  if (dock.access === "private") return "Club only";
+  if (dock.access === "members" || dock.access === "private") return "Members’ dock";
   return null;
 }
 
@@ -53,27 +52,26 @@ export function DockCard({
   return (
     <article
       className={cn(
-        "w-full border text-left",
-        selected ? "border-harbor bg-sand" : "border-harbor/12 bg-white",
-        trust === "verified" && !selected && "border-l-[3px] border-l-fresh",
-        trust === "last-seen" && !selected && "border-l-[3px] border-l-amber",
-        trust === "unverified" && !selected && "border-l-[3px] border-l-rust",
+        "w-full overflow-hidden rounded-3xl border border-[color:var(--line)] bg-[color:var(--panel)] text-left",
+        selected && "border-[color:var(--sea)] ring-2 ring-[color:var(--sea)]/30",
       )}
     >
       <a
         href={href}
         aria-current={selected ? "true" : undefined}
         data-testid={`dock-card-${dock.id}`}
-        className="block p-3.5 hover:bg-sand/40"
+        className="block p-5 hover:bg-white/40"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="font-serif text-lg leading-tight text-harbor">{dock.name}</h3>
-            <p className="mt-0.5 text-sm text-harbor/60">
+            <h3 className="font-heading text-lg leading-tight text-[color:var(--cream)]">
+              {dock.name}
+            </h3>
+            <p className="mt-0.5 text-sm text-[color:var(--cream)]/60">
               {dock.city}, {dock.state}
             </p>
             {flags.length > 0 ? (
-              <p className="mt-1 text-[11px] font-medium tracking-wide text-harbor/70">
+              <p className="mt-1 text-[11px] font-medium tracking-wide text-[color:var(--cream)]/70">
                 {flags.join(" · ")}
               </p>
             ) : null}
@@ -82,32 +80,34 @@ export function DockCard({
         </div>
 
         <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-          <div className="bg-sand px-3 py-2">
-            <dt className="text-[11px] text-harbor/50">Regular</dt>
-            <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
+          <div className="rounded-lg bg-[color:var(--ink)] px-3 py-2">
+            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Regular</dt>
+            <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
               {formatQuote(gas)}
             </dd>
           </div>
-          <div className="bg-sand px-3 py-2">
-            <dt className="text-[11px] text-harbor/50">Diesel</dt>
-            <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
+          <div className="rounded-lg bg-[color:var(--ink)] px-3 py-2">
+            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Diesel</dt>
+            <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
               {formatQuote(diesel)}
             </dd>
           </div>
-          <div className="bg-sand px-3 py-2">
-            <dt className="text-[11px] text-harbor/50">Blend</dt>
-            <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
+          <div className="rounded-lg bg-[color:var(--ink)] px-3 py-2">
+            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Blend</dt>
+            <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
               {ethanolCopy(dock.ethanol)}
             </dd>
           </div>
-          <div className="bg-sand px-3 py-2">
-            <dt className="text-[11px] text-harbor/50">Hours</dt>
-            <dd className="text-[15px] font-medium text-harbor">{dock.hours ?? "Call"}</dd>
+          <div className="rounded-lg bg-[color:var(--ink)] px-3 py-2">
+            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Hours</dt>
+            <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
+              {dock.hours ?? "Call"}
+            </dd>
           </div>
         </dl>
 
-        <p className="mt-3 text-xs text-harbor/50" data-testid={`pin-trust-${dock.id}`}>
-          <span className="mr-2 text-[11px] text-harbor/50">Date</span>
+        <p className="mt-3 text-xs text-[color:var(--cream)]/50" data-testid={`pin-trust-${dock.id}`}>
+          <span className="mr-2 text-[11px] text-[color:var(--cream)]/50">Date</span>
           {formatDate(dock.lastVerifiedAt)}
           {trust === "verified"
             ? ` · Verified · ${sourceLabel(dock.lastVerifiedSource)}`
@@ -118,12 +118,12 @@ export function DockCard({
                 : ""}
         </p>
         {dock.phone ? (
-          <p className="mt-1 text-xs text-harbor/70">
-            {hasPostedPrice(dock) ? dock.phone : `Call ahead · ${dock.phone}`}
+          <p className="mt-1 text-xs text-[color:var(--cream)]/70">
+            {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
           </p>
         ) : null}
       </a>
-      <p className="border-t border-harbor/8 px-3.5 py-2 text-[11px] text-harbor/50">
+      <p className="border-t border-[color:var(--line)] px-3.5 py-2 text-[11px] text-[color:var(--cream)]/50">
         <a href={`/report?dock=${dock.id}`} className="underline-offset-2 hover:underline">
           {trust === "verified" ? "Update this pin" : "Claim this pin"}
         </a>

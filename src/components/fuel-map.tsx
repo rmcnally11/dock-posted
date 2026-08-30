@@ -8,9 +8,9 @@ const TILE = 256;
 
 function pinColor(dock: Dock): string {
   const trust = pinTrust(dock);
-  if (trust === "verified") return "#1f8a5b";
-  if (trust === "last-seen") return "#c9891a";
-  return "#c45c26";
+  if (trust === "verified") return "#1d7ec4";
+  if (trust === "last-seen") return "#e3b01c";
+  return "#e23b3b";
 }
 
 export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) {
@@ -29,7 +29,10 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
   }
 
   return (
-    <div className="chart-frame absolute inset-0 overflow-hidden bg-sand" data-testid="fuel-map">
+    <div
+      className="absolute inset-0 overflow-hidden rounded-2xl bg-[#e8f2f8] ring-1 ring-[color:var(--line)]"
+      data-testid="fuel-map"
+    >
       <div
         className="absolute left-1/2 top-1/2"
         style={{
@@ -54,7 +57,7 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
               width={TILE}
               height={TILE}
               src={`/api/tiles/${zoom}/${tile.x}/${tile.y}`}
-              className="block contrast-[0.96] saturate-[0.85]"
+              className="block"
             />
           ))}
         </div>
@@ -83,7 +86,7 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
           );
         })}
       </div>
-      <p className="pointer-events-none absolute bottom-2 left-2 z-[2] bg-paper/90 px-1.5 py-0.5 font-mono text-[10px] text-harbor/55">
+      <p className="pointer-events-none absolute bottom-2 left-2 z-[2] rounded-md bg-white/90 px-1.5 py-0.5 font-mono text-[10px] text-[color:var(--cream)]/55">
         {view.center[1].toFixed(2)}N {Math.abs(view.center[0]).toFixed(2)}W · z{zoom} · © OpenStreetMap
       </p>
     </div>
