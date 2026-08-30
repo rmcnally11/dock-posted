@@ -1,30 +1,30 @@
 @import "tailwindcss";
 
-:root {
-  --harbor: #0b1f2a;
-  --harbor-soft: #163645;
-  --wake: #1a6b6b;
-  --wake-deep: #145656;
-  --foam: #f3f6f2;
-  --sand: #efe7d6;
-  --fresh: #1f8a5b;
-  --amber: #c9891a;
-  --rust: #c45c26;
-}
-
 @theme inline {
-  --color-harbor: var(--harbor);
-  --color-harbor-soft: var(--harbor-soft);
-  --color-wake: var(--wake);
-  --color-wake-deep: var(--wake-deep);
-  --color-foam: var(--foam);
-  --color-sand: var(--sand);
-  --color-fresh: var(--fresh);
-  --color-amber: var(--amber);
-  --color-rust: var(--rust);
+  --color-harbor: #0b1f33;
+  --color-harbor-soft: #163645;
+  --color-wake: #1d7ec4;
+  --color-wake-deep: #155a8c;
+  --color-foam: #ffffff;
+  --color-sand: #f4f8fc;
+  --color-fresh: #1f8a5b;
+  --color-amber: #e3b01c;
+  --color-rust: #e23b3b;
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-newsreader);
+  --font-heading: var(--font-newsreader);
   --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --ink: #ffffff;
+  --cream: #0b1f33;
+  --copper: #e23b3b;
+  --coral: #ff6b4a;
+  --gold: #e3b01c;
+  --sea: #1d7ec4;
+  --line: rgba(11, 31, 51, 0.12);
+  --panel: #f4f8fc;
 }
 
 html,
@@ -33,22 +33,40 @@ body {
 }
 
 body {
-  background: var(--foam);
-  color: var(--harbor);
+  background:
+    radial-gradient(900px 520px at 8% -10%, rgba(29, 126, 196, 0.1), transparent 55%),
+    radial-gradient(720px 420px at 108% 0%, rgba(255, 107, 74, 0.07), transparent 50%),
+    #ffffff;
+  color: var(--cream);
 }
 
 .dock-pin {
   width: 18px;
   height: 18px;
-  border: 2px solid #f7f4ea;
+  border: 2px solid #ffffff;
   border-radius: 999px;
-  box-shadow: 0 2px 8px rgb(11 31 42 / 0.35);
+  box-shadow: 0 2px 8px rgb(11 31 51 / 0.35);
   cursor: pointer;
 }
 
 .dock-pin[data-selected="true"] {
   width: 22px;
   height: 22px;
-  outline: 3px solid rgb(26 107 107 / 0.45);
+  outline: 3px solid rgb(29 126 196 / 0.45);
 }
 
+@keyframes waterline-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-80px);
+  }
+}
+
+.waterline-svg .waterline-a {
+  animation: waterline-drift 14s linear infinite;
+}
+.waterline-svg .waterline-b {
+  animation: waterline-drift 22s linear infinite reverse;
+}

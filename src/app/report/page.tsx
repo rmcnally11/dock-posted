@@ -13,10 +13,10 @@ export default async function ReportPage({
 
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 py-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-wake-deep">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]">
         Public report
       </p>
-      <h1 className="mt-2 font-serif text-4xl text-harbor">Report a price</h1>
+      <h1 className="mt-2 font-heading text-4xl text-[color:var(--cream)]">Report a price</h1>
       <p className="mt-3 text-sm leading-6 text-harbor/70">
         If you just fueled or read the board, post it. This updates the dock card after
         refresh. No account. Invented numbers get the whole map ignored — only post what

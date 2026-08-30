@@ -1,9 +1,10 @@
 # Dock Posted
 
-Public marina fuel-price map for **two corridors only**:
+Public marina fuel-price map for the **Gulf coast, Sabine to Key West** — Texas, Louisiana, Mississippi, Alabama, and Florida, no gaps.
 
-1. Galveston Bay / Clear Lake / Kemah / Seabrook, Texas
-2. Key Largo / Upper Keys
+Sister instrument to [On This Water](https://onthiswater.com). Same cream/ink format so the two can sit next to each other later.
+
+Stretches with a public board (Galveston Bay, Upper Keys) show posted numbers. The rest of the chain is real docks marked **Call** until someone posts what they saw. We never invent a price.
 
 This is a consumer tool. It does **not** sell, broker, bid, or source gallons. No accounts. No marina POS.
 

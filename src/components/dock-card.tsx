@@ -25,8 +25,8 @@ export function DockCard({
       className={cn(
         "block w-full rounded-xl border p-4 text-left shadow-sm transition",
         selected
-          ? "border-wake bg-sand ring-2 ring-wake/40"
-          : "border-harbor/10 bg-white hover:border-harbor/25",
+          ? "border-[color:var(--sea)] bg-[color:var(--panel)] ring-2 ring-[color:var(--sea)]/30"
+          : "border-[color:var(--line)] bg-white hover:border-[color:var(--cream)]/20",
         state === "call" && !selected && "border-l-4 border-l-rust",
         state === "stale" && !selected && "border-l-4 border-l-amber",
         state === "fresh" && !selected && "border-l-4 border-l-fresh",
@@ -34,7 +34,7 @@ export function DockCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-serif text-lg leading-tight text-harbor">{dock.name}</h3>
+          <h3 className="font-heading text-lg leading-tight text-[color:var(--cream)]">{dock.name}</h3>
           <p className="mt-0.5 text-sm text-harbor/60">
             {dock.city}, {dock.state}
             {dock.access !== "public" ? ` · ${dock.access}` : ""}

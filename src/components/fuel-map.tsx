@@ -1,7 +1,7 @@
 import { boardHref, type BoardQuery } from "@/lib/board-query";
 import { latToTileY, lngToTileX } from "@/lib/geo";
 import { freshness } from "@/lib/freshness";
-import { CORRIDORS, type Dock } from "@/lib/types";
+import { CORRIDORS, GULF_VIEW, type Dock } from "@/lib/types";
 
 const COLS = 4;
 const ROWS = 3;
@@ -15,8 +15,8 @@ function pinColor(dock: Dock): string {
 }
 
 export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) {
-  const view = CORRIDORS[query.corridor];
-  const zoom = Math.max(8, Math.min(14, Math.round(view.zoom)));
+  const view = query.corridor ? CORRIDORS[query.corridor] : GULF_VIEW;
+  const zoom = Math.max(5, Math.min(14, Math.round(view.zoom)));
   const centerX = lngToTileX(view.center[0], zoom);
   const centerY = latToTileY(view.center[1], zoom);
   const startX = Math.floor(centerX - COLS / 2);

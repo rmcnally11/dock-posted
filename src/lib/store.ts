@@ -10,6 +10,42 @@ import type {
 } from "./types";
 
 const SEED_PATH = path.join(process.cwd(), "data", "docks.seed.json");
+const GULF_CALL_PATH = path.join(process.cwd(), "data", "gulf-call.json");
+
+type CallDockRow = Pick<
+  Dock,
+  "id" | "name" | "corridor" | "city" | "state" | "lat" | "lng" | "phone" | "website"
+>;
+
+function expandCallDock(row: CallDockRow): Dock {
+  return {
+    ...row,
+    hours: null,
+    notes:
+      "On the Texas–Florida chain. No public board captured — card says Call until someone posts what they saw.",
+    access: "public",
+    ethanol: "unknown",
+    quotes: [
+      { product: "90", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+    ],
+    lastVerifiedAt: null,
+    lastVerifiedSource: null,
+    sourceUrl: null,
+  };
+}
+
+export async function loadCombinedSeed(): Promise<DockStoreFile> {
+  const base = JSON.parse(await readFile(SEED_PATH, "utf8")) as DockStoreFile;
+  const extra = JSON.parse(await readFile(GULF_CALL_PATH, "utf8")) as { docks: CallDockRow[] };
+  const have = new Set(base.docks.map((dock) => dock.id));
+  const added = extra.docks.filter((row) => !have.has(row.id)).map(expandCallDock);
+  return {
+    ...base,
+    generatedAt: new Date().toISOString(),
+    docks: [...base.docks, ...added],
+  };
+}
 
 function runtimeDir() {
   if (process.env.DATA_DIR) return process.env.DATA_DIR;
@@ -27,11 +63,19 @@ function reportsPath() {
 
 async function ensureRuntime(): Promise<void> {
   await mkdir(runtimeDir(), { recursive: true });
+  const combined = await loadCombinedSeed();
   try {
-    await readFile(docksPath(), "utf8");
+    const raw = await readFile(docksPath(), "utf8");
+    const current = JSON.parse(raw) as DockStoreFile;
+    const have = new Set(current.docks.map((dock) => dock.id));
+    const missing = combined.docks.filter((dock) => !have.has(dock.id));
+    if (missing.length > 0) {
+      current.docks.push(...missing);
+      current.generatedAt = new Date().toISOString();
+      await writeFile(docksPath(), JSON.stringify(current, null, 2), "utf8");
+    }
   } catch {
-    const seed = await readFile(SEED_PATH, "utf8");
-    await writeFile(docksPath(), seed, "utf8");
+    await writeFile(docksPath(), JSON.stringify(combined, null, 2), "utf8");
   }
   try {
     await readFile(reportsPath(), "utf8");
@@ -72,10 +116,10 @@ export async function writeReports(reports: PriceReport[]): Promise<void> {
 
 export async function resetFromSeed(): Promise<DockStoreFile> {
   await mkdir(runtimeDir(), { recursive: true });
-  const seedRaw = await readFile(SEED_PATH, "utf8");
-  await writeFile(docksPath(), seedRaw, "utf8");
+  const combined = await loadCombinedSeed();
+  await writeFile(docksPath(), JSON.stringify(combined, null, 2), "utf8");
   await writeReports([]);
-  return JSON.parse(seedRaw) as DockStoreFile;
+  return combined;
 }
 
 function applyReportToDock(dock: Dock, report: PriceReport): Dock {

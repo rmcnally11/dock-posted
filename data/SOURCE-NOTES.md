@@ -25,6 +25,6 @@ Used for posted numbers (or Call / No Report) at Marina Bay Harbor, Blue Marlin 
 - https://southshoreharbourmarina.com/fuel-pier/ — hours and ValvTect, no pump prices
 - https://www.pilothousemarina.com/marina/ — Rec 90 + diesel, no pump prices
 
-## Not seeded (out of v1 corridor)
+## Gulf chain (Call only)
 
-Rockport, Naples, Bay St. Louis, Freeport, Port Arthur, Key West, Marathon, Duck Key, and the rest of the Gulf / Keys report tables.
+`data/gulf-call.json` fills Sabine → Key West so the map has no empty stretch. Those yards are real. Prices are Call — no public board was opened for them on 30 Aug 2026.

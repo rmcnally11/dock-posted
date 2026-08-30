@@ -1,8 +1,8 @@
+import { CoastChips } from "@/components/coast-chips";
 import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
 import { boardHref, type BoardQuery } from "@/lib/board-query";
-import { CORRIDORS, type CorridorId, type Dock } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { CORRIDORS, type Dock } from "@/lib/types";
 
 export function DockBoard({
   query,
@@ -15,24 +15,22 @@ export function DockBoard({
 }) {
   const selected = visible.find((dock) => dock.id === query.dock) ?? null;
   const filtered = query.e0Only || query.freshOnly;
+  const label = query.corridor ? CORRIDORS[query.corridor].label : "All water";
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col lg:min-h-[calc(100dvh-14rem)] lg:flex-row">
+    <div className="flex min-h-0 flex-1 flex-col lg:min-h-[calc(100dvh-16rem)] lg:flex-row">
       <section className="relative isolate h-[52vh] min-h-[320px] lg:h-auto lg:min-h-[28rem] lg:flex-1">
         <FuelMap docks={visible} query={query} />
-        <div className="pointer-events-none absolute left-3 top-3 z-[600] flex max-w-[calc(100%-4.5rem)] flex-wrap gap-2">
-          <CorridorSwitch query={query} />
-        </div>
       </section>
 
-      <aside className="relative z-20 flex w-full flex-col border-t border-harbor/10 bg-foam lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
-        <div className="border-b border-harbor/10 px-4 py-3">
+      <aside className="relative z-20 flex w-full flex-col border-t border-[color:var(--line)] bg-white lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
+        <div className="border-b border-[color:var(--line)] px-4 py-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 data-testid="corridor-heading" className="font-serif text-xl text-harbor">
-                {CORRIDORS[query.corridor].label}
+              <h2 data-testid="corridor-heading" className="font-heading text-xl text-[color:var(--cream)]">
+                {label}
               </h2>
-              <p data-testid="dock-count" className="text-sm text-harbor/60">
+              <p data-testid="dock-count" className="text-sm text-[color:var(--cream)]/55">
                 {filtered
                   ? `Showing ${visible.length} of ${inCorridor.length} docks`
                   : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"} · prices go stale after 7 days`}
@@ -40,33 +38,47 @@ export function DockBoard({
             </div>
             <a
               href={selected ? `/report?dock=${selected.id}` : "/report"}
-              className="inline-flex h-8 items-center rounded-md bg-wake px-3 text-xs font-medium text-foam hover:bg-wake-deep"
+              className="inline-flex h-8 items-center rounded-md bg-[color:var(--sea)] px-3 text-xs font-medium text-white"
             >
               Report
             </a>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <CorridorSwitch query={query} />
+          <div className="mt-3">
+            <CoastChips query={query} />
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
-            <FilterChip
-              active={query.e0Only}
+            <a
               href={boardHref({ ...query, e0Only: !query.e0Only, dock: null })}
+              aria-pressed={query.e0Only}
+              className={
+                query.e0Only
+                  ? "rounded-full border border-[color:var(--sea)] bg-[color:var(--sea)]/10 px-3 py-1 text-xs text-[color:var(--sea)]"
+                  : "rounded-full border border-[color:var(--line)] bg-white px-3 py-1 text-xs text-[color:var(--cream)]/70"
+              }
             >
               E0 only
-            </FilterChip>
-            <FilterChip
-              active={query.freshOnly}
+            </a>
+            <a
               href={boardHref({ ...query, freshOnly: !query.freshOnly, dock: null })}
+              aria-pressed={query.freshOnly}
+              className={
+                query.freshOnly
+                  ? "rounded-full border border-[color:var(--sea)] bg-[color:var(--sea)]/10 px-3 py-1 text-xs text-[color:var(--sea)]"
+                  : "rounded-full border border-[color:var(--line)] bg-white px-3 py-1 text-xs text-[color:var(--cream)]/70"
+              }
             >
               Fresh this week
-            </FilterChip>
+            </a>
           </div>
         </div>
 
         <div data-testid="dock-list" className="flex-1 space-y-3 overflow-y-auto p-3">
           {visible.length === 0 ? (
-            <EmptyList e0Only={query.e0Only} freshOnly={query.freshOnly} />
+            <div className="rounded-3xl border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] p-6 text-sm text-[color:var(--cream)]/70">
+              {filtered
+                ? "No docks match those filters in this stretch. Clear a chip and try again."
+                : "No docks loaded. Run npm run seed and refresh."}
+            </div>
           ) : (
             visible.map((dock) => (
               <DockCard
@@ -79,60 +91,6 @@ export function DockBoard({
           )}
         </div>
       </aside>
-    </div>
-  );
-}
-
-function CorridorSwitch({ query }: { query: BoardQuery }) {
-  return (
-    <>
-      {(Object.keys(CORRIDORS) as CorridorId[]).map((id) => (
-        <a
-          key={id}
-          href={boardHref({ ...query, corridor: id, dock: null })}
-          className={cn(
-            "pointer-events-auto rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm",
-            query.corridor === id ? "bg-harbor text-foam" : "bg-white text-harbor ring-1 ring-harbor/15",
-          )}
-        >
-          {CORRIDORS[id].short}
-        </a>
-      ))}
-    </>
-  );
-}
-
-function FilterChip({
-  active,
-  href,
-  children,
-}: {
-  active: boolean;
-  href: "/" | `/?${string}`;
-  children: string;
-}) {
-  return (
-    <a
-      href={href}
-      aria-pressed={active}
-      className={cn(
-        "rounded-full border px-3 py-1 text-xs font-medium",
-        active
-          ? "border-wake bg-wake/10 text-wake-deep"
-          : "border-harbor/15 bg-white text-harbor/70",
-      )}
-    >
-      {children}
-    </a>
-  );
-}
-
-function EmptyList({ e0Only, freshOnly }: { e0Only: boolean; freshOnly: boolean }) {
-  return (
-    <div className="rounded-xl border border-dashed border-harbor/20 bg-white p-6 text-sm text-harbor/70">
-      {freshOnly || e0Only
-        ? "No docks match those filters in this corridor. Clear a chip and try again."
-        : "No docks loaded. Run npm run seed and refresh."}
     </div>
   );
 }
