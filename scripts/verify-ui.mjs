@@ -207,6 +207,19 @@ try {
     /7:30am–5:30pm/.test(marinaBayCard) && /store only, not the hose/.test(marinaBayCard),
     marinaBayCard.slice(0, 280),
   );
+  const marinaBayHref = await page.$eval(
+    "[data-testid=dock-card-marina-bay-harbor]",
+    (el) => el.getAttribute("href"),
+  );
+  check("card opens dock page", marinaBayHref === "/docks/marina-bay-harbor", marinaBayHref);
+  const pinLegend = await page.$eval("[data-testid=pin-legend]", (el) => el.textContent ?? "");
+  check("pin legend posted vs call", /Call/.test(pinLegend) && /Posted/.test(pinLegend), pinLegend);
+  check("pin legend diesel vs gas", /Diesel/.test(pinLegend) && /Gas/.test(pinLegend), pinLegend);
+  check(
+    "pin legend is dock talk",
+    !/status|trust|map key|unverified|should-be|invoice|nymex|\bTCN\b|platts|waterdog/i.test(pinLegend),
+    pinLegend,
+  );
 
   const coastHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
   check("coast heading", coastHeading?.includes("Sabine to Maine"), coastHeading);
@@ -733,6 +746,52 @@ try {
     });
     check(`phone ${phone.width} haul-out radio 44`, radioHit.h >= 44, JSON.stringify(radioHit));
   }
+
+  await page.goto(`${base}/docks/marina-bay-harbor`, { waitUntil: "networkidle0" });
+  const dockName = await page.$eval("[data-testid=dock-page-name]", (el) => el.textContent?.trim());
+  check("dock page name", dockName === "Marina Bay Harbor", dockName);
+  const dockRegular = await page.$eval(
+    "[data-testid=quote-regular-marina-bay-harbor]",
+    (el) => ({ text: el.textContent?.trim(), color: getComputedStyle(el).color }),
+  );
+  check(
+    "dock page blank stays call",
+    dockRegular.text === "Call" && dockRegular.color === "rgb(226, 59, 59)",
+    JSON.stringify(dockRegular),
+  );
+  const dockDiesel = await page.$eval(
+    "[data-testid=quote-diesel-marina-bay-harbor]",
+    (el) => el.textContent?.trim(),
+  );
+  check("dock page diesel not sold", dockDiesel === "Not sold", dockDiesel);
+  const dockCopy = await page.$eval("[data-testid=dock-page]", (el) => el.textContent ?? "");
+  check("dock page hose", /\(281\)\s*535-2222/.test(dockCopy) && !/549-4772/.test(dockCopy), dockCopy.slice(0, 240));
+  check("dock page call is a fact", /Call is a fact/.test(dockCopy), dockCopy.slice(0, 200));
+  const dockSansFooter = await page.$eval("[data-testid=dock-page]", (el) => {
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll("footer").forEach((node) => node.remove());
+    return clone.textContent ?? "";
+  });
+  check(
+    "dock page no wholesale book",
+    !/nymex|platts|should-be|invoice|\bTCN\b|\brack\b|waterdog|jobber|fair hose|\bDAP\b/i.test(dockSansFooter),
+  );
+  const brandImgs = await page.$$eval('img[src*="/brand/"]', (els) => els.map((el) => el.getAttribute("src")));
+  check("dock page has no brand jpegs", brandImgs.length === 0, JSON.stringify(brandImgs));
+
+  await page.goto(`${base}/docks/galveston-yacht-marina`, { waitUntil: "networkidle0" });
+  const postedDiesel = await page.$eval(
+    "[data-testid=quote-diesel-galveston-yacht-marina]",
+    (el) => ({ text: el.textContent?.trim() ?? "", color: getComputedStyle(el).color }),
+  );
+  check(
+    "dock page posted diesel",
+    /\$/.test(postedDiesel.text) && postedDiesel.color === "rgb(47, 143, 214)",
+    JSON.stringify(postedDiesel),
+  );
+
+  const missingDock = await page.goto(`${base}/docks/no-such-hose`, { waitUntil: "domcontentloaded" });
+  check("unknown dock 404", missingDock?.status() === 404, String(missingDock?.status()));
 
   const wholesaleRes = await page.goto(`${base}/wholesale`, { waitUntil: "domcontentloaded" });
   check("wholesale 404 without password", wholesaleRes?.status() === 404, String(wholesaleRes?.status()));

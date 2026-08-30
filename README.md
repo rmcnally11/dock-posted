@@ -25,6 +25,7 @@ npm run dev           # http://127.0.0.1:43123
 Then:
 
 - `/` — landing, then `#board` (chart + list)
+- `/docks/[id]` — one dock, posted or Call
 - `/haul-out` — leftover haul-out seats (Clear Lake / Kemah / Upper Keys). Blank = Call
 - `/haul-out/plan/[id]` — Named Storm Plan one-pager
 - `/report` — post a price (honeypot + 8 reports/hour/IP)

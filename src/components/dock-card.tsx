@@ -1,7 +1,7 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { ethanolCopy, formatDate, formatQuote, sourceLabel, telHref } from "@/lib/format";
 import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
-import type { BoardHref } from "@/lib/board-query";
+import type { DockHref } from "@/lib/board-query";
 import type { Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +50,7 @@ export function DockCard({
 }: {
   dock: Dock;
   selected?: boolean;
-  href: BoardHref;
+  href: DockHref;
 }) {
   const gas = boardQuote(dock, displayGas(dock));
   const diesel = boardQuote(dock, displayDiesel(dock));

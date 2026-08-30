@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { boardHref, filterDocks, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
+import { boardHref, dockPath, filterDocks, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
 import { formatQuote, telHref } from "../src/lib/format";
 import { boardQuote, boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
@@ -367,6 +367,7 @@ for (const file of [
   "src/app/safe-fuel/page.tsx",
   "src/components/dock-card.tsx",
   "src/components/dock-board.tsx",
+  "src/app/docks/[id]/page.tsx",
   "src/components/site-header.tsx",
   "src/components/site-footer.tsx",
   "src/components/report-form.tsx",
@@ -385,6 +386,7 @@ for (const file of [
   "src/components/dock-card.tsx",
   "src/components/dock-board.tsx",
   "src/components/fuel-map.tsx",
+  "src/app/docks/[id]/page.tsx",
   "src/components/freshness-badge.tsx",
 ]) {
   const text = readFileSync(path.join(process.cwd(), file), "utf8");
@@ -485,6 +487,8 @@ assert.doesNotMatch(homeSource, /waitlist|stripe|email capture|newsletter/i);
 assert.doesNotMatch(homeSource, /four-door|campaign card|grid-cols-4/i);
 assert.doesNotMatch(homeSource, /href="\/board"/);
 assert.equal(existsSync(path.join(process.cwd(), "src/app/board/page.tsx")), false);
+assert.equal(existsSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx")), true);
+assert.equal(existsSync(path.join(process.cwd(), "public/brand/cover.jpg")), false);
 assert.match(homeSource, /lg:overflow-hidden/);
 assert.match(homeSource, /lg:h-\[calc\(100dvh-3\.6rem\)\]/);
 assert.doesNotMatch(homeSource, /flex-col overflow-hidden/);
@@ -516,6 +520,8 @@ assert.equal(
   }),
   "/#board",
 );
+assert.equal(dockPath("marina-bay-harbor"), "/docks/marina-bay-harbor");
+assert.equal(dockPath("galveston-yacht-marina"), "/docks/galveston-yacht-marina");
 
 const reportSource = readFileSync(path.join(process.cwd(), "src/app/report/page.tsx"), "utf8");
 const safeSource = readFileSync(path.join(process.cwd(), "src/app/safe-fuel/page.tsx"), "utf8");
@@ -592,12 +598,33 @@ assert.equal(publicXHandle("RJMtweets11"), "DockPosted");
 assert.equal(publicXHandle("@goodpiratesalma"), "DockPosted");
 assert.equal(publicXHandle("SomeOther_1"), "SomeOther_1");
 assert.equal(xProfileUrl("DockPosted"), "https://x.com/DockPosted");
+const dockPageSource = readFileSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx"), "utf8");
+assert.match(dockPageSource, /data-testid="dock-page"/);
+assert.match(dockPageSource, /boardQuote/);
+assert.match(dockPageSource, /formatQuote/);
+assert.match(dockPageSource, /Call is a fact\. A blank stays Call\./);
+assert.match(dockPageSource, /Hours Call/);
+assert.doesNotMatch(dockPageSource, /BrandPhoto|\/brand\/.*\.jpg/);
+assert.doesNotMatch(dockPageSource, /should-be|invoice|\bNYMEX\b|\bTCN\b|Platts|Waterdog|Fair hose|\bDAP\b/i);
 assert.doesNotMatch(homeSource, campaign);
 assert.doesNotMatch(aboutSource, campaign);
 assert.doesNotMatch(reportSource, campaign);
 assert.doesNotMatch(safeSource, campaign);
 assert.doesNotMatch(haulSource, campaign);
+assert.doesNotMatch(dockPageSource, campaign);
 assert.doesNotMatch(footerSource, campaign);
+
+for (const file of [
+  "src/app/page.tsx",
+  "src/app/about/page.tsx",
+  "src/app/report/page.tsx",
+  "src/app/safe-fuel/page.tsx",
+  "src/app/haul-out/page.tsx",
+  "src/app/docks/[id]/page.tsx",
+]) {
+  const text = readFileSync(path.join(process.cwd(), file), "utf8");
+  assert.doesNotMatch(text, /BrandPhoto|\/brand\/(?:cover|board|pump|storm|close)\.jpg/, `${file} wired a missing brand JPEG`);
+}
 
 const cardSource = readFileSync(path.join(process.cwd(), "src/components/dock-card.tsx"), "utf8");
 assert.match(cardSource, />Regular</);
@@ -610,6 +637,7 @@ assert.match(cardSource, /Call the dock · \$\{dock\.phone\}/);
 assert.match(cardSource, /quoteTone/);
 assert.match(cardSource, /--signal/);
 assert.match(cardSource, /--diesel/);
+assert.match(cardSource, /DockHref/);
 assert.equal(telHref("(281) 535-2222"), "tel:+12815352222");
 assert.equal(telHref("(832) 256-6923"), "tel:+18322566923");
 assert.equal(telHref("not a phone"), null);
@@ -620,11 +648,18 @@ assert.doesNotMatch(headerSource, /flex-wrap items-center justify-between/);
 const fuelMapSource = readFileSync(path.join(process.cwd(), "src/components/fuel-map.tsx"), "utf8");
 assert.match(fuelMapSource, /fuel-map-board/);
 assert.match(fuelMapSource, /dock-pin-dot/);
+assert.match(fuelMapSource, /data-testid="pin-legend"/);
+assert.match(fuelMapSource, />\s*Call\s*</);
+assert.match(fuelMapSource, />\s*Posted\s*</);
+assert.match(fuelMapSource, />\s*Diesel\s*</);
+assert.match(fuelMapSource, />\s*Gas\s*</);
+assert.doesNotMatch(fuelMapSource, /status|trust level|map key|legend title/i);
 assert.doesNotMatch(fuelMapSource, /leaflet|mapbox|webgl/i);
 
 const boardSource = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
 assert.match(boardSource, /action="\/#board"/);
 assert.match(boardSource, /Call is a fact\. Silence is not a price\./);
+assert.match(boardSource, /dockPath\(dock\.id\)/);
 assert.doesNotMatch(boardSource, /waterdog|Waterdog|nymex|platts|\bTCN\b/i);
 assert.match(boardSource, /text-base/);
 assert.match(boardSource, /coast-jumps/);
