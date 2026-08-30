@@ -230,7 +230,7 @@ assert.doesNotMatch(headerSource, />Report</);
 
 const haulSource = readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8");
 assert.match(haulSource, /What.s left/);
-assert.match(haulSource, />Named storm</);
+assert.match(haulSource, /data-testid="haul-out-headline"[\s\S]*Named storm/);
 assert.match(haulSource, /A leftover seat, said out loud\./);
 assert.match(haulSource, /Four doors\. One cone\./);
 assert.match(haulSource, /File the boat/);
