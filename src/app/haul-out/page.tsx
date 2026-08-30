@@ -46,15 +46,23 @@ export default async function HaulOutPage({
       </p>
       <Waterline className="mt-3" />
 
-      <section className="mt-10 max-w-3xl space-y-4">
-        <h2 className="font-heading text-2xl text-[color:var(--cream)]">How it works</h2>
+      <section className="mt-10 max-w-3xl space-y-4" data-testid="how-it-works">
+        <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]">
+          How it works
+        </p>
+        <h2 className="font-heading text-2xl text-[color:var(--cream)]">Four doors. One cone.</h2>
+        <p className="text-sm leading-6 text-[color:var(--cream)]/75">
+          You file the boat. We hold two yards that fit. When NHC names it, you call. We
+          do not lift.
+        </p>
         <ol className="list-decimal space-y-3 pl-5 text-sm leading-6 text-[color:var(--cream)]/75">
-          <li>You file the boat.</li>
-          <li>We match a primary and a backup that fit.</li>
+          <li>File the boat — Name, length, where she sits. One page.</li>
+          <li>Two yards that fit — A primary and a backup. Indoor or lot. Not a wet slip.</li>
           <li>
-            When NHC names a storm in the cone we text remaining seats and the yard
-            number. You call the yard. We do not lift the boat.
+            The cone gets a name — We text what’s left and the yard number. If the yard
+            did not say, it stays Call.
           </li>
+          <li>You call the yard — They haul. They store. They insure. We do not.</li>
         </ol>
       </section>
 
@@ -114,7 +122,7 @@ export default async function HaulOutPage({
           Clear Lake first-come color has been about $40 a foot. That is not a quote. If
           a yard will not disclose leftover seats, they stay Call and they get no boats.
         </p>
-        <p className="mt-3">Kill: five yards have not said leftover seats out loud.</p>
+        <p className="mt-3">Five yards still have not said what’s left.</p>
       </section>
     </main>
   );

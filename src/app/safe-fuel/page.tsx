@@ -44,7 +44,7 @@ export default function SafeFuelPage() {
         </p>
       </section>
 
-      <section className="mt-8 space-y-3">
+      <section className="mt-8 max-w-2xl space-y-3">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">What to do</h2>
         <ul className="list-disc space-y-2 pl-5 text-sm leading-7 text-[color:var(--cream)]/80">
           <li>Read the pump sticker. Walk away from E15.</li>
@@ -54,7 +54,7 @@ export default function SafeFuelPage() {
         </ul>
       </section>
 
-      <section className="mt-10 rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5 text-sm leading-6 text-[color:var(--cream)]/70">
+      <section className="mt-10 max-w-2xl rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5 text-sm leading-6 text-[color:var(--cream)]/70">
         <h2 className="font-heading text-xl text-[color:var(--cream)]">Pages we opened</h2>
         <ul className="mt-3 list-disc space-y-2 pl-5">
           <li>

@@ -5,8 +5,7 @@ import type { Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function accessLabel(dock: Dock): string | null {
-  if (dock.access === "members") return "Members only";
-  if (dock.access === "private") return "Club only";
+  if (dock.access === "members" || dock.access === "private") return "Members’ dock";
   return null;
 }
 
@@ -120,7 +119,7 @@ export function DockCard({
         </p>
         {dock.phone ? (
           <p className="mt-1 text-xs text-[color:var(--cream)]/70">
-            {hasPostedPrice(dock) ? dock.phone : `Call ahead · ${dock.phone}`}
+            {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
           </p>
         ) : null}
       </a>

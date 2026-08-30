@@ -57,7 +57,7 @@ export function pinTrust(dock: Dock): PinTrust {
 
 export function freshnessLabel(dock: Dock, now = Date.now()): string {
   const trust = pinTrust(dock);
-  if (trust === "unverified") return "Call ahead";
+  if (trust === "unverified") return "Call the dock";
   if (isOlderThanWeek(dock, now)) return "Stale";
   if (trust === "verified") return "Verified";
   return "Last seen";

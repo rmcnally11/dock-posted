@@ -224,7 +224,7 @@ function EmptyList({ query }: { query: BoardQuery }) {
         ? `Nothing named “${query.q}”. Try Seabrook, Key Largo, or Beaufort.`
         : query.freshOnly || query.e0Only
           ? "No docks match. Clear E0 or This week."
-          : "No docks here. Call ahead, or open Clear Lake or Key Largo."}
+          : "No docks here. Call the dock, or open Clear Lake or Key Largo."}
     </div>
   );
 }

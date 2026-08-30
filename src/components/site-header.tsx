@@ -18,25 +18,25 @@ export function SiteHeader() {
             className="rounded-md px-2.5 py-1.5 text-[color:var(--cream)]/75 transition hover:bg-[color:var(--cream)]/6 hover:text-[color:var(--cream)]"
             href="/"
           >
-            Board
+            The board
           </a>
           <a
             className="rounded-md px-2.5 py-1.5 text-[color:var(--cream)]/75 transition hover:bg-[color:var(--cream)]/6 hover:text-[color:var(--cream)]"
             href="/haul-out"
           >
-            Haul-out
+            Named storm
           </a>
           <a
             className="rounded-md px-2.5 py-1.5 text-[color:var(--cream)]/75 transition hover:bg-[color:var(--cream)]/6 hover:text-[color:var(--cream)]"
             href="/report"
           >
-            Report
+            Post a number
           </a>
           <a
             className="rounded-md px-2.5 py-1.5 text-[color:var(--cream)]/75 transition hover:bg-[color:var(--cream)]/6 hover:text-[color:var(--cream)]"
             href="/safe-fuel"
           >
-            Safe fuel
+            E15
           </a>
         </nav>
       </div>
