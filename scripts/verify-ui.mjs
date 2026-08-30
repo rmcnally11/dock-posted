@@ -299,18 +299,18 @@ try {
   const mapCopy = await page.$eval("[data-testid=fuel-map]", (el) => el.textContent ?? "");
   const footerCopy = await page.$eval("footer", (el) => el.textContent ?? "");
   const waterdogHref = await page.$eval("[data-testid=waterdog-credit] a", (el) => el.getAttribute("href"));
-  check("pins have no waterdog", !/waterdog|coastal cavaliers|platts|nymex|\bTCN\b|\brack\b/i.test(dockListCopy));
-  check("map has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(mapCopy));
-  check("hero has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(`${kicker} ${headline} ${deck} ${geo} ${extra} ${tally}`));
+  check("pins have no waterdog", !/waterdog|coastal cavaliers|platts|nymex|\bTCN\b|\brack\b|should-be|Fair hose|\binvoice\b/i.test(dockListCopy));
+  check("map has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b|should-be|Fair hose|\binvoice\b/i.test(mapCopy));
+  check("hero has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b|should-be|Fair hose|\binvoice\b/i.test(`${kicker} ${headline} ${deck} ${geo} ${extra} ${tally}`));
   const landingCopy = await page.$eval("[data-testid=landing]", (el) => el.textContent ?? "");
-  check("landing has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(landingCopy));
+  check("landing has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b|should-be|Fair hose|\binvoice\b/i.test(landingCopy));
   check("landing has no waitlist", !/waitlist|stripe|email capture/i.test(landingCopy));
   check("waterdog footer credit", /Waterdog Fuel\. Rack to dock\./.test(footerCopy), footerCopy);
   check("waterdog footer link", waterdogHref === "https://coastalcavaliers.com", waterdogHref);
   check("no invented waterdog domain", !/waterdogfuel\.com/i.test(homeCopy));
   check("no waterdog twitter", !/RJMtweets11/i.test(homeCopy));
   check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
-  check("board has no wholesale book", !/nymex|differential|\bTCN\b/i.test(`${kicker} ${headline} ${deck} ${tally} ${dockListCopy} ${mapCopy}`));
+  check("board has no wholesale book", !/nymex|differential|\bTCN\b|should-be|Fair hose|\binvoice\b/i.test(`${kicker} ${headline} ${deck} ${tally} ${dockListCopy} ${mapCopy}`));
   check("board omits wholesale nav without password", !(await page.$("[data-testid=nav-wholesale]")));
   check("call the dock action", /call the dock/i.test(homeCopy));
   check("company footer", /if they didn.t post it, it.s Call/i.test(homeCopy));
@@ -404,7 +404,7 @@ try {
     return clone.textContent ?? "";
   });
   check("safe fuel no waterdog on the warning", !/waterdog|opis|argus|platts|invoice/i.test(safeSansFooter));
-  check("safe fuel no wholesale book", !/nymex|differential|\bTCN\b|jobber/i.test(safeSansFooter));
+  check("safe fuel no wholesale book", !/nymex|differential|\bTCN\b|jobber|should-be|Fair hose|\binvoice\b/i.test(safeSansFooter));
   check("safe fuel footer credit", /Waterdog Fuel\. Rack to dock\./.test(safe));
 
   await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
@@ -448,7 +448,7 @@ try {
     clone.querySelectorAll("footer").forEach((node) => node.remove());
     return clone.textContent ?? "";
   });
-  check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(haulSansFooter));
+  check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber|should-be|Fair hose|\binvoice\b/i.test(haulSansFooter));
   check("haul-out footer credit", /Waterdog Fuel\. Rack to dock\./.test(haulCopy));
   check("haul-out header omits wholesale nav without password", !/wholesale/i.test(haulHeader));
 
@@ -467,7 +467,7 @@ try {
     clone.querySelectorAll("footer").forEach((node) => node.remove());
     return clone.textContent ?? "";
   });
-  check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(reportSansFooter));
+  check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber|should-be|Fair hose|\binvoice\b/i.test(reportSansFooter));
   check("report footer credit", /Waterdog Fuel\. Rack to dock\./.test(reportCopy));
 
   await page.setViewport({ width: 375, height: 812 });
@@ -544,7 +544,7 @@ try {
     ),
   );
   check("about no campaign nouns", !/the take|the book|come in|four doors|we publish the pin|Holds Fast/i.test(aboutCopy));
-  check("about no wholesale book", !/nymex|platts|differential|\bTCN\b|jobber|opis/i.test(aboutCopy));
+  check("about no wholesale book", !/nymex|platts|differential|\bTCN\b|jobber|opis|should-be|Fair hose|\binvoice\b/i.test(aboutCopy));
   check("about no invented tweets", !/RJMtweets11|goodpiratesalma/i.test(aboutCopy));
   check("about no invented domain", !/waterdogfuel\.com/i.test(aboutCopy));
   check("about footer credit", /Waterdog Fuel\. Rack to dock\./.test(aboutCopy));
@@ -737,7 +737,7 @@ try {
   const wholesaleRes = await page.goto(`${base}/wholesale`, { waitUntil: "domcontentloaded" });
   check("wholesale 404 without password", wholesaleRes?.status() === 404, String(wholesaleRes?.status()));
   const wholesaleCopy = await page.$eval("body", (el) => el.textContent ?? "");
-  check("wholesale 404 has no desk book", !/nymex|platts|\bTCN\b|differential/i.test(wholesaleCopy));
+  check("wholesale 404 has no desk book", !/nymex|platts|\bTCN\b|differential|should-be|Fair hose|\binvoice\b|\brack\b/i.test(wholesaleCopy));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));
   console.error(error);

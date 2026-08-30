@@ -68,7 +68,7 @@ export default async function WholesalePrintPage({
           ) : (
             <p className="mt-2 text-sm text-[#8a2c12]" data-testid="print-empty">
               No computed or saved book for this region yet. Compute or Save on the desk — this
-              matrix stays — until then. Investor print cannot invent a book.
+              matrix stays — until then. Print cannot invent a book.
             </p>
           )}
           {footnotes.length > 0 ? (
@@ -98,10 +98,15 @@ export default async function WholesalePrintPage({
               <th className="px-2 py-2 font-medium">Rack margin</th>
               <th className="px-2 py-2 font-medium">Jobber</th>
               <th className="px-2 py-2 font-medium">Jobber margin</th>
-              <th className="px-2 py-2 font-medium">Dock posted</th>
+              <th className="px-2 py-2 font-medium">Posted pump</th>
               <th className="px-2 py-2 font-medium">Federal tax</th>
               <th className="px-2 py-2 font-medium">State tax</th>
               <th className="px-2 py-2 font-medium">Tax</th>
+              <th className="px-2 py-2 font-medium">DAP</th>
+              <th className="px-2 py-2 font-medium">Fair hose</th>
+              <th className="px-2 py-2 font-medium">Should-be</th>
+              <th className="px-2 py-2 font-medium">Invoice</th>
+              <th className="px-2 py-2 font-medium">Fat take</th>
               <th className="px-2 py-2 font-medium">Ex-tax</th>
               <th className="px-2 py-2 font-medium">Remaining</th>
               <th className="px-2 py-2 font-medium">Implied Δ</th>
@@ -134,6 +139,11 @@ export default async function WholesalePrintPage({
                   <td className="px-2 py-2 font-mono">{formatBoth(book.taxMode === "oneline" ? null : book.taxFederal)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.taxMode === "oneline" ? null : book.taxState)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.tax)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.dap)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.fairHose)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.shouldBe)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.invoiceDelivered)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.fatTake)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.dockExTax)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.dockRemaining)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.impliedDiff)}</td>

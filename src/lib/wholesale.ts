@@ -93,6 +93,8 @@ export interface ProductInputs {
   postedRack: Cents;
   jobberSell: Cents;
   dockPosted: Cents;
+  fairHose: Cents;
+  invoiceDelivered: Cents;
 }
 
 export interface TaxInputs {
@@ -130,7 +132,8 @@ export type TakeKey =
   | "taxState"
   | "taxOther"
   | "tax"
-  | "remaining";
+  | "remaining"
+  | "fatTake";
 export type RungRole = "start" | "take" | "level" | "leftover";
 export type TaxMode = "split" | "oneline";
 
@@ -240,6 +243,12 @@ export interface ProductNetback {
   edgeVsTyped: Cents;
   taxIncomplete: boolean;
   nymexSource: ValueOrigin;
+  dap: Cents;
+  fairHose: Cents;
+  invoiceDelivered: Cents;
+  shouldBe: Cents;
+  fatTake: Cents;
+  postedVsDap: Cents;
 }
 
 const emptyProduct = (): ProductInputs => ({
@@ -249,6 +258,8 @@ const emptyProduct = (): ProductInputs => ({
   postedRack: null,
   jobberSell: null,
   dockPosted: null,
+  fairHose: null,
+  invoiceDelivered: null,
 });
 
 const emptyTax = (): TaxInputs => ({
@@ -286,7 +297,9 @@ function productHasInput(row: ProductInputs): boolean {
     row.inboundFreight != null ||
     row.postedRack != null ||
     row.jobberSell != null ||
-    row.dockPosted != null
+    row.dockPosted != null ||
+    row.fairHose != null ||
+    row.invoiceDelivered != null
   );
 }
 
@@ -432,47 +445,75 @@ function resolveNymexScreen(
   return { cents: null, origin: null };
 }
 
+export function deliveredAtPlace(
+  input: ProductInputs,
+  nymexCents: Cents,
+  taxStrip: Cents,
+  taxIncomplete: boolean,
+): Cents {
+  if (taxIncomplete) return null;
+  const productBasis = input.postedRack != null ? input.postedRack : addCents(nymexCents, input.terminalDiff);
+  return addCents(productBasis, input.inboundFreight, taxStrip);
+}
+
+export function shouldBeCents(dap: Cents, fairHose: Cents): Cents {
+  return addCents(dap, fairHose);
+}
+
+export function fatTakeCents(invoice: Cents, rack: Cents): Cents {
+  return subCents(invoice, rack);
+}
+
+export function postedVsDapCents(posted: Cents, dap: Cents): Cents {
+  return subCents(posted, dap);
+}
+
 export function computeProductNetback(
   product: WholesaleProduct,
   input: ProductInputs,
   tax: TaxInputs,
   context: NetbackContext = {},
 ): ProductNetback {
+  const row = { ...emptyProduct(), ...input };
   const resolved = context.taxResolved ?? resolveTaxForProduct(tax, product, {
     state: context.state,
     applyDefaults: Boolean(context.state),
   });
   const taxStrip = resolved.incomplete ? null : resolved.strip.cents;
-  const nymex = resolveNymexScreen(input.nymexScreen, context.nymexFallback ?? null, context.inputOrigins?.nymexScreen);
-  const terminalSpot = addCents(nymex.cents, input.terminalDiff);
-  const inboundRack = addCents(terminalSpot, input.inboundFreight);
-  const rackMargin = subCents(input.postedRack, inboundRack);
-  const jobberMargin = subCents(input.jobberSell, input.postedRack);
-  const dockExTax = subCents(input.dockPosted, taxStrip);
-  const dockRemaining = subCents(dockExTax, input.jobberSell);
+  const nymex = resolveNymexScreen(row.nymexScreen, context.nymexFallback ?? null, context.inputOrigins?.nymexScreen);
+  const terminalSpot = addCents(nymex.cents, row.terminalDiff);
+  const inboundRack = addCents(terminalSpot, row.inboundFreight);
+  const rackMargin = subCents(row.postedRack, inboundRack);
+  const jobberMargin = subCents(row.jobberSell, row.postedRack);
+  const dockExTax = subCents(row.dockPosted, taxStrip);
+  const dockRemaining = subCents(dockExTax, row.jobberSell);
   const rackEquivalent = dockExTax;
-  const terminalEquivalent = subCents(rackEquivalent, input.inboundFreight);
+  const terminalEquivalent = subCents(rackEquivalent, row.inboundFreight);
   const impliedDiff = subCents(terminalEquivalent, nymex.cents);
-  const edgeVsTyped = subCents(impliedDiff, input.terminalDiff);
+  const edgeVsTyped = subCents(impliedDiff, row.terminalDiff);
+  const dap = deliveredAtPlace(row, nymex.cents, taxStrip, resolved.incomplete);
+  const shouldBe = shouldBeCents(dap, row.fairHose);
+  const fatTake = fatTakeCents(row.invoiceDelivered, row.postedRack);
+  const postedVsDap = postedVsDapCents(row.dockPosted, dap);
   const origins = context.inputOrigins ?? {};
   const labels = context.inputLabels ?? {};
 
   const steps: WaterfallStep[] = [
     { key: "nymex", label: "NYMEX screen", cents: nymex.cents, kind: "input", source: nymex.origin, sourceLabel: nymex.origin === "yahoo" ? "yahoo" : origins.nymexScreen === "typed" ? "typed" : null },
-    { key: "diff", label: "+ Terminal differential", cents: input.terminalDiff, kind: "input", source: originOf(input.terminalDiff, origins.terminalDiff) },
+    { key: "diff", label: "+ Terminal differential", cents: row.terminalDiff, kind: "input", source: originOf(row.terminalDiff, origins.terminalDiff) },
     { key: "spot", label: "= Terminal / spot", cents: terminalSpot, kind: "derived", source: terminalSpot == null ? null : "derived" },
-    { key: "freight", label: "+ Inbound freight / pipeline / truck", cents: input.inboundFreight, kind: "input", source: originOf(input.inboundFreight, origins.inboundFreight) },
+    { key: "freight", label: "+ Inbound freight / pipeline / truck", cents: row.inboundFreight, kind: "input", source: originOf(row.inboundFreight, origins.inboundFreight) },
     { key: "inbound", label: "= Inbound rack cost", cents: inboundRack, kind: "derived", source: inboundRack == null ? null : "derived" },
-    { key: "posted", label: "Posted rack", cents: input.postedRack, kind: "input", source: originOf(input.postedRack, origins.postedRack) },
+    { key: "posted", label: "Posted rack", cents: row.postedRack, kind: "input", source: originOf(row.postedRack, origins.postedRack) },
     { key: "rackMargin", label: "Rack margin", cents: rackMargin, kind: "margin", source: rackMargin == null ? null : "derived" },
-    { key: "jobber", label: "Jobber sell", cents: input.jobberSell, kind: "input", source: originOf(input.jobberSell, origins.jobberSell) },
+    { key: "jobber", label: "Jobber sell", cents: row.jobberSell, kind: "input", source: originOf(row.jobberSell, origins.jobberSell) },
     { key: "jobberMargin", label: "Jobber margin", cents: jobberMargin, kind: "margin", source: jobberMargin == null ? null : "derived" },
     {
       key: "dock",
-      label: "Dock / retail posted",
-      cents: input.dockPosted,
+      label: "Posted pump",
+      cents: row.dockPosted,
       kind: "input",
-      source: originOf(input.dockPosted, origins.dockPosted),
+      source: originOf(row.dockPosted, origins.dockPosted),
       sourceLabel: labels.dockPosted ?? null,
     },
   ];
@@ -518,8 +559,46 @@ export function computeProductNetback(
   }
 
   steps.push(
+    { key: "dap", label: "DAP", cents: dap, kind: "derived", source: dap == null ? (resolved.incomplete ? "incomplete" : null) : "derived" },
+    {
+      key: "fairHose",
+      label: "Fair hose.",
+      cents: row.fairHose,
+      kind: "input",
+      source: originOf(row.fairHose, origins.fairHose),
+    },
+    {
+      key: "shouldBe",
+      label: "What it should have been.",
+      cents: shouldBe,
+      kind: "derived",
+      source: shouldBe == null ? null : "derived",
+    },
+    {
+      key: "invoice",
+      label: "Invoice / delivered",
+      cents: row.invoiceDelivered,
+      kind: "input",
+      source: originOf(row.invoiceDelivered, origins.invoiceDelivered),
+    },
+    {
+      key: "fatTake",
+      label: "Fat take",
+      cents: fatTake,
+      kind: "take",
+      source: fatTake == null ? null : "derived",
+      sourceLabel: fatTake == null ? null : "invoice − posted rack",
+    },
     { key: "exTax", label: "Dock ex-tax", cents: dockExTax, kind: "derived", source: dockExTax == null ? null : "derived" },
     { key: "remaining", label: "Dock / retail remaining", cents: dockRemaining, kind: "margin", source: dockRemaining == null ? null : "derived" },
+    {
+      key: "postedVsDap",
+      label: "Posted pump leftover",
+      cents: postedVsDap,
+      kind: "derived",
+      source: postedVsDap == null ? null : "derived",
+      sourceLabel: postedVsDap == null ? null : "posted pump − DAP",
+    },
   );
 
   const book: ProductNetback = {
@@ -543,12 +622,18 @@ export function computeProductNetback(
     rackEquivalent,
     terminalEquivalent,
     impliedDiff,
-    typedDiff: input.terminalDiff,
+    typedDiff: row.terminalDiff,
     edgeVsTyped,
     taxIncomplete: resolved.incomplete,
     nymexSource: nymex.origin,
+    dap,
+    fairHose: row.fairHose,
+    invoiceDelivered: row.invoiceDelivered,
+    shouldBe,
+    fatTake,
+    postedVsDap,
   };
-  book.rungs = buildWaterfallRungs(book, resolved, input, origins, labels);
+  book.rungs = buildWaterfallRungs(book, resolved, row, origins, labels);
   book.takes = rankTakes(book.rungs);
   book.fattestTake = book.takes[0]?.key ?? null;
   return book;
@@ -633,6 +718,8 @@ export function productInputsFromFields(
     postedRack: readOptionalCents(fields[`rack_${p}`], unit),
     jobberSell: readOptionalCents(fields[`jobber_${p}`], unit),
     dockPosted: readOptionalCents(fields[`dock_${p}`], unit),
+    fairHose: readOptionalCents(fields[`hose_${p}`], unit),
+    invoiceDelivered: readOptionalCents(fields[`invoice_${p}`], unit),
   };
 }
 
@@ -912,7 +999,7 @@ function prepareProduct(
   const next = { ...input };
   const savedInput = product === "RB" ? context.saved?.rb : context.saved?.ho;
 
-  (["nymexScreen", "terminalDiff", "inboundFreight", "postedRack", "jobberSell"] as const).forEach((key) => {
+  (["nymexScreen", "terminalDiff", "inboundFreight", "postedRack", "jobberSell", "fairHose", "invoiceDelivered"] as const).forEach((key) => {
     if (input[key] != null) origins[key] = "typed";
   });
 
@@ -1084,6 +1171,52 @@ export function buildWaterfallRungs(
   }
 
   rungs.push(
+    rung("dap", "DAP", book.dap, "level", book.dap == null ? (resolved.incomplete ? "incomplete" : null) : "derived", book.dap == null ? null : "rack or NYMEX+diff + freight + tax", null),
+    rung(
+      "fairHose",
+      "Fair hose.",
+      input.fairHose,
+      "take",
+      originOf(input.fairHose, origins.fairHose),
+      input.fairHose == null ? null : "typed",
+      null,
+    ),
+    rung(
+      "shouldBe",
+      "What it should have been.",
+      book.shouldBe,
+      "level",
+      book.shouldBe == null ? null : "derived",
+      book.shouldBe == null ? null : "DAP + Fair hose",
+      null,
+    ),
+    rung(
+      "invoice",
+      "Invoice / delivered",
+      input.invoiceDelivered,
+      "level",
+      originOf(input.invoiceDelivered, origins.invoiceDelivered),
+      input.invoiceDelivered == null ? null : "typed",
+      null,
+    ),
+    rung(
+      "fatTake",
+      "Fat take",
+      book.fatTake,
+      "take",
+      book.fatTake == null ? null : "derived",
+      book.fatTake == null ? null : "invoice − posted rack",
+      "fatTake",
+    ),
+    rung(
+      "postedVsDap",
+      "Posted pump leftover",
+      book.postedVsDap,
+      "leftover",
+      book.postedVsDap == null ? null : "derived",
+      book.postedVsDap == null ? null : "posted pump − DAP",
+      null,
+    ),
     rung(
       "remaining",
       "Dock / retail remaining",
@@ -1100,7 +1233,11 @@ export function buildWaterfallRungs(
 
 export function rankTakes(rungs: WaterfallRung[]): RankedTake[] {
   return rungs
-    .filter((row): row is WaterfallRung & { takeKey: TakeKey; cents: number } => row.takeKey != null && row.cents != null)
+    .filter((row): row is WaterfallRung & { takeKey: TakeKey; cents: number } => {
+      if (row.takeKey == null || row.cents == null) return false;
+      if (row.takeKey === "fatTake" && row.cents <= 0) return false;
+      return true;
+    })
     .map((row) => ({ key: row.takeKey, label: row.label, cents: row.cents }))
     .sort((a, b) => Math.abs(b.cents) - Math.abs(a.cents) || a.label.localeCompare(b.label));
 }

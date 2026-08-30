@@ -19,6 +19,8 @@ import {
   boardDockDefault,
   computeProductNetback,
   computeWorksheet,
+  deliveredAtPlace,
+  fatTakeCents,
   defaultTaxForTerminal,
   deskFootnotes,
   emptyWorksheet,
@@ -165,13 +167,25 @@ assert.equal(filled.rackEquivalent, 320);
 assert.equal(filled.terminalEquivalent, 316);
 assert.equal(filled.impliedDiff, 116);
 assert.equal(filled.edgeVsTyped, 108);
-assert.ok(filled.steps.filter((step) => step.key !== "taxOther").every((step) => step.cents != null));
+assert.ok(
+  filled.steps
+    .filter((step) => !["taxOther", "fairHose", "shouldBe", "invoice", "fatTake"].includes(step.key))
+    .every((step) => step.cents != null),
+);
 assert.equal(filled.steps[0]?.source, "typed");
 assert.equal(filled.steps[2]?.source, "derived");
 assert.equal(filled.taxMode, "split");
 assert.ok(filled.rungs.some((rung) => rung.key === "taxFederal" && rung.cents === 18.4));
 assert.ok(filled.rungs.some((rung) => rung.key === "taxState" && rung.cents === 21.6));
 assert.equal(filled.fattestTake, "remaining");
+assert.equal(filled.dap, 274);
+assert.equal(filled.shouldBe, null);
+assert.equal(filled.fatTake, null);
+assert.equal(filled.postedVsDap, 86);
+assert.ok(filled.rungs.some((rung) => rung.key === "shouldBe" && rung.label === "What it should have been." && rung.cents == null));
+assert.ok(filled.rungs.some((rung) => rung.key === "fatTake" && rung.takeKey === "fatTake"));
+assert.ok(filled.rungs.some((rung) => rung.key === "postedVsDap" && rung.takeKey == null));
+assert.ok(!filled.takes.some((take) => take.key === "fatTake"));
 
 const oneLineBook = computeProductNetback(
   "RB",
@@ -302,6 +316,10 @@ const boardApplied = applyWorksheetDefaults(emptyWorksheet(), {
 assert.equal(boardApplied.rb.input.dockPosted, 445);
 assert.equal(boardApplied.rb.origins.dockPosted, "board");
 assert.equal(boardApplied.ho.input.dockPosted, 528);
+assert.equal(boardApplied.rb.input.invoiceDelivered, null);
+assert.equal(boardApplied.rb.input.fairHose, null);
+assert.equal(boardApplied.ho.input.invoiceDelivered, null);
+assert.equal(boardApplied.ho.input.fairHose, null);
 
 const typedDock = emptyWorksheet();
 typedDock.rb.dockPosted = 399;
@@ -349,7 +367,12 @@ assert.equal(incompleteTax.tax, null);
 assert.equal(incompleteTax.taxIncomplete, true);
 assert.equal(incompleteTax.dockExTax, null);
 assert.equal(incompleteTax.dockRemaining, null);
+assert.equal(incompleteTax.dap, null);
+assert.equal(incompleteTax.shouldBe, null);
+assert.notEqual(incompleteTax.dap, 0);
 assert.equal(formatCents(incompleteTax.dockExTax), "—");
+assert.equal(formatCents(incompleteTax.dap), "—");
+assert.equal(formatCents(incompleteTax.shouldBe), "—");
 assert.equal(stepByKey(incompleteTax, "taxFederal")?.cents, 18.4);
 assert.equal(resolveTaxForProduct({ federal: 18.4, state: null, other: null, oneLine: null }, "RB").incomplete, true);
 const otherMissing = resolveTaxForProduct(
@@ -535,6 +558,10 @@ const printPage = readFileSync(path.join(process.cwd(), "src/app/wholesale/print
 assert.match(deskSource, />Wholesale</);
 assert.match(deskSource, /What it cost\. What they posted\./);
 assert.match(deskSource, /Continue/);
+assert.match(deskSource, /What it should have been\./);
+assert.match(deskSource, /Fair hose\./);
+assert.match(deskSource, /Invoice \/ delivered/);
+assert.match(deskSource, /Fat\s+take is invoice versus posted rack, not posted pump/);
 assert.doesNotMatch(deskSource, /Come in/);
 assert.doesNotMatch(deskSource, /Where the cents went/);
 assert.doesNotMatch(deskSource, /The take/);
@@ -543,6 +570,8 @@ assert.doesNotMatch(deskSource, /Open the book/);
 assert.doesNotMatch(deskSource, /hacking the gallon/);
 assert.doesNotMatch(deskSource, /Investor print/);
 assert.doesNotMatch(deskSource, /Sign in to dashboard/);
+assert.doesNotMatch(deskSource, /silly|gotcha|bargain|call-out|shame/i);
+assert.doesNotMatch(deskSource, /posted − should-be|posted - should-be|posted − DAP|posted - DAP/);
 assert.match(wholesalePage, /How the gallon got that way\./);
 assert.doesNotMatch(wholesalePage, /The take/);
 assert.doesNotMatch(wholesalePage, /Come in/);
@@ -553,6 +582,220 @@ assert.doesNotMatch(printPage, /The book/);
 assert.doesNotMatch(printPage, /Investor/);
 assert.equal(filled.rungs.find((rung) => rung.key === "taxFederal")?.label, "Federal tax");
 assert.equal(filled.rungs.find((rung) => rung.key === "taxState")?.label, "State tax");
+assert.equal(filled.rungs.find((rung) => rung.key === "shouldBe")?.label, "What it should have been.");
+assert.equal(filled.rungs.find((rung) => rung.key === "fairHose")?.label, "Fair hose.");
+
+const costSheet = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 360,
+    fairHose: 10,
+    invoiceDelivered: 400,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: null },
+);
+assert.equal(costSheet.dap, 274);
+assert.equal(costSheet.shouldBe, 284);
+assert.equal(costSheet.fatTake, 170);
+assert.equal(fatTakeCents(400, 230), 170);
+assert.equal(
+  deliveredAtPlace(
+    {
+      nymexScreen: 200,
+      terminalDiff: 8,
+      inboundFreight: 4,
+      postedRack: 230,
+      jobberSell: 245,
+      dockPosted: 360,
+      fairHose: 10,
+      invoiceDelivered: 400,
+    },
+    200,
+    40,
+    false,
+  ),
+  274,
+);
+assert.notEqual(costSheet.fatTake, 360 - 284, "fat take is not posted − should-be");
+assert.notEqual(costSheet.fatTake, 360 - 274, "fat take is not posted − DAP");
+assert.equal(costSheet.postedVsDap, 86);
+assert.equal(costSheet.dockRemaining, 75);
+assert.equal(costSheet.rackMargin, 18);
+assert.equal(costSheet.fattestTake, "fatTake");
+assert.ok(costSheet.takes.some((take) => take.key === "fatTake" && take.cents === 170));
+assert.ok(costSheet.rungs.some((rung) => rung.key === "taxFederal"));
+assert.ok(costSheet.rungs.some((rung) => rung.key === "shouldBe" && rung.cents === 284));
+const shouldBeAt = costSheet.rungs.findIndex((rung) => rung.key === "shouldBe");
+const remainingAt = costSheet.rungs.findIndex((rung) => rung.key === "remaining");
+const taxAt = costSheet.rungs.findIndex((rung) => rung.key === "taxState");
+assert.ok(taxAt < shouldBeAt && shouldBeAt < remainingAt, "should-be sits after tax and before leftover");
+
+const noHose = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 360,
+    fairHose: null,
+    invoiceDelivered: 280,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: null },
+);
+assert.equal(noHose.dap, 274);
+assert.equal(noHose.shouldBe, null);
+assert.equal(formatCents(noHose.shouldBe), "—");
+assert.equal(noHose.fatTake, 50, "fat take is invoice − rack even when hose is blank");
+assert.notEqual(noHose.fatTake, 360 - 274);
+
+const noInvoice = computeProductNetback(
+  "HO",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 360,
+    fairHose: 12,
+    invoiceDelivered: null,
+  },
+  { federal: 24.4, state: 20, other: null, oneLine: null },
+);
+assert.equal(noInvoice.shouldBe, 230 + 4 + 44.4 + 12);
+assert.equal(noInvoice.fatTake, null);
+assert.equal(formatCents(noInvoice.fatTake), "—");
+assert.ok(!noInvoice.takes.some((take) => take.key === "fatTake"));
+
+const underInvoice = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 360,
+    fairHose: 10,
+    invoiceDelivered: 200,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: null },
+);
+assert.equal(underInvoice.fatTake, -30);
+assert.ok(!underInvoice.takes.some((take) => take.key === "fatTake"), "negative fat take stays quiet");
+assert.equal(underInvoice.fattestTake, "remaining");
+
+const incompleteWithHose = computeProductNetback(
+  "HO",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 360,
+    fairHose: 15,
+    invoiceDelivered: 300,
+  },
+  { federal: 18.4, state: null, other: null, oneLine: null },
+);
+assert.equal(incompleteWithHose.taxIncomplete, true);
+assert.equal(incompleteWithHose.dap, null);
+assert.equal(incompleteWithHose.shouldBe, null);
+assert.equal(incompleteWithHose.fatTake, 70);
+assert.notEqual(incompleteWithHose.dap, 0);
+assert.equal(formatCents(incompleteWithHose.dap), "—");
+assert.equal(formatCents(incompleteWithHose.shouldBe), "—");
+
+const nymexPathDap = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: null,
+    jobberSell: null,
+    dockPosted: null,
+    fairHose: 6,
+    invoiceDelivered: null,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: null },
+);
+assert.equal(nymexPathDap.dap, 200 + 8 + 4 + 40);
+assert.equal(nymexPathDap.shouldBe, 258);
+assert.equal(nymexPathDap.fatTake, null);
+
+const yahooDap = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: null,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: null,
+    jobberSell: null,
+    dockPosted: null,
+    fairHose: 5,
+    invoiceDelivered: null,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: null },
+  { nymexFallback: 210 },
+);
+assert.equal(yahooDap.nymexSource, "yahoo");
+assert.equal(yahooDap.dap, 210 + 8 + 4 + 40);
+assert.equal(yahooDap.shouldBe, 267);
+
+const yahooFailDap = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: null,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: null,
+    jobberSell: null,
+    dockPosted: null,
+    fairHose: 5,
+    invoiceDelivered: null,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: null },
+  { nymexFallback: null },
+);
+assert.equal(yahooFailDap.dap, null);
+assert.equal(yahooFailDap.shouldBe, null);
+
+const fromFields = worksheetFromFields(
+  { hose_rb: "11", invoice_ho: "255", rack_rb: "230" },
+  "cent",
+);
+assert.equal(fromFields.rb.fairHose, 11);
+assert.equal(fromFields.rb.invoiceDelivered, null);
+assert.equal(fromFields.ho.invoiceDelivered, 255);
+assert.equal(fromFields.rb.postedRack, 230);
+
+const publicPages = [
+  "src/app/page.tsx",
+  "src/app/haul-out/page.tsx",
+  "src/app/report/page.tsx",
+  "src/app/safe-fuel/page.tsx",
+  "src/app/wholesale/layout.tsx",
+  "src/components/dock-board.tsx",
+  "src/components/dock-card.tsx",
+  "src/components/fuel-map.tsx",
+];
+const publicLeak = /should-be|Fair hose|invoice \/ delivered|nymex|\bTCN\b|platts|n8n|riodata2026/i;
+for (const file of publicPages) {
+  const text = readFileSync(path.join(process.cwd(), file), "utf8");
+  assert.doesNotMatch(text, publicLeak, `${file} leaked a wholesale cost-sheet term`);
+}
+assert.match(readFileSync(path.join(process.cwd(), "src/app/wholesale/desk.tsx"), "utf8"), /LoginPanel/);
+const loginSlice = deskSource.slice(deskSource.indexOf("export function LoginPanel"), deskSource.length);
+assert.doesNotMatch(loginSlice, /should-be|Fair hose|\binvoice\b|nymex|\brack\b|\bTCN\b|Platts/i);
 
 async function storeRoundtrip() {
   const dir = await mkdtemp(path.join(tmpdir(), "dock-posted-wholesale-"));

@@ -21,7 +21,9 @@ function isProductInputs(value: unknown): boolean {
     isCents(row.inboundFreight) &&
     isCents(row.postedRack) &&
     isCents(row.jobberSell) &&
-    isCents(row.dockPosted)
+    isCents(row.dockPosted) &&
+    (row.fairHose === undefined || isCents(row.fairHose)) &&
+    (row.invoiceDelivered === undefined || isCents(row.invoiceDelivered))
   );
 }
 
@@ -53,8 +55,8 @@ export function parseWholesaleDraft(raw: string | undefined): WholesaleDraft | n
     return {
       terminalId: parsed.terminalId,
       sheet: {
-        rb: { ...blank.rb, ...sheet.rb },
-        ho: { ...blank.ho, ...sheet.ho },
+        rb: { ...blank.rb, ...sheet.rb, fairHose: sheet.rb.fairHose ?? null, invoiceDelivered: sheet.rb.invoiceDelivered ?? null },
+        ho: { ...blank.ho, ...sheet.ho, fairHose: sheet.ho.fairHose ?? null, invoiceDelivered: sheet.ho.invoiceDelivered ?? null },
         tax: { ...blank.tax, ...sheet.tax },
         taxRb: { federal: sheet.taxRb?.federal ?? null, state: sheet.taxRb?.state ?? null },
         taxHo: { federal: sheet.taxHo?.federal ?? null, state: sheet.taxHo?.state ?? null },
