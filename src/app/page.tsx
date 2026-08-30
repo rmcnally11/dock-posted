@@ -3,6 +3,7 @@ import { CoastChips } from "@/components/coast-chips";
 import { DockBoard } from "@/components/dock-board";
 import { Waterline } from "@/components/waterline";
 import { filterDocks, parseBoardQuery } from "@/lib/board-query";
+import { boardTally } from "@/lib/freshness";
 import { readDocks } from "@/lib/store";
 import { CORRIDORS } from "@/lib/types";
 
@@ -26,6 +27,7 @@ export default async function Home({
   const params = await searchParams;
   const query = parseBoardQuery(params);
   const { inCorridor, visible } = filterDocks(docks, query);
+  const tally = boardTally(docks);
   const reportedDock = query.reported
     ? docks.find((dock) => dock.id === query.reported)
     : null;
@@ -45,6 +47,10 @@ export default async function Home({
             className="max-w-2xl text-sm leading-6 text-harbor/72 md:text-base"
           >
             The last number they wrote on the board. If they did not post, it stays Call.
+          </p>
+          <p data-testid="board-tally" className="text-sm text-harbor/55">
+            {tally.postedThisWeek} posted this week · {tally.call} Call
+            {tally.stale ? ` · ${tally.stale} stale` : ""}
           </p>
         </div>
         {query.reported ? (

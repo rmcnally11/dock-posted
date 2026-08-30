@@ -32,6 +32,7 @@ try {
   const kicker = await page.$eval("[data-testid=hero-kicker]", (el) => el.textContent?.trim());
   const headline = await page.$eval("[data-testid=hero-headline]", (el) => el.textContent?.trim());
   const deck = await page.$eval("[data-testid=hero-deck]", (el) => el.textContent?.trim());
+  const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
   check("copy lock kicker", kicker === "What the dock posted", kicker);
   check("copy lock headline", headline === "Sabine to Key West", headline);
   check(
@@ -39,6 +40,9 @@ try {
     deck === "The last number they wrote on the board. If they did not post, it stays Call.",
     deck,
   );
+  const tally = await page.$eval("[data-testid=board-tally]", (el) => el.textContent?.trim());
+  check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
+  check("no invent compliance", !/never invent a price/i.test(homeCopy));
 
   const texasHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
   check("texas heading", texasHeading?.includes("Galveston Bay"));
@@ -65,11 +69,11 @@ try {
   check("island is not the poster", texasNames[0] !== "Galveston Yacht Marina");
   check("no kemah boardwalk", !texasNames.some((name) => name?.includes("Kemah Boardwalk")));
 
-  const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
   check("no on this water", !/on this water/i.test(homeCopy));
   check("no instrument family", !/instrument family/i.test(homeCopy));
   check("no sister page", !/sister page/i.test(homeCopy));
-  check("no two-corridors copy", !/two corridors only/i.test(homeCopy));
+  check("no corridors copy", !/\bcorridors\b/i.test(homeCopy));
+  check("no platform insights", !/platform|insights|real-time/i.test(homeCopy));
   check("no compliance hero", !/does not sell gallons, broker fuel/i.test(homeCopy));
   check("no sine-wave costume", (await page.$$("svg")).length === 0 || !homeCopy.includes("sine"));
   check("no waterdog mark", !/waterdog/i.test(homeCopy));

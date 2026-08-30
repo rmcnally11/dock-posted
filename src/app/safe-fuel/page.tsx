@@ -3,10 +3,10 @@ import { SiteFooter } from "@/components/site-footer";
 export default function SafeFuelPage() {
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10">
-      <p className="kicker text-wake-deep">At the pump</p>
+      <p className="kicker text-wake-deep">What the dock posted</p>
       <h1 className="mt-2 font-serif text-4xl text-harbor">E15 is not for boats</h1>
       <p className="mt-3 text-base leading-7 text-harbor/75">
-        Read the sticker. If it says 15% ethanol, walk away. That is the whole sheet.
+        If the sticker says 15% ethanol, walk away. That hose stays Call.
       </p>
 
       <section className="mt-8 space-y-3">
@@ -47,7 +47,7 @@ export default function SafeFuelPage() {
       </section>
 
       <section className="mt-10 border border-harbor/12 bg-white p-5 text-sm leading-6 text-harbor/70">
-        <h2 className="font-serif text-xl text-harbor">Opened for this page</h2>
+        <h2 className="font-serif text-xl text-harbor">Pages we opened</h2>
         <ul className="mt-3 list-disc space-y-2 pl-5">
           <li>
             EPA, “E15 Fuel Registration” — boats among equipment that cannot use E15.{" "}
@@ -73,7 +73,7 @@ export default function SafeFuelPage() {
 
       <p className="mt-8 text-sm">
         <a className="text-wake underline-offset-2 hover:underline" href="/">
-          Back to the chart
+          Back to the board
         </a>
       </p>
       <SiteFooter />

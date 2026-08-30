@@ -3,7 +3,6 @@ import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
 import { SiteFooter } from "@/components/site-footer";
 import { boardHref, viewLabel, type BoardQuery } from "@/lib/board-query";
-import { boardTally } from "@/lib/freshness";
 import { COAST_JUMPS, type Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +17,6 @@ export function DockBoard({
 }) {
   const selected = visible.find((dock) => dock.id === query.dock) ?? null;
   const filtered = query.e0Only || query.freshOnly || query.q.length >= 2;
-  const tally = boardTally(inCorridor);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col lg:min-h-[calc(100dvh-13rem)] lg:flex-row">
@@ -40,10 +38,6 @@ export function DockBoard({
                 {filtered
                   ? `Showing ${visible.length} of ${inCorridor.length} docks`
                   : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"}`}
-              </p>
-              <p data-testid="board-tally" className="mt-0.5 text-xs text-harbor/55">
-                {tally.postedThisWeek} posted this week · {tally.call} Call
-                {tally.stale ? ` · ${tally.stale} stale` : ""}
               </p>
               {query.corridor === "galveston-bay" && !query.state && !query.region && query.q.length < 2 ? (
                 <p className="mt-1 text-xs text-harbor/50">
@@ -234,9 +228,9 @@ function EmptyList({ query }: { query: BoardQuery }) {
   return (
     <div className="border border-dashed border-harbor/25 bg-white p-6 text-sm text-harbor/70">
       {query.q.length >= 2
-        ? `Nothing named “${query.q}” on this chart. Try Seabrook, Key Largo, or Beaufort.`
+        ? `Nothing named “${query.q}”. Try Seabrook, Key Largo, or Beaufort.`
         : query.freshOnly || query.e0Only
-          ? "No docks match those chips. Clear one and look again."
+          ? "No docks match. Clear E0 or This week."
           : "No docks here. Call ahead, or open Clear Lake or Key Largo."}
     </div>
   );
