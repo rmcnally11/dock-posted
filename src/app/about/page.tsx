@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BrandPhoto } from "@/components/brand-photo";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { XTimeline } from "@/components/x-timeline";
@@ -27,6 +28,7 @@ export default function AboutPage() {
         We write what they posted. If they didn’t, it’s Call.
       </p>
       <Waterline className="mt-3" />
+      <BrandPhoto name="cover" className="mt-8 aspect-[16/9] w-full max-w-2xl" />
 
       <section
         data-testid="about-body"

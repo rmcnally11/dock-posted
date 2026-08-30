@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BrandPhoto } from "@/components/brand-photo";
 import { ReportForm } from "@/components/report-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
@@ -37,6 +38,7 @@ export default async function ReportPage({
         Post the number. Save the next boat a phone call.
       </p>
       <Waterline className="mt-3 hidden lg:block" />
+      <BrandPhoto name="board" className="mt-6 aspect-[16/9] w-full max-w-xl" />
 
       <form action="/report" method="get" className="mt-6 flex max-w-xl gap-2">
         {params.dock ? <input type="hidden" name="dock" value={params.dock} /> : null}
