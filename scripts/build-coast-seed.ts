@@ -149,25 +149,25 @@ const HOME_PATCHES: Record<
       "League City fuel pier. Marina page (30 Aug 2026): ValvTect gasoline and diesel. Summer 8am–6pm daily; winter 8am–4:30pm. No ethanol-free line. Tenant pump-out is free — not fuel. No ice on the pages Tide pulled. WG dollars are a stale sample, not live. A 6:30 run cannot use this dock.",
   },
   "houston-yacht-club": {
-    lead: 4,
+    lead: 6,
     access: "members",
     notes:
       "Club only. Members and reciprocal, not a public pump. Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never.",
   },
   "lakewood-yacht-club": {
-    lead: 5,
+    lead: 7,
     access: "private",
     phone: "(832) 256-6923",
     notes:
       "Club only. Private. Fuel and pump-out line 832-256-6923. Not a public pump. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
   },
   "watermans-harbor": {
-    lead: 6,
+    lead: 8,
     notes:
       "On Dickinson Bayou. Waterway Guide lists gas as Call, non-ethanol No, last fuel update Never. No diesel line on that listing.",
   },
   "galveston-yacht-marina": {
-    lead: 7,
+    lead: 12,
     notes:
       "Galveston Island, not the Clear Lake mouth. Marina homepage on 30 Aug 2026 posted Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79. Matches Waterway Guide 08/28/26.",
   },
@@ -202,6 +202,77 @@ const HOME_PATCHES: Record<
     lead: 7,
     notes:
       "Tavernier. Waterway Guide marina listing: gas Call, non-ethanol No (landside E10). Last fuel update Never. Call.",
+  },
+  "bayland-marina": {
+    lead: 4,
+    hours: "Tue–Sun 8am–5pm. Monday closed.",
+    ethanol: "unknown",
+    quotes: [
+      { product: "87", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+    ],
+    lastVerifiedAt: null,
+    lastVerifiedSource: "marina site",
+    sourceUrl: "https://baylandmarina.com/rules.html",
+    notes:
+      "Baytown / Tabbs Bay, upper Galveston Bay. Own rules page (30 Aug 2026): fuel dock open during regular business hours; marina office Tue–Sun 8am–5pm. Store (281) 422-8900. Snag-A-Slip and Waterway Guide list ValvTect gas and diesel. No pump dollars on the marina site. Call.",
+  },
+  "marinemax-houston": {
+    lead: 5,
+    hours: null,
+    access: "members",
+    ethanol: "unknown",
+    quotes: [
+      { product: "87", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+    ],
+    lastVerifiedAt: null,
+    lastVerifiedSource: "marina site",
+    sourceUrl: "https://www.marinemax.com/pages/locations/houston",
+    notes:
+      "3001 NASA Pkwy, Seabrook. Own site (30 Aug 2026): wet slips exclusive to MarineMax customers, with high-speed fueling and a pump-out. Not a public pump. Hours and products stay Call. No pump dollars posted.",
+  },
+  "harborwalk-hitchcock": {
+    lead: 9,
+    hours: "Daily 7am–6pm. May vary by season.",
+    ethanol: "unknown",
+    quotes: [
+      { product: "87", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+    ],
+    lastVerifiedAt: null,
+    lastVerifiedSource: "marina site",
+    sourceUrl: "https://www.harborwalk.com/amenities/marina/services/",
+    notes:
+      "Hitchcock / West Galveston Bay. Own marina services page (30 Aug 2026): five fuel pumps; marine-grade diesel and regular gasoline. Location page hours Daily 7am–6pm, may vary by season. No pump dollars posted. Call.",
+  },
+  "eagle-point-san-leon": {
+    lead: 10,
+    hours: null,
+    ethanol: "unknown",
+    quotes: [
+      { product: "87", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "not-sold", taxIncluded: null },
+    ],
+    lastVerifiedAt: null,
+    lastVerifiedSource: "marina site",
+    sourceUrl: "https://www.eaglepointfishingcamp.com/services.html",
+    notes:
+      "San Leon, Galveston Bay. Own services page (30 Aug 2026): gasoline dock easily accessible by boat. Diesel is not named on that page. Hours not posted. No pump dollars. Call.",
+  },
+  "pelican-rest-marina": {
+    lead: 11,
+    hours: "Daily 8am–5pm.",
+    ethanol: "unknown",
+    quotes: [
+      { product: "87", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+    ],
+    lastVerifiedAt: null,
+    lastVerifiedSource: "marina site",
+    sourceUrl: "https://www.pelicanrestmarina.com/",
+    notes:
+      "Offatts Bayou, Galveston. Own site (30 Aug 2026): fuel dock sells gasoline and diesel. Supplies page: open 7 days, 8am–5pm. No pump dollars posted. Call.",
   },
   "plantation-yacht-harbor": {
     corridor: null,
@@ -278,6 +349,42 @@ function homeDock(row: {
   };
 }
 
+function bayDock(row: {
+  id: string;
+  name: string;
+  city: string;
+  lat: number;
+  lng: number;
+  phone: string;
+  website: string;
+  notes: string;
+  access: DockAccess;
+  lead: number;
+  products?: Product[];
+}): Dock {
+  return {
+    id: row.id,
+    name: row.name,
+    corridor: "galveston-bay",
+    region: "texas",
+    city: row.city,
+    state: "TX",
+    lat: row.lat,
+    lng: row.lng,
+    phone: row.phone,
+    hours: null,
+    website: row.website,
+    notes: row.notes,
+    access: row.access,
+    ethanol: "unknown",
+    quotes: callQuotes(row.products ?? ["87", "diesel"]),
+    lastVerifiedAt: null,
+    lastVerifiedSource: "marina site",
+    sourceUrl: row.website,
+    lead: row.lead,
+  };
+}
+
 const HOME_ADDITIONS: Dock[] = [
   homeDock({
     id: "marina-del-mar",
@@ -304,6 +411,72 @@ const HOME_ADDITIONS: Dock[] = [
       "Members only. Private marina. Club page lists the marina open daily 7am–6pm for members and their guests. A weekend guest who is not with a member cannot buy. No pump dollars posted. Call.",
     access: "members",
     lead: 5,
+  }),
+  bayDock({
+    id: "bayland-marina",
+    name: "Bayland Marina",
+    city: "Baytown",
+    lat: 29.70912,
+    lng: -94.99644,
+    phone: "(281) 422-8900",
+    website: "https://baylandmarina.com/",
+    notes:
+      "Baytown / Tabbs Bay, upper Galveston Bay. Own rules page (30 Aug 2026): fuel dock open during regular business hours; marina office Tue–Sun 8am–5pm. Store (281) 422-8900. Snag-A-Slip and Waterway Guide list ValvTect gas and diesel. No pump dollars on the marina site. Call.",
+    access: "public",
+    lead: 4,
+  }),
+  bayDock({
+    id: "marinemax-houston",
+    name: "MarineMax Houston",
+    city: "Seabrook",
+    lat: 29.55948,
+    lng: -95.04018,
+    phone: "(281) 326-4224",
+    website: "https://www.marinemax.com/pages/locations/houston",
+    notes:
+      "3001 NASA Pkwy, Seabrook. Own site (30 Aug 2026): wet slips exclusive to MarineMax customers, with high-speed fueling and a pump-out. Not a public pump. Hours and products stay Call. No pump dollars posted.",
+    access: "members",
+    lead: 5,
+  }),
+  bayDock({
+    id: "harborwalk-hitchcock",
+    name: "HarborWalk Marina",
+    city: "Hitchcock",
+    lat: 29.285,
+    lng: -94.95778,
+    phone: "(409) 935-3737",
+    website: "https://www.harborwalk.com/amenities/marina/services/",
+    notes:
+      "Hitchcock / West Galveston Bay. Own marina services page (30 Aug 2026): five fuel pumps; marine-grade diesel and regular gasoline. Location page hours Daily 7am–6pm, may vary by season. No pump dollars posted. Call.",
+    access: "public",
+    lead: 9,
+  }),
+  bayDock({
+    id: "eagle-point-san-leon",
+    name: "Eagle Point Fishing Camp",
+    city: "San Leon",
+    lat: 29.49642,
+    lng: -94.91025,
+    phone: "(281) 339-1131",
+    website: "https://www.eaglepointfishingcamp.com/services.html",
+    notes:
+      "San Leon, Galveston Bay. Own services page (30 Aug 2026): gasoline dock easily accessible by boat. Diesel is not named on that page. Hours not posted. No pump dollars. Call.",
+    access: "public",
+    lead: 10,
+    products: ["87"],
+  }),
+  bayDock({
+    id: "pelican-rest-marina",
+    name: "Pelican Rest Marina",
+    city: "Galveston",
+    lat: 29.2846,
+    lng: -94.85736,
+    phone: "(409) 744-2618",
+    website: "https://www.pelicanrestmarina.com/",
+    notes:
+      "Offatts Bayou, Galveston. Own site (30 Aug 2026): fuel dock sells gasoline and diesel. Supplies page: open 7 days, 8am–5pm. No pump dollars posted. Call.",
+    access: "public",
+    lead: 11,
   }),
 ];
 

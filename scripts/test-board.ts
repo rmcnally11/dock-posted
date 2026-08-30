@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { boardHref, filterDocks, parseBoardQuery, matchesSearch } from "../src/lib/board-query";
+import { boardHref, filterDocks, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
 import { formatQuote, telHref } from "../src/lib/format";
 import { boardQuote, boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
@@ -32,18 +32,38 @@ for (const dock of docks) {
   }
 }
 
-const texas = filterDocks(docks, parseBoardQuery({}));
-assert.equal(texas.inCorridor.length, 7);
-assert.equal(texas.visible.length, 7);
+const coast = filterDocks(docks, parseBoardQuery({}));
+assert.equal(coast.inCorridor.length, docks.length);
+assert.equal(coast.visible.length, docks.length);
+assert.ok(coast.visible.length > 90, `bare / should show the full seed, got ${coast.visible.length}`);
+assert.ok(coast.visible.some((dock) => dock.corridor === "galveston-bay"));
+assert.ok(coast.visible.some((dock) => dock.corridor === "upper-keys"));
+assert.ok(coast.visible.some((dock) => dock.state === "ME"));
+assert.ok(coast.visible.some((dock) => dock.id === "pleasure-island-marina"));
+assert.equal(viewLabel(parseBoardQuery({})), "Sabine to Maine");
+assert.equal(parseBoardQuery({}).corridor, null);
+
+const texas = filterDocks(docks, parseBoardQuery({ corridor: "galveston-bay" }));
+assert.ok(texas.inCorridor.length > 7, `bay corridor should densify past 7, got ${texas.inCorridor.length}`);
+assert.equal(texas.visible.length, texas.inCorridor.length);
 assert.ok(texas.visible.every((dock) => dock.corridor === "galveston-bay"));
 assert.deepEqual(
-  texas.visible.slice(0, 3).map((dock) => dock.id),
-  ["marina-bay-harbor", "blue-marlin-seabrook", "south-shore-harbour"],
+  texas.visible.slice(0, 5).map((dock) => dock.id),
+  [
+    "marina-bay-harbor",
+    "blue-marlin-seabrook",
+    "south-shore-harbour",
+    "bayland-marina",
+    "marinemax-houston",
+  ],
 );
 assert.equal(texas.visible[0].name, "Marina Bay Harbor");
 assert.equal(texas.visible[1].name, "Blue Marlin Fuel Dock");
 assert.equal(texas.visible[2].name, "South Shore Harbour Fuel Pier");
 assert.equal(texas.visible.at(-1)?.id, "galveston-yacht-marina");
+assert.ok(texas.visible.some((dock) => dock.id === "harborwalk-hitchcock"));
+assert.ok(texas.visible.some((dock) => dock.id === "eagle-point-san-leon"));
+assert.ok(texas.visible.some((dock) => dock.id === "pelican-rest-marina"));
 
 const keys = filterDocks(docks, parseBoardQuery({ corridor: "upper-keys" }));
 assert.equal(keys.inCorridor.length, 7);
@@ -90,7 +110,7 @@ assert.ok(fresh.visible.every((dock) => dock.lastVerifiedAt));
 assert.ok(fresh.visible.every((dock) => freshness(dock) === "fresh"));
 
 const texasState = filterDocks(docks, parseBoardQuery({ state: "TX" }));
-assert.ok(texasState.inCorridor.length > 7);
+assert.ok(texasState.inCorridor.length > texas.inCorridor.length);
 assert.ok(texasState.visible.every((dock) => dock.state === "TX"));
 assert.ok(texasState.visible.some((dock) => dock.id === "cove-harbor-rockport"));
 assert.ok(!texasState.visible.some((dock) => dock.id === "kemah-boardwalk-marina"));
@@ -187,6 +207,39 @@ assert.equal(lakewood.access, "private");
 assert.equal(lakewood.phone, "(832) 256-6923");
 assert.ok(lakewood.quotes.every((quote) => quote.pricePerGallon == null));
 
+const bayland = docks.find((dock) => dock.id === "bayland-marina");
+assert.ok(bayland);
+assert.equal(bayland.corridor, "galveston-bay");
+assert.equal(bayland.city, "Baytown");
+assert.equal(bayland.access, "public");
+assert.equal(bayland.phone, "(281) 422-8900");
+assert.match(bayland.hours ?? "", /Tue–Sun 8am–5pm/);
+assert.ok(bayland.quotes.every((quote) => quote.pricePerGallon == null && quote.status === "call"));
+assert.equal(formatQuote(bayland.quotes[0] ?? null), "Call");
+
+const marineMax = docks.find((dock) => dock.id === "marinemax-houston");
+assert.ok(marineMax);
+assert.equal(marineMax.corridor, "galveston-bay");
+assert.equal(marineMax.city, "Seabrook");
+assert.equal(marineMax.access, "members");
+assert.equal(marineMax.hours, null);
+assert.ok(marineMax.quotes.every((quote) => quote.pricePerGallon == null && quote.status === "call"));
+assert.match(marineMax.notes ?? "", /not a public pump/i);
+
+const harborwalk = docks.find((dock) => dock.id === "harborwalk-hitchcock");
+assert.ok(harborwalk);
+assert.equal(harborwalk.corridor, "galveston-bay");
+assert.ok(harborwalk.quotes.every((quote) => quote.pricePerGallon == null));
+
+const eaglePoint = docks.find((dock) => dock.id === "eagle-point-san-leon");
+assert.ok(eaglePoint);
+assert.equal(eaglePoint.quotes.find((quote) => quote.product === "diesel")?.status, "not-sold");
+assert.ok(eaglePoint.quotes.every((quote) => quote.pricePerGallon == null));
+
+const pelicanRest = docks.find((dock) => dock.id === "pelican-rest-marina");
+assert.ok(pelicanRest);
+assert.ok(pelicanRest.quotes.every((quote) => quote.pricePerGallon == null));
+
 const keyLargoHarbor = docks.find((dock) => dock.id === "key-largo-harbor");
 assert.ok(keyLargoHarbor);
 assert.ok(keyLargoHarbor.quotes.every((quote) => quote.pricePerGallon == null));
@@ -250,6 +303,11 @@ const galvestonView = viewForBoard([], parseBoardQuery({ corridor: "galveston-ba
 assert.deepEqual(galvestonView.center, [-95.03, 29.56]);
 assert.equal(galvestonView.zoom, 11.2);
 
+const coastView = viewForBoard(docks, parseBoardQuery({}));
+assert.ok(coastView.zoom <= 6, `coast zoom should fit Sabine to Maine, got ${coastView.zoom}`);
+assert.notEqual(coastView.center[0], CORRIDORS["galveston-bay"].center[0]);
+assert.notEqual(coastView.center[1], CORRIDORS["galveston-bay"].center[1]);
+
 const lakeMouth = pinPercent(-95.03, 29.56, galvestonView);
 assert.equal(lakeMouth.zoom, 11);
 assert.notEqual(`${lakeMouth.startX}/${lakeMouth.startY}`, "239/422");
@@ -259,13 +317,36 @@ assert.ok(lakeMouth.top > 40 && lakeMouth.top < 80, `lake mouth top ${lakeMouth.
 const waller = pinPercent(-95.85, 30.0, galvestonView);
 assert.ok(waller.left < -2 || waller.left > 102 || waller.top < -2 || waller.top > 102);
 
-for (const dock of texas.visible.filter((item) => item.id !== "galveston-yacht-marina")) {
+const lakeMouthIds = new Set([
+  "marina-bay-harbor",
+  "blue-marlin-seabrook",
+  "south-shore-harbour",
+  "houston-yacht-club",
+  "lakewood-yacht-club",
+  "watermans-harbor",
+  "marinemax-houston",
+]);
+for (const dock of texas.visible.filter((item) => lakeMouthIds.has(item.id))) {
   const pin = pinPercent(dock.lng, dock.lat, galvestonView);
   assert.ok(
     pin.left >= -2 && pin.left <= 102 && pin.top >= -2 && pin.top <= 102,
     `${dock.id} fell off the Clear Lake frame (${pin.left.toFixed(1)}, ${pin.top.toFixed(1)})`,
   );
 }
+
+const sabine = docks.find((dock) => dock.id === "pleasure-island-marina");
+const maine = docks.find((dock) => dock.id === "bar-harbor-town-pier");
+assert.ok(sabine && maine);
+const sabinePin = pinPercent(sabine.lng, sabine.lat, coastView);
+const mainePin = pinPercent(maine.lng, maine.lat, coastView);
+assert.ok(
+  sabinePin.left >= -2 && sabinePin.left <= 102 && sabinePin.top >= -2 && sabinePin.top <= 102,
+  `Sabine fell off the coast frame (${sabinePin.left.toFixed(1)}, ${sabinePin.top.toFixed(1)})`,
+);
+assert.ok(
+  mainePin.left >= -2 && mainePin.left <= 102 && mainePin.top >= -2 && mainePin.top <= 102,
+  `Maine fell off the coast frame (${mainePin.left.toFixed(1)}, ${mainePin.top.toFixed(1)})`,
+);
 
 const fence =
   /cheapest fuel|bargain map|on this water|instrument family|field letter|almanac|onthiswater|wind is the tide|sister page|field board|us saltwater docks|the board at the dock|seven letter|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning|Holds Fast|waterdogfuel\.com/i;
@@ -522,5 +603,5 @@ assert.ok(tally.postedThisWeek > 0);
 assert.ok(tally.call > tally.postedThisWeek);
 
 console.log(
-  `board filters ok — seed ${docks.length}, texas ${texas.visible.length}, keys ${keys.visible.length}, tx-state ${texasState.visible.length}, ne ${newEngland.visible.length}, e0 ${e0.visible.length}, fresh ${fresh.visible.length}, search ${search.visible.length}, posted-this-week ${tally.postedThisWeek}, call ${tally.call}, stale ${tally.stale}`,
+  `board filters ok — seed ${docks.length}, coast ${coast.visible.length}, bay ${texas.visible.length}, keys ${keys.visible.length}, tx-state ${texasState.visible.length}, ne ${newEngland.visible.length}, e0 ${e0.visible.length}, fresh ${fresh.visible.length}, search ${search.visible.length}, posted-this-week ${tally.postedThisWeek}, call ${tally.call}, stale ${tally.stale}`,
 );

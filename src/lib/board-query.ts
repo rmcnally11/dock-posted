@@ -55,10 +55,9 @@ export function parseBoardQuery(params: {
   const region = asRegion(params.region);
   const corridor = asCorridor(params.corridor);
   const q = (params.q ?? "").trim();
-  const jumping = Boolean(state || region || corridor || q.length >= 2);
 
   return {
-    corridor: jumping ? corridor : "galveston-bay",
+    corridor,
     state,
     region,
     q,
@@ -105,7 +104,7 @@ export function geographicSet(docks: Dock[], query: BoardQuery): Dock[] {
   if (query.corridor) {
     return docks.filter((dock) => dock.corridor === query.corridor);
   }
-  return docks.filter((dock) => dock.corridor === "galveston-bay");
+  return docks;
 }
 
 function leadRank(dock: Dock): number {
@@ -138,14 +137,9 @@ export function viewLabel(query: BoardQuery): string {
   if (query.state) return STATE_VIEWS[query.state].label;
   if (query.region) return REGIONS[query.region].label;
   if (query.corridor) return CORRIDORS[query.corridor].label;
-  return CORRIDORS["galveston-bay"].label;
+  return "Sabine to Maine";
 }
 
 export function isHomeView(query: BoardQuery): boolean {
-  return (
-    query.q.length < 2 &&
-    !query.state &&
-    !query.region &&
-    (query.corridor === "galveston-bay" || query.corridor === "upper-keys")
-  );
+  return query.q.length < 2 && !query.state && !query.region && !query.corridor;
 }
