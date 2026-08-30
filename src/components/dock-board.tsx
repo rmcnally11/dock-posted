@@ -44,6 +44,32 @@ export function DockBoard({
               <p data-testid="board-fact" className="mt-1 text-xs text-[color:var(--ink)]/55">
                 Call is a fact. Silence is not a price.
               </p>
+              <p
+                data-testid="pin-legend"
+                aria-label="Posted and Call"
+                className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[color:var(--ink)]/70"
+              >
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
+                  Call
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
+                  Posted
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--gold)]" />
+                  Last seen
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
+                  Diesel
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
+                  Gas
+                </span>
+              </p>
               {query.corridor === "galveston-bay" && !query.state && !query.region && query.q.length < 2 ? (
                 <p className="mt-1 text-xs text-[color:var(--ink)]/50">
                   Clear Lake mouth first. Hours beat a posted price. A 6:30 run cannot use
