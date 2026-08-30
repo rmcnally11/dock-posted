@@ -1,12 +1,18 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import {
+  readOverlayFile,
+  readReportFile,
+  writeOverlayFile,
+  writeReportFile,
+} from "./persist";
 import type {
   Dock,
+  DockOverlay,
   DockStoreFile,
   PriceReport,
   Product,
-  ReportStoreFile,
 } from "./types";
 
 const SEED_PATH = path.join(process.cwd(), "data", "docks.seed.json");
@@ -47,48 +53,47 @@ export async function loadCombinedSeed(): Promise<DockStoreFile> {
   };
 }
 
-function runtimeDir() {
-  if (process.env.DATA_DIR) return process.env.DATA_DIR;
-  if (process.env.VERCEL) return "/tmp/dock-posted";
-  return path.join(process.cwd(), "data", "runtime");
+async function readSeed(): Promise<DockStoreFile> {
+  const raw = await readFile(SEED_PATH, "utf8");
+  return JSON.parse(raw) as DockStoreFile;
 }
 
-function docksPath() {
-  return path.join(runtimeDir(), "docks.json");
+function applyOverlay(dock: Dock, overlay: DockOverlay | undefined): Dock {
+  if (!overlay) return dock;
+  return {
+    ...dock,
+    quotes: overlay.quotes ? overlay.quotes.map((quote) => ({ ...quote })) : dock.quotes,
+    ethanol: overlay.ethanol ?? dock.ethanol,
+    lastVerifiedAt:
+      overlay.lastVerifiedAt !== undefined ? overlay.lastVerifiedAt : dock.lastVerifiedAt,
+    lastVerifiedSource:
+      overlay.lastVerifiedSource !== undefined
+        ? overlay.lastVerifiedSource
+        : dock.lastVerifiedSource,
+    sourceUrl: overlay.sourceUrl !== undefined ? overlay.sourceUrl : dock.sourceUrl,
+    notes: overlay.notes !== undefined ? overlay.notes : dock.notes,
+  };
 }
 
-function reportsPath() {
-  return path.join(runtimeDir(), "reports.json");
-}
-
-async function ensureRuntime(): Promise<void> {
-  await mkdir(runtimeDir(), { recursive: true });
-  const combined = await loadCombinedSeed();
-  try {
-    const raw = await readFile(docksPath(), "utf8");
-    const current = JSON.parse(raw) as DockStoreFile;
-    const have = new Set(current.docks.map((dock) => dock.id));
-    const missing = combined.docks.filter((dock) => !have.has(dock.id));
-    if (missing.length > 0) {
-      current.docks.push(...missing);
-      current.generatedAt = new Date().toISOString();
-      await writeFile(docksPath(), JSON.stringify(current, null, 2), "utf8");
-    }
-  } catch {
-    await writeFile(docksPath(), JSON.stringify(combined, null, 2), "utf8");
-  }
-  try {
-    await readFile(reportsPath(), "utf8");
-  } catch {
-    const empty: ReportStoreFile = { reports: [] };
-    await writeFile(reportsPath(), JSON.stringify(empty, null, 2), "utf8");
-  }
+function overlayFromDock(dock: Dock): DockOverlay {
+  return {
+    quotes: dock.quotes.map((quote) => ({ ...quote })),
+    ethanol: dock.ethanol,
+    lastVerifiedAt: dock.lastVerifiedAt,
+    lastVerifiedSource: dock.lastVerifiedSource,
+    sourceUrl: dock.sourceUrl,
+    notes: dock.notes,
+  };
 }
 
 export async function readDockStore(): Promise<DockStoreFile> {
-  await ensureRuntime();
-  const raw = await readFile(docksPath(), "utf8");
-  return JSON.parse(raw) as DockStoreFile;
+  const seed = await readSeed();
+  const { overlays } = await readOverlayFile();
+  return {
+    ...seed,
+    generatedAt: new Date().toISOString(),
+    docks: seed.docks.map((dock) => applyOverlay(dock, overlays[dock.id])),
+  };
 }
 
 export async function readDocks(): Promise<Dock[]> {
@@ -97,29 +102,37 @@ export async function readDocks(): Promise<Dock[]> {
 }
 
 export async function readReports(): Promise<PriceReport[]> {
-  await ensureRuntime();
-  const raw = await readFile(reportsPath(), "utf8");
-  const parsed = JSON.parse(raw) as ReportStoreFile;
-  return parsed.reports;
+  const file = await readReportFile();
+  return file.reports;
+}
+
+function sameOverlay(left: Dock, right: Dock): boolean {
+  return JSON.stringify(overlayFromDock(left)) === JSON.stringify(overlayFromDock(right));
 }
 
 export async function writeDockStore(store: DockStoreFile): Promise<void> {
-  await ensureRuntime();
-  await writeFile(docksPath(), JSON.stringify(store, null, 2), "utf8");
+  const seed = await readSeed();
+  const { overlays } = await readOverlayFile();
+  for (const dock of store.docks) {
+    const baseline = seed.docks.find((item) => item.id === dock.id);
+    if (!baseline) continue;
+    if (sameOverlay(baseline, dock)) {
+      delete overlays[dock.id];
+    } else {
+      overlays[dock.id] = overlayFromDock(dock);
+    }
+  }
+  await writeOverlayFile({ overlays });
 }
 
 export async function writeReports(reports: PriceReport[]): Promise<void> {
-  await ensureRuntime();
-  const file: ReportStoreFile = { reports };
-  await writeFile(reportsPath(), JSON.stringify(file, null, 2), "utf8");
+  await writeReportFile({ reports });
 }
 
 export async function resetFromSeed(): Promise<DockStoreFile> {
-  await mkdir(runtimeDir(), { recursive: true });
-  const combined = await loadCombinedSeed();
-  await writeFile(docksPath(), JSON.stringify(combined, null, 2), "utf8");
   await writeReports([]);
-  return combined;
+  await writeOverlayFile({ overlays: {} });
+  return readDockStore();
 }
 
 function applyReportToDock(dock: Dock, report: PriceReport): Dock {

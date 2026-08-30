@@ -9,10 +9,9 @@ import {
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const results = await Promise.all([
-    fetchPublicReport(WG_REPORTS.gulf.url),
-    fetchPublicReport(WG_REPORTS.keys.url),
-  ]);
+  const results = await Promise.all(
+    Object.values(WG_REPORTS).map((report) => fetchPublicReport(report.url)),
+  );
 
   const store = await readDockStore();
   const updatedIds: string[] = [];

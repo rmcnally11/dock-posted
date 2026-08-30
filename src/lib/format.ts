@@ -8,7 +8,8 @@ export function formatPrice(value: number | null | undefined): string {
 export function formatQuote(quote: FuelQuote | null): string {
   if (!quote) return "—";
   if (quote.status === "not-sold") return "Not sold";
-  if (quote.status === "call" || quote.status === "no-report") return "Call";
+  if (quote.status === "no-report") return "No report";
+  if (quote.status === "call") return "Call";
   if (quote.pricePerGallon == null) return "Call";
   const grade = quote.product === "diesel" ? "diesel" : quote.product;
   const ethanol = quote.ethanol === "unknown" ? "" : ` ${quote.ethanol}`;

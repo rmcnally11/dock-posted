@@ -23,13 +23,13 @@ export function DockCard({
       aria-current={selected ? "true" : undefined}
       data-testid={`dock-card-${dock.id}`}
       className={cn(
-        "block w-full rounded-xl border p-4 text-left shadow-sm transition",
-        selected
-          ? "border-[color:var(--sea)] bg-[color:var(--panel)] ring-2 ring-[color:var(--sea)]/30"
-          : "border-[color:var(--line)] bg-white hover:border-[color:var(--cream)]/20",
-        state === "call" && !selected && "border-l-4 border-l-rust",
-        state === "stale" && !selected && "border-l-4 border-l-amber",
-        state === "fresh" && !selected && "border-l-4 border-l-fresh",
+        "block w-full border p-3.5 text-left transition",
+        selected ? "border-harbor bg-sand" : "border-harbor/12 bg-white hover:border-harbor/30",
+        state === "fresh" && !selected && "border-l-[3px] border-l-fresh",
+        state === "stale" && !selected && "border-l-[3px] border-l-amber",
+        (state === "call" || state === "no-report" || state === "never") &&
+          !selected &&
+          "border-l-[3px] border-l-rust",
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -44,13 +44,17 @@ export function DockCard({
       </div>
 
       <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-        <div className="rounded-lg bg-sand px-3 py-2">
-          <dt className="text-[11px] uppercase tracking-wide text-harbor/50">Gas</dt>
-          <dd className="font-semibold tabular-nums text-harbor">{formatQuote(gas)}</dd>
+        <div className="bg-sand px-3 py-2">
+          <dt className="kicker text-harbor/45">Gas</dt>
+          <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
+            {formatQuote(gas)}
+          </dd>
         </div>
-        <div className="rounded-lg bg-sand px-3 py-2">
-          <dt className="text-[11px] uppercase tracking-wide text-harbor/50">Diesel</dt>
-          <dd className="font-semibold tabular-nums text-harbor">{formatQuote(diesel)}</dd>
+        <div className="bg-sand px-3 py-2">
+          <dt className="kicker text-harbor/45">Diesel</dt>
+          <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
+            {formatQuote(diesel)}
+          </dd>
         </div>
       </dl>
 
@@ -59,11 +63,11 @@ export function DockCard({
         {dock.hours ? ` · ${dock.hours}` : ""}
       </p>
       <p className="mt-1 text-xs text-harbor/50">
-        Last verified {formatDate(dock.lastVerifiedAt)} · {sourceLabel(dock.lastVerifiedSource)}
+        {formatDate(dock.lastVerifiedAt)} · {sourceLabel(dock.lastVerifiedSource)}
       </p>
       {dock.phone ? (
         <p className="mt-1 text-xs text-harbor/70">
-          Call ahead: <span className="tabular-nums">{dock.phone}</span>
+          {dock.phone}
         </p>
       ) : null}
     </a>

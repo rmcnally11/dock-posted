@@ -20,18 +20,18 @@ export async function submitPriceReport(formData: FormData): Promise<void> {
   const note = String(formData.get("note") ?? "").trim();
 
   if (!dockId) {
-    redirect("/report?error=Pick%20a%20marina.");
+    redirect("/report?error=Pick%20the%20dock.");
   }
   if (!PRODUCTS.includes(product)) {
-    redirect(`/report?error=Pick%20a%20product.&dock=${encodeURIComponent(dockId)}`);
+    redirect(`/report?error=Pick%20the%20hose.&dock=${encodeURIComponent(dockId)}`);
   }
   if (!Number.isFinite(pricePerGallon) || pricePerGallon <= 0 || pricePerGallon > 20) {
     redirect(
-      `/report?error=Enter%20the%20price%20you%20saw%20on%20the%20pump%2C%20per%20gallon.&dock=${encodeURIComponent(dockId)}`,
+      `/report?error=The%20number%20on%20the%20pump%2C%20per%20gallon.&dock=${encodeURIComponent(dockId)}`,
     );
   }
   if (!seenAt) {
-    redirect(`/report?error=Add%20the%20date%20you%20saw%20the%20price.&dock=${encodeURIComponent(dockId)}`);
+    redirect(`/report?error=When%20did%20you%20see%20it%3F&dock=${encodeURIComponent(dockId)}`);
   }
 
   const ethanol: Ethanol =

@@ -8,9 +8,11 @@ export function FreshnessBadge({ dock }: { dock: Dock }) {
   return (
     <Badge
       className={cn(
+        "rounded-none font-medium tracking-[0.12em]",
         state === "fresh" && "bg-fresh/15 text-fresh",
         state === "stale" && "bg-amber/15 text-amber",
-        state === "call" && "bg-rust/15 text-rust",
+        (state === "call" || state === "no-report" || state === "never") &&
+          "bg-rust/15 text-rust",
       )}
     >
       {freshnessLabel(dock)}

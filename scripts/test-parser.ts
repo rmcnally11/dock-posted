@@ -22,8 +22,11 @@ async function main() {
   if (!rockport) {
     throw new Error(`Parser missed Cove Harbor block. Got: ${parsed.map((row) => row.name).join(", ")}`);
   }
-  if (!isOutOfCorridor(rockport.name, rockport.city)) {
-    throw new Error(`Rockport should be flagged out of corridor (city=${rockport.city})`);
+  if (isOutOfCorridor(rockport.name, rockport.city)) {
+    throw new Error(`Rockport is on the saltwater coast and should not be flagged off-chart (city=${rockport.city})`);
+  }
+  if (rockport.dockId !== "cove-harbor-rockport") {
+    throw new Error(`Cove Harbor should map to cove-harbor-rockport, got ${rockport.dockId}`);
   }
 
   console.log(`Parser fixture OK (${parsed.length} marinas).`);

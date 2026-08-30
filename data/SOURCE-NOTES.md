@@ -1,15 +1,17 @@
 # Seed sources (captured 30 Aug 2026)
 
-Prices in `docks.seed.json` come from public pages opened that day. Nothing here was invented.
+Prices in `docks.seed.json` come from public pages opened that day. Nothing here was invented. New coastal pins are real docks from public marina and municipal pages. If no pump board was on that page, the card says Call.
 
-## Waterway Guide weekly reports
+## Home waters — posted numbers
+
+Waterway Guide weekly reports (opened 30 Aug 2026):
 
 - Gulf Coast AL thru TX: https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx
 - Florida Keys: https://www.waterwayguide.com/fuel-price-report/7/florida-keys
 
-Used for posted numbers (or Call / No Report) at Marina Bay Harbor, Blue Marlin / Seabrook, South Shore Harbour, Pilot House, Mangrove, Plantation Yacht Harbor, IslaMarina, Snake Creek, Three Waters, World Wide Sportsman, Bud'n Mary's.
+Used for posted numbers, Call, or No Report at Marina Bay Harbor, Blue Marlin / Seabrook, South Shore Harbour, Pilot House, Mangrove, Plantation Yacht Harbor, IslaMarina, Snake Creek, Three Waters, World Wide Sportsman, Bud'n Mary's.
 
-## Waterway Guide marina pages (Call / never)
+Waterway Guide marina pages (Call / Never):
 
 - Houston Yacht Club
 - Lakewood Yacht Club
@@ -18,13 +20,41 @@ Used for posted numbers (or Call / No Report) at Marina Bay Harbor, Blue Marlin 
 - Tavernier Creek Marina
 - Garden Cove Marina
 
-## Marina marketing sites
+Marina marketing sites with a live board:
 
-- https://galvestonyachtbasin.com/ — live board on 30 Aug 2026: Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79
-- https://seabrookmarina.com/pages/seabrook-marina-fuel-dock — confirms gas + diesel, no pump prices
-- https://southshoreharbourmarina.com/fuel-pier/ — hours and ValvTect, no pump prices
-- https://www.pilothousemarina.com/marina/ — Rec 90 + diesel, no pump prices
+- https://galvestonyachtbasin.com/ — 30 Aug 2026: Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79
 
-## Gulf chain (Call only)
+Marina sites that confirm fuel but show no pump price (home set):
 
-`data/gulf-call.json` fills Sabine → Key West so the map has no empty stretch. Those yards are real. Prices are Call — no public board was opened for them on 30 Aug 2026.
+- https://seabrookmarina.com/pages/seabrook-marina-fuel-dock
+- https://southshoreharbourmarina.com/fuel-pier/
+- https://www.pilothousemarina.com/marina/
+
+## Coast expansion — directory capture, no invented dollars
+
+The rest of the seed (Texas beyond Clear Lake, Louisiana, Mississippi, Alabama, both Florida coasts, the lower Keys, Georgia, the Carolinas, Chesapeake, New Jersey, New York, New England) was taken from public marina sites, municipal harbor pages, and well-known recreational docks on those waters.
+
+Each of those pins has a real name, city, state, and a public lat/lng for the harbor. Phone and website are included when the public page listed them. Quotes are **Call**. `lastVerifiedAt` is empty (Never) until a public board or a boater report fills it.
+
+No Waterway Guide scrape of the expanded coast succeeded from this environment. Cloudflare still challenges unattended fetches. That is a failed scrape, not a silent success. Do not treat this file as a fresh weekly report for the new pins.
+
+Public WG report URLs the fetcher will try again (login not required):
+
+- https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx
+- https://www.waterwayguide.com/fuel-price-report/7/florida-keys
+- https://www.waterwayguide.com/fuel-price-report/6/east-coast-of-florida
+- https://www.waterwayguide.com/fuel-price-report/5/georgia
+- https://www.waterwayguide.com/fuel-price-report/4/carolinas
+- https://www.waterwayguide.com/fuel-price-report/3/chesapeake-bay
+- https://www.waterwayguide.com/fuel-price-report/2/new-jersey-new-york
+- https://www.waterwayguide.com/fuel-price-report/1/maine-to-new-york
+
+If a later fetch returns real HTML, the parser can write overlays. Until then the seed stays Call.
+
+## Rebuild
+
+```bash
+npm run seed:coast
+```
+
+That script keeps the 18 home-water docks (prices intact) and rewrites the coastal additions from `scripts/build-coast-seed.ts`.

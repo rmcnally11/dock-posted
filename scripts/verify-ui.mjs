@@ -52,7 +52,25 @@ try {
   check("keys list", keysNames.some((name) => name.includes("Key Largo Harbor")));
   check("keys hides texas", !keysNames.some((name) => name.includes("Marina Bay Harbor")));
 
-  await page.goto(`${base}/?corridor=galveston-bay&e0=1`, { waitUntil: "networkidle0" });
+  const homeCopy = await page.$eval("main", (el) => el.textContent ?? "");
+  check("no two-corridors copy", !/two corridors only/i.test(homeCopy));
+  check("no compliance hero", !/does not sell gallons, broker fuel/i.test(homeCopy));
+
+  await page.goto(`${base}/?state=TX`, { waitUntil: "networkidle0" });
+  const texasState = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
+  const texasStateNames = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
+    nodes.map((node) => node.textContent),
+  );
+  check("texas state heading", texasState?.includes("Texas"));
+  check("texas state includes rockport", texasStateNames.some((name) => name?.includes("Cove Harbor")));
+
+  await page.goto(`${base}/?q=key+largo`, { waitUntil: "networkidle0" });
+  const searchNames = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
+    nodes.map((node) => node.textContent),
+  );
+  check("search key largo", searchNames.some((name) => name?.includes("Key Largo Harbor")));
+
+  await page.goto(`${base}/?e0=1`, { waitUntil: "networkidle0" });
   const e0Count = await page.$eval("[data-testid=dock-count]", (el) => el.textContent);
   const e0Names = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
     nodes.map((node) => node.textContent),

@@ -12,6 +12,36 @@ export const WG_REPORTS = {
     title: "Florida Keys",
     url: "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
   },
+  eastFlorida: {
+    id: "east-florida",
+    title: "East Coast of Florida",
+    url: "https://www.waterwayguide.com/fuel-price-report/6/east-coast-of-florida",
+  },
+  georgia: {
+    id: "georgia",
+    title: "Georgia",
+    url: "https://www.waterwayguide.com/fuel-price-report/5/georgia",
+  },
+  carolinas: {
+    id: "carolinas",
+    title: "Carolinas",
+    url: "https://www.waterwayguide.com/fuel-price-report/4/carolinas",
+  },
+  chesapeake: {
+    id: "chesapeake",
+    title: "Chesapeake",
+    url: "https://www.waterwayguide.com/fuel-price-report/3/chesapeake-bay",
+  },
+  nyNj: {
+    id: "ny-nj",
+    title: "New Jersey / New York",
+    url: "https://www.waterwayguide.com/fuel-price-report/2/new-jersey-new-york",
+  },
+  newEngland: {
+    id: "new-england",
+    title: "New England",
+    url: "https://www.waterwayguide.com/fuel-price-report/1/maine-to-new-york",
+  },
 } as const;
 
 export const CORRIDOR_NAME_ALIASES: Record<string, string> = {
@@ -38,26 +68,30 @@ export const CORRIDOR_NAME_ALIASES: Record<string, string> = {
   "bud'n mary's fishing marina": "bud-n-marys",
   "tavernier creek marina": "tavernier-creek",
   "garden cove marina": "garden-cove-marina",
+  "cove harbor marina and drystack": "cove-harbor-rockport",
+  "cove harbor marina": "cove-harbor-rockport",
+  "kemah boardwalk marina": "kemah-boardwalk-marina",
+  "island moorings marina": "island-moorings",
+  "cypress cove marina": "cypress-cove-venice",
+  "orange beach marina": "orange-beach-marina",
+  "sportsman marina": "sportsman-marina",
+  "marina jack": "marina-jack-sarasota",
+  "st. petersburg municipal marina": "st-pete-municipal-marina",
+  "naples city dock": "naples-city-dock",
+  "miami beach marina": "miami-beach-marina",
+  "bahia mar yachting center": "bahia-mar-fort-lauderdale",
+  "sailfish marina resort": "sailfish-marina-palm-beach",
+  "charleston city marina": "charleston-city-marina",
+  "beaufort docks": "beaufort-docks-nc",
+  "hatteras harbor marina": "hatteras-harbor-marina",
+  "herrington harbour north": "herrington-harbour-north",
+  "white marlin marina": "white-marlin-marina",
+  "canyon club resort marina": "canyon-club-cape-may",
+  "montauk marine basin": "montauk-marine-basin",
+  "nantucket boat basin": "nantucket-boat-basin",
 };
 
-const OUT_OF_CORRIDOR = [
-  "rockport",
-  "naples",
-  "bay st. louis",
-  "bay saint louis",
-  "key west",
-  "marathon",
-  "duck key",
-  "big pine",
-  "port aransas",
-  "south padre",
-  "freeport",
-  "port arthur",
-  "gulfport",
-  "mobile",
-  "orange beach",
-  "gulf shores",
-];
+const OFF_SALTWATER = ["lake travis", "lake texoma", "lake of the ozarks"];
 
 export interface ParsedMarina {
   name: string;
@@ -94,7 +128,7 @@ export function matchDockId(name: string): string | null {
 
 export function isOutOfCorridor(name: string, city: string | null): boolean {
   const hay = `${name} ${city ?? ""}`.toLowerCase();
-  return OUT_OF_CORRIDOR.some((token) => hay.includes(token));
+  return OFF_SALTWATER.some((token) => hay.includes(token));
 }
 
 function parseMoney(raw: string): { price: number | null; status: QuoteStatus; taxIncluded: boolean | null } {
@@ -156,7 +190,7 @@ export function parseFuelReportHtml(html: string): ParsedMarina[] {
     .filter(
       (item) =>
         item.name.length > 2 &&
-        !/fuel price|popular|subscribe|gulf coast|florida keys|atlantic|maine to|long island|click here/i.test(
+        !/fuel price|popular|subscribe|gulf coast|florida keys|east coast|atlantic|maine to|long island|chesapeake|click here/i.test(
           item.name,
         ),
     );
@@ -213,7 +247,9 @@ function fieldValue(block: string, label: string): string | null {
 
 function parseMarinaBlock(name: string, block: string): ParsedMarina | null {
   if (!name || /click here|sorted by/i.test(name)) return null;
-  const cityMatch = block.match(/([A-Za-z .'-]+,\s*(?:TX|FL|AL|MS|LA))/);
+  const cityMatch = block.match(
+    /([A-Za-z .'-]+,\s*(?:TX|LA|MS|AL|FL|GA|SC|NC|VA|MD|NJ|NY|CT|RI|MA|NH|ME))/,
+  );
   const city = cityMatch?.[1]?.trim() ?? null;
   const comments = fieldValue(block, "Comments");
   const lastUpdate = parseIsoDate(fieldValue(block, "Last Update"));
@@ -349,11 +385,11 @@ export function mergeParsedIntoDocks(
 
   for (const marina of parsed) {
     if (isOutOfCorridor(marina.name, marina.city)) {
-      skipped.push(`${marina.name} (out of corridor)`);
+      skipped.push(`${marina.name} (off saltwater coast)`);
       continue;
     }
     if (!marina.dockId) {
-      skipped.push(`${marina.name} (not in v1 seed)`);
+      skipped.push(`${marina.name} (not in seed)`);
       continue;
     }
     const dock = next.find((item) => item.id === marina.dockId);
