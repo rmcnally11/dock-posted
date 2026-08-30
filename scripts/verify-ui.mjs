@@ -90,6 +90,29 @@ try {
 
   const attribution = await page.$eval("[data-testid=fuel-map]", (el) => el.textContent ?? "");
   check("no carto attribution", !/carto/i.test(attribution), attribution);
+  check(
+    "galveston bay frame",
+    /29\.56N 95\.03W · z11 · © OpenStreetMap/.test(attribution),
+    attribution,
+  );
+  const tileSrcs = await page.$$eval('img[src*="/api/tiles/"]', (tiles) =>
+    tiles.map((img) => img.getAttribute("src") ?? ""),
+  );
+  check(
+    "cache-bust tile url",
+    tileSrcs.every((src) => /\/api\/tiles\/11\/\d+\/\d+\.png\?v=2$/.test(src)),
+    tileSrcs[0],
+  );
+  check("no waller z10 grid", !tileSrcs.some((src) => /\/api\/tiles\/10\/239\//.test(src)));
+
+  await page.goto(`${base}/?corridor=galveston-bay`, { waitUntil: "networkidle0" });
+  const corridorMap = await page.$eval("[data-testid=fuel-map]", (el) => el.textContent ?? "");
+  check(
+    "corridor query same bay frame",
+    /29\.56N 95\.03W · z11 · © OpenStreetMap/.test(corridorMap),
+    corridorMap,
+  );
+  await page.goto(base, { waitUntil: "networkidle0" });
 
   const texasNames = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
     nodes.map((node) => node.textContent),

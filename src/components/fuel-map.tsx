@@ -56,7 +56,7 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
               alt=""
               width={TILE}
               height={TILE}
-              src={`/api/tiles/${zoom}/${tile.x}/${tile.y}`}
+              src={`/api/tiles/${zoom}/${tile.x}/${tile.y}.png?v=2`}
               className="block"
             />
           ))}

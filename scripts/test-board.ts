@@ -7,8 +7,9 @@ import { boardQuote, boardTally, freshness, freshnessLabel, pinTrust } from "../
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
 import { DEFAULT_X_HANDLE, publicXHandle, xProfileUrl } from "../src/lib/x-handle";
 import seed from "../data/docks.seed.json";
-import type { Dock, StateCode } from "../src/lib/types";
-import { STATE_CODES } from "../src/lib/types";
+import { latToTileY, lngToTileX } from "../src/lib/geo";
+import { tileGridForZoom, viewForBoard } from "../src/lib/map-view";
+import { CORRIDORS, STATE_CODES, type Dock, type StateCode } from "../src/lib/types";
 
 const docks = seed.docks as Dock[];
 
@@ -196,9 +197,75 @@ const tiles = readFileSync(
   path.join(process.cwd(), "src/app/api/tiles/[z]/[x]/[y]/route.ts"),
   "utf8",
 );
-assert.match(tiles, /tile\.openstreetmap\.org/);
-assert.doesNotMatch(tiles, /carto/i);
-assert.match(tiles, /DockPosted\/1\.0/);
+assert.match(tiles, /tile\.openstreetmap\.de/);
+assert.match(tiles, /a\.tile\.openstreetmap\.fr\/osmfr/);
+assert.match(tiles, /DockPosted\/1\.0 \(\+https:\/\/github\.com\/rmcnally11\/dock-posted\)/);
+assert.match(tiles, /cache: "no-store"/);
+assert.doesNotMatch(tiles, /tile\.openstreetmap\.org/);
+assert.doesNotMatch(tiles, /force-cache/);
+assert.doesNotMatch(tiles, /carto|basemaps\.cartocdn|mapbox|maptiler|googleapis|maps\.google/i);
+
+const fuelMap = readFileSync(path.join(process.cwd(), "src/components/fuel-map.tsx"), "utf8");
+assert.match(fuelMap, /\/api\/tiles\/\$\{zoom\}\/\$\{tile\.x\}\/\$\{tile\.y\}\.png\?v=2/);
+assert.match(fuelMap, /© OpenStreetMap/);
+assert.doesNotMatch(fuelMap, /carto|basemaps\.cartocdn|mapbox|maptiler|googleapis|maps\.google/i);
+
+const paidTiles = /carto|basemaps\.cartocdn|mapbox|maptiler|googleapis\.com\/maps|maps\.google/i;
+for (const file of [
+  "src/app/api/tiles/[z]/[x]/[y]/route.ts",
+  "src/components/fuel-map.tsx",
+  "src/lib/map-view.ts",
+  "src/lib/types.ts",
+]) {
+  const text = readFileSync(path.join(process.cwd(), file), "utf8");
+  assert.doesNotMatch(text, paidTiles, `${file} has a paid or keyed tile URL`);
+}
+
+function pinPercent(
+  lng: number,
+  lat: number,
+  view: { center: [number, number]; zoom: number },
+): { left: number; top: number; zoom: number; startX: number; startY: number } {
+  const zoom = Math.max(5, Math.min(14, Math.round(view.zoom)));
+  const { cols, rows } = tileGridForZoom(zoom);
+  const centerX = lngToTileX(view.center[0], zoom);
+  const centerY = latToTileY(view.center[1], zoom);
+  const startX = Math.floor(centerX - cols / 2);
+  const startY = Math.floor(centerY - rows / 2);
+  return {
+    left: ((lngToTileX(lng, zoom) - startX) / cols) * 100,
+    top: ((latToTileY(lat, zoom) - startY) / rows) * 100,
+    zoom,
+    startX,
+    startY,
+  };
+}
+
+assert.deepEqual(CORRIDORS["galveston-bay"].center, [-95.03, 29.56]);
+assert.equal(CORRIDORS["galveston-bay"].zoom, 11.2);
+assert.deepEqual(CORRIDORS["upper-keys"].center, [-80.53, 25.02]);
+assert.equal(CORRIDORS["upper-keys"].zoom, 9.6);
+
+const galvestonView = viewForBoard([], parseBoardQuery({ corridor: "galveston-bay" }));
+assert.deepEqual(galvestonView.center, [-95.03, 29.56]);
+assert.equal(galvestonView.zoom, 11.2);
+
+const lakeMouth = pinPercent(-95.03, 29.56, galvestonView);
+assert.equal(lakeMouth.zoom, 11);
+assert.ok(!(lakeMouth.zoom === 10 && lakeMouth.startX === 239 && lakeMouth.startY === 422));
+assert.ok(lakeMouth.left > 40 && lakeMouth.left < 75, `lake mouth left ${lakeMouth.left}`);
+assert.ok(lakeMouth.top > 40 && lakeMouth.top < 80, `lake mouth top ${lakeMouth.top}`);
+
+const waller = pinPercent(-95.85, 30.0, galvestonView);
+assert.ok(waller.left < -2 || waller.left > 102 || waller.top < -2 || waller.top > 102);
+
+for (const dock of texas.visible.filter((item) => item.id !== "galveston-yacht-marina")) {
+  const pin = pinPercent(dock.lng, dock.lat, galvestonView);
+  assert.ok(
+    pin.left >= -2 && pin.left <= 102 && pin.top >= -2 && pin.top <= 102,
+    `${dock.id} fell off the Clear Lake frame (${pin.left.toFixed(1)}, ${pin.top.toFixed(1)})`,
+  );
+}
 
 const fence =
   /cheapest fuel|bargain map|on this water|instrument family|field letter|almanac|onthiswater|wind is the tide|sister page|field board|us saltwater docks|the board at the dock|seven letter|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning|Holds Fast|waterdogfuel\.com/i;

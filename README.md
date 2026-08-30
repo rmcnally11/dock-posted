@@ -86,7 +86,7 @@ npm run test:parser
 | `WHOLESALE_PASSWORD` | for `/wholesale` | unset = 404 | Shared password for the internal netback desk |
 | `WHOLESALE_SESSION_SECRET` | no | derived from the password | Signs the HttpOnly wholesale cookie |
 
-No map API keys. Tiles are OpenStreetMap (`tile.openstreetmap.org`) through `/api/tiles/{z}/{x}/{y}`. User-Agent: `DockPosted/1.0`. Attribution: © OpenStreetMap. Not Carto.
+No map API keys. Tiles are OpenStreetMap (`tile.openstreetmap.de`, fallback `a.tile.openstreetmap.fr/osmfr`) through `/api/tiles/{z}/{x}/{y}.png?v=2`. User-Agent: `DockPosted/1.0`. Attribution: © OpenStreetMap. Not Carto.
 
 ## Stack
 
