@@ -321,7 +321,7 @@ function WorksheetFields({
         </tbody>
       </table>
       <div className="grid gap-3 border-t border-black/10 p-3 sm:grid-cols-2">
-        <TaxField label="Other / local" name="tax_other" value={sheet.tax.other} unit={unit} />
+        <TaxField label="Other tax" name="tax_other" value={sheet.tax.other} unit={unit} />
         <TaxField label="One line (replaces federal tax and state tax)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
       </div>
       <p className="px-3 pb-3 text-xs text-black/45">{MARINE_TAX_NOTE}</p>
@@ -471,11 +471,10 @@ export function Waterfall({
   return (
     <section className="mt-8" data-testid="waterfall">
       <div>
-        <h2 className="text-sm font-medium">From the terminal to the dock</h2>
-        <p className="mt-1 max-w-3xl text-xs text-black/45">
-          Where the cents went. Empty stays Call / —, never $0. Federal tax and state tax sit on
-          their own rows, not folded into leftover.
-        </p>
+        <div className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.08em] text-black/45">
+          <span>Terminal</span>
+          <span>Dock</span>
+        </div>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         {WHOLESALE_PRODUCTS.map((product) => {
@@ -514,10 +513,10 @@ function WaterfallColumn({
         <h3 className="text-sm font-medium">{PRODUCT_LABEL[product]}</h3>
         {winner ? (
           <p className="text-[11px] uppercase tracking-[0.08em] text-[#8a2c12]" data-testid={`fattest-${product.toLowerCase()}`}>
-            Fattest · {book.takes[0]?.label} {formatCents(book.takes[0]?.cents ?? null)}
+            {book.takes[0]?.label} {formatCents(book.takes[0]?.cents ?? null)}
           </p>
         ) : (
-          <p className="text-[11px] text-black/40">No takes yet</p>
+          <p className="text-[11px] text-black/40">—</p>
         )}
       </div>
       <ol className="mt-4 space-y-2.5">
@@ -603,7 +602,7 @@ export function LoginPanel({ error }: { error?: string }) {
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-16">
       <h1 className="text-2xl font-medium tracking-tight">Wholesale</h1>
       <p className="mt-2 text-sm text-black/55">
-        From the terminal to what they wrote on the board.
+        What it cost. What they posted.
       </p>
       <form action={loginWholesale} className="mt-8 space-y-4" autoComplete="off">
         {error ? <p className="text-sm text-[#8a2c12]">{error}</p> : null}
@@ -618,7 +617,7 @@ export function LoginPanel({ error }: { error?: string }) {
           />
         </label>
         <button type="submit" className="h-10 border border-black bg-black px-4 text-sm text-white">
-          Come in
+          Continue
         </button>
       </form>
     </main>

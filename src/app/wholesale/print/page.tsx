@@ -37,12 +37,7 @@ export default async function WholesalePrintPage({
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 print:px-0 print:py-0">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.16em] text-black/45">Print</p>
-          <h1 className="mt-1 text-3xl font-medium tracking-tight">This week’s sheet · {area.label}</h1>
-          <p className="mt-2 max-w-3xl text-sm text-black/55">
-            One region. Terminals as rows. What you typed, and what it adds up to. Not a blended
-            Gulf number.
-          </p>
+          <h1 className="text-3xl font-medium tracking-tight">Wholesale · {area.label}</h1>
           <p className="mt-2 text-xs text-black/45">{area.note}</p>
         </div>
         <DeskLogout />

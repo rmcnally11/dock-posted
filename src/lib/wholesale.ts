@@ -441,7 +441,7 @@ export function computeProductNetback(
     if (resolved.other.cents != null) {
       steps.push({
         key: "taxOther",
-        label: "Other / local",
+        label: "Other tax",
         cents: resolved.other.cents,
         kind: "take",
         source: resolved.other.origin,
@@ -1010,7 +1010,7 @@ export function buildWaterfallRungs(
     );
     if (resolved.other.cents != null) {
       rungs.push(
-        rung("taxOther", "Other / local", resolved.other.cents, "take", resolved.other.origin, resolved.other.sourceLabel, "taxOther"),
+        rung("taxOther", "Other tax", resolved.other.cents, "take", resolved.other.origin, resolved.other.sourceLabel, "taxOther"),
       );
     }
   }

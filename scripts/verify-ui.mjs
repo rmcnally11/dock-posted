@@ -42,7 +42,7 @@ try {
   check("no invent compliance", !/never invent a price/i.test(homeCopy));
   check(
     "no campaign nouns",
-    !/the take|the book|open the book|we publish the pin|we own the pin|fat cut lights up|call is the honest number/i.test(
+    !/the take|the book|open the book|come in|where the cents went|four doors|we publish the pin|we own the pin|fat cut lights up|call is the honest number/i.test(
       homeCopy,
     ),
   );
@@ -198,7 +198,7 @@ try {
   await page.goto(`${base}/report?dock=galveston-yacht-marina`, { waitUntil: "networkidle0" });
   const reportHero = await page.$eval("main h1", (el) => el.textContent?.trim());
   const reportHeader = await page.$eval("header", (el) => el.textContent ?? "");
-  check("report is its own page", reportHero === "What did they post", reportHero);
+  check("report is its own page", reportHero === "Post a number", reportHero);
   check("report header is not a family lockup", !/what the dock posted/i.test(reportHeader));
   const reporting = await page.$eval("[data-testid=reporting-for]", (el) => el.textContent);
   check("report marina label", reporting?.includes("Galveston Yacht Marina"));
@@ -233,16 +233,16 @@ try {
   check("haul headline", haulHeadline === "Named storm", haulHeadline);
   check(
     "haul deck",
-    haulDeck ===
-      "Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say what was left, it stays Call.",
+    /When they name it, you need a hole\. If the yard didn.t say what was left, it stays Call\./.test(
+      haulDeck ?? "",
+    ),
     haulDeck,
   );
-  check("how it works kicker", /how it works/i.test(haulHow));
-  check("four doors headline", /Four doors\. One cone\./.test(haulHow));
-  check("door 01", /File the boat/.test(haulHow) && /One page/.test(haulHow));
-  check("door 02", /Two yards that fit/.test(haulHow) && /Not a wet slip/.test(haulHow));
-  check("door 03", /The cone gets a name/.test(haulHow));
-  check("door 04", /You call the yard/.test(haulHow) && /We do not/.test(haulHow));
+  check("no four doors slogan", !/Four doors\. One cone\./.test(haulHow) && !/how it works/i.test(haulHow));
+  check("door 01", /File the boat/.test(haulHow));
+  check("door 02", /Two yards that fit/.test(haulHow));
+  check("door 03", /When they name it, we text what.s left/.test(haulHow));
+  check("door 04", /You call the yard\. We don.t lift her\./.test(haulHow));
   check("file the boat button", /File the boat/.test(haulCopy));
   check("no checkout", /No checkout on this page/.test(haulCopy));
   check("all leftover call", /All leftover seats are Call/.test(haulCopy));
@@ -252,7 +252,9 @@ try {
   check("we are not the yard", /We are not the yard/.test(haulCopy));
   check(
     "haul-out no campaign nouns",
-    !/the take|the book|a leftover seat, said out loud|call is the honest number/i.test(haulCopy),
+    !/the take|the book|come in|where the cents went|four doors|a leftover seat, said out loud|call is the honest number/i.test(
+      haulCopy,
+    ),
   );
   check("no stripe", !/stripe/i.test(haulCopy));
   check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(haulCopy));
@@ -261,7 +263,7 @@ try {
   const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
     page.$eval("main", (el) => el.textContent ?? ""),
   );
-  check("report headline", /What did they post/.test(reportCopy));
+  check("report headline", /Post a number/.test(reportCopy) && /You were there\. What did they have up\./.test(reportCopy));
   check("report send it button", /Send it/.test(reportCopy) && !/submit a price/i.test(reportCopy));
   check(
     "report no campaign nouns",
