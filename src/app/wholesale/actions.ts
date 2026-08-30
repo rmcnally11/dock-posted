@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import type { Route } from "next";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import {
@@ -24,7 +25,8 @@ function requireGate(): void {
 }
 
 function fail(path: string, message: string): never {
-  redirect(`${path}${path.includes("?") ? "&" : "?"}error=${encodeURIComponent(message)}`);
+  const href = `${path}${path.includes("?") ? "&" : "?"}error=${encodeURIComponent(message)}`;
+  redirect(href as Route);
 }
 
 export async function loginWholesale(formData: FormData): Promise<void> {
