@@ -60,13 +60,21 @@ body {
   color: #0b1f2a;
 }
 
-.maplibregl-map,
-.maplibregl-canvas,
-.maplibregl-canvas-container {
+.leaflet-container {
   width: 100%;
   height: 100%;
+  background: var(--sand);
+  font-family: inherit;
 }
 
-.maplibregl-ctrl-attrib {
-  font-size: 10px;
+.dock-pin-wrap {
+  background: transparent;
+  border: 0;
+}
+
+.leaflet-popup-content {
+  font-size: 12px;
+  line-height: 1.35;
+  margin: 8px 10px;
+  color: #0b1f2a;
 }

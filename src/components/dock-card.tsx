@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { ethanolCopy, formatDate, formatQuote, sourceLabel } from "@/lib/format";
 import { displayDiesel, displayGas, freshness } from "@/lib/freshness";
@@ -7,22 +8,23 @@ import { cn } from "@/lib/utils";
 export function DockCard({
   dock,
   selected,
-  onSelect,
+  href,
 }: {
   dock: Dock;
   selected?: boolean;
-  onSelect?: (id: string) => void;
+  href: "/" | `/?${string}`;
 }) {
   const gas = displayGas(dock);
   const diesel = displayDiesel(dock);
   const state = freshness(dock);
 
   return (
-    <button
-      type="button"
-      onClick={() => onSelect?.(dock.id)}
+    <Link
+      href={href}
+      aria-current={selected ? "true" : undefined}
+      data-testid={`dock-card-${dock.id}`}
       className={cn(
-        "w-full rounded-xl border p-4 text-left shadow-sm transition",
+        "block w-full rounded-xl border p-4 text-left shadow-sm transition",
         selected
           ? "border-wake bg-sand ring-2 ring-wake/40"
           : "border-harbor/10 bg-white hover:border-harbor/25",
@@ -30,7 +32,6 @@ export function DockCard({
         state === "stale" && !selected && "border-l-4 border-l-amber",
         state === "fresh" && !selected && "border-l-4 border-l-fresh",
       )}
-      aria-pressed={selected}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -66,6 +67,6 @@ export function DockCard({
           Call ahead: <span className="tabular-nums">{dock.phone}</span>
         </p>
       ) : null}
-    </button>
+    </Link>
   );
 }

@@ -9,13 +9,15 @@
     "lint": "eslint",
     "seed": "tsx scripts/seed.ts",
     "fetch:wg": "tsx scripts/fetch-waterway-guide.ts",
-    "test:parser": "tsx scripts/test-parser.ts"
+    "test:parser": "tsx scripts/test-parser.ts",
+    "test:board": "tsx scripts/test-board.ts",
+    "test:ui": "node scripts/verify-ui.mjs"
   },
   "dependencies": {
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "maplibre-gl": "^6.6.0",
+    "leaflet": "^1.9.4",
     "next": "16.3.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -24,11 +26,13 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "puppeteer-core": "^25.9.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
     "typescript": "^5"

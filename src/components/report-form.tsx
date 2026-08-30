@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ETHANOLS, PRODUCTS, type Dock, type Ethanol, type Product } from "@/lib/types";
+import { CORRIDORS, ETHANOLS, PRODUCTS, type CorridorId, type Dock, type Ethanol, type Product } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDockId?: string }) {
   const router = useRouter();
@@ -71,28 +72,53 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
 
   return (
     <form onSubmit={onSubmit} autoComplete="off" noValidate className="space-y-5">
-      <div className="space-y-1.5">
-        <Label htmlFor="marina">Marina</Label>
-        <select
-          id="marina"
-          name="marina"
-          className="h-11 w-full rounded-md border border-harbor/15 bg-white px-3 text-base text-harbor md:text-sm"
-          value={dockId}
-          onChange={(event) => setDockId(event.target.value)}
-        >
-          {docks.map((dock) => (
-            <option key={dock.id} value={dock.id}>
-              {dock.name} — {dock.city}, {dock.state}
-            </option>
-          ))}
-        </select>
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium text-harbor/80">Marina</legend>
+        {(Object.keys(CORRIDORS) as CorridorId[]).map((corridor) => (
+          <div key={corridor} className="space-y-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-harbor/45">
+              {CORRIDORS[corridor].label}
+            </p>
+            <div className="space-y-1">
+              {docks
+                .filter((dock) => dock.corridor === corridor)
+                .map((dock) => (
+                  <label
+                    key={dock.id}
+                    data-testid={`marina-${dock.id}`}
+                    className={cn(
+                      "flex cursor-pointer items-start gap-2 rounded-lg border px-3 py-2 text-sm",
+                      dockId === dock.id
+                        ? "border-wake bg-sand"
+                        : "border-harbor/10 bg-white hover:border-harbor/25",
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="marina"
+                      value={dock.id}
+                      checked={dockId === dock.id}
+                      onChange={() => setDockId(dock.id)}
+                      className="mt-1"
+                    />
+                    <span>
+                      <span className="block font-medium text-harbor">{dock.name}</span>
+                      <span className="block text-xs text-harbor/55">
+                        {dock.city}, {dock.state}
+                        {dock.phone ? ` · ${dock.phone}` : ""}
+                      </span>
+                    </span>
+                  </label>
+                ))}
+            </div>
+          </div>
+        ))}
         {selected ? (
-          <p className="text-xs text-harbor/55">
+          <p data-testid="reporting-for" className="text-xs text-harbor/55">
             Reporting for {selected.name}
-            {selected.phone ? ` · ${selected.phone}` : ""}
           </p>
         ) : null}
-      </div>
+      </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">

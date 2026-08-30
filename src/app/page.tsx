@@ -1,4 +1,5 @@
 import { DockBoard } from "@/components/dock-board";
+import { filterDocks, parseBoardQuery } from "@/lib/board-query";
 import { readDocks } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -6,10 +7,18 @@ export const dynamic = "force-dynamic";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ reported?: string }>;
+  searchParams: Promise<{
+    reported?: string;
+    corridor?: string;
+    e0?: string;
+    fresh?: string;
+    dock?: string;
+  }>;
 }) {
   const docks = await readDocks();
   const params = await searchParams;
+  const query = parseBoardQuery(params);
+  const { inCorridor, visible } = filterDocks(docks, query);
 
   return (
     <main className="flex min-h-0 flex-1 flex-col overflow-hidden lg:h-[calc(100dvh-3.75rem)]">
@@ -32,13 +41,16 @@ export default async function Home({
             snapshots plus boater reports.
           </p>
         </div>
-        {params.reported ? (
-          <p className="mx-auto mt-3 max-w-6xl rounded-md bg-fresh/10 px-3 py-2 text-sm text-fresh">
+        {query.reported ? (
+          <p
+            data-testid="report-saved"
+            className="mx-auto mt-3 max-w-6xl rounded-md bg-fresh/10 px-3 py-2 text-sm text-fresh"
+          >
             Report saved. The map now uses your last-verified time for that dock.
           </p>
         ) : null}
       </section>
-      <DockBoard docks={docks} />
+      <DockBoard query={query} inCorridor={inCorridor} visible={visible} />
     </main>
   );
 }
