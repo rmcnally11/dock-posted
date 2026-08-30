@@ -123,8 +123,20 @@ try {
     waterlineStrokes.includes("#E23B3B") && waterlineStrokes.includes("#2F8FD6") && waterlineStrokes.length >= 2,
     waterlineStrokes.join(","),
   );
-  const favicon = await page.$eval('link[rel="icon"]', (el) => el.getAttribute("href"));
-  check("favicon is dp mark lineage", /favicon\.svg/.test(favicon ?? ""), favicon);
+  const favicon = await page.evaluate(async () => {
+    const res = await fetch("/favicon.svg");
+    const text = await res.text();
+    return { ok: res.ok, text };
+  });
+  check(
+    "favicon is dp mark lineage",
+    favicon.ok &&
+      /#0B1F33/i.test(favicon.text) &&
+      />DP</.test(favicon.text) &&
+      /#E23B3B/i.test(favicon.text) &&
+      /#2F8FD6/i.test(favicon.text),
+    favicon.text.slice(0, 180),
+  );
   const landingBg = await page.$eval("[data-testid=landing]", (el) => getComputedStyle(el).backgroundColor);
   check("landing is navy night cover", landingBg === "rgb(11, 31, 51)", landingBg);
   const paperBg = await page.$eval("body", (el) => getComputedStyle(el).backgroundColor);

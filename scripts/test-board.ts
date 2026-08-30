@@ -672,6 +672,11 @@ assert.doesNotMatch(logoSvg, /DOCK POSTED/);
 assert.doesNotMatch(logoSvg, /\$\d|Regular|Diesel/);
 assert.match(markSvg, />DP</);
 assert.match(faviconSvg, />DP</);
+assert.ok(existsSync(path.join(process.cwd(), "src/app/icon.svg")));
+const appIcon = readFileSync(path.join(process.cwd(), "src/app/icon.svg"), "utf8");
+assert.match(appIcon, />DP</);
+assert.match(appIcon, /#E23B3B/i);
+assert.match(appIcon, /#2F8FD6/i);
 assert.match(layoutSource, /\/favicon\.svg/);
 assert.match(layoutSource, /\/dp-mark\.svg/);
 
