@@ -16,6 +16,14 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           © OpenStreetMap
         </a>
       </p>
+      <p
+        data-testid="waterdog-credit"
+        className={compact ? "mt-1" : "mt-2 text-xs leading-5 text-[color:var(--cream)]/45"}
+      >
+        <a href="https://coastalcavaliers.com" className="underline-offset-2 hover:underline">
+          Waterdog Fuel. Rack to dock.
+        </a>
+      </p>
     </footer>
   );
 }

@@ -133,9 +133,19 @@ try {
   check("no platform insights", !/platform|insights|real-time/i.test(homeCopy));
   check("no compliance hero", !/does not sell gallons, broker fuel/i.test(homeCopy));
   check("no sine-wave costume", (await page.$$("svg")).length === 0 || !homeCopy.includes("sine"));
-  check("no waterdog mark", !/waterdog/i.test(homeCopy));
+  const dockListCopy = await page.$eval("[data-testid=dock-list]", (el) => el.textContent ?? "");
+  const mapCopy = await page.$eval("[data-testid=fuel-map]", (el) => el.textContent ?? "");
+  const footerCopy = await page.$eval("footer", (el) => el.textContent ?? "");
+  const waterdogHref = await page.$eval("[data-testid=waterdog-credit] a", (el) => el.getAttribute("href"));
+  check("pins have no waterdog", !/waterdog|coastal cavaliers|platts|nymex|\bTCN\b|\brack\b/i.test(dockListCopy));
+  check("map has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(mapCopy));
+  check("hero has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(`${kicker} ${headline} ${deck} ${tally}`));
+  check("waterdog footer credit", /Waterdog Fuel\. Rack to dock\./.test(footerCopy), footerCopy);
+  check("waterdog footer link", waterdogHref === "https://coastalcavaliers.com", waterdogHref);
+  check("no invented waterdog domain", !/waterdogfuel\.com/i.test(homeCopy));
+  check("no waterdog twitter", !/RJMtweets11/i.test(homeCopy));
   check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
-  check("board has no wholesale book", !/nymex|differential|\bTCN\b|\brack\b/i.test(homeCopy));
+  check("board has no wholesale book", !/nymex|differential|\bTCN\b/i.test(`${kicker} ${headline} ${deck} ${tally} ${dockListCopy} ${mapCopy}`));
   check("board omits wholesale nav without password", !(await page.$("[data-testid=nav-wholesale]")));
   check("call the dock action", /call the dock/i.test(homeCopy));
   check("company footer", /if they didn.t post it, it.s Call/i.test(homeCopy));
@@ -145,7 +155,7 @@ try {
   check("verified vs last seen", /verified|last seen/i.test(homeCopy));
   check("claim path", /claim this pin/i.test(homeCopy));
   check("no bargain", !/cheapest|savings|bargain/i.test(homeCopy));
-  check("no slips pitch", !/wet-slip|coastal cavaliers|waterdog/i.test(homeCopy));
+  check("no slips pitch", !/wet-slip|Holds Fast/i.test(homeCopy));
 
   await page.goto(`${base}/?corridor=upper-keys`, { waitUntil: "networkidle0" });
   const keysHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
@@ -221,8 +231,14 @@ try {
     "safe fuel no campaign nouns",
     !/the take|the book|call is the honest number|we publish the pin/i.test(safe),
   );
-  check("safe fuel no waterdog", !/waterdog|opis|argus|platts|invoice/i.test(safe));
-  check("safe fuel no wholesale book", !/nymex|differential|\bTCN\b|\brack\b|jobber/i.test(safe));
+  const safeSansFooter = await page.$eval("main", (el) => {
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll("footer").forEach((node) => node.remove());
+    return clone.textContent ?? "";
+  });
+  check("safe fuel no waterdog on the warning", !/waterdog|opis|argus|platts|invoice/i.test(safeSansFooter));
+  check("safe fuel no wholesale book", !/nymex|differential|\bTCN\b|jobber/i.test(safeSansFooter));
+  check("safe fuel footer credit", /Waterdog Fuel\. Rack to dock\./.test(safe));
 
   await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
   const haulKicker = await page.$eval("[data-testid=haul-out-kicker]", (el) => el.textContent?.trim());
@@ -259,7 +275,13 @@ try {
     ),
   );
   check("no stripe", !/stripe/i.test(haulCopy));
-  check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(haulCopy));
+  const haulSansFooter = await page.$eval("main", (el) => {
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll("footer").forEach((node) => node.remove());
+    return clone.textContent ?? "";
+  });
+  check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(haulSansFooter));
+  check("haul-out footer credit", /Waterdog Fuel\. Rack to dock\./.test(haulCopy));
   check("haul-out header omits wholesale nav without password", !/wholesale/i.test(haulHeader));
 
   const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
@@ -271,7 +293,13 @@ try {
     "report no campaign nouns",
     !/if you saw it, write it|the book|call is the honest number/i.test(reportCopy),
   );
-  check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(reportCopy));
+  const reportSansFooter = await page.$eval("main", (el) => {
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll("footer").forEach((node) => node.remove());
+    return clone.textContent ?? "";
+  });
+  check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(reportSansFooter));
+  check("report footer credit", /Waterdog Fuel\. Rack to dock\./.test(reportCopy));
 
   await page.setViewport({ width: 375, height: 812 });
   await page.goto(`${base}/about`, { waitUntil: "domcontentloaded" });
@@ -326,9 +354,31 @@ try {
     JSON.stringify(fallback),
   );
   check("about nav has about", /About/.test(aboutHeader));
-  check("about no campaign nouns", !/the take|the book|come in|four doors|we publish the pin/i.test(aboutCopy));
-  check("about no wholesale book", !/nymex|platts|differential|\bTCN\b|\brack\b|jobber|opis/i.test(aboutCopy));
+  const waterdogBlock = await page.$eval("[data-testid=waterdog-fuel]", (el) => el.textContent ?? "");
+  const waterdogMail = await page.$eval(
+    "[data-testid=waterdog-fuel] a[href='mailto:orders@coastalcavaliers.com']",
+    (el) => el.textContent?.trim(),
+  );
+  check("about waterdog heading", /^Waterdog Fuel/.test(waterdogBlock.trim()), waterdogBlock.slice(0, 80));
+  check(
+    "about waterdog body",
+    /Waterdog Fuel brings the gallon from the Houston rack to the first-water dock\. Clear Lake, Kemah, Seabrook\. Opens 2027\. Not selling gallons yet\./.test(
+      waterdogBlock,
+    ),
+    waterdogBlock,
+  );
+  check("about waterdog mail", waterdogMail === "orders@coastalcavaliers.com", waterdogMail);
+  check(
+    "about waterdog hose",
+    /Rack to dock\. Same family as this board\. They do not set the number on the hose\./.test(
+      waterdogBlock,
+    ),
+  );
+  check("about no campaign nouns", !/the take|the book|come in|four doors|we publish the pin|Holds Fast/i.test(aboutCopy));
+  check("about no wholesale book", !/nymex|platts|differential|\bTCN\b|jobber|opis/i.test(aboutCopy));
   check("about no invented tweets", !/RJMtweets11|goodpiratesalma/i.test(aboutCopy));
+  check("about no invented domain", !/waterdogfuel\.com/i.test(aboutCopy));
+  check("about footer credit", /Waterdog Fuel\. Rack to dock\./.test(aboutCopy));
   const headerOverflow = await page.$eval("header", (el) => el.scrollWidth > el.clientWidth + 1);
   const aboutNavBox = await page.$eval("[data-testid=nav-about]", (el) => {
     const r = el.getBoundingClientRect();

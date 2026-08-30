@@ -52,6 +52,28 @@ export default function AboutPage() {
         </p>
       </section>
 
+      <section
+        data-testid="waterdog-fuel"
+        className="mt-10 max-w-2xl space-y-3 text-sm leading-7 text-[color:var(--cream)]/80"
+      >
+        <h2 className="font-heading text-2xl text-[color:var(--cream)]">Waterdog Fuel</h2>
+        <p>
+          Waterdog Fuel brings the gallon from the Houston rack to the first-water dock. Clear
+          Lake, Kemah, Seabrook. Opens 2027. Not selling gallons yet.
+        </p>
+        <p>
+          Reach them at{" "}
+          <a
+            className="text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2"
+            href="mailto:orders@coastalcavaliers.com"
+          >
+            orders@coastalcavaliers.com
+          </a>
+          .
+        </p>
+        <p>Rack to dock. Same family as this board. They do not set the number on the hose.</p>
+      </section>
+
       <XTimeline handle={handle} />
       <SiteFooter />
     </main>

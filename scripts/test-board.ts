@@ -201,7 +201,7 @@ assert.doesNotMatch(tiles, /carto/i);
 assert.match(tiles, /DockPosted\/1\.0/);
 
 const fence =
-  /waterdog|coastal cavaliers|cheapest fuel|bargain map|on this water|instrument family|field letter|almanac|onthiswater|wind is the tide|sister page|field board|us saltwater docks|the board at the dock|seven letter|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning/i;
+  /cheapest fuel|bargain map|on this water|instrument family|field letter|almanac|onthiswater|wind is the tide|sister page|field board|us saltwater docks|the board at the dock|seven letter|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning|Holds Fast|waterdogfuel\.com/i;
 for (const file of [
   "src/app/page.tsx",
   "src/app/layout.tsx",
@@ -220,6 +220,18 @@ for (const file of [
 ]) {
   const text = readFileSync(path.join(process.cwd(), file), "utf8");
   assert.doesNotMatch(text, fence, `${file} leaked a fuel-desk term`);
+}
+
+const pinWall =
+  /waterdog|coastal cavaliers|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|nymex|\bTCN\b|pasadena rack/i;
+for (const file of [
+  "src/components/dock-card.tsx",
+  "src/components/dock-board.tsx",
+  "src/components/fuel-map.tsx",
+  "src/components/freshness-badge.tsx",
+]) {
+  const text = readFileSync(path.join(process.cwd(), file), "utf8");
+  assert.doesNotMatch(text, pinWall, `${file} put a supplier mark on the board`);
 }
 
 const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-header.tsx"), "utf8");
@@ -271,6 +283,9 @@ assert.doesNotMatch(reportSource, /submit a price/i);
 assert.doesNotMatch(reportSource, /If you saw it, write it/);
 assert.match(footerSource, /If they didn.t post it, it.s Call\./);
 assert.match(footerSource, /OpenStreetMap/);
+assert.match(footerSource, /Waterdog Fuel\. Rack to dock\./);
+assert.match(footerSource, /https:\/\/coastalcavaliers\.com/);
+assert.doesNotMatch(footerSource, /waterdogfuel\.com|RJMtweets11|Holds Fast/i);
 assert.doesNotMatch(footerSource, /We publish the pin/);
 assert.doesNotMatch(footerSource, /What the boater saw/);
 const campaign =
@@ -293,6 +308,21 @@ assert.match(aboutSource, /Wholesale is what it cost and what they posted\. That
 assert.match(aboutSource, /If you were at the dock, send the number\./);
 assert.match(aboutSource, /href="\/report"/);
 assert.match(aboutSource, />\s*Post a number\s*</);
+assert.match(aboutSource, />Waterdog Fuel</);
+assert.match(
+  aboutSource,
+  /Waterdog Fuel brings the gallon from the Houston rack to the first-water dock\. Clear\s+Lake, Kemah, Seabrook\. Opens 2027\. Not selling gallons yet\./,
+);
+assert.match(aboutSource, /mailto:orders@coastalcavaliers\.com/);
+assert.match(aboutSource, /Reach them at/);
+assert.match(
+  aboutSource,
+  /Rack to dock\. Same family as this board\. They do not set the number on the hose\./,
+);
+const waterdogAt = aboutSource.indexOf('data-testid="waterdog-fuel"');
+const onXImport = aboutSource.indexOf("<XTimeline");
+assert.ok(waterdogAt > 0 && onXImport > waterdogAt, "Waterdog block sits before On X");
+assert.doesNotMatch(aboutSource, /waterdogfuel\.com|RJMtweets11|Holds Fast|HoldsFast/i);
 assert.match(xTimelineSource, />On X</);
 assert.match(xTimelineSource, /Nothing on X yet\./);
 assert.match(xTimelineSource, /platform\.twitter\.com\/widgets\.js/);
@@ -302,7 +332,7 @@ assert.match(xHandleSource, /NEXT_PUBLIC_X_HANDLE/);
 assert.match(xHandleSource, /DockPosted/);
 assert.doesNotMatch(aboutSource, /Twitter feed|\bsocial\b|OTW|on this water/i);
 assert.doesNotMatch(xTimelineSource, /Twitter feed|\bsocial\b|RJMtweets11|goodpiratesalma/);
-assert.doesNotMatch(aboutSource, /nymex|differential|\bTCN\b|\brack\b|platts|opis|argus/i);
+assert.doesNotMatch(aboutSource, /nymex|differential|\bTCN\b|platts|opis|argus|jobber/i);
 assert.doesNotMatch(xTimelineSource, /nymex|platts|\brack\b|opis/i);
 assert.equal(DEFAULT_X_HANDLE, "DockPosted");
 assert.equal(publicXHandle(undefined), "DockPosted");
