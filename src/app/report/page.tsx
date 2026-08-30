@@ -20,7 +20,7 @@ export default async function ReportPage({
       <p className="kicker text-wake-deep">From the pump</p>
       <h1 className="mt-2 font-serif text-4xl text-harbor">You just fueled</h1>
       <p className="mt-3 text-sm leading-6 text-harbor/70">
-        Post the number on the hose. Clear Lake, Islamorada, or wherever you tied up.
+        Post the number on the board. If they did not post, it stays Call.
       </p>
 
       <form action="/report" method="get" className="mt-6 flex gap-2">
@@ -46,7 +46,7 @@ export default async function ReportPage({
         ) : null}
         {visible.length === 0 ? (
           <p className="text-sm text-harbor/70">
-            No marina by that name. Try Kemah, Key Largo, or Beaufort.
+            No marina by that name. Try Seabrook, Key Largo, or Beaufort.
           </p>
         ) : (
           <ReportForm docks={visible} initialDockId={params.dock} />

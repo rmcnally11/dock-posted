@@ -29,6 +29,17 @@ try {
   await page.goto(`${base}/?corridor=galveston-bay`, { waitUntil: "networkidle0" });
   await page.waitForSelector("[data-testid=corridor-heading]");
 
+  const kicker = await page.$eval("[data-testid=hero-kicker]", (el) => el.textContent?.trim());
+  const headline = await page.$eval("[data-testid=hero-headline]", (el) => el.textContent?.trim());
+  const deck = await page.$eval("[data-testid=hero-deck]", (el) => el.textContent?.trim());
+  check("copy lock kicker", kicker === "What the dock posted", kicker);
+  check("copy lock headline", headline === "Sabine to Key West", headline);
+  check(
+    "copy lock deck",
+    deck === "The last number they wrote on the board. If they did not post, it stays Call.",
+    deck,
+  );
+
   const texasHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
   check("texas heading", texasHeading?.includes("Galveston Bay"));
 
@@ -38,23 +49,43 @@ try {
   );
   check("map tiles painted", tileCount > 0, `tiles=${tileCount}`);
 
+  const attribution = await page.$eval("[data-testid=fuel-map]", (el) => el.textContent ?? "");
+  check("no carto attribution", !/carto/i.test(attribution), attribution);
+
   const texasNames = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
     nodes.map((node) => node.textContent),
   );
-  check("texas list", texasNames.some((name) => name.includes("Marina Bay Harbor")));
+  check("clear lake 1 marina bay", texasNames[0] === "Marina Bay Harbor", texasNames[0]);
+  check("clear lake 2 blue marlin", texasNames[1] === "Blue Marlin Fuel Dock", texasNames[1]);
+  check(
+    "clear lake 3 south shore",
+    texasNames[2] === "South Shore Harbour Fuel Pier",
+    texasNames[2],
+  );
+  check("island is not the poster", texasNames[0] !== "Galveston Yacht Marina");
+  check("no kemah boardwalk", !texasNames.some((name) => name?.includes("Kemah Boardwalk")));
+
+  const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
+  check("no on this water", !/on this water/i.test(homeCopy));
+  check("no instrument family", !/instrument family/i.test(homeCopy));
+  check("no sister page", !/sister page/i.test(homeCopy));
+  check("no two-corridors copy", !/two corridors only/i.test(homeCopy));
+  check("no compliance hero", !/does not sell gallons, broker fuel/i.test(homeCopy));
+  check("no sine-wave costume", (await page.$$("svg")).length === 0 || !homeCopy.includes("sine"));
 
   await page.goto(`${base}/?corridor=upper-keys`, { waitUntil: "networkidle0" });
   const keysHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
   const keysNames = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
     nodes.map((node) => node.textContent),
   );
+  const keysCopy = await page.$eval("main", (el) => el.textContent ?? "");
   check("keys heading", keysHeading?.includes("Key Largo"));
   check("keys list", keysNames.some((name) => name.includes("Key Largo Harbor")));
+  check("keys marina del mar", keysNames.some((name) => name.includes("Marina Del Mar")));
+  check("keys ocean reef", keysNames.some((name) => name.includes("Ocean Reef")));
   check("keys hides texas", !keysNames.some((name) => name.includes("Marina Bay Harbor")));
-
-  const homeCopy = await page.$eval("main", (el) => el.textContent ?? "");
-  check("no two-corridors copy", !/two corridors only/i.test(homeCopy));
-  check("no compliance hero", !/does not sell gallons, broker fuel/i.test(homeCopy));
+  check("keys islamorada caption", /islamorada is a different run/i.test(keysCopy));
+  check("keys members honesty", /members only/i.test(keysCopy));
 
   await page.goto(`${base}/?state=TX`, { waitUntil: "networkidle0" });
   const texasState = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
@@ -63,6 +94,7 @@ try {
   );
   check("texas state heading", texasState?.includes("Texas"));
   check("texas state includes rockport", texasStateNames.some((name) => name?.includes("Cove Harbor")));
+  check("texas state hides kemah", !texasStateNames.some((name) => name?.includes("Kemah Boardwalk")));
 
   await page.goto(`${base}/?q=key+largo`, { waitUntil: "networkidle0" });
   const searchNames = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
@@ -76,7 +108,7 @@ try {
     nodes.map((node) => node.textContent),
   );
   check("e0 count copy", e0Count?.startsWith("Showing"));
-  check("e0 hides south shore", !e0Names.includes("South Shore Harbour Marina"));
+  check("e0 hides south shore", !e0Names.includes("South Shore Harbour Fuel Pier"));
 
   await page.goto(`${base}/?corridor=galveston-bay&fresh=1`, { waitUntil: "networkidle0" });
   const freshCount = await page.$eval("[data-testid=dock-count]", (el) => el.textContent);

@@ -9,7 +9,7 @@ Waterway Guide weekly reports (opened 30 Aug 2026):
 - Gulf Coast AL thru TX: https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx
 - Florida Keys: https://www.waterwayguide.com/fuel-price-report/7/florida-keys
 
-Used for posted numbers, Call, or No Report at Marina Bay Harbor, Blue Marlin / Seabrook, South Shore Harbour, Pilot House, Mangrove, Plantation Yacht Harbor, IslaMarina, Snake Creek, Three Waters, World Wide Sportsman, Bud'n Mary's.
+Used for posted numbers, Call, or No Report at Marina Bay Harbor, Blue Marlin Fuel Dock / Seabrook, South Shore Harbour Fuel Pier, Pilot House, Mangrove, Plantation Yacht Harbor, IslaMarina, Snake Creek, Three Waters, World Wide Sportsman, Bud'n Mary's.
 
 Waterway Guide marina pages (Call / Never):
 
@@ -19,6 +19,17 @@ Waterway Guide marina pages (Call / Never):
 - Key Largo Harbor Marina
 - Tavernier Creek Marina
 - Garden Cove Marina
+
+Key Largo home pins added as Call, no invented dollars:
+
+- Marina Del Mar (Key Largo) — public marina site; no pump board
+- Ocean Reef Club (North Key Largo) — members only, not a public pump
+
+Dropped from the coast set (no weekend routing / no fuel):
+
+- Kemah Boardwalk Marina
+- Watergate Yachting Center
+- Waterford, Legend Point, Portofino — never seeded
 
 Marina marketing sites with a live board:
 
@@ -57,4 +68,4 @@ If a later fetch returns real HTML, the parser can write overlays. Until then th
 npm run seed:coast
 ```
 
-That script keeps the 18 home-water docks (prices intact) and rewrites the coastal additions from `scripts/build-coast-seed.ts`.
+That script keeps the home-water docks (prices intact), applies Clear Lake / Key Largo lead order, and rewrites the coastal additions from `scripts/build-coast-seed.ts`.

@@ -3,6 +3,7 @@ import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
 import { SiteFooter } from "@/components/site-footer";
 import { boardHref, viewLabel, type BoardQuery } from "@/lib/board-query";
+import { boardTally } from "@/lib/freshness";
 import { COAST_JUMPS, type Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,7 @@ export function DockBoard({
 }) {
   const selected = visible.find((dock) => dock.id === query.dock) ?? null;
   const filtered = query.e0Only || query.freshOnly || query.q.length >= 2;
+  const tally = boardTally(inCorridor);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col lg:min-h-[calc(100dvh-13rem)] lg:flex-row">
@@ -37,8 +39,23 @@ export function DockBoard({
               <p data-testid="dock-count" className="text-sm text-[color:var(--cream)]/55">
                 {filtered
                   ? `Showing ${visible.length} of ${inCorridor.length} docks`
-                  : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"} on this water`}
+                  : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"}`}
               </p>
+              <p data-testid="board-tally" className="mt-0.5 text-xs text-harbor/55">
+                {tally.postedThisWeek} posted this week · {tally.call} Call
+                {tally.stale ? ` · ${tally.stale} stale` : ""}
+              </p>
+              {query.corridor === "galveston-bay" && !query.state && !query.region && query.q.length < 2 ? (
+                <p className="mt-1 text-xs text-harbor/50">
+                  Clear Lake mouth first. Hours beat a posted price.
+                </p>
+              ) : null}
+              {query.corridor === "upper-keys" && !query.state && !query.region && query.q.length < 2 ? (
+                <p className="mt-1 text-xs text-harbor/50">
+                  Key Largo first. Islamorada is a different run. Dock E0 is not the landside E10
+                  hose.
+                </p>
+              ) : null}
             </div>
             <a
               href={selected ? `/report?dock=${selected.id}` : "/report"}
@@ -217,10 +234,10 @@ function EmptyList({ query }: { query: BoardQuery }) {
   return (
     <div className="border border-dashed border-harbor/25 bg-white p-6 text-sm text-harbor/70">
       {query.q.length >= 2
-        ? `Nothing named “${query.q}” on this chart. Try a town — Kemah, Islamorada, Beaufort.`
+        ? `Nothing named “${query.q}” on this chart. Try Seabrook, Key Largo, or Beaufort.`
         : query.freshOnly || query.e0Only
-          ? "No docks on this water match those chips. Clear one and look again."
-          : "No docks on this water. Open Clear Lake or the Keys, or search a town."}
+          ? "No docks match those chips. Clear one and look again."
+          : "No docks here. Open Clear Lake or Key Largo, or search a town."}
     </div>
   );
 }

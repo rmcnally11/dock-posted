@@ -6,10 +6,9 @@ export function formatPrice(value: number | null | undefined): string {
 }
 
 export function formatQuote(quote: FuelQuote | null): string {
-  if (!quote) return "—";
+  if (!quote) return "Call";
   if (quote.status === "not-sold") return "Not sold";
-  if (quote.status === "no-report") return "No report";
-  if (quote.status === "call") return "Call";
+  if (quote.status === "no-report" || quote.status === "call") return "Call";
   if (quote.pricePerGallon == null) return "Call";
   const grade = quote.product === "diesel" ? "diesel" : quote.product;
   const ethanol = quote.ethanol === "unknown" ? "" : ` ${quote.ethanol}`;
@@ -17,7 +16,7 @@ export function formatQuote(quote: FuelQuote | null): string {
 }
 
 export function formatDate(iso: string | null): string {
-  if (!iso) return "Never";
+  if (!iso) return "Call";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
   return new Intl.DateTimeFormat("en-US", {
@@ -35,12 +34,12 @@ export function sourceLabel(source: SourceLabel | null): string {
 export function ethanolCopy(ethanol: Ethanol): string {
   switch (ethanol) {
     case "E0":
-      return "E0 / ethanol-free";
+      return "E0";
     case "E10":
       return "E10";
     case "E15":
       return "E15 — not for boats";
     default:
-      return "Ethanol unknown";
+      return "Call";
   }
 }

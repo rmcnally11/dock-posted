@@ -106,14 +106,28 @@ export function geographicSet(docks: Dock[], query: BoardQuery): Dock[] {
   return docks.filter((dock) => dock.corridor === "galveston-bay");
 }
 
+function leadRank(dock: Dock): number {
+  return dock.lead ?? Number.POSITIVE_INFINITY;
+}
+
+export function sortDocks(docks: Dock[]): Dock[] {
+  return [...docks].sort((left, right) => {
+    const byLead = leadRank(left) - leadRank(right);
+    if (byLead !== 0) return byLead;
+    return left.name.localeCompare(right.name);
+  });
+}
+
 export function filterDocks(
   docks: Dock[],
   query: BoardQuery,
 ): { inCorridor: Dock[]; visible: Dock[] } {
-  const inCorridor = geographicSet(docks, query);
-  const visible = inCorridor
-    .filter((dock) => (query.e0Only ? dock.ethanol === "E0" : true))
-    .filter((dock) => (query.freshOnly ? freshness(dock) === "fresh" : true));
+  const inCorridor = sortDocks(geographicSet(docks, query));
+  const visible = sortDocks(
+    inCorridor
+      .filter((dock) => (query.e0Only ? dock.ethanol === "E0" : true))
+      .filter((dock) => (query.freshOnly ? freshness(dock) === "fresh" : true)),
+  );
   return { inCorridor, visible };
 }
 

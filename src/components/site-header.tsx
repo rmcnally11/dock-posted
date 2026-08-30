@@ -11,7 +11,9 @@ export function SiteHeader() {
           </span>
           <span className="leading-tight">
             <span className="block font-serif text-xl leading-none text-harbor">Dock Posted</span>
-            <span className="kicker mt-1 block text-wake-deep">US saltwater docks</span>
+            <span className="mt-1 block text-[11px] font-medium tracking-wide text-harbor/55">
+              Posted pump
+            </span>
           </span>
         </a>
         <nav className="flex items-center gap-0.5 text-sm">

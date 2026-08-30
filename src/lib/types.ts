@@ -63,7 +63,7 @@ export type QuoteStatus = "posted" | "call" | "no-report" | "not-sold";
 
 export type DockAccess = "public" | "private" | "members";
 
-export type UsGulfState = "TX" | "LA" | "MS" | "AL" | "FL";
+export type DockFlag = "last-pump" | "still-open";
 
 export interface FuelQuote {
   product: Product;
@@ -92,6 +92,8 @@ export interface Dock {
   lastVerifiedAt: string | null;
   lastVerifiedSource: SourceLabel | null;
   sourceUrl: string | null;
+  lead?: number;
+  flags?: DockFlag[];
 }
 
 export interface PriceReport {
@@ -420,7 +422,7 @@ export const COAST_JUMPS: Array<
   | { kind: "region"; id: RegionId; short: string }
 > = [
   { kind: "corridor", id: "galveston-bay", short: "Clear Lake" },
-  { kind: "corridor", id: "upper-keys", short: "Keys home" },
+  { kind: "corridor", id: "upper-keys", short: "Key Largo" },
   { kind: "state", id: "TX", short: "TX" },
   { kind: "state", id: "LA", short: "LA" },
   { kind: "state", id: "MS", short: "MS" },

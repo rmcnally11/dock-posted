@@ -33,16 +33,19 @@ export default async function Home({
   return (
     <main className="flex min-h-0 flex-1 flex-col overflow-hidden lg:h-[calc(100dvh-3.6rem)]">
       <section className="border-b border-harbor/15 bg-sand/80 px-4 py-3 md:px-6 paper-grain">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="kicker text-wake-deep">Field board</p>
-            <h1 className="mt-1 font-serif text-3xl text-harbor md:text-4xl">
-              The board at the dock
-            </h1>
-            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-harbor/72 md:text-base">
-              Clear Lake this weekend. Key Largo next. Texas through New England on one chart.
-            </p>
-          </div>
+        <div className="mx-auto flex max-w-6xl flex-col gap-2">
+          <p data-testid="hero-kicker" className="text-sm font-medium text-wake-deep">
+            What the dock posted
+          </p>
+          <h1 data-testid="hero-headline" className="font-serif text-3xl text-harbor md:text-4xl">
+            Sabine to Key West
+          </h1>
+          <p
+            data-testid="hero-deck"
+            className="max-w-2xl text-sm leading-6 text-harbor/72 md:text-base"
+          >
+            The last number they wrote on the board. If they did not post, it stays Call.
+          </p>
         </div>
         {query.reported ? (
           <p

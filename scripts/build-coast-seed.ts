@@ -4,6 +4,7 @@ import type {
   CorridorId,
   Dock,
   DockAccess,
+  DockFlag,
   Ethanol,
   FuelQuote,
   Product,
@@ -67,33 +68,180 @@ function toDock(row: Addition): Dock {
   };
 }
 
-const ADDITIONS: Addition[] = [
-  // Texas beyond Clear Lake / Galveston Bay
-  {
-    id: "kemah-boardwalk-marina",
-    name: "Kemah Boardwalk Marina",
-    region: "texas",
-    city: "Kemah",
-    state: "TX",
-    lat: 29.5428,
-    lng: -95.0197,
-    phone: "(281) 334-9880",
-    website: "https://www.kemahboardwalk.com/marina/",
+const DROP_IDS = new Set(["kemah-boardwalk-marina", "watergate-yachting-center"]);
+
+const HOME_PATCHES: Record<
+  string,
+  Partial<Pick<Dock, "name" | "lead" | "flags" | "notes">>
+> = {
+  "marina-bay-harbor": {
+    lead: 1,
+    flags: ["last-pump"],
     notes:
-      "Public slips on the Clear Lake channel. Marina site lists fuel service; no pump prices on the marketing page (30 Aug 2026).",
+      "Last public pump at the Clear Lake mouth, Clear Lake Shores. Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. 93 is the E0 hose. Does not sell diesel. Blank stays Call.",
   },
-  {
-    id: "watergate-yachting-center",
-    name: "Watergate Yachting Center",
-    region: "texas",
-    city: "Clear Lake Shores",
-    state: "TX",
-    lat: 29.5489,
-    lng: -95.0675,
-    phone: "(281) 334-1511",
-    website: "https://www.watergateyachtingcenter.com/",
-    notes: "Clear Lake wet slips. Site confirms a fuel dock; no posted pump prices (30 Aug 2026).",
+  "blue-marlin-seabrook": {
+    name: "Blue Marlin Fuel Dock",
+    lead: 2,
+    flags: ["last-pump", "still-open"],
+    notes:
+      "Seabrook, west of SH 146. Waterway Guide 08/28/26: diesel $5.280, 87 $4.980, 93 $5.990 E0, tax included. Hours Daily 7am–6pm. Still open when they post hours.",
   },
+  "south-shore-harbour": {
+    name: "South Shore Harbour Fuel Pier",
+    lead: 3,
+    flags: ["still-open"],
+    notes:
+      "League City fuel pier. Waterway Guide 08/28/26: diesel $5.000, 89 $5.500, tax included. Non-ethanol: No. Hours Daily 8am–6pm (summer hours on marina site). Hours beat a posted price.",
+  },
+  "houston-yacht-club": {
+    lead: 4,
+    notes:
+      "Club only. Members' dock, not a public pump. Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never.",
+  },
+  "lakewood-yacht-club": {
+    lead: 5,
+    notes:
+      "Club only. Private. Not a public pump. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
+  },
+  "watermans-harbor": {
+    lead: 6,
+    notes:
+      "On Dickinson Bayou. Waterway Guide lists gas as Call, non-ethanol No, last fuel update Never. No diesel line on that listing.",
+  },
+  "galveston-yacht-marina": {
+    lead: 7,
+    notes:
+      "Galveston Island, not the Clear Lake mouth. Marina homepage on 30 Aug 2026 posted Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79. Matches Waterway Guide 08/28/26.",
+  },
+  "key-largo-harbor": {
+    lead: 1,
+    notes:
+      "Key Largo stretch. Waterway Guide: diesel Call, 87–93 Call, non-ethanol Yes. Last fuel update 08/26/2022. Call / unverified. Do not invent a 2026 price. Dock E0 is not the landside E10 hose.",
+  },
+  "marina-del-mar": {
+    lead: 2,
+  },
+  "pilot-house-marina": {
+    lead: 3,
+  },
+  "garden-cove-marina": {
+    lead: 4,
+    notes:
+      "Key Largo. Waterway Guide: 90 Call, non-ethanol No (landside E10, not dock E0). Last fuel update 06/29/23. Marina site confirms gas; no pump price. Call.",
+  },
+  "ocean-reef-club": {
+    lead: 5,
+  },
+  "mangrove-marina": {
+    lead: 6,
+  },
+  "tavernier-creek": {
+    lead: 7,
+    notes:
+      "Tavernier. Waterway Guide marina listing: gas Call, non-ethanol No (landside E10). Last fuel update Never. Call.",
+  },
+  "plantation-yacht-harbor": {
+    lead: 20,
+    notes:
+      "Islamorada — a different run from Key Largo. Waterway Guide 08/24/26: diesel $6.000, 90 $5.659, tax included, non-ethanol Yes.",
+  },
+  islamarina: {
+    lead: 21,
+    notes:
+      "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $5.450, 90 $5.590, tax included, non-ethanol Yes.",
+  },
+  "snake-creek-marina": {
+    lead: 22,
+    notes:
+      "Islamorada — a different run from Key Largo. Listed on Waterway Guide as The Marina at Islamorada Yacht Club, now Snake Creek Marina. 08/28/26: does not sell diesel; 90 No Report This Week; non-ethanol Yes.",
+  },
+  "three-waters-marina": {
+    lead: 23,
+    notes:
+      "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $6.250, 90 $5.500, tax included, non-ethanol Yes.",
+  },
+  "worldwide-sportsman": {
+    lead: 24,
+    notes:
+      "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $4.840 tax not included (7.50%), 90 $5.170 tax included, non-ethanol Yes.",
+  },
+  "bud-n-marys": {
+    lead: 25,
+    notes:
+      "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $6.290 (dyed diesel noted), 90 $6.190, tax included, non-ethanol Yes.",
+  },
+};
+
+function homeDock(row: {
+  id: string;
+  name: string;
+  city: string;
+  lat: number;
+  lng: number;
+  phone: string;
+  website: string;
+  notes: string;
+  access: DockAccess;
+  lead: number;
+  flags?: DockFlag[];
+}): Dock {
+  return {
+    id: row.id,
+    name: row.name,
+    corridor: "upper-keys",
+    region: "keys",
+    city: row.city,
+    state: "FL",
+    lat: row.lat,
+    lng: row.lng,
+    phone: row.phone,
+    hours: null,
+    website: row.website,
+    notes: row.notes,
+    access: row.access,
+    ethanol: "unknown",
+    quotes: callQuotes(["90", "diesel"]),
+    lastVerifiedAt: null,
+    lastVerifiedSource: "marina site",
+    sourceUrl: row.website,
+    lead: row.lead,
+    flags: row.flags,
+  };
+}
+
+const HOME_ADDITIONS: Dock[] = [
+  homeDock({
+    id: "marina-del-mar",
+    name: "Marina Del Mar",
+    city: "Key Largo",
+    lat: 25.0965,
+    lng: -80.4378,
+    phone: "(305) 451-4107",
+    website: "https://www.marinadelmar.com/",
+    notes:
+      "Key Largo, next to the harbor. Public marina. Marketing page lists docks; no pump dollars. Call. We do not invent a price.",
+    access: "public",
+    lead: 2,
+  }),
+  homeDock({
+    id: "ocean-reef-club",
+    name: "Ocean Reef Club",
+    city: "North Key Largo",
+    lat: 25.3094,
+    lng: -80.2778,
+    phone: "(305) 367-2611",
+    website: "https://www.oceanreef.com/",
+    notes:
+      "Members only. Not a public pump. Gated North Key Largo club. Call the club if you belong. We do not invent a price.",
+    access: "members",
+    lead: 5,
+  }),
+];
+
+const ADDITIONS: Addition[] = [
+  // Texas beyond Clear Lake / Galveston Bay. No Kemah Boardwalk weekend
+  // routing. No Watergate / Waterford / Legend Point / Portofino — no fuel.
   {
     id: "cove-harbor-rockport",
     name: "Cove Harbor Marina",
@@ -1573,16 +1721,29 @@ async function main() {
     docks: Array<Dock & { corridor: CorridorId; region?: RegionId }>;
   };
 
-  const home: Dock[] = current.docks
-    .filter((dock) => dock.corridor === "galveston-bay" || dock.corridor === "upper-keys")
-    .map((dock) => ({
+  const homeIds = new Set<string>();
+  const home: Dock[] = [];
+  for (const dock of current.docks) {
+    if (DROP_IDS.has(dock.id)) continue;
+    if (dock.corridor !== "galveston-bay" && dock.corridor !== "upper-keys") continue;
+    const patched = {
       ...dock,
       region: HOME_REGION[dock.corridor] ?? dock.region ?? "texas",
-    }));
+      ...HOME_PATCHES[dock.id],
+    };
+    home.push(patched);
+    homeIds.add(dock.id);
+  }
+  for (const extra of HOME_ADDITIONS) {
+    if (homeIds.has(extra.id)) continue;
+    home.push({ ...extra, ...HOME_PATCHES[extra.id] });
+    homeIds.add(extra.id);
+  }
 
-  const existingIds = new Set(home.map((dock) => dock.id));
-  const added = ADDITIONS.filter((row) => !existingIds.has(row.id)).map(toDock);
-  const docks = [...home, ...added];
+  const added = ADDITIONS.filter((row) => !homeIds.has(row.id) && !DROP_IDS.has(row.id)).map(
+    toDock,
+  );
+  const docks = [...home, ...added].filter((dock) => !DROP_IDS.has(dock.id));
   assertUnique(docks);
 
   const next = {

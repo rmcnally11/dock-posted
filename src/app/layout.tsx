@@ -28,9 +28,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Dock Posted — the board at the dock",
+  title: "Dock Posted — Sabine to Key West",
   description:
-    "Posted gas and diesel on US saltwater recreational docks, Gulf through New England. Call the dock. We never invent a price.",
+    "The last number they wrote on the board. If they did not post, it stays Call.",
   icons: { icon: "/favicon.svg" },
 };
 

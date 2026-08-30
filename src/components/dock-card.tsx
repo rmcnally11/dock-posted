@@ -4,6 +4,21 @@ import { displayDiesel, displayGas, freshness } from "@/lib/freshness";
 import type { Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+function accessLabel(dock: Dock): string | null {
+  if (dock.access === "members") return "Members only";
+  if (dock.access === "private") return "Club only";
+  return null;
+}
+
+function flagLabels(dock: Dock): string[] {
+  const labels: string[] = [];
+  if (dock.flags?.includes("last-pump")) labels.push("Last pump");
+  if (dock.flags?.includes("still-open")) labels.push("Still open");
+  const access = accessLabel(dock);
+  if (access) labels.push(access);
+  return labels;
+}
+
 export function DockCard({
   dock,
   selected,
@@ -16,6 +31,7 @@ export function DockCard({
   const gas = displayGas(dock);
   const diesel = displayDiesel(dock);
   const state = freshness(dock);
+  const flags = flagLabels(dock);
 
   return (
     <a
@@ -37,15 +53,19 @@ export function DockCard({
           <h3 className="font-heading text-lg leading-tight text-[color:var(--cream)]">{dock.name}</h3>
           <p className="mt-0.5 text-sm text-harbor/60">
             {dock.city}, {dock.state}
-            {dock.access !== "public" ? ` · ${dock.access}` : ""}
           </p>
+          {flags.length > 0 ? (
+            <p className="mt-1 text-[11px] font-medium tracking-wide text-harbor/70">
+              {flags.join(" · ")}
+            </p>
+          ) : null}
         </div>
         <FreshnessBadge dock={dock} />
       </div>
 
       <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
         <div className="bg-sand px-3 py-2">
-          <dt className="kicker text-harbor/45">Gas</dt>
+          <dt className="kicker text-harbor/45">Regular</dt>
           <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
             {formatQuote(gas)}
           </dd>
@@ -56,20 +76,24 @@ export function DockCard({
             {formatQuote(diesel)}
           </dd>
         </div>
+        <div className="bg-sand px-3 py-2">
+          <dt className="kicker text-harbor/45">Blend</dt>
+          <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
+            {ethanolCopy(dock.ethanol)}
+          </dd>
+        </div>
+        <div className="bg-sand px-3 py-2">
+          <dt className="kicker text-harbor/45">Hours</dt>
+          <dd className="text-[15px] font-medium text-harbor">{dock.hours ?? "Call"}</dd>
+        </div>
       </dl>
 
-      <p className="mt-3 text-xs text-harbor/65">
-        {ethanolCopy(dock.ethanol)}
-        {dock.hours ? ` · ${dock.hours}` : ""}
+      <p className="mt-3 text-xs text-harbor/50">
+        <span className="kicker mr-2 text-harbor/45">Date</span>
+        {formatDate(dock.lastVerifiedAt)}
+        {dock.lastVerifiedAt ? ` · ${sourceLabel(dock.lastVerifiedSource)}` : ""}
       </p>
-      <p className="mt-1 text-xs text-harbor/50">
-        {formatDate(dock.lastVerifiedAt)} · {sourceLabel(dock.lastVerifiedSource)}
-      </p>
-      {dock.phone ? (
-        <p className="mt-1 text-xs text-harbor/70">
-          {dock.phone}
-        </p>
-      ) : null}
+      {dock.phone ? <p className="mt-1 text-xs text-harbor/70">{dock.phone}</p> : null}
     </a>
   );
 }

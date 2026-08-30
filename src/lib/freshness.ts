@@ -45,11 +45,22 @@ export function freshness(dock: Dock, now = Date.now()): Freshness {
 
 export function freshnessLabel(dock: Dock, now = Date.now()): string {
   const state = freshness(dock, now);
-  if (state === "never") return "Never";
-  if (state === "no-report") return "No report";
-  if (state === "call") return "Call";
   if (state === "stale") return "Stale";
-  return "This week";
+  if (state === "fresh") return "This week";
+  return "Call";
+}
+
+export function boardTally(docks: Dock[], now = Date.now()) {
+  let postedThisWeek = 0;
+  let call = 0;
+  let stale = 0;
+  for (const dock of docks) {
+    const state = freshness(dock, now);
+    if (state === "fresh") postedThisWeek += 1;
+    else if (state === "stale") stale += 1;
+    else call += 1;
+  }
+  return { postedThisWeek, call, stale };
 }
 
 export function displayGas(dock: Dock): FuelQuote | null {
