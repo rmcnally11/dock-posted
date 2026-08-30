@@ -16,10 +16,18 @@ import {
   readHaulOutFile,
   readOverlayFile,
   readReportFile,
+  readWholesaleFile,
   writeHaulOutFile,
   writeOverlayFile,
   writeReportFile,
+  writeWholesaleFile,
 } from "./persist";
+import {
+  emptyWholesaleStore,
+  type DiffRow,
+  type TerminalWorksheet,
+  type WholesaleStoreFile,
+} from "./wholesale";
 import type {
   Dock,
   DockOverlay,
@@ -131,7 +139,38 @@ export async function resetFromSeed(): Promise<DockStoreFile> {
   await writeReports([]);
   await writeOverlayFile({ overlays: {} });
   await writeHaulOutFile(await emptyHaulOutStore());
+  await writeWholesaleFile(emptyWholesaleStore());
   return readDockStore();
+}
+
+export async function readWholesaleStore(): Promise<WholesaleStoreFile> {
+  return readWholesaleFile();
+}
+
+export async function writeWholesaleStore(store: WholesaleStoreFile): Promise<void> {
+  store.generatedAt = new Date().toISOString();
+  await writeWholesaleFile(store);
+}
+
+export async function saveTerminalWorksheet(
+  terminalId: string,
+  worksheet: TerminalWorksheet,
+): Promise<void> {
+  const store = await readWholesaleStore();
+  store.worksheets[terminalId] = worksheet;
+  await writeWholesaleStore(store);
+}
+
+export async function addWholesaleDiff(row: DiffRow): Promise<void> {
+  const store = await readWholesaleStore();
+  store.differentials.unshift(row);
+  await writeWholesaleStore(store);
+}
+
+export async function removeWholesaleDiff(id: string): Promise<void> {
+  const store = await readWholesaleStore();
+  store.differentials = store.differentials.filter((row) => row.id !== id);
+  await writeWholesaleStore(store);
 }
 
 export async function readHaulOutStore(): Promise<HaulOutStoreFile> {

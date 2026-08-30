@@ -2,10 +2,12 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { HaulOutStoreFile } from "./haul-out";
 import type { OverlayStoreFile, ReportStoreFile } from "./types";
+import { emptyWholesaleStore, type WholesaleStoreFile } from "./wholesale";
 
 const REPORTS_BLOB = "dock-posted/reports.json";
 const OVERLAYS_BLOB = "dock-posted/overlays.json";
 const HAUL_OUT_BLOB = "dock-posted/haul-out.json";
+const WHOLESALE_BLOB = "dock-posted/wholesale.json";
 
 function runtimeDir() {
   if (process.env.DATA_DIR) return process.env.DATA_DIR;
@@ -23,6 +25,10 @@ function overlaysPath() {
 
 function haulOutPath() {
   return path.join(runtimeDir(), "haul-out.json");
+}
+
+function wholesalePath() {
+  return path.join(runtimeDir(), "wholesale.json");
 }
 
 export function blobConfigured(): boolean {
@@ -132,4 +138,25 @@ export async function writeHaulOutFile(file: HaulOutStoreFile): Promise<void> {
     return;
   }
   await writeJsonFile(haulOutPath(), file);
+}
+
+export async function readWholesaleFile(): Promise<WholesaleStoreFile> {
+  const empty = emptyWholesaleStore();
+  if (blobConfigured()) {
+    try {
+      return (await readBlobJson<WholesaleStoreFile>(WHOLESALE_BLOB)) ?? empty;
+    } catch (error) {
+      console.warn("Blob wholesale read failed; using empty store.", error);
+      return empty;
+    }
+  }
+  return readJsonFile(wholesalePath(), empty);
+}
+
+export async function writeWholesaleFile(file: WholesaleStoreFile): Promise<void> {
+  if (blobConfigured()) {
+    await writeBlobJson(WHOLESALE_BLOB, file);
+    return;
+  }
+  await writeJsonFile(wholesalePath(), file);
 }

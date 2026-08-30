@@ -45,7 +45,7 @@ npm run seed          # clear runtime reports + overlays
 
 Local `npm run dev` writes reports to `data/runtime/`. On Vercel the filesystem is `/tmp` and evaporates.
 
-When a Blob store is connected, reports, dock overlays, and haul-out plans live in Vercel Blob under `dock-posted/reports.json`, `dock-posted/overlays.json`, and `dock-posted/haul-out.json`.
+When a Blob store is connected, reports, dock overlays, haul-out plans, and the wholesale desk live in Vercel Blob under `dock-posted/reports.json`, `dock-posted/overlays.json`, `dock-posted/haul-out.json`, and `dock-posted/wholesale.json`.
 
 One dashboard click on the existing Dock Posted project:
 
@@ -80,9 +80,11 @@ npm run test:parser
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
-| `DATA_DIR` | no | `data/runtime` or `/tmp/...` | Local file fallback for reports, overlays, and haul-out |
+| `DATA_DIR` | no | `data/runtime` or `/tmp/...` | Local file fallback for reports, overlays, haul-out, and wholesale |
 | `BLOB_READ_WRITE_TOKEN` | no | unset | Vercel Blob. Injected when a Blob store is connected |
 | `VERCEL` | set by Vercel | — | Local fallback uses `/tmp/dock-posted` if Blob is not configured |
+| `WHOLESALE_PASSWORD` | for `/wholesale` | unset = 404 | Shared password for the internal netback desk |
+| `WHOLESALE_SESSION_SECRET` | no | derived from the password | Signs the HttpOnly wholesale cookie |
 
 No map API keys. Tiles are OpenStreetMap (`tile.openstreetmap.org`) through `/api/tiles/{z}/{x}/{y}`. User-Agent: `DockPosted/1.0`. Attribution: © OpenStreetMap. Not Carto.
 
@@ -99,6 +101,16 @@ npm run build
 npm start             # same port as dev: 43123
 ```
 
+## Internal wholesale desk
+
+`/wholesale` is a password-gated netback worksheet. The header shows **Wholesale** only when `WHOLESALE_PASSWORD` is set. If that env is unset, the route is 404 and the nav link is omitted. Unauthenticated visitors see a password form only.
+
+Differentials and per-terminal inputs persist next to haul-out: `DATA_DIR` / `data/runtime/wholesale.json`, or Blob `dock-posted/wholesale.json`. Terminal TCNs are in `data/wholesale-terminals.json` (IRS directory + Buckeye / KM pages). Blank TCN stays blank.
+
+```bash
+npm run test:wholesale
+```
+
 ## What this is not
 
-A fuel desk, a bargain map, an SMS product, a payment flow, or a wholesale book. No leftover wet-slip or pump-out products.
+A public fuel desk, a bargain map, an SMS product, or a payment flow. The consumer board does not show rack, NYMEX, or a wholesale book. No leftover wet-slip or pump-out products.

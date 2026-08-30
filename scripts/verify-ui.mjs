@@ -127,6 +127,8 @@ try {
   check("no sine-wave costume", (await page.$$("svg")).length === 0 || !homeCopy.includes("sine"));
   check("no waterdog mark", !/waterdog/i.test(homeCopy));
   check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
+  check("board has no wholesale book", !/nymex|differential|\bTCN\b|\brack\b/i.test(homeCopy));
+  check("board omits wholesale nav without password", !(await page.$("[data-testid=nav-wholesale]")));
   check("call the dock action", /call the dock/i.test(homeCopy));
   check("no call ahead", !/call ahead/i.test(homeCopy));
   check("no tbd or unknown", !/\bTBD\b|\bunknown\b/i.test(homeCopy));
@@ -205,6 +207,7 @@ try {
   check("safe fuel", /E15 is not for boats/i.test(safe));
   check("safe fuel is a warning", /walk away/i.test(safe) && !/save|deal|cheap/i.test(safe));
   check("safe fuel no waterdog", !/waterdog|opis|argus|platts|invoice/i.test(safe));
+  check("safe fuel no wholesale book", !/nymex|differential|\bTCN\b|\brack\b|jobber/i.test(safe));
 
   await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
   const haulKicker = await page.$eval("[data-testid=haul-out-kicker]", (el) => el.textContent?.trim());
@@ -212,6 +215,7 @@ try {
   const haulDeck = await page.$eval("[data-testid=haul-out-deck]", (el) => el.textContent?.trim());
   const haulCopy = await page.$eval("main", (el) => el.textContent ?? "");
   const haulHow = await page.$eval("[data-testid=how-it-works]", (el) => el.textContent ?? "");
+  const haulHeader = await page.$eval("header", (el) => el.textContent ?? "");
   check("haul kicker", haulKicker === "Leftover seats", haulKicker);
   check("haul headline", haulHeadline === "Named storm parking", haulHeadline);
   check(
@@ -234,6 +238,13 @@ try {
   check("yard post heading", /Yard: post what.s left/.test(haulCopy));
   check("we are not the yard", /We are not the yard/.test(haulCopy));
   check("no stripe", !/stripe/i.test(haulCopy));
+  check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(haulCopy));
+  check("haul-out header omits wholesale nav without password", !/wholesale/i.test(haulHeader));
+
+  const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
+    page.$eval("main", (el) => el.textContent ?? ""),
+  );
+  check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(reportCopy));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));
   console.error(error);

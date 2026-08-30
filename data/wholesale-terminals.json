@@ -1,0 +1,1582 @@
+{
+  "retrievedAt": "2026-08-30",
+  "irsDirectoryAsOf": "2026-06-30",
+  "irsDirectoryTitle": "ACTIVE FUEL TERMINALS @6/30/2026",
+  "sources": {
+    "irs-tcn-2026-06-30": {
+      "title": "IRS Terminal Control Number (TCN) / Terminal Locations Directory",
+      "url": "https://www.irs.gov/businesses/small-businesses-self-employed/terminal-control-number-tcn-terminal-locations-directory",
+      "file": "https://www.irs.gov/pub/irs-sbse/tcn-db.xlsx",
+      "retrievedAt": "2026-08-30",
+      "directoryAsOf": "2026-06-30"
+    },
+    "buckeye-marine-specs-2025-10": {
+      "title": "Buckeye Pipe Line Company, L.P. Section 7.1 Table I Marine Terminal Specs",
+      "url": "https://www.buckeye.com/wp-content/uploads/2025/09/Section-7.1-Table-I-Marine-Terminal-Specs-100125.pdf",
+      "retrievedAt": "2026-08-30",
+      "dated": "2025-10-01"
+    },
+    "km-products-page-2026-08-30": {
+      "title": "Kinder Morgan Products Pipelines",
+      "url": "https://www.kindermorgan.com/Operations/Products/Index",
+      "retrievedAt": "2026-08-30"
+    },
+    "km-pasadena-2025-06": {
+      "title": "Kinder Morgan Pasadena Terminal facility sheet",
+      "url": "https://www.kindermorgan.com/getmedia/0086655d-8bad-4607-9307-c3b81e81ec3b/(GL)-Pasadena-(2025-06).pdf",
+      "retrievedAt": "2026-08-30",
+      "dated": "2025-06"
+    },
+    "km-galena-park-2025-06": {
+      "title": "Kinder Morgan Galena Park Terminal facility sheet",
+      "url": "https://www.kindermorgan.com/getmedia/f06a0876-d052-4ed6-8309-6112e45ebee0/(GL)-Galena-Park-(2025-06).pdf",
+      "retrievedAt": "2026-08-30",
+      "dated": "2025-06"
+    }
+  },
+  "hubs": [
+    {
+      "id": "houston",
+      "label": "Houston (TX Gulf)",
+      "note": "KM liquids / truck. No Buckeye TCN here."
+    },
+    {
+      "id": "corpus",
+      "label": "Corpus Christi",
+      "note": "Buckeye Texas Hub / Processing."
+    },
+    {
+      "id": "new-orleans",
+      "label": "New Orleans / Marrero",
+      "note": "Buckeye marine list; TCN unverified."
+    },
+    {
+      "id": "opelousas",
+      "label": "Opelousas",
+      "note": "Inland Buckeye."
+    },
+    {
+      "id": "collins",
+      "label": "Collins",
+      "note": "KMST inland Mississippi."
+    },
+    {
+      "id": "birmingham",
+      "label": "Birmingham",
+      "note": "Addable inland hub; already seeded."
+    },
+    {
+      "id": "montgomery",
+      "label": "Montgomery",
+      "note": "Inland Buckeye."
+    },
+    {
+      "id": "tampa",
+      "label": "Tampa",
+      "note": "Buckeye and KM, separate rows."
+    },
+    {
+      "id": "orlando",
+      "label": "Orlando / Taft",
+      "note": "KM CFPL. Inland from Tampa Bay."
+    },
+    {
+      "id": "jacksonville",
+      "label": "Jacksonville",
+      "note": "Buckeye."
+    },
+    {
+      "id": "port-everglades",
+      "label": "Fort Lauderdale / Port Everglades",
+      "note": "Buckeye. No KM TCN."
+    },
+    {
+      "id": "albany-ga",
+      "label": "Albany, GA",
+      "note": "Inland Buckeye. Atlanta can be added later."
+    },
+    {
+      "id": "charleston",
+      "label": "Charleston",
+      "note": "Buckeye and KM."
+    },
+    {
+      "id": "wilmington-nc",
+      "label": "Wilmington, NC",
+      "note": "KM. Charlotte hub can be added later."
+    },
+    {
+      "id": "chesapeake",
+      "label": "Chesapeake / Hampton Roads",
+      "note": "Buckeye and KM."
+    },
+    {
+      "id": "baltimore",
+      "label": "Baltimore",
+      "note": "Buckeye and KM."
+    },
+    {
+      "id": "new-york-harbor",
+      "label": "New York Harbor",
+      "note": "Buckeye and KM."
+    },
+    {
+      "id": "pennsauken",
+      "label": "Pennsauken",
+      "note": "Buckeye Delaware River."
+    },
+    {
+      "id": "albany-ny",
+      "label": "Albany / Rensselaer",
+      "note": "Buckeye."
+    },
+    {
+      "id": "hudson",
+      "label": "Hudson (Newburgh / Roseton)",
+      "note": "Buckeye."
+    },
+    {
+      "id": "groton",
+      "label": "Groton",
+      "note": "Buckeye."
+    },
+    {
+      "id": "new-haven",
+      "label": "New Haven",
+      "note": "Three IRS TCNs, not merged."
+    },
+    {
+      "id": "south-portland",
+      "label": "South Portland",
+      "note": "Buckeye."
+    },
+    {
+      "id": "bangor",
+      "label": "Bangor",
+      "note": "Inland Buckeye."
+    },
+    {
+      "id": "atlanta",
+      "label": "Atlanta / Doraville",
+      "note": "Placeholder hub id for later. No rows seeded."
+    }
+  ],
+  "terminals": [
+    {
+      "id": "t-76-tx-2809",
+      "hub": "houston",
+      "city": "Pasadena",
+      "state": "TX",
+      "operator": "Kinder Morgan",
+      "facilityName": "KM Liquids Terminals, LLC",
+      "address": "530 North Witter",
+      "zip": "77506",
+      "tcnIrs": "T-76-TX-2809",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "KM Pasadena facility sheet (June 2025) lists refined petroleum products and distillates. IRS directory does not state RB vs HO.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "km-pasadena-2025-06"
+      ]
+    },
+    {
+      "id": "t-76-tx-2830",
+      "hub": "houston",
+      "city": "Pasadena",
+      "state": "TX",
+      "operator": "Kinder Morgan",
+      "facilityName": "KM Pasadena Truck Facility",
+      "address": "400 N. Jefferson",
+      "zip": "77506",
+      "tcnIrs": "T-76-TX-2830",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated in the IRS directory.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-76-tx-2788",
+      "hub": "houston",
+      "city": "Galena Park",
+      "state": "TX",
+      "operator": "Kinder Morgan",
+      "facilityName": "KM Liquids Terminals, LLC",
+      "address": "906 Clinton Drive",
+      "zip": "77547",
+      "tcnIrs": "T-76-TX-2788",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "KM Galena Park facility sheet (June 2025) lists refined petroleum products and distillates.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "km-galena-park-2025-06"
+      ]
+    },
+    {
+      "id": "t-76-tx-2819",
+      "hub": "houston",
+      "city": "Galena Park",
+      "state": "TX",
+      "operator": "Kinder Morgan",
+      "facilityName": "KM Liquids Terminals, LLC",
+      "address": "1500 Clinton Drive",
+      "zip": "77547",
+      "tcnIrs": "T-76-TX-2819",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN at Galena Park. Product slate unstated in the IRS directory.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-76-tx-2838",
+      "hub": "corpus",
+      "city": "Corpus Christi",
+      "state": "TX",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Texas Hub",
+      "address": "7002 Marvin L Berry Rd",
+      "zip": "78409",
+      "tcnIrs": "T-76-TX-2838",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-76-tx-2844",
+      "hub": "corpus",
+      "city": "Corpus Christi",
+      "state": "TX",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Texas Processing",
+      "address": "1501 Southern Minerals Road",
+      "zip": "78409",
+      "tcnIrs": "T-76-TX-2844",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN as processing. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-72-la-2375",
+      "hub": "opelousas",
+      "city": "Opelousas",
+      "state": "LA",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminal - Opelousas",
+      "address": "Highway 182 South",
+      "zip": "70571",
+      "tcnIrs": "T-72-LA-2375",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Only Buckeye TCN in Louisiana on the 6/30/2026 IRS directory. Inland.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "buckeye-marrero-unverified",
+      "hub": "new-orleans",
+      "city": "Marrero",
+      "state": "LA",
+      "operator": "Buckeye",
+      "facilityName": "Marrero (Buckeye marine list)",
+      "address": null,
+      "zip": null,
+      "tcnIrs": null,
+      "tcnStatus": "unverified",
+      "products": "both",
+      "productNote": "Buckeye marine receipt specs (1 Oct 2025) list Marrero, LA among marine terminals and specify RBOB and ULSD. No matching Buckeye Marrero row in the IRS TCN directory dated 6/30/2026. TCN left blank.",
+      "sources": [
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-64-ms-2402",
+      "hub": "collins",
+      "city": "Collins",
+      "state": "MS",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Southeast Terminals LLC",
+      "address": "31 Kola Road",
+      "zip": "39428",
+      "tcnIrs": "T-64-MS-2402",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Only KM/Buckeye TCN in Mississippi on the IRS directory. Inland, not on the Gulf beach.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-63-al-2309",
+      "hub": "birmingham",
+      "city": "Birmingham",
+      "state": "AL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Birmingham",
+      "address": "2400 Nabors Road",
+      "zip": "35211",
+      "tcnIrs": "T-63-AL-2309",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Inland. No Buckeye or KM TCN in Mobile on the IRS directory.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-63-al-2312",
+      "hub": "birmingham",
+      "city": "Birmingham",
+      "state": "AL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC",
+      "address": "1600 Mims Ave. SW",
+      "zip": "35211",
+      "tcnIrs": "T-63-AL-2312",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Inland Birmingham. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-63-al-2307",
+      "hub": "birmingham",
+      "city": "Birmingham",
+      "state": "AL",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Southeast Terminals LLC",
+      "address": "2635 Balsam Avenue",
+      "zip": "35211",
+      "tcnIrs": "T-63-AL-2307",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Inland KMST Birmingham. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-63-al-2304",
+      "hub": "montgomery",
+      "city": "Montgomery",
+      "state": "AL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC",
+      "address": "4951 Birmingham Highway",
+      "zip": "36108",
+      "tcnIrs": "T-63-AL-2304",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Inland. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-59-fl-2107",
+      "hub": "tampa",
+      "city": "Tampa",
+      "state": "FL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Tampa",
+      "address": "504 North 19th Street",
+      "zip": "33605",
+      "tcnIrs": "T-59-FL-2107",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Tampa North / Tampa South and specify RBOB and ULSD receipts.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-59-fl-2130",
+      "hub": "tampa",
+      "city": "Tampa",
+      "state": "FL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC",
+      "address": "848 McCloskey Blvd.",
+      "zip": "33605",
+      "tcnIrs": "T-59-FL-2130",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Address matches Buckeye Tampa South (EPA Title V). Marine specs specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-59-fl-2683",
+      "hub": "tampa",
+      "city": "Tampa",
+      "state": "FL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals LLC Tampa",
+      "address": "1001 McCloskey Blvd",
+      "zip": "33605",
+      "tcnIrs": "T-59-FL-2683",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Separate IRS TCN on McCloskey. Marine specs specify RBOB and ULSD at Tampa.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-59-fl-2123",
+      "hub": "tampa",
+      "city": "Tampa",
+      "state": "FL",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Liquids Terminals LLC",
+      "address": "2101 GATX Drive",
+      "zip": "33605-6863",
+      "tcnIrs": "T-59-FL-2123",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "KM Products page lists KMLT Tampa at 2101 GATX Drive handling gasoline/gasohol, diesel, jet fuel and ethanol.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "km-products-page-2026-08-30"
+      ]
+    },
+    {
+      "id": "t-59-fl-2129",
+      "hub": "orlando",
+      "city": "Orlando",
+      "state": "FL",
+      "operator": "Kinder Morgan",
+      "facilityName": "Central Florida Pipeline LLC",
+      "address": "9919 Orange Avenue",
+      "zip": "32824-8466",
+      "tcnIrs": "T-59-FL-2129",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "KM Products page: CFPL Taft / Orlando terminal handles gasoline/gasohol, diesel, jet fuel and ethanol. Inland from Tampa Bay.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "km-products-page-2026-08-30"
+      ]
+    },
+    {
+      "id": "t-65-fl-2156",
+      "hub": "port-everglades",
+      "city": "Fort Lauderdale",
+      "state": "FL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Fort Lauderdale",
+      "address": "1501 SE 20th Street",
+      "zip": "33316",
+      "tcnIrs": "T-65-FL-2156",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Ft Lauderdale and specify RBOB and ULSD. No Kinder Morgan TCN at Port Everglades / Fort Lauderdale on the 6/30/2026 IRS directory.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-59-fl-2102",
+      "hub": "jacksonville",
+      "city": "Jacksonville",
+      "state": "FL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Jacksonville",
+      "address": "2617 Zoo Parkway",
+      "zip": "32226",
+      "tcnIrs": "T-59-FL-2102",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Jacksonville and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-59-fl-2682",
+      "hub": "jacksonville",
+      "city": "Jacksonville",
+      "state": "FL",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals",
+      "address": "10201 East Port Road",
+      "zip": "32218",
+      "tcnIrs": "T-59-FL-2682",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Second Jacksonville Buckeye TCN on the IRS directory.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-58-ga-2501",
+      "hub": "albany-ga",
+      "city": "Albany",
+      "state": "GA",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Albany",
+      "address": "1722 W Oakridge Dr",
+      "zip": "31707",
+      "tcnIrs": "T-58-GA-2501",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Nearest in-state Buckeye TCN. Inland. No Buckeye or KM TCN in Savannah.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-57-sc-2064",
+      "hub": "charleston",
+      "city": "North Charleston",
+      "state": "SC",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - North Charleston",
+      "address": "5150 Virginia Avenue",
+      "zip": "29405",
+      "tcnIrs": "T-57-SC-2064",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Charleston, SC and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-57-sc-2054",
+      "hub": "charleston",
+      "city": "Charleston",
+      "state": "SC",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Operating LP \"C\"",
+      "address": "1500 Greenleaf St.",
+      "zip": "29405-9308",
+      "tcnIrs": "T-57-SC-2054",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. KM products page does not describe 1500 Greenleaf as a refined-products truck rack. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-56-nc-2044",
+      "hub": "wilmington-nc",
+      "city": "Wilmington",
+      "state": "NC",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Terminals Wilmington",
+      "address": "1710 Woodbine St.",
+      "zip": "28402",
+      "tcnIrs": "T-56-NC-2044",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Coastal KM TCN. Product slate unstated in the IRS directory.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-56-nc-2047",
+      "hub": "wilmington-nc",
+      "city": "Wilmington",
+      "state": "NC",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Terminals Wilmington",
+      "address": "3340 River Road",
+      "zip": "28412",
+      "tcnIrs": "T-56-NC-2047",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Second Wilmington KM TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-54-va-1650",
+      "hub": "chesapeake",
+      "city": "Chesapeake",
+      "state": "VA",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Chesapeake",
+      "address": "4030 Buell Street",
+      "zip": "23324",
+      "tcnIrs": "T-54-VA-1650",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Chesapeake, VA and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-54-va-1653",
+      "hub": "chesapeake",
+      "city": "Chesapeake",
+      "state": "VA",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Virginia Liquids",
+      "address": "502 Hill Street",
+      "zip": "23324",
+      "tcnIrs": "T-54-VA-1653",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-54-va-1654",
+      "hub": "chesapeake",
+      "city": "Chesapeake",
+      "state": "VA",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Southeast Terminals LLC",
+      "address": "4115 Buell Street",
+      "zip": "23324",
+      "tcnIrs": "T-54-VA-1654",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-52-md-1550",
+      "hub": "baltimore",
+      "city": "Baltimore",
+      "state": "MD",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Baltimore",
+      "address": "6200 Pennington Avenue",
+      "zip": "21226",
+      "tcnIrs": "T-52-MD-1550",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Baltimore, MD and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-52-md-1551",
+      "hub": "baltimore",
+      "city": "Baltimore",
+      "state": "MD",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Liquids Terminals LLC",
+      "address": "801 East Ordance Rd",
+      "zip": "21226",
+      "tcnIrs": "T-52-MD-1551",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-22-nj-1500",
+      "hub": "new-york-harbor",
+      "city": "Bayonne",
+      "state": "NJ",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Bayonne",
+      "address": "4200 Hook Road",
+      "zip": "07002",
+      "tcnIrs": "T-22-NJ-1500",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Bayonne, NJ and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-22-nj-1506",
+      "hub": "new-york-harbor",
+      "city": "Carteret",
+      "state": "NJ",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Liquids Terminals LLC",
+      "address": "760 Roosevelt Avenue",
+      "zip": "07008",
+      "tcnIrs": "T-22-NJ-1506",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-22-nj-1507",
+      "hub": "new-york-harbor",
+      "city": "Carteret",
+      "state": "NJ",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Liquids Terminals LLC",
+      "address": "78 Lafayette Street",
+      "zip": "07008",
+      "tcnIrs": "T-22-NJ-1507",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-22-nj-1531",
+      "hub": "new-york-harbor",
+      "city": "Perth Amboy",
+      "state": "NJ",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Perth Amboy",
+      "address": "380 Mauer Road",
+      "zip": "08661",
+      "tcnIrs": "T-22-NJ-1531",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Perth Amboy and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-22-nj-1545",
+      "hub": "new-york-harbor",
+      "city": "Perth Amboy",
+      "state": "NJ",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Perth Amboy",
+      "address": "Smith Street & Convery Boulevard",
+      "zip": "08861",
+      "tcnIrs": "T-22-NJ-1545",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Second Perth Amboy Buckeye TCN.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-22-nj-1535",
+      "hub": "new-york-harbor",
+      "city": "Port Reading",
+      "state": "NJ",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Port Reading",
+      "address": "750 Cliff Road",
+      "zip": "07064",
+      "tcnIrs": "T-22-NJ-1535",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Port Reading and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-22-nj-1550",
+      "hub": "new-york-harbor",
+      "city": "Perth Amboy",
+      "state": "NJ",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Liquids Terminals LLC",
+      "address": "920 High Street",
+      "zip": "08862",
+      "tcnIrs": "T-22-NJ-1550",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-22-nj-1528",
+      "hub": "pennsauken",
+      "city": "Pennsauken",
+      "state": "NJ",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Pennsauken",
+      "address": "123 Delrousse Avenue",
+      "zip": "08110",
+      "tcnIrs": "T-22-NJ-1528",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Pennsauken, NJ and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-11-ny-1301",
+      "hub": "new-york-harbor",
+      "city": "Brooklyn",
+      "state": "NY",
+      "operator": "Kinder Morgan",
+      "facilityName": "Kinder Morgan Liquids Terminals LLC",
+      "address": "125 Apollo St.",
+      "zip": "11222",
+      "tcnIrs": "T-11-NY-1301",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "IRS lists this TCN. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    },
+    {
+      "id": "t-14-ny-1401",
+      "hub": "albany-ny",
+      "city": "Albany",
+      "state": "NY",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Albany Terminal, LLC",
+      "address": "301 Normanskill Street",
+      "zip": "12202",
+      "tcnIrs": "T-14-NY-1401",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Albany, NY and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-14-ny-1415",
+      "hub": "albany-ny",
+      "city": "Rensselaer",
+      "state": "NY",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Rensselaer",
+      "address": "367 American Oil Road",
+      "zip": "12144",
+      "tcnIrs": "T-14-NY-1415",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Rensselaer, NY.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-14-ny-1421",
+      "hub": "hudson",
+      "city": "Newburgh",
+      "state": "NY",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Newburgh",
+      "address": "924 River Road",
+      "zip": "12550",
+      "tcnIrs": "T-14-NY-1421",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Roseton, NY (Newburgh).",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-06-ct-1255",
+      "hub": "groton",
+      "city": "Groton",
+      "state": "CT",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC - Groton",
+      "address": "443 East Point Road",
+      "zip": "06340",
+      "tcnIrs": "T-06-CT-1255",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list Groton, CT and specify RBOB and ULSD.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-06-ct-1263",
+      "hub": "new-haven",
+      "city": "New Haven",
+      "state": "CT",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals",
+      "address": "134 Forbes Avenue",
+      "zip": "06512",
+      "tcnIrs": "T-06-CT-1263",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list New Haven, CT. Three IRS TCNs at New Haven \u2014 listed separately, not merged.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-06-ct-1265",
+      "hub": "new-haven",
+      "city": "New Haven",
+      "state": "CT",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals",
+      "address": "85 East Street",
+      "zip": "06536",
+      "tcnIrs": "T-06-CT-1265",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Separate New Haven Buckeye TCN on the IRS directory.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-06-ct-1274",
+      "hub": "new-haven",
+      "city": "New Haven",
+      "state": "CT",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals",
+      "address": "280 Waterfront St",
+      "zip": "06512",
+      "tcnIrs": "T-06-CT-1274",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Separate New Haven Buckeye TCN on the IRS directory.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-01-me-1004",
+      "hub": "south-portland",
+      "city": "South Portland",
+      "state": "ME",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Development and Logistics II LLC",
+      "address": "170 Lincoln Street",
+      "zip": "04106",
+      "tcnIrs": "T-01-ME-1004",
+      "tcnStatus": "verified",
+      "products": "both",
+      "productNote": "Buckeye marine specs list S. Portland, ME.",
+      "sources": [
+        "irs-tcn-2026-06-30",
+        "buckeye-marine-specs-2025-10"
+      ]
+    },
+    {
+      "id": "t-01-me-1000",
+      "hub": "bangor",
+      "city": "Bangor",
+      "state": "ME",
+      "operator": "Buckeye",
+      "facilityName": "Buckeye Terminals, LLC",
+      "address": "730 Lower Main Street",
+      "zip": "04401",
+      "tcnIrs": "T-01-ME-1000",
+      "tcnStatus": "verified",
+      "products": null,
+      "productNote": "Inland Maine. Product slate unstated.",
+      "sources": [
+        "irs-tcn-2026-06-30"
+      ]
+    }
+  ],
+  "areas": [
+    {
+      "areaId": "galveston-bay",
+      "label": "Galveston Bay / Clear Lake",
+      "note": "Home corridor. No Buckeye TCN at Houston / Pasadena / Galena Park on the IRS directory. KM only.",
+      "footnotes": [
+        "Atlanta / Birmingham hubs can be added later without rewriting this file."
+      ],
+      "terminals": [
+        {
+          "terminalId": "t-76-tx-2809",
+          "inArea": true,
+          "miles": 15,
+          "direction": "W",
+          "note": "Houston Ship Channel / Pasadena. In the home corridor."
+        },
+        {
+          "terminalId": "t-76-tx-2830",
+          "inArea": true,
+          "miles": 15,
+          "direction": "W",
+          "note": "KM Pasadena truck facility."
+        },
+        {
+          "terminalId": "t-76-tx-2788",
+          "inArea": true,
+          "miles": 16,
+          "direction": "W",
+          "note": "KM Galena Park, 906 Clinton."
+        },
+        {
+          "terminalId": "t-76-tx-2819",
+          "inArea": true,
+          "miles": 16,
+          "direction": "W",
+          "note": "KM Galena Park, 1500 Clinton. Separate IRS TCN."
+        }
+      ]
+    },
+    {
+      "areaId": "texas",
+      "label": "Texas coast",
+      "note": "Houston is KM. Corpus Christi is Buckeye. No invented Houston Buckeye row.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-76-tx-2809",
+          "inArea": true,
+          "miles": 90,
+          "direction": "N"
+        },
+        {
+          "terminalId": "t-76-tx-2830",
+          "inArea": true,
+          "miles": 90,
+          "direction": "N"
+        },
+        {
+          "terminalId": "t-76-tx-2788",
+          "inArea": true,
+          "miles": 90,
+          "direction": "N"
+        },
+        {
+          "terminalId": "t-76-tx-2819",
+          "inArea": true,
+          "miles": 90,
+          "direction": "N"
+        },
+        {
+          "terminalId": "t-76-tx-2838",
+          "inArea": true,
+          "miles": 140,
+          "direction": "SW",
+          "note": "Buckeye Texas Hub, Corpus Christi."
+        },
+        {
+          "terminalId": "t-76-tx-2844",
+          "inArea": true,
+          "miles": 140,
+          "direction": "SW",
+          "note": "Buckeye Texas Processing. Separate IRS TCN."
+        }
+      ]
+    },
+    {
+      "areaId": "louisiana",
+      "label": "Louisiana",
+      "note": "No Kinder Morgan TCN in Louisiana on the 6/30/2026 IRS directory. Do not copy a Houston TCN onto Marrero.",
+      "footnotes": [
+        "Nearest verified KM liquids TCNs sit at Houston / Pasadena (~300 mi W). Not attached as Louisiana rows.",
+        "No Magellan/Colonial footnote required: Buckeye is present in-state (Opelousas verified; Marrero unverified)."
+      ],
+      "terminals": [
+        {
+          "terminalId": "buckeye-marrero-unverified",
+          "inArea": true,
+          "miles": 28,
+          "direction": "S",
+          "note": "On Buckeye\u2019s marine list. IRS TCN blank \u2014 unverified."
+        },
+        {
+          "terminalId": "t-72-la-2375",
+          "inArea": true,
+          "miles": 133,
+          "direction": "NW",
+          "note": "Only verified Buckeye TCN in Louisiana. Inland."
+        }
+      ]
+    },
+    {
+      "areaId": "mississippi",
+      "label": "Mississippi",
+      "note": "No Buckeye or KM terminal on the Mississippi coast. Do not invent a Gulfport TCN.",
+      "footnotes": [
+        "Nearest other-operator rack on the water: Chevron USA Pascagoula, IRS T-64-MS-2416 (Industrial Road / Hwy 611). Not Buckeye or KM."
+      ],
+      "terminals": [
+        {
+          "terminalId": "t-64-ms-2402",
+          "inArea": true,
+          "miles": 97,
+          "direction": "N",
+          "note": "KMST Collins. Inland. Only KM/Buckeye TCN in Mississippi."
+        },
+        {
+          "terminalId": "t-63-al-2309",
+          "inArea": false,
+          "miles": 251,
+          "direction": "NE",
+          "note": "Nearest Buckeye TCN (Birmingham). Not a Gulfport terminal."
+        }
+      ]
+    },
+    {
+      "areaId": "alabama",
+      "label": "Alabama",
+      "note": "No Buckeye or KM TCN in Mobile. In-state rows are inland. Do not invent a Mobile pipeline terminal.",
+      "footnotes": [
+        "Nearest coastal Buckeye/KM cluster is Tampa (~360 mi E). Not copied onto Mobile.",
+        "Atlanta / Birmingham remain addable inland hubs; Birmingham is already listed."
+      ],
+      "terminals": [
+        {
+          "terminalId": "t-63-al-2309",
+          "inArea": true,
+          "miles": 227,
+          "direction": "N",
+          "note": "Inland Birmingham Buckeye."
+        },
+        {
+          "terminalId": "t-63-al-2312",
+          "inArea": true,
+          "miles": 227,
+          "direction": "N"
+        },
+        {
+          "terminalId": "t-63-al-2307",
+          "inArea": true,
+          "miles": 227,
+          "direction": "N",
+          "note": "KMST Birmingham. Same hub, separate TCN."
+        },
+        {
+          "terminalId": "t-63-al-2304",
+          "inArea": true,
+          "miles": 170,
+          "direction": "NNE",
+          "note": "Buckeye Montgomery. Inland."
+        }
+      ]
+    },
+    {
+      "areaId": "west-florida",
+      "label": "West Florida",
+      "note": "Tampa Bay has both Buckeye and KM. Listed as separate TCN rows, not one Tampa pin.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-59-fl-2107",
+          "inArea": true,
+          "miles": 26,
+          "direction": "NE",
+          "note": "Buckeye Tampa \u2014 504 N 19th."
+        },
+        {
+          "terminalId": "t-59-fl-2130",
+          "inArea": true,
+          "miles": 26,
+          "direction": "NE",
+          "note": "Buckeye Tampa South \u2014 848 McCloskey."
+        },
+        {
+          "terminalId": "t-59-fl-2683",
+          "inArea": true,
+          "miles": 26,
+          "direction": "NE",
+          "note": "Buckeye Tampa \u2014 1001 McCloskey. Separate TCN."
+        },
+        {
+          "terminalId": "t-59-fl-2123",
+          "inArea": true,
+          "miles": 26,
+          "direction": "NE",
+          "note": "KM Tampa \u2014 2101 GATX Drive."
+        },
+        {
+          "terminalId": "t-59-fl-2129",
+          "inArea": true,
+          "miles": 95,
+          "direction": "NE",
+          "note": "KM CFPL Taft / Orlando. Inland from the bay."
+        }
+      ]
+    },
+    {
+      "areaId": "keys",
+      "label": "Florida Keys",
+      "note": "No Buckeye or KM terminal in the Keys. Do not invent a Key Largo TCN. Nearest verified row is Buckeye Fort Lauderdale T-65-FL-2156.",
+      "footnotes": [
+        "No Kinder Morgan TCN at Port Everglades on the IRS directory."
+      ],
+      "terminals": [
+        {
+          "terminalId": "t-65-fl-2156",
+          "inArea": false,
+          "miles": 109,
+          "direction": "N",
+          "note": "Nearest Buckeye/KM: Port Everglades / Fort Lauderdale. No Key Largo pipeline terminal."
+        }
+      ]
+    },
+    {
+      "areaId": "upper-keys",
+      "label": "Key Largo / Upper Keys",
+      "note": "Home corridor. Same nearest terminal as the Keys region. No invented Key Largo pipeline terminal.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-65-fl-2156",
+          "inArea": false,
+          "miles": 80,
+          "direction": "N",
+          "note": "Nearest terminal is Port Everglades / Fort Lauderdale, ~80 mi N of Key Largo. Not a Keys rack."
+        }
+      ]
+    },
+    {
+      "areaId": "east-florida",
+      "label": "East Florida",
+      "note": "East Florida has Buckeye at Jacksonville and Fort Lauderdale. No KM TCN at Port Everglades.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-65-fl-2156",
+          "inArea": true,
+          "miles": 90,
+          "direction": "S",
+          "note": "Buckeye Port Everglades / Fort Lauderdale."
+        },
+        {
+          "terminalId": "t-59-fl-2102",
+          "inArea": true,
+          "miles": 216,
+          "direction": "N",
+          "note": "Buckeye Jacksonville \u2014 Zoo Parkway."
+        },
+        {
+          "terminalId": "t-59-fl-2682",
+          "inArea": true,
+          "miles": 216,
+          "direction": "N",
+          "note": "Buckeye Jacksonville \u2014 East Port Road. Separate TCN."
+        }
+      ]
+    },
+    {
+      "areaId": "georgia",
+      "label": "Georgia",
+      "note": "No Buckeye or KM TCN in Savannah. Do not invent a Savannah Buckeye/KM row.",
+      "footnotes": [
+        "True nearest waterfront rack is Colonial Terminals, Inc., Savannah, IRS T-58-GA-2550 (101 N. Lathrop Avenue). Other operator. TCN is real; not preferred.",
+        "Atlanta / Doraville Buckeye and KM TCNs exist inland and can be added as a hub later."
+      ],
+      "terminals": [
+        {
+          "terminalId": "t-59-fl-2102",
+          "inArea": false,
+          "miles": 79,
+          "direction": "S",
+          "note": "Nearest coastal Buckeye: Jacksonville."
+        },
+        {
+          "terminalId": "t-57-sc-2064",
+          "inArea": false,
+          "miles": 126,
+          "direction": "NE",
+          "note": "Nearest coastal Buckeye north: North Charleston."
+        },
+        {
+          "terminalId": "t-58-ga-2501",
+          "inArea": true,
+          "miles": 175,
+          "direction": "W",
+          "note": "Nearest in-state Buckeye TCN. Inland Albany."
+        }
+      ]
+    },
+    {
+      "areaId": "south-carolina",
+      "label": "South Carolina",
+      "note": "Charleston harbor has both Buckeye and KM IRS rows.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-57-sc-2064",
+          "inArea": true,
+          "miles": 7,
+          "direction": "SE",
+          "note": "Buckeye North Charleston."
+        },
+        {
+          "terminalId": "t-57-sc-2054",
+          "inArea": true,
+          "miles": 8,
+          "direction": "SE",
+          "note": "KM Operating LP C, 1500 Greenleaf. Separate TCN."
+        }
+      ]
+    },
+    {
+      "areaId": "north-carolina",
+      "label": "North Carolina",
+      "note": "Coastal KM at Wilmington. No Buckeye TCN in Wilmington on the IRS directory.",
+      "footnotes": [
+        "Inland Charlotte / Greensboro / Selma Buckeye and KMST TCNs exist and can be added as a hub later."
+      ],
+      "terminals": [
+        {
+          "terminalId": "t-56-nc-2044",
+          "inArea": true,
+          "miles": 87,
+          "direction": "SW",
+          "note": "KM Wilmington \u2014 Woodbine St."
+        },
+        {
+          "terminalId": "t-56-nc-2047",
+          "inArea": true,
+          "miles": 87,
+          "direction": "SW",
+          "note": "KM Wilmington \u2014 River Road. Separate TCN."
+        }
+      ]
+    },
+    {
+      "areaId": "virginia",
+      "label": "Virginia",
+      "note": "Chesapeake / Hampton Roads has both Buckeye and KM.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-54-va-1650",
+          "inArea": true,
+          "miles": 23,
+          "direction": "SE",
+          "note": "Buckeye Chesapeake."
+        },
+        {
+          "terminalId": "t-54-va-1653",
+          "inArea": true,
+          "miles": 23,
+          "direction": "SE",
+          "note": "KM Virginia Liquids. Separate TCN."
+        },
+        {
+          "terminalId": "t-54-va-1654",
+          "inArea": true,
+          "miles": 23,
+          "direction": "SE",
+          "note": "KMST Chesapeake. Separate TCN."
+        }
+      ]
+    },
+    {
+      "areaId": "maryland",
+      "label": "Maryland",
+      "note": "Baltimore has both Buckeye and KM.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-52-md-1550",
+          "inArea": true,
+          "miles": 51,
+          "direction": "NE",
+          "note": "Buckeye Baltimore."
+        },
+        {
+          "terminalId": "t-52-md-1551",
+          "inArea": true,
+          "miles": 51,
+          "direction": "NE",
+          "note": "KM Liquids Baltimore. Separate TCN."
+        }
+      ]
+    },
+    {
+      "areaId": "new-jersey",
+      "label": "New Jersey",
+      "note": "New York Harbor and Pennsauken. Buckeye and KM listed as separate TCN rows.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-22-nj-1500",
+          "inArea": true,
+          "miles": 60,
+          "direction": "NE",
+          "note": "Buckeye Bayonne."
+        },
+        {
+          "terminalId": "t-22-nj-1506",
+          "inArea": true,
+          "miles": 55,
+          "direction": "NE",
+          "note": "KM Carteret \u2014 Roosevelt."
+        },
+        {
+          "terminalId": "t-22-nj-1507",
+          "inArea": true,
+          "miles": 55,
+          "direction": "NE",
+          "note": "KM Carteret \u2014 Lafayette. Separate TCN."
+        },
+        {
+          "terminalId": "t-22-nj-1531",
+          "inArea": true,
+          "miles": 45,
+          "direction": "NE",
+          "note": "Buckeye Perth Amboy \u2014 Mauer."
+        },
+        {
+          "terminalId": "t-22-nj-1545",
+          "inArea": true,
+          "miles": 45,
+          "direction": "NE",
+          "note": "Buckeye Perth Amboy \u2014 Smith. Separate TCN."
+        },
+        {
+          "terminalId": "t-22-nj-1550",
+          "inArea": true,
+          "miles": 45,
+          "direction": "NE",
+          "note": "KM Perth Amboy. Separate TCN."
+        },
+        {
+          "terminalId": "t-22-nj-1535",
+          "inArea": true,
+          "miles": 50,
+          "direction": "NE",
+          "note": "Buckeye Port Reading."
+        },
+        {
+          "terminalId": "t-22-nj-1528",
+          "inArea": true,
+          "miles": 55,
+          "direction": "SW",
+          "note": "Buckeye Pennsauken (Delaware River)."
+        }
+      ]
+    },
+    {
+      "areaId": "new-york",
+      "label": "New York",
+      "note": "Harbor KM plus Hudson / Albany Buckeye. No invented Brooklyn Buckeye TCN \u2014 IRS has KM at 125 Apollo St.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-11-ny-1301",
+          "inArea": true,
+          "miles": 28,
+          "direction": "SW",
+          "note": "KM Brooklyn."
+        },
+        {
+          "terminalId": "t-14-ny-1421",
+          "inArea": true,
+          "miles": 55,
+          "direction": "N",
+          "note": "Buckeye Newburgh / Roseton."
+        },
+        {
+          "terminalId": "t-14-ny-1401",
+          "inArea": true,
+          "miles": 128,
+          "direction": "N",
+          "note": "Buckeye Albany."
+        },
+        {
+          "terminalId": "t-14-ny-1415",
+          "inArea": true,
+          "miles": 128,
+          "direction": "N",
+          "note": "Buckeye Rensselaer. Separate TCN."
+        }
+      ]
+    },
+    {
+      "areaId": "new-england",
+      "label": "New England",
+      "note": "No Kinder Morgan TCN in CT / RI / MA / NH / ME on the coastal set used here. Buckeye only.",
+      "footnotes": [],
+      "terminals": [
+        {
+          "terminalId": "t-06-ct-1255",
+          "inArea": true,
+          "miles": 98,
+          "direction": "SW",
+          "note": "Buckeye Groton."
+        },
+        {
+          "terminalId": "t-06-ct-1263",
+          "inArea": true,
+          "miles": 120,
+          "direction": "SW",
+          "note": "Buckeye New Haven \u2014 Forbes Ave."
+        },
+        {
+          "terminalId": "t-06-ct-1265",
+          "inArea": true,
+          "miles": 120,
+          "direction": "SW",
+          "note": "Buckeye New Haven \u2014 East St. Separate TCN."
+        },
+        {
+          "terminalId": "t-06-ct-1274",
+          "inArea": true,
+          "miles": 120,
+          "direction": "SW",
+          "note": "Buckeye New Haven \u2014 Waterfront St. Separate TCN."
+        },
+        {
+          "terminalId": "t-01-me-1004",
+          "inArea": true,
+          "miles": 90,
+          "direction": "NNE",
+          "note": "Buckeye South Portland."
+        },
+        {
+          "terminalId": "t-01-me-1000",
+          "inArea": true,
+          "miles": 155,
+          "direction": "NNE",
+          "note": "Buckeye Bangor. Inland."
+        }
+      ]
+    }
+  ]
+}
