@@ -24,6 +24,7 @@ import {
 } from "./persist";
 import {
   emptyWholesaleStore,
+  normalizeWorksheet,
   type DiffRow,
   type TerminalWorksheet,
   type WholesaleStoreFile,
@@ -144,7 +145,13 @@ export async function resetFromSeed(): Promise<DockStoreFile> {
 }
 
 export async function readWholesaleStore(): Promise<WholesaleStoreFile> {
-  return readWholesaleFile();
+  const file = await readWholesaleFile();
+  return {
+    ...file,
+    worksheets: Object.fromEntries(
+      Object.entries(file.worksheets).map(([id, sheet]) => [id, normalizeWorksheet(sheet)]),
+    ),
+  };
 }
 
 export async function writeWholesaleStore(store: WholesaleStoreFile): Promise<void> {
@@ -157,7 +164,7 @@ export async function saveTerminalWorksheet(
   worksheet: TerminalWorksheet,
 ): Promise<void> {
   const store = await readWholesaleStore();
-  store.worksheets[terminalId] = worksheet;
+  store.worksheets[terminalId] = normalizeWorksheet(worksheet);
   await writeWholesaleStore(store);
 }
 

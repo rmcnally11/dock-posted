@@ -1,0 +1,41 @@
+{
+  "retrievedAt": "2026-08-30",
+  "note": "Highway undyed motor-fuel rates only. Dyed / off-road diesel and local option taxes are not assumed. Marina diesel is not treated as tax-free.",
+  "federal": {
+    "asOf": "2026",
+    "unchangedSince": "1993-10-01",
+    "label": "default · IRS as of 2026",
+    "source": "IRS / EIA. Federal highway excise plus Leaking Underground Storage Tank (LUST) 0.1 ¢/gal. Unchanged since October 1993.",
+    "url": "https://www.eia.gov/tools/faqs/faq.php?id=10&t=5",
+    "also": "https://www.eia.gov/petroleum/marketing/monthly/xls/fueltaxes.xlsx",
+    "gasolineCents": 18.4,
+    "dieselCents": 24.4
+  },
+  "state": {
+    "asOf": "2026-07",
+    "revised": "2026-08",
+    "label": "default · EIA as of July 2026",
+    "source": "EIA Federal and state motor fuel taxes, sheet “July 2026 (revised August 2026)”. Total state column: state excise plus other state taxes and fees of general application. Excludes federal tax and local option taxes.",
+    "url": "https://www.eia.gov/petroleum/marketing/monthly/xls/fueltaxes.xlsx",
+    "page": "https://www.eia.gov/petroleum/gasdiesel/",
+    "rates": {
+      "AL": { "gasolineCents": 31, "dieselCents": 32.75 },
+      "CT": { "gasolineCents": 25, "dieselCents": 49.9 },
+      "FL": { "gasolineCents": 40.096, "dieselCents": 40.971 },
+      "GA": { "gasolineCents": 34.05, "dieselCents": 38.05 },
+      "LA": { "gasolineCents": 20.925, "dieselCents": 20.925 },
+      "ME": { "gasolineCents": 31.452, "dieselCents": 31.9619 },
+      "MD": { "gasolineCents": 46.81, "dieselCents": 47.66 },
+      "MA": { "gasolineCents": 27.5593, "dieselCents": 27.5593 },
+      "MS": { "gasolineCents": 24.4, "dieselCents": 24.4 },
+      "NH": { "gasolineCents": 23.746, "dieselCents": 23.746 },
+      "NJ": { "gasolineCents": 49.15, "dieselCents": 56.15 },
+      "NY": { "gasolineCents": 24.1774, "dieselCents": 22.3774 },
+      "NC": { "gasolineCents": 41.25, "dieselCents": 41.25 },
+      "RI": { "gasolineCents": 41.12, "dieselCents": 41.12 },
+      "SC": { "gasolineCents": 28.75, "dieselCents": 28.75 },
+      "TX": { "gasolineCents": 20, "dieselCents": 20 },
+      "VA": { "gasolineCents": 42.4, "dieselCents": 43.5 }
+    }
+  }
+}

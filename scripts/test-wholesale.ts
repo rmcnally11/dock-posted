@@ -3,18 +3,27 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { wholesalePasswordConfigured } from "../src/lib/wholesale-auth";
+import seed from "../data/docks.seed.json";
+import type { Dock } from "../src/lib/types";
 import {
   WHOLESALE_AREA_ORDER,
   addCents,
+  applyWorksheetDefaults,
+  boardDockDefault,
   computeProductNetback,
   computeWorksheet,
+  defaultTaxForTerminal,
   emptyWorksheet,
   findArea,
   findTerminal,
   formatCents,
   formatDollars,
   loadWholesaleCatalog,
+  loadWholesaleTax,
   parseOptionalCents,
+  rankTakes,
+  resolveTaxForProduct,
+  stripUnchangedDefaults,
   subCents,
   taxCents,
   tcnLabel,
@@ -130,9 +139,158 @@ assert.equal(filled.rackEquivalent, 320);
 assert.equal(filled.terminalEquivalent, 316);
 assert.equal(filled.impliedDiff, 116);
 assert.equal(filled.edgeVsTyped, 108);
-assert.ok(filled.steps.every((step) => step.cents != null));
+assert.ok(filled.steps.filter((step) => step.key !== "taxOther").every((step) => step.cents != null));
 assert.equal(filled.steps[0]?.source, "typed");
 assert.equal(filled.steps[2]?.source, "derived");
+assert.equal(filled.taxMode, "split");
+assert.ok(filled.rungs.some((rung) => rung.key === "taxFederal" && rung.cents === 18.4));
+assert.ok(filled.rungs.some((rung) => rung.key === "taxState" && rung.cents === 21.6));
+assert.equal(filled.fattestTake, "remaining");
+
+const oneLineBook = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 360,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: 55 },
+);
+assert.equal(oneLineBook.taxMode, "oneline");
+assert.equal(oneLineBook.tax, 55);
+assert.ok(oneLineBook.rungs.some((rung) => rung.key === "tax" && rung.label === "TAX" && rung.cents === 55));
+assert.ok(!oneLineBook.rungs.some((rung) => rung.key === "taxFederal"));
+assert.equal(oneLineBook.fattestTake, "remaining");
+
+const taxWins = computeProductNetback(
+  "HO",
+  {
+    nymexScreen: 200,
+    terminalDiff: 5,
+    inboundFreight: 3,
+    postedRack: 220,
+    jobberSell: 230,
+    dockPosted: 280,
+  },
+  { federal: 24.4, state: 20, other: null, oneLine: null },
+);
+assert.equal(taxWins.tax, 44.4);
+assert.ok(taxWins.dockRemaining != null && Math.abs(taxWins.dockRemaining - 5.6) < 1e-6);
+assert.equal(taxWins.fattestTake, "taxFederal");
+
+const table = loadWholesaleTax();
+assert.equal(table.federal.gasolineCents, 18.4);
+assert.equal(table.federal.dieselCents, 24.4);
+assert.match(table.federal.label, /IRS as of 2026/);
+assert.equal(table.state.asOf, "2026-07");
+assert.equal(table.state.rates.TX.gasolineCents, 20);
+assert.equal(table.state.rates.TX.dieselCents, 20);
+
+const txRb = defaultTaxForTerminal("TX", "RB");
+const txHo = defaultTaxForTerminal("TX", "HO");
+assert.equal(txRb.federal.cents, 18.4);
+assert.equal(txHo.federal.cents, 24.4);
+assert.equal(txRb.state.cents, 20);
+assert.equal(txHo.state.cents, 20);
+assert.match(txRb.federal.label, /default · IRS as of 2026/);
+assert.match(txRb.state.label, /EIA as of July 2026/);
+
+const xx = defaultTaxForTerminal("ZZ", "RB");
+assert.equal(xx.federal.cents, 18.4);
+assert.equal(xx.state.cents, null);
+
+const emptySheet = emptyWorksheet();
+const withDefaults = applyWorksheetDefaults(emptySheet, { state: "TX" });
+assert.equal(emptySheet.tax.federal, null);
+assert.equal(withDefaults.rb.tax.federal.cents, 18.4);
+assert.equal(withDefaults.rb.tax.federal.origin, "default");
+assert.equal(withDefaults.ho.tax.federal.cents, 24.4);
+assert.equal(withDefaults.ho.tax.federal.origin, "default");
+assert.equal(withDefaults.rb.input.inboundFreight, null);
+assert.equal(withDefaults.rb.input.nymexScreen, null);
+assert.equal(withDefaults.rb.input.postedRack, null);
+
+const typedTax = emptyWorksheet();
+typedTax.taxRb = { federal: 30, state: 10 };
+const override = applyWorksheetDefaults(typedTax, { state: "TX", saved: typedTax });
+assert.equal(override.rb.tax.federal.cents, 30);
+assert.equal(override.rb.tax.federal.origin, "typed");
+assert.equal(override.rb.tax.state.cents, 10);
+assert.equal(override.ho.tax.federal.cents, 24.4);
+assert.equal(override.ho.tax.federal.origin, "default");
+
+const defaultedBook = computeWorksheet(emptyWorksheet(), { state: "FL" });
+assert.equal(defaultedBook.RB.taxFederal, 18.4);
+assert.equal(defaultedBook.HO.taxFederal, 24.4);
+assert.equal(defaultedBook.RB.taxState, 40.096);
+assert.equal(defaultedBook.HO.taxState, 40.971);
+assert.equal(defaultedBook.RB.inboundRack, null);
+assert.equal(defaultedBook.RB.rungs.find((rung) => rung.key === "freight")?.cents, null);
+assert.ok(defaultedBook.RB.takes.every((take) => take.key !== "freight"));
+assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxFederal"));
+assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxState"));
+
+const blankFreightRank = rankTakes(defaultedBook.RB.rungs);
+assert.ok(!blankFreightRank.some((take) => take.key === "freight"));
+assert.ok(blankFreightRank.some((take) => take.key === "taxFederal" || take.key === "taxState"));
+
+const oneLineResolved = resolveTaxForProduct(
+  { federal: 18.4, state: 20, other: null, oneLine: 62 },
+  "RB",
+  { state: "TX", applyDefaults: true },
+);
+assert.equal(oneLineResolved.mode, "oneline");
+assert.equal(oneLineResolved.strip.cents, 62);
+
+const docks = seed.docks as Dock[];
+const galvRb = boardDockDefault(docks, "galveston-bay", "RB");
+const galvHo = boardDockDefault(docks, "galveston-bay", "HO");
+assert.ok(galvRb);
+assert.equal(galvRb.dockId, "galveston-yacht-marina");
+assert.equal(galvRb.cents, 445);
+assert.match(galvRb.label, /from the board/);
+assert.ok(galvHo);
+assert.equal(galvHo.cents, 528);
+assert.equal(boardDockDefault(docks, "keys", "RB"), null);
+assert.equal(boardDockDefault(docks, "keys", "HO"), null);
+assert.equal(boardDockDefault(docks, "upper-keys", "RB"), null);
+
+const boardApplied = applyWorksheetDefaults(emptyWorksheet(), {
+  state: "TX",
+  areaId: "galveston-bay",
+  docks,
+});
+assert.equal(boardApplied.rb.input.dockPosted, 445);
+assert.equal(boardApplied.rb.origins.dockPosted, "board");
+assert.equal(boardApplied.ho.input.dockPosted, 528);
+
+const typedDock = emptyWorksheet();
+typedDock.rb.dockPosted = 399;
+const dockOverride = applyWorksheetDefaults(typedDock, {
+  state: "TX",
+  areaId: "galveston-bay",
+  docks,
+  saved: typedDock,
+});
+assert.equal(dockOverride.rb.input.dockPosted, 399);
+assert.equal(dockOverride.rb.origins.dockPosted, "typed");
+
+const stripped = stripUnchangedDefaults(
+  {
+    ...emptyWorksheet(),
+    taxRb: { federal: 18.4, state: 20 },
+    taxHo: { federal: 24.4, state: 20 },
+    rb: { ...emptyWorksheet().rb, dockPosted: 445 },
+  },
+  "TX",
+  { areaId: "galveston-bay", docks },
+);
+assert.equal(stripped.taxRb?.federal, null);
+assert.equal(stripped.taxHo?.federal, null);
+assert.equal(stripped.rb.dockPosted, null);
 
 const partial = worksheetFromFields({ nymex_rb: "210" }, "cent");
 assert.equal(partial.rb.nymexScreen, 210);
