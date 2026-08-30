@@ -25,6 +25,8 @@ npm run dev           # http://127.0.0.1:43123
 Then:
 
 - `/` — chart + list
+- `/haul-out` — leftover haul-out seats (Clear Lake / Kemah / Upper Keys). Blank = Call
+- `/haul-out/plan/[id]` — Named Storm Plan one-pager
 - `/report` — post a price (honeypot + 8 reports/hour/IP)
 - `/safe-fuel` — E15 / E10 / E0 at the pump
 
@@ -43,7 +45,7 @@ npm run seed          # clear runtime reports + overlays
 
 Local `npm run dev` writes reports to `data/runtime/`. On Vercel the filesystem is `/tmp` and evaporates.
 
-When a Blob store is connected, reports and dock overlays live in Vercel Blob under `dock-posted/reports.json` and `dock-posted/overlays.json`.
+When a Blob store is connected, reports, dock overlays, and haul-out plans live in Vercel Blob under `dock-posted/reports.json`, `dock-posted/overlays.json`, and `dock-posted/haul-out.json`.
 
 One dashboard click on the existing Dock Posted project:
 
@@ -78,7 +80,7 @@ npm run test:parser
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
-| `DATA_DIR` | no | `data/runtime` or `/tmp/...` | Local file fallback for reports + overlays |
+| `DATA_DIR` | no | `data/runtime` or `/tmp/...` | Local file fallback for reports, overlays, and haul-out |
 | `BLOB_READ_WRITE_TOKEN` | no | unset | Vercel Blob. Injected when a Blob store is connected |
 | `VERCEL` | set by Vercel | — | Local fallback uses `/tmp/dock-posted` if Blob is not configured |
 

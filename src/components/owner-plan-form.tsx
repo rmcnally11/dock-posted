@@ -1,0 +1,75 @@
+import { submitNamedStormPlan } from "@/app/haul-out/actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { NAMED_STORM_PLAN_PRICE } from "@/lib/haul-out";
+
+export function OwnerPlanForm() {
+  return (
+    <form action={submitNamedStormPlan} autoComplete="off" className="space-y-4" data-testid="owner-plan-form">
+      <p className="text-sm text-harbor/70">
+        Named Storm Plan is {NAMED_STORM_PLAN_PRICE}. One page: primary, backup, and a
+        text when NHC names a storm in the cone. No checkout on this page. File the boat.
+      </p>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="ownerName">Name</Label>
+        <Input id="ownerName" name="ownerName" required />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="phone">Phone</Label>
+          <Input id="phone" name="phone" type="tel" required />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" name="email" type="email" required />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="homeDock">Home dock</Label>
+        <Input id="homeDock" name="homeDock" required placeholder="Marina or ramp" />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="length">Length (ft)</Label>
+          <Input id="length" name="length" inputMode="decimal" required />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="beam">Beam (ft)</Label>
+          <Input id="beam" name="beam" inputMode="decimal" required />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="insuranceCarrier">Insurance carrier</Label>
+        <Input id="insuranceCarrier" name="insuranceCarrier" required />
+      </div>
+
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium text-harbor/80">Where the boat sits</legend>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="radio" name="berth" value="in-water" defaultChecked />
+          In-water
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="radio" name="berth" value="trailer" />
+          Trailer
+        </label>
+      </fieldset>
+
+      <div className="hidden" aria-hidden="true">
+        <Label htmlFor="company">Company</Label>
+        <Input id="company" name="website_url" tabIndex={-1} autoComplete="off" />
+      </div>
+
+      <Button type="submit">File the boat</Button>
+      <p className="text-xs text-harbor/50">
+        We do not haul, store, or insure. You call the yard. Blank leftover seats stay Call.
+      </p>
+    </form>
+  );
+}

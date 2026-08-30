@@ -81,3 +81,27 @@ npm run seed:coast
 ```
 
 That script keeps the home-water docks (prices intact), applies Clear Lake / Key Largo lead order, and rewrites the coastal additions from `scripts/build-coast-seed.ts`.
+
+## Haul-out leftover seats
+
+No live leftover counts. Blank = Call. We do not invent remaining seats, indoor or lot holes, max length, or yard phones.
+
+`data/yards.seed.json` lists unverified names on the Clear Lake / Kemah / Upper Keys stretch already in these notes (Marina Bay Harbor, South Shore Harbour, Lakewood Yacht Club, Seabrook Shipyard from the WG “seabrook marina/shipyard” alias, Plantation Yacht Harbor, Mangrove, Tavernier Creek). Name only. Indoor, lot, max length, phone, and remaining seats stay Call until a yard posts them.
+
+Market color, not quotes:
+
+- Clear Lake first-come haul has been about $40/ft. Do not print that as a live quote.
+- Progressive and other carriers have talked 50% haul reimbursement with a cap around $2,000. Insurance color. Not a Dock Posted quote.
+
+Out of scope:
+
+- Wet slips. We do not sell or list leftover wet slips.
+- We are not the yard. We do not haul, store, or insure.
+
+Owner offer: Named Storm Plan $99–$199 a season. Form only. No checkout.
+
+Yard: bounty when a referred boat actually shows. They keep the haul fee. If they will not disclose leftover seats, they stay Call and they get no boats.
+
+Kill: five yards have not said leftover seats out loud.
+
+Owner plans and leftover posts write with price reports: `DATA_DIR` / `data/runtime/haul-out.json`, or Vercel Blob `dock-posted/haul-out.json` when configured. Not a separate `/tmp`-only path.

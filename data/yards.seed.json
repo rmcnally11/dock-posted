@@ -1,0 +1,55 @@
+{
+  "capturedOn": "2026-08-30",
+  "note": "Names only. Indoor, lot, max length, phone, and leftover seats are Call. Nothing here is a live count.",
+  "yards": [
+    {
+      "id": "marina-bay-harbor",
+      "name": "Marina Bay Harbor",
+      "area": "clear-lake",
+      "city": "Clear Lake Shores",
+      "state": "TX"
+    },
+    {
+      "id": "south-shore-harbour",
+      "name": "South Shore Harbour Marina",
+      "area": "clear-lake",
+      "city": "League City",
+      "state": "TX"
+    },
+    {
+      "id": "lakewood-yacht-club",
+      "name": "Lakewood Yacht Club",
+      "area": "kemah",
+      "city": "Seabrook",
+      "state": "TX"
+    },
+    {
+      "id": "seabrook-shipyard",
+      "name": "Seabrook Shipyard",
+      "area": "kemah",
+      "city": "Seabrook",
+      "state": "TX"
+    },
+    {
+      "id": "plantation-yacht-harbor",
+      "name": "Plantation Yacht Harbor Marina",
+      "area": "upper-keys",
+      "city": "Islamorada",
+      "state": "FL"
+    },
+    {
+      "id": "mangrove-marina",
+      "name": "Mangrove Marina",
+      "area": "upper-keys",
+      "city": "Key Largo",
+      "state": "FL"
+    },
+    {
+      "id": "tavernier-creek",
+      "name": "Tavernier Creek Marina",
+      "area": "upper-keys",
+      "city": "Tavernier",
+      "state": "FL"
+    }
+  ]
+}
