@@ -1,0 +1,618 @@
+{
+  "generatedAt": "2026-08-30T00:00:00.000Z",
+  "seedCapturedOn": "2026-08-30",
+  "docks": [
+    {
+      "id": "marina-bay-harbor",
+      "name": "Marina Bay Harbor",
+      "corridor": "galveston-bay",
+      "city": "Clear Lake Shores",
+      "state": "TX",
+      "lat": 29.54435,
+      "lng": -95.02692,
+      "phone": "(281) 549-4772",
+      "hours": null,
+      "website": "https://marinabayharbor.com/",
+      "notes": "Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. Dock sells 87 and 93; 93 is the non-ethanol product. Does not sell diesel. WG comment: call 281-535-2222 to verify.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "no-report",
+          "taxIncluded": null
+        },
+        {
+          "product": "93",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "no-report",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "not-sold",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx"
+    },
+    {
+      "id": "galveston-yacht-marina",
+      "name": "Galveston Yacht Marina",
+      "corridor": "galveston-bay",
+      "city": "Galveston",
+      "state": "TX",
+      "lat": 29.319,
+      "lng": -94.7789,
+      "phone": "(409) 765-3000",
+      "hours": "Daily 9am–7pm (marina site, 30 Aug 2026)",
+      "website": "https://galvestonyachtbasin.com/",
+      "notes": "Marina homepage on 30 Aug 2026 posted Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79. Matches Waterway Guide 08/28/26 (89 $4.450, 90 $5.790 E0, diesel $5.280, tax included).",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "89",
+          "pricePerGallon": 4.45,
+          "ethanol": "E10",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "90",
+          "pricePerGallon": 5.79,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 5.28,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-30",
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://galvestonyachtbasin.com/"
+    },
+    {
+      "id": "blue-marlin-seabrook",
+      "name": "Seabrook Marina / Blue Marlin Fuel Dock",
+      "corridor": "galveston-bay",
+      "city": "Seabrook",
+      "state": "TX",
+      "lat": 29.54967,
+      "lng": -95.02667,
+      "phone": "(281) 291-7497",
+      "hours": "Daily 7am–6pm",
+      "website": "https://seabrookmarina.com/pages/seabrook-marina-fuel-dock",
+      "notes": "Waterway Guide 08/28/26: diesel $5.280, 87 $4.980, 93 $5.990, tax included. 93 is non-ethanol. Marina site confirms gas and diesel; no live pump prices on the marketing page.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": 4.98,
+          "ethanol": "E10",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "93",
+          "pricePerGallon": 5.99,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 5.28,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx"
+    },
+    {
+      "id": "south-shore-harbour",
+      "name": "South Shore Harbour Marina",
+      "corridor": "galveston-bay",
+      "city": "League City",
+      "state": "TX",
+      "lat": 29.5475,
+      "lng": -95.0664,
+      "phone": "(281) 334-0515",
+      "hours": "Daily 8am–6pm (summer hours on marina site)",
+      "website": "https://southshoreharbourmarina.com/fuel-pier/",
+      "notes": "Waterway Guide 08/28/26: diesel $5.000, 89 $5.500, tax included. Non-ethanol: No. Marina fuel-pier page lists ValvTect gas and diesel and hours, no pump prices.",
+      "access": "public",
+      "ethanol": "E10",
+      "quotes": [
+        {
+          "product": "89",
+          "pricePerGallon": 5.5,
+          "ethanol": "E10",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 5.0,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx"
+    },
+    {
+      "id": "houston-yacht-club",
+      "name": "Houston Yacht Club",
+      "corridor": "galveston-bay",
+      "city": "Shoreacres",
+      "state": "TX",
+      "lat": 29.61788,
+      "lng": -95.00065,
+      "phone": "(281) 471-1255",
+      "hours": "8am–5pm Wednesday–Sunday",
+      "website": "https://www.houstonyachtclub.com/",
+      "notes": "Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never. Fuel for members only.",
+      "access": "members",
+      "ethanol": "E10",
+      "quotes": [
+        {
+          "product": "89",
+          "pricePerGallon": null,
+          "ethanol": "E10",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/marina/houston-yacht-club"
+    },
+    {
+      "id": "lakewood-yacht-club",
+      "name": "Lakewood Yacht Club",
+      "corridor": "galveston-bay",
+      "city": "Seabrook",
+      "state": "TX",
+      "lat": 29.55833,
+      "lng": -95.02983,
+      "phone": "(281) 474-2540",
+      "hours": null,
+      "website": "https://www.lakewoodyachtclub.com/",
+      "notes": "Private club. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
+      "access": "private",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": "2025-06-24",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/marina/lakewood-yacht-club"
+    },
+    {
+      "id": "watermans-harbor",
+      "name": "Waterman's Harbor",
+      "corridor": "galveston-bay",
+      "city": "Texas City",
+      "state": "TX",
+      "lat": 29.45648,
+      "lng": -94.97298,
+      "phone": "(281) 339-1416",
+      "hours": null,
+      "website": null,
+      "notes": "On Dickinson Bayou. Waterway Guide lists gas as Call, non-ethanol No, last fuel update Never. No diesel line on that listing.",
+      "access": "public",
+      "ethanol": "E10",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "E10",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/marina/watermans-harbor"
+    },
+    {
+      "id": "key-largo-harbor",
+      "name": "Key Largo Harbor Marina",
+      "corridor": "upper-keys",
+      "city": "Key Largo",
+      "state": "FL",
+      "lat": 25.09633,
+      "lng": -80.431,
+      "phone": "(305) 451-0045",
+      "hours": null,
+      "website": "https://keylargoharbormarina.com/",
+      "notes": "Waterway Guide service listing: diesel Call, 87–93 Call for pricing, non-ethanol Yes. Comments: fuel dock open, not posting, call marina. Last fuel update 08/26/2022.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "91",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": "2022-08-26",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/service/key-largo-harbor"
+    },
+    {
+      "id": "pilot-house-marina",
+      "name": "Pilot House Marina & Restaurant",
+      "corridor": "upper-keys",
+      "city": "Key Largo",
+      "state": "FL",
+      "lat": 25.0875,
+      "lng": -80.44117,
+      "phone": "(305) 747-4359",
+      "hours": "Daily 7am–5pm (marina site)",
+      "website": "https://www.pilothousemarina.com/marina/",
+      "notes": "Waterway Guide Florida Keys report 08/25/26: diesel $6.050, 90 $6.050, tax included, non-ethanol Yes. Marina site lists Valvtect diesel and Rec 90 non-ethanol; no live pump prices on the marketing page.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": 6.05,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 6.05,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-25",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+    },
+    {
+      "id": "mangrove-marina",
+      "name": "Mangrove Marina",
+      "corridor": "upper-keys",
+      "city": "Tavernier",
+      "state": "FL",
+      "lat": 25.0117,
+      "lng": -80.5153,
+      "phone": "(305) 852-8380",
+      "hours": "8am–5pm",
+      "website": "https://www.mangrovemarina.com/",
+      "notes": "Waterway Guide Florida Keys report 08/28/26: diesel $6.180, 90 $6.270, tax included, non-ethanol Yes.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": 6.27,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 6.18,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+    },
+    {
+      "id": "plantation-yacht-harbor",
+      "name": "Plantation Yacht Harbor Marina",
+      "corridor": "upper-keys",
+      "city": "Islamorada",
+      "state": "FL",
+      "lat": 24.9733,
+      "lng": -80.5667,
+      "phone": "(305) 852-2381",
+      "hours": "Open 8am–6pm daily; fuel and pump-out until 5pm",
+      "website": null,
+      "notes": "Town of Islamorada marina. Waterway Guide 08/24/26: diesel $6.000, 90 $5.659, tax included, non-ethanol Yes.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": 5.659,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 6.0,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-24",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+    },
+    {
+      "id": "islamarina",
+      "name": "IslaMarina",
+      "corridor": "upper-keys",
+      "city": "Islamorada",
+      "state": "FL",
+      "lat": 24.9578,
+      "lng": -80.5889,
+      "phone": "(305) 664-3636",
+      "hours": "6am–6pm",
+      "website": "https://islamarina.net/",
+      "notes": "Waterway Guide 08/28/26: diesel $5.450, 90 $5.590, tax included, non-ethanol Yes.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": 5.59,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 5.45,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+    },
+    {
+      "id": "snake-creek-marina",
+      "name": "Snake Creek Marina (Islamorada Yacht Club)",
+      "corridor": "upper-keys",
+      "city": "Islamorada",
+      "state": "FL",
+      "lat": 24.9536,
+      "lng": -80.5872,
+      "phone": "(305) 396-7724",
+      "hours": "Daily 9am–5pm",
+      "website": null,
+      "notes": "Listed on Waterway Guide as The Marina at Islamorada Yacht Club, now Snake Creek Marina. 08/28/26: does not sell diesel; 90 No Report This Week; non-ethanol Yes.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "no-report",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "not-sold",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+    },
+    {
+      "id": "three-waters-marina",
+      "name": "Three Waters Resort and Marina",
+      "corridor": "upper-keys",
+      "city": "Islamorada",
+      "state": "FL",
+      "lat": 24.9444,
+      "lng": -80.6078,
+      "phone": "(305) 433-9942",
+      "hours": "6am–5pm",
+      "website": null,
+      "notes": "Waterway Guide 08/28/26: diesel $6.250, 90 $5.500, tax included, non-ethanol Yes.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": 5.5,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 6.25,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+    },
+    {
+      "id": "worldwide-sportsman",
+      "name": "World Wide Sportsman / Bayside Marina",
+      "corridor": "upper-keys",
+      "city": "Islamorada",
+      "state": "FL",
+      "lat": 24.9228,
+      "lng": -80.6281,
+      "phone": "(305) 664-3398",
+      "hours": "6am–4pm; free pump-out 6am–5pm",
+      "website": null,
+      "notes": "Waterway Guide 08/28/26: diesel $4.840 tax not included (7.50%), 90 $5.170 tax included, non-ethanol Yes.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": 5.17,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 4.84,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": false
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+    },
+    {
+      "id": "bud-n-marys",
+      "name": "Bud'n Mary's Fishing Marina",
+      "corridor": "upper-keys",
+      "city": "Islamorada",
+      "state": "FL",
+      "lat": 24.9075,
+      "lng": -80.6369,
+      "phone": "(305) 664-2461",
+      "hours": "7am–7pm",
+      "website": "https://www.budnmarys.com/",
+      "notes": "Waterway Guide 08/28/26: diesel $6.290 (dyed diesel noted), 90 $6.190, tax included, non-ethanol Yes.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": 6.19,
+          "ethanol": "E0",
+          "status": "posted",
+          "taxIncluded": true
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 6.29,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": true
+        }
+      ],
+      "lastVerifiedAt": "2026-08-28",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+    },
+    {
+      "id": "tavernier-creek",
+      "name": "Tavernier Creek Marina",
+      "corridor": "upper-keys",
+      "city": "Tavernier",
+      "state": "FL",
+      "lat": 25.00333,
+      "lng": -80.53033,
+      "phone": "(305) 852-5854",
+      "hours": "8am–5pm, seven days",
+      "website": "http://www.taverniercreekmarina.com",
+      "notes": "Waterway Guide marina listing: gas Call, non-ethanol No, last fuel update Never.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/marina/tavernier-creek-marina"
+    },
+    {
+      "id": "garden-cove-marina",
+      "name": "Garden Cove Marina",
+      "corridor": "upper-keys",
+      "city": "Key Largo",
+      "state": "FL",
+      "lat": 25.17062,
+      "lng": -80.37142,
+      "phone": "(305) 451-4694",
+      "hours": "Daily 8am–5pm",
+      "website": "https://www.buzzardsroostkeylargo.com/garden-cove-marina/",
+      "notes": "Waterway Guide marina listing: 90 Call for pricing, non-ethanol No. Comments say call marina; last fuel update 06/29/23. Marina site confirms gas; no pump price.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": "2023-06-29",
+      "lastVerifiedSource": "Waterway Guide",
+      "sourceUrl": "https://www.waterwayguide.com/marina/garden-cove-marina"
+    }
+  ]
+}
