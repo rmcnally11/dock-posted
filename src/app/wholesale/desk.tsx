@@ -12,10 +12,12 @@ import {
   netbackHasFigures,
   tcnLabel,
   type AreaTerminalRef,
+  type Cents,
   type DiffRow,
   type InputUnit,
   type PreparedWorksheet,
   type ProductNetback,
+  type ProductTaxSlice,
   type TerminalWorksheet,
   type WaterfallRung,
   type WholesaleArea,
@@ -224,12 +226,14 @@ export function Worksheet({
     ho: sheet.ho,
     tax: sheet.tax,
     taxRb: {
-      federal: sheet.taxRb?.federal ?? sheet.tax.federal ?? prepared?.rb.tax.federal.cents ?? null,
-      state: sheet.taxRb?.state ?? sheet.tax.state ?? prepared?.rb.tax.state.cents ?? null,
+      federal: displayTaxBox(sheet.taxRb, "federal", sheet.tax.federal, prepared?.rb.tax.federal.cents ?? null),
+      state: displayTaxBox(sheet.taxRb, "state", sheet.tax.state, prepared?.rb.tax.state.cents ?? null),
+      ...(sheet.taxRb?.touched ? { touched: true } : {}),
     },
     taxHo: {
-      federal: sheet.taxHo?.federal ?? sheet.tax.federal ?? prepared?.ho.tax.federal.cents ?? null,
-      state: sheet.taxHo?.state ?? sheet.tax.state ?? prepared?.ho.tax.state.cents ?? null,
+      federal: displayTaxBox(sheet.taxHo, "federal", sheet.tax.federal, prepared?.ho.tax.federal.cents ?? null),
+      state: displayTaxBox(sheet.taxHo, "state", sheet.tax.state, prepared?.ho.tax.state.cents ?? null),
+      ...(sheet.taxHo?.touched ? { touched: true } : {}),
     },
   };
   const formKey = JSON.stringify({
@@ -320,6 +324,17 @@ export function Worksheet({
 function yahooHint(cents: number | null, unit: InputUnit): string {
   if (cents == null) return "";
   return `${displayInputValue(cents, unit)} yahoo`;
+}
+
+function displayTaxBox(
+  slice: ProductTaxSlice | undefined,
+  part: "federal" | "state",
+  shared: Cents,
+  prepared: Cents,
+): Cents {
+  const value = slice?.[part] ?? null;
+  if (slice?.touched && value == null) return null;
+  return value ?? shared ?? prepared ?? null;
 }
 
 function WorksheetFields({
@@ -437,9 +452,10 @@ function WorksheetFields({
       </div>
       <p className="px-3 pb-3 text-xs text-black/45">
         {MARINE_TAX_NOTE} Published federal and state defaults come from the IRS / EIA table on this
-        desk. A missing federal or state leaves DAP, should-be, dock ex-tax, and remaining as —, never
-        $0.00. One tax line overrides the split. Fair hose and invoice stay blank until typed. Fat
-        take is invoice versus posted rack, not posted pump.
+        desk on first load only. Clearing federal, state, or the one-line tax leaves that product
+        incomplete — DAP, should-be, dock ex-tax, and remaining stay —, never $0.00, and the published
+        default is not written back in. One tax line overrides the split. Fair hose and invoice stay
+        blank until typed. Fat take is invoice versus posted rack, not posted pump.
       </p>
     </div>
   );

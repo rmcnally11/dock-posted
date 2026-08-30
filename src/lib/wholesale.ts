@@ -102,11 +102,15 @@ export interface TaxInputs {
   state: Cents;
   other: Cents;
   oneLine: Cents;
+  /** True after the one-line box was submitted empty following a typed value. Stays until a number is typed again. */
+  oneLineCleared?: boolean;
 }
 
 export interface ProductTaxSlice {
   federal: Cents;
   state: Cents;
+  /** Set once the override boxes have been submitted. Null then means cleared, not "use the IRS/EIA default". */
+  touched?: boolean;
 }
 
 export interface TerminalWorksheet {
@@ -284,9 +288,22 @@ export function normalizeWorksheet(sheet: TerminalWorksheet | undefined | null):
   return {
     rb: { ...emptyProduct(), ...base.rb },
     ho: { ...emptyProduct(), ...base.ho },
-    tax: { ...emptyTax(), ...base.tax },
-    taxRb: { federal: base.taxRb?.federal ?? null, state: base.taxRb?.state ?? null },
-    taxHo: { federal: base.taxHo?.federal ?? null, state: base.taxHo?.state ?? null },
+    tax: (() => {
+      const tax = { ...emptyTax(), ...base.tax };
+      if (tax.oneLine != null || !tax.oneLineCleared) delete tax.oneLineCleared;
+      else tax.oneLineCleared = true;
+      return tax;
+    })(),
+    taxRb: normalizeTaxSlice(base.taxRb),
+    taxHo: normalizeTaxSlice(base.taxHo),
+  };
+}
+
+export function normalizeTaxSlice(slice: ProductTaxSlice | undefined | null): ProductTaxSlice {
+  return {
+    federal: slice?.federal ?? null,
+    state: slice?.state ?? null,
+    ...(slice?.touched ? { touched: true } : {}),
   };
 }
 
@@ -314,8 +331,10 @@ export function worksheetHasInputs(sheet: TerminalWorksheet): boolean {
     next.tax.oneLine != null ||
     next.taxRb?.federal != null ||
     next.taxRb?.state != null ||
+    next.taxRb?.touched === true ||
     next.taxHo?.federal != null ||
-    next.taxHo?.state != null
+    next.taxHo?.state != null ||
+    next.taxHo?.touched === true
   );
 }
 
@@ -738,9 +757,15 @@ function productTaxFromFields(
   unit: InputUnit,
 ): ProductTaxSlice {
   const p = product.toLowerCase();
+  const federalKey = `tax_federal_${p}`;
+  const stateKey = `tax_state_${p}`;
+  const federalAlt = `tax_federal${p}`;
+  const stateAlt = `tax_state${p}`;
+  const submitted = [federalKey, stateKey, federalAlt, stateAlt].some((key) => fields[key] !== undefined);
   return {
-    federal: readOptionalCents(fields[`tax_federal_${p}`] ?? fields[`tax_federal${p}`], unit),
-    state: readOptionalCents(fields[`tax_state_${p}`] ?? fields[`tax_state${p}`], unit),
+    federal: readOptionalCents(fields[federalKey] ?? fields[federalAlt], unit),
+    state: readOptionalCents(fields[stateKey] ?? fields[stateAlt], unit),
+    ...(submitted ? { touched: true } : {}),
   };
 }
 
@@ -865,13 +890,14 @@ function coalesceTaxPart(
   typed: Cents,
   saved: Cents,
   fallback: DefaultTaxPart | undefined,
+  allowDefault: boolean,
 ): LabeledCents {
   if (typed != null && saved != null) return labeled(typed, "typed", "typed");
   if (typed != null && fallback && sameCents(typed, fallback.cents)) {
     return labeled(typed, "default", fallback.label);
   }
   if (typed != null) return labeled(typed, "typed", "typed");
-  if (fallback?.cents != null) return labeled(fallback.cents, "default", fallback.label);
+  if (allowDefault && fallback?.cents != null) return labeled(fallback.cents, "default", fallback.label);
   return labeled(null, null, null);
 }
 
@@ -895,8 +921,14 @@ export function resolveTaxForProduct(
   const typedState = options.slice?.state ?? tax.state;
   const savedFederal = options.savedSlice?.federal ?? options.saved?.federal ?? null;
   const savedState = options.savedSlice?.state ?? options.saved?.state ?? null;
-  const federal = coalesceTaxPart(typedFederal, savedFederal, defaults?.federal);
-  const state = coalesceTaxPart(typedState, savedState, defaults?.state);
+  const touched = options.slice?.touched === true;
+  const oneLineCleared = tax.oneLine == null && oneLine.cents == null && tax.oneLineCleared === true;
+  // Published IRS/EIA figures fill an untouched strip on first load only.
+  // A submitted empty box, a leftover sibling, or a cleared one-line stays blank.
+  const stripPresent = typedFederal != null || typedState != null;
+  const allowDefault = Boolean(defaults) && !touched && !stripPresent && !oneLineCleared;
+  const federal = coalesceTaxPart(typedFederal, savedFederal, defaults?.federal, allowDefault);
+  const state = coalesceTaxPart(typedState, savedState, defaults?.state, allowDefault);
   const other = labeled(tax.other, tax.other == null ? null : "typed", tax.other == null ? null : "typed");
 
   if (oneLine.cents != null) {
@@ -911,8 +943,21 @@ export function resolveTaxForProduct(
     };
   }
 
+  if (oneLineCleared) {
+    return {
+      federal,
+      state,
+      other,
+      oneLine,
+      strip: labeled(null, "incomplete", "incomplete"),
+      mode: "oneline",
+      incomplete: true,
+    };
+  }
+
   const anySplit = federal.cents != null || state.cents != null || other.cents != null;
-  const incomplete = anySplit && (federal.cents == null || state.cents == null);
+  const incomplete =
+    (federal.cents == null || state.cents == null) && (touched || anySplit);
   const stripCents = incomplete || !anySplit ? null : (federal.cents as number) + (state.cents as number) + (other.cents ?? 0);
   const stripOrigin =
     stripCents == null
@@ -1071,20 +1116,57 @@ export function stripUnchangedDefaults(
       ...normalized.ho,
       dockPosted: stripPart(normalized.ho.dockPosted, hoBoard?.cents ?? null),
     },
-    taxRb: {
-      federal: stripPart(normalized.taxRb?.federal ?? null, rbDefault.federal.cents),
-      state: stripPart(normalized.taxRb?.state ?? null, rbDefault.state.cents),
-    },
-    taxHo: {
-      federal: stripPart(normalized.taxHo?.federal ?? null, hoDefault.federal.cents),
-      state: stripPart(normalized.taxHo?.state ?? null, hoDefault.state.cents),
-    },
+    taxRb: stripTaxSlice(normalized.taxRb, rbDefault),
+    taxHo: stripTaxSlice(normalized.taxHo, hoDefault),
     tax: {
       ...normalized.tax,
       federal: stripPart(normalized.tax.federal, rbDefault.federal.cents),
       state: stripPart(normalized.tax.state, rbDefault.state.cents),
+      ...(normalized.tax.oneLineCleared && normalized.tax.oneLine == null
+        ? { oneLineCleared: true }
+        : {}),
     },
   };
+}
+
+function stripTaxSlice(slice: ProductTaxSlice | undefined, defaults: DefaultTaxForTerminal): ProductTaxSlice {
+  const federal = slice?.federal ?? null;
+  const state = slice?.state ?? null;
+  const touched = slice?.touched === true;
+  if (federal == null && state == null) {
+    return { federal: null, state: null, ...(touched ? { touched: true } : {}) };
+  }
+  if (federal == null || state == null) {
+    // Keep the leftover number so a cleared sibling cannot be mistaken for "never touched".
+    return { federal, state, touched: true };
+  }
+  const strippedFederal = sameCents(federal, defaults.federal.cents) ? null : federal;
+  const strippedState = sameCents(state, defaults.state.cents) ? null : state;
+  if (strippedFederal == null && strippedState == null) {
+    return { federal: null, state: null };
+  }
+  return {
+    federal: strippedFederal,
+    state: strippedState,
+    ...(touched ? { touched: true } : {}),
+  };
+}
+
+export function rememberClearedTax(
+  next: TerminalWorksheet,
+  previous: TerminalWorksheet | undefined | null,
+): TerminalWorksheet {
+  const sheet = normalizeWorksheet(next);
+  if (sheet.tax.oneLine != null) {
+    const tax = { ...sheet.tax };
+    delete tax.oneLineCleared;
+    return { ...sheet, tax };
+  }
+  const prev = previous ? normalizeWorksheet(previous) : null;
+  if (prev?.tax.oneLine != null || prev?.tax.oneLineCleared) {
+    return { ...sheet, tax: { ...sheet.tax, oneLineCleared: true } };
+  }
+  return sheet;
 }
 
 function rung(

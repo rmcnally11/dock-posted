@@ -26,6 +26,7 @@ import {
   parseAreaId,
   parseOptionalCents,
   parseUnit,
+  rememberClearedTax,
   stripUnchangedDefaults,
   worksheetFromFields,
   type TerminalWorksheet,
@@ -60,6 +61,23 @@ function fieldsFromForm(formData: FormData): Record<string, string> {
     fields[key] = String(value);
   }
   return fields;
+}
+
+async function previousSheetForTerminal(terminalId: string): Promise<TerminalWorksheet | null> {
+  const jar = await cookies();
+  const draft = parseWholesaleDraft(jar.get(WHOLESALE_DRAFT_COOKIE)?.value);
+  if (draft && draft.terminalId === terminalId) return draft.sheet;
+  const store = await readWholesaleStore();
+  return store.worksheets[terminalId] ?? null;
+}
+
+async function sheetFromComputeForm(
+  formData: FormData,
+  terminalId: string,
+  unit: ReturnType<typeof parseUnit>,
+): Promise<TerminalWorksheet> {
+  const submitted = worksheetFromFields(fieldsFromForm(formData), unit);
+  return rememberClearedTax(submitted, await previousSheetForTerminal(terminalId));
 }
 
 async function persistDraft(terminalId: string, sheet: TerminalWorksheet): Promise<void> {
@@ -102,7 +120,7 @@ export async function computeWholesaleWorksheet(formData: FormData): Promise<voi
   const unit = parseUnit(String(formData.get("unit") ?? ""));
   if (!terminal) fail(`/wholesale?area=${area}`, "Pick a terminal.");
   try {
-    const sheet = worksheetFromFields(fieldsFromForm(formData), unit);
+    const sheet = await sheetFromComputeForm(formData, terminal, unit);
     const row = findTerminal(terminal);
     const docks = await readDocks();
     const persisted = row
@@ -125,7 +143,7 @@ export async function saveWholesaleWorksheet(formData: FormData): Promise<void> 
   if (!terminal) fail(`/wholesale?area=${area}`, "Pick a terminal.");
 
   try {
-    const sheet = worksheetFromFields(fieldsFromForm(formData), unit);
+    const sheet = await sheetFromComputeForm(formData, terminal, unit);
     const row = findTerminal(terminal);
     const docks = await readDocks();
     const persisted = row
