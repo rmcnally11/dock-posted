@@ -41,7 +41,7 @@ export default async function Home({
           </p>
           <h1
             data-testid="hero-headline"
-            className="mt-1 font-heading text-3xl text-[color:var(--cream)] md:text-4xl"
+            className="mt-1 font-heading text-4xl text-[color:var(--cream)] md:text-5xl"
           >
             Sabine to Key West
           </h1>

@@ -8,7 +8,7 @@ const TILE = 256;
 
 function pinColor(dock: Dock): string {
   const trust = pinTrust(dock);
-  if (trust === "verified") return "#1f8a5b";
+  if (trust === "verified") return "#1d7ec4";
   if (trust === "last-seen") return "#e3b01c";
   return "#e23b3b";
 }
@@ -30,7 +30,7 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
 
   return (
     <div
-      className="absolute inset-0 overflow-hidden bg-[#e8f2f8]"
+      className="absolute inset-0 overflow-hidden rounded-2xl bg-[#e8f2f8] ring-1 ring-[color:var(--line)]"
       data-testid="fuel-map"
     >
       <div

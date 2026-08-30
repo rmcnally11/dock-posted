@@ -53,20 +53,15 @@ export function DockCard({
   return (
     <article
       className={cn(
-        "w-full overflow-hidden rounded-2xl border text-left",
-        selected
-          ? "border-[color:var(--sea)] bg-[color:var(--panel)] ring-2 ring-[color:var(--sea)]/30"
-          : "border-[color:var(--line)] bg-white",
-        trust === "verified" && !selected && "border-l-[3px] border-l-fresh",
-        trust === "last-seen" && !selected && "border-l-[3px] border-l-gold",
-        trust === "unverified" && !selected && "border-l-[3px] border-l-copper",
+        "w-full overflow-hidden rounded-3xl border border-[color:var(--line)] bg-[color:var(--panel)] text-left",
+        selected && "border-[color:var(--sea)] ring-2 ring-[color:var(--sea)]/30",
       )}
     >
       <a
         href={href}
         aria-current={selected ? "true" : undefined}
         data-testid={`dock-card-${dock.id}`}
-        className="block p-3.5 hover:bg-[color:var(--panel)]/60"
+        className="block p-5 hover:bg-white/40"
       >
         <div className="flex items-start justify-between gap-3">
           <div>

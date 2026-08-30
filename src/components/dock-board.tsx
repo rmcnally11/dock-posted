@@ -182,7 +182,7 @@ function HomePills({ query }: { query: BoardQuery }) {
             "pointer-events-auto rounded-full border px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] shadow-sm",
             query.corridor === item.id && !query.state && !query.region
               ? "border-[color:var(--sea)] bg-[color:var(--sea)]/20 text-[color:var(--cream)]"
-              : "border-[color:var(--line)] bg-[color:var(--ink)]/95 text-[color:var(--cream)]",
+              : "border-[color:var(--line)] bg-[color:var(--ink)]/90 text-[color:var(--cream)]",
           )}
         >
           {item.short}
