@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
 import { boardHref, type BoardQuery } from "@/lib/board-query";
@@ -39,12 +38,12 @@ export function DockBoard({
                   : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"} · prices go stale after 7 days`}
               </p>
             </div>
-            <Link
+            <a
               href={selected ? `/report?dock=${selected.id}` : "/report"}
               className="inline-flex h-8 items-center rounded-md bg-wake px-3 text-xs font-medium text-foam hover:bg-wake-deep"
             >
               Report
-            </Link>
+            </a>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <CorridorSwitch query={query} />
@@ -88,7 +87,7 @@ function CorridorSwitch({ query }: { query: BoardQuery }) {
   return (
     <>
       {(Object.keys(CORRIDORS) as CorridorId[]).map((id) => (
-        <Link
+        <a
           key={id}
           href={boardHref({ ...query, corridor: id, dock: null })}
           className={cn(
@@ -97,7 +96,7 @@ function CorridorSwitch({ query }: { query: BoardQuery }) {
           )}
         >
           {CORRIDORS[id].short}
-        </Link>
+        </a>
       ))}
     </>
   );
@@ -113,7 +112,7 @@ function FilterChip({
   children: string;
 }) {
   return (
-    <Link
+    <a
       href={href}
       aria-pressed={active}
       className={cn(
@@ -124,7 +123,7 @@ function FilterChip({
       )}
     >
       {children}
-    </Link>
+    </a>
   );
 }
 

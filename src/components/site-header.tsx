@@ -1,10 +1,8 @@
-import Link from "next/link";
-
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-harbor/95 text-foam backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <Link href="/" className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-md bg-wake text-xs font-bold tracking-tight">
             DP
           </span>
@@ -14,20 +12,17 @@ export function SiteHeader() {
               Gulf + Keys fuel
             </span>
           </span>
-        </Link>
+        </a>
         <nav className="flex items-center gap-1 text-sm">
-          <Link className="rounded-md px-3 py-2 text-foam/80 hover:bg-white/5 hover:text-foam" href="/">
+          <a className="rounded-md px-3 py-2 text-foam/80 hover:bg-white/5 hover:text-foam" href="/">
             Map
-          </Link>
-          <Link className="rounded-md px-3 py-2 text-foam/80 hover:bg-white/5 hover:text-foam" href="/report">
+          </a>
+          <a className="rounded-md px-3 py-2 text-foam/80 hover:bg-white/5 hover:text-foam" href="/report">
             Report
-          </Link>
-          <Link
-            className="rounded-md px-3 py-2 text-foam/80 hover:bg-white/5 hover:text-foam"
-            href="/safe-fuel"
-          >
+          </a>
+          <a className="rounded-md px-3 py-2 text-foam/80 hover:bg-white/5 hover:text-foam" href="/safe-fuel">
             Safe fuel
-          </Link>
+          </a>
         </nav>
       </div>
     </header>

@@ -52,29 +52,3 @@ body {
   outline: 3px solid rgb(26 107 107 / 0.45);
 }
 
-.maplibregl-popup-content {
-  font-size: 12px;
-  line-height: 1.35;
-  padding: 8px 10px;
-  border-radius: 8px;
-  color: #0b1f2a;
-}
-
-.leaflet-container {
-  width: 100%;
-  height: 100%;
-  background: var(--sand);
-  font-family: inherit;
-}
-
-.dock-pin-wrap {
-  background: transparent;
-  border: 0;
-}
-
-.leaflet-popup-content {
-  font-size: 12px;
-  line-height: 1.35;
-  margin: 8px 10px;
-  color: #0b1f2a;
-}

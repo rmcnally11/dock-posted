@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ReportForm } from "@/components/report-form";
 import { readDocks } from "@/lib/store";
 
@@ -7,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function ReportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ dock?: string }>;
+  searchParams: Promise<{ dock?: string; error?: string }>;
 }) {
   const docks = await readDocks();
   const params = await searchParams;
@@ -24,6 +23,9 @@ export default async function ReportPage({
         you saw.
       </p>
       <div className="mt-8 rounded-2xl border border-harbor/10 bg-white p-5 shadow-sm">
+        {params.error ? (
+          <p className="mb-4 rounded-md bg-rust/10 px-3 py-2 text-sm text-rust">{params.error}</p>
+        ) : null}
         {docks.length === 0 ? (
           <p className="text-sm text-harbor/70">
             No marinas loaded. Run <code>npm run seed</code> and reload.
@@ -34,9 +36,9 @@ export default async function ReportPage({
       </div>
       <p className="mt-6 text-sm text-harbor/55">
         Need the ethanol rules first?{" "}
-        <Link className="text-wake underline-offset-2 hover:underline" href="/safe-fuel">
+        <a className="text-wake underline-offset-2 hover:underline" href="/safe-fuel">
           Read safe fuel
-        </Link>
+        </a>
         .
       </p>
     </main>

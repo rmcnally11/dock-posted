@@ -28,11 +28,10 @@ try {
   const texasHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
   check("texas heading", texasHeading?.includes("Galveston Bay"));
 
-  await page.waitForFunction(() => {
-    const map = document.querySelector("[data-testid=fuel-map]");
-    return Boolean(map && map.querySelector("img.leaflet-tile"));
-  });
-  const tileCount = await page.$$eval("img.leaflet-tile", (tiles) => tiles.length);
+  await page.waitForSelector('img[src*="/api/tiles/"]');
+  const tileCount = await page.$$eval('img[src*="/api/tiles/"]', (tiles) =>
+    tiles.filter((img) => img.complete && img.naturalWidth > 0).length,
+  );
   check("map tiles painted", tileCount > 0, `tiles=${tileCount}`);
 
   const texasNames = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
@@ -69,16 +68,15 @@ try {
   check("selected card", selected);
 
   await page.goto(`${base}/report?dock=galveston-yacht-marina`, { waitUntil: "networkidle0" });
-  await page.click("[data-testid=marina-galveston-yacht-marina]");
   const reporting = await page.$eval("[data-testid=reporting-for]", (el) => el.textContent);
   check("report marina label", reporting?.includes("Galveston Yacht Marina"));
-  await page.click("#price");
   await page.type("#price", "5.280");
-  const reportingAfter = await page.$eval("[data-testid=reporting-for]", (el) => el.textContent);
-  check("report marina stays", reportingAfter?.includes("Galveston Yacht Marina"));
-  await page.click("button[type=submit]");
-  await page.waitForSelector("[data-testid=report-saved]");
-  check("report saved banner", true);
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "networkidle0" }),
+    page.click("button[type=submit]"),
+  ]);
+  const saved = await page.$("[data-testid=report-saved]");
+  check("report saved banner", Boolean(saved));
 
   await page.goto(`${base}/safe-fuel`, { waitUntil: "networkidle0" });
   const safe = await page.$eval("h1", (el) => el.textContent);

@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function SafeFuelPage() {
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10">
@@ -117,9 +115,9 @@ export default function SafeFuelPage() {
       </section>
 
       <p className="mt-8 text-sm">
-        <Link className="text-wake underline-offset-2 hover:underline" href="/">
+        <a className="text-wake underline-offset-2 hover:underline" href="/">
           Back to the map
-        </Link>
+        </a>
       </p>
     </main>
   );

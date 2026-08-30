@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { ethanolCopy, formatDate, formatQuote, sourceLabel } from "@/lib/format";
 import { displayDiesel, displayGas, freshness } from "@/lib/freshness";
@@ -19,7 +18,7 @@ export function DockCard({
   const state = freshness(dock);
 
   return (
-    <Link
+    <a
       href={href}
       aria-current={selected ? "true" : undefined}
       data-testid={`dock-card-${dock.id}`}
@@ -67,6 +66,6 @@ export function DockCard({
           Call ahead: <span className="tabular-nums">{dock.phone}</span>
         </p>
       ) : null}
-    </Link>
+    </a>
   );
 }
