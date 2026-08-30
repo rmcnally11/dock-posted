@@ -105,3 +105,27 @@ Yard: bounty when a referred boat actually shows. They keep the haul fee. If the
 Kill: five yards have not said leftover seats out loud.
 
 Owner plans and leftover posts write with price reports: `DATA_DIR` / `data/runtime/haul-out.json`, or Vercel Blob `dock-posted/haul-out.json` when configured. Not a separate `/tmp`-only path.
+
+## Wholesale terminals (internal desk only)
+
+Captured 30 Aug 2026. Mapping lives in `data/wholesale-terminals.json`. This is not shown on the public board.
+
+Source of truth, in order:
+
+1. IRS Terminal Control Number / Terminal Locations Directory, file title **ACTIVE FUEL TERMINALS @6/30/2026**. Page: https://www.irs.gov/businesses/small-businesses-self-employed/terminal-control-number-tcn-terminal-locations-directory — XLSX https://www.irs.gov/pub/irs-sbse/tcn-db.xlsx retrieved 30 Aug 2026.
+2. Buckeye Pipe Line Company, L.P. Section 7.1 Table I Marine Terminal Specs (1 Oct 2025): https://www.buckeye.com/wp-content/uploads/2025/09/Section-7.1-Table-I-Marine-Terminal-Specs-100125.pdf — lists Albany NY, Baltimore MD, Bayonne NJ, Charleston SC, Chesapeake VA, Corpus Christi TX, Ft Lauderdale FL, Groton CT, Jacksonville FL, Marrero LA, New Haven CT, Pennsauken NJ, Perth Amboy NJ, Port Reading NJ, Rensselaer NY, Roseton NY, S. Portland ME, Tampa North FL, Tampa South FL, and specifies marine receipt of RBOB and ULSD.
+3. Kinder Morgan Products page: https://www.kindermorgan.com/Operations/Products/Index — KMLT Tampa at 2101 GATX Drive (gasoline/gasohol, diesel, jet, ethanol); CFPL Taft / Orlando; Southeast terminals. Pasadena sheet (June 2025): https://www.kindermorgan.com/getmedia/0086655d-8bad-4607-9307-c3b81e81ec3b/(GL)-Pasadena-(2025-06).pdf — 1420 / N. Witter, refined products and distillates. Galena Park sheet (June 2025): https://www.kindermorgan.com/getmedia/f06a0876-d052-4ed6-8309-6112e45ebee0/(GL)-Galena-Park-(2025-06).pdf — 906 Clinton Drive.
+
+Rules used:
+
+- Every verified `tcnIrs` is copied from the IRS XLSX. No minted 4-digit. No neighbor-hub copy.
+- If Buckeye lists a marine terminal but the IRS file has no matching operator+city row, `tcnIrs` is blank and `tcnStatus` is unverified (Marrero, LA).
+- Keys / Key Largo: no pipeline terminal. Nearest row is Buckeye Fort Lauderdale `T-65-FL-2156` (~80 mi N of Key Largo). No invented Key Largo TCN. No KM TCN at Port Everglades in the 6/30/2026 IRS file.
+- Houston / Clear Lake: KM only (`T-76-TX-2809`, `T-76-TX-2830`, `T-76-TX-2788`, `T-76-TX-2819`). No Buckeye Houston TCN.
+- Mississippi coast: no Buckeye/KM on the water. In-state KMST Collins `T-64-MS-2402`. Footnote: Chevron Pascagoula `T-64-MS-2416` (other operator).
+- Georgia coast: no Buckeye/KM in Savannah. Nearest Buckeye: Jacksonville and North Charleston. Footnote: Colonial Terminals Savannah `T-58-GA-2550`.
+- Alabama coast: no Buckeye/KM in Mobile. In-state inland Birmingham / Montgomery TCNs only.
+- Atlanta and extra inland KMST/Buckeye rows are left as addable hubs, not dumped onto the coastal worksheet.
+
+Miles on area attachments are great-circle city-to-region-center distances, for “nearest / direction” labels only. They are not freight.
+
