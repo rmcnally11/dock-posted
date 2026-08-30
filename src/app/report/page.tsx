@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function ReportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ dock?: string; error?: string; q?: string }>;
+  searchParams: Promise<{ dock?: string; error?: string; q?: string; who?: string }>;
 }) {
   const docks = await readDocks();
   const params = await searchParams;
@@ -42,6 +42,7 @@ export default async function ReportPage({
 
       <form action="/report" method="get" className="mt-6 flex max-w-xl gap-2">
         {params.dock ? <input type="hidden" name="dock" value={params.dock} /> : null}
+        {params.who ? <input type="hidden" name="who" value={params.who} /> : null}
         <label className="sr-only" htmlFor="report-search">
           Filter marinas
         </label>
@@ -71,7 +72,7 @@ export default async function ReportPage({
             No marina by that name. Try Seabrook, Key Largo, or Beaufort.
           </p>
         ) : (
-          <ReportForm docks={visible} initialDockId={params.dock} />
+          <ReportForm docks={visible} initialDockId={params.dock} initialWho={params.who} />
         )}
       </div>
       <p className="mt-6 text-sm text-[color:var(--ink)]/55">
