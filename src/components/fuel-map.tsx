@@ -86,8 +86,7 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
         {view.center[1].toFixed(2)}N {Math.abs(view.center[0]).toFixed(2)}W · z{zoom} · © OpenStreetMap
       </p>
       <div
-        data-testid="pin-legend"
-        aria-label="Posted and Call"
+        aria-hidden
         className="pointer-events-none absolute bottom-2 right-2 z-[2] max-w-[11rem] rounded-md bg-[color:var(--cream)]/90 px-1.5 py-1 font-mono text-[10px] leading-4 text-[color:var(--ink)]/70"
       >
         <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
