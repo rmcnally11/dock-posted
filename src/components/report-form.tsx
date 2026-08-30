@@ -72,7 +72,13 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
           >
             {ETHANOLS.map((item) => (
               <option key={item} value={item}>
-                {item === "E0" ? "E0 / ethanol-free" : item}
+                {item === "E0"
+                  ? "E0"
+                  : item === "E15"
+                    ? "E15 — not for boats"
+                    : item === "unknown"
+                      ? "Call"
+                      : item}
               </option>
             ))}
           </select>
@@ -110,7 +116,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
         Post what you saw
       </Button>
       <p className="text-xs text-harbor/50">
-        Only the number on the pump. If the dock said Call, leave this blank.
+        The number on the pump. If they did not post, it stays Call.
       </p>
     </form>
   );

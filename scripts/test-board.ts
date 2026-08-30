@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { filterDocks, parseBoardQuery, matchesSearch } from "../src/lib/board-query";
 import { formatQuote } from "../src/lib/format";
-import { boardTally, freshness } from "../src/lib/freshness";
+import { boardTally, freshness, freshnessLabel } from "../src/lib/freshness";
 import seed from "../data/docks.seed.json";
 import type { Dock, StateCode } from "../src/lib/types";
 import { STATE_CODES } from "../src/lib/types";
@@ -108,6 +108,7 @@ const houstonYacht = docks.find((dock) => dock.id === "houston-yacht-club");
 assert.ok(houstonYacht);
 assert.equal(formatQuote(houstonYacht.quotes.find((quote) => quote.product === "89") ?? null), "Call");
 assert.equal(freshness(houstonYacht), "never");
+assert.equal(freshnessLabel(houstonYacht), "Call ahead");
 assert.equal(houstonYacht.access, "members");
 
 const lakewood = docks.find((dock) => dock.id === "lakewood-yacht-club");
@@ -127,6 +128,23 @@ const tiles = readFileSync(
 assert.match(tiles, /tile\.openstreetmap\.org/);
 assert.doesNotMatch(tiles, /carto/i);
 assert.match(tiles, /DockPosted\/1\.0/);
+
+const fence = /waterdog|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack/i;
+for (const file of [
+  "src/app/page.tsx",
+  "src/app/layout.tsx",
+  "src/app/report/page.tsx",
+  "src/app/safe-fuel/page.tsx",
+  "src/components/dock-card.tsx",
+  "src/components/dock-board.tsx",
+  "src/components/site-header.tsx",
+  "src/components/site-footer.tsx",
+  "src/components/report-form.tsx",
+  "src/components/freshness-badge.tsx",
+]) {
+  const text = readFileSync(path.join(process.cwd(), file), "utf8");
+  assert.doesNotMatch(text, fence, `${file} leaked a fuel-desk term`);
+}
 
 const tally = boardTally(docks);
 assert.ok(tally.postedThisWeek > 0);

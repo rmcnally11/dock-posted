@@ -97,7 +97,11 @@ export function DockCard({
             ? " · Unverified"
             : ""}
       </p>
-      {dock.phone ? <p className="mt-1 text-xs text-harbor/70">{dock.phone}</p> : null}
+      {dock.phone ? (
+        <p className="mt-1 text-xs text-harbor/70">
+          {hasPostedPrice(dock) ? dock.phone : `Call ahead · ${dock.phone}`}
+        </p>
+      ) : null}
     </a>
   );
 }

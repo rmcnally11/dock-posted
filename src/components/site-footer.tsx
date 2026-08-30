@@ -8,7 +8,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
       }
     >
       <p className={compact ? "" : "text-xs leading-5 text-harbor/50"}>
-        A public board, not a fuel desk. Call the dock. We do not sell gallons.
+        What the boater saw. Call the dock.
       </p>
     </footer>
   );

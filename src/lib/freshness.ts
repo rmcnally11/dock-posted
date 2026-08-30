@@ -47,7 +47,7 @@ export function freshnessLabel(dock: Dock, now = Date.now()): string {
   const state = freshness(dock, now);
   if (state === "stale") return "Stale";
   if (state === "fresh") return "This week";
-  return "Call";
+  return "Call ahead";
 }
 
 export function boardTally(docks: Dock[], now = Date.now()) {

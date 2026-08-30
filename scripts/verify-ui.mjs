@@ -72,6 +72,9 @@ try {
   check("no two-corridors copy", !/two corridors only/i.test(homeCopy));
   check("no compliance hero", !/does not sell gallons, broker fuel/i.test(homeCopy));
   check("no sine-wave costume", (await page.$$("svg")).length === 0 || !homeCopy.includes("sine"));
+  check("no waterdog mark", !/waterdog/i.test(homeCopy));
+  check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
+  check("call ahead empty", /call ahead/i.test(homeCopy));
 
   await page.goto(`${base}/?corridor=upper-keys`, { waitUntil: "networkidle0" });
   const keysHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
@@ -133,8 +136,10 @@ try {
   check("report saved banner", Boolean(saved));
 
   await page.goto(`${base}/safe-fuel`, { waitUntil: "networkidle0" });
-  const safe = await page.$eval("h1", (el) => el.textContent);
-  check("safe fuel", /E15|boat|fuel/i.test(safe ?? ""));
+  const safe = await page.$eval("main", (el) => el.textContent ?? "");
+  check("safe fuel", /E15 is not for boats/i.test(safe));
+  check("safe fuel is a warning", /walk away/i.test(safe) && !/save|deal|cheap/i.test(safe));
+  check("safe fuel no waterdog", !/waterdog|opis|argus|platts|invoice/i.test(safe));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));
   console.error(error);

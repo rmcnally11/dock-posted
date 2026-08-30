@@ -32,7 +32,7 @@ export default function SafeFuelPage() {
         </p>
         <p className="text-sm leading-7 text-harbor/80">
           When a dock has E0, the card says E0. When the public page said non-ethanol: no, we mark
-          E10. If nobody labeled the pump, we say unknown. Octane is not a test for ethanol.
+          E10. If nobody labeled the pump, the blend stays Call. Octane is not a test for ethanol.
         </p>
       </section>
 
