@@ -103,6 +103,12 @@ export async function computeWholesaleWorksheet(formData: FormData): Promise<voi
   if (!terminal) fail(`/wholesale?area=${area}`, "Pick a terminal.");
   try {
     const sheet = worksheetFromFields(fieldsFromForm(formData), unit);
+    const row = findTerminal(terminal);
+    const docks = await readDocks();
+    const persisted = row
+      ? stripUnchangedDefaults(sheet, row.state, { areaId: area, docks })
+      : sheet;
+    await saveTerminalWorksheet(terminal, persisted);
     await persistDraft(terminal, sheet);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not compute.";

@@ -9,6 +9,7 @@ import {
   fattestTakeAcross,
   formatBoth,
   formatCents,
+  netbackHasFigures,
   tcnLabel,
   type AreaTerminalRef,
   type DiffRow,
@@ -83,10 +84,23 @@ export function TerminalTable({
   unit: InputUnit;
 }) {
   void unit;
+  const selected = rows.find((row) => row.terminal.id === selectedId);
+  const selectedFilled = Boolean(
+    selected && (netbackHasFigures(selected.rb) || netbackHasFigures(selected.ho)),
+  );
+  const anyFilled = rows.some((row) => netbackHasFigures(row.rb) || netbackHasFigures(row.ho));
+  const regionNote = !anyFilled
+    ? "Region rack / remaining / implied Δ stay — until you Compute or Save a worksheet on a terminal. Compute writes the same book this table and investor print read."
+    : selected && !selectedFilled
+      ? "This terminal’s row stays — until you Compute or Save its worksheet. Other rows fill only after that terminal’s book is computed or saved."
+      : "A computed or saved book fills that terminal’s row. Other terminals stay — until you Compute or Save them. Remaining stays — until federal and state are both entered.";
   return (
     <section className="mt-8">
       <h2 className="text-sm font-medium">Terminals for this region</h2>
       <p className="mt-1 max-w-3xl text-sm leading-6 text-black/55">{area.note}</p>
+      <p className="mt-2 max-w-3xl text-xs leading-5 text-black/50" data-testid="region-empty-note">
+        {regionNote}
+      </p>
       <div className="mt-3 overflow-x-auto border border-black/15 bg-white">
         <table className="min-w-full text-left text-xs" data-testid="region-terminals">
           <thead className="border-b border-black/10 bg-black/[0.03] text-[11px] uppercase tracking-[0.08em] text-black/45">
@@ -156,7 +170,8 @@ export function NymexBanner({ screens }: { screens: NymexScreenPull }) {
       <h2 className="text-sm font-medium">NYMEX screen · Yahoo Finance (public)</h2>
       <p className="mt-1 text-xs text-black/45">
         RB=F (RBOB / gasoline) and HO=F (NY Harbor ULSD / heating oil). Server pull only. Not Platts,
-        OPIS, DTN, or a paid vendor. Typed screen wins. Failed or stale quotes stay —.
+        OPIS, DTN, or a paid vendor. Typed screen wins — a typed cell is your number, not the live
+        pull. Failed or stale quotes stay —.
       </p>
       <ul className="mt-3 space-y-1 text-sm">
         {WHOLESALE_PRODUCTS.map((product) => {
@@ -205,18 +220,33 @@ export function Worksheet({
 }) {
   const unitLabel = unit === "dollar" ? "$/gal" : "¢/gal";
   const display: TerminalWorksheet = {
-    rb: prepared?.rb.input ?? sheet.rb,
-    ho: prepared?.ho.input ?? sheet.ho,
+    rb: sheet.rb,
+    ho: sheet.ho,
     tax: sheet.tax,
     taxRb: {
-      federal: prepared?.rb.tax.federal.cents ?? sheet.taxRb?.federal ?? sheet.tax.federal,
-      state: prepared?.rb.tax.state.cents ?? sheet.taxRb?.state ?? sheet.tax.state,
+      federal:
+        sheet.taxRb?.federal ??
+        sheet.tax.federal ??
+        (!draft && prepared?.rb.tax.federal.origin === "default" ? prepared.rb.tax.federal.cents : null),
+      state: sheet.taxRb?.state ?? sheet.tax.state ?? null,
     },
     taxHo: {
-      federal: prepared?.ho.tax.federal.cents ?? sheet.taxHo?.federal ?? sheet.tax.federal,
-      state: prepared?.ho.tax.state.cents ?? sheet.taxHo?.state ?? sheet.tax.state,
+      federal:
+        sheet.taxHo?.federal ??
+        sheet.tax.federal ??
+        (!draft && prepared?.ho.tax.federal.origin === "default" ? prepared.ho.tax.federal.cents : null),
+      state: sheet.taxHo?.state ?? sheet.tax.state ?? null,
     },
   };
+  const formKey = JSON.stringify({
+    terminal: terminal.id,
+    unit,
+    rb: display.rb,
+    ho: display.ho,
+    tax: display.tax,
+    taxRb: display.taxRb,
+    taxHo: display.taxHo,
+  });
   return (
     <section className="mt-8" data-testid="worksheet">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -253,11 +283,11 @@ export function Worksheet({
       {saved ? <p className="mt-3 text-sm text-black/55">Saved for this terminal.</p> : null}
       {draft ? (
         <p className="mt-3 text-sm text-black/55" data-testid="compute-draft">
-          Showing computed figures. Inputs below are the same book. Not written until you save.
+          Computed book for this terminal. The boxes below are the same figures — still editable.
         </p>
       ) : null}
 
-      <form className="mt-4 print:hidden">
+      <form className="mt-4 print:hidden" key={formKey}>
         <input type="hidden" name="area" value={areaId} />
         <input type="hidden" name="terminal" value={terminal.id} />
         <input type="hidden" name="unit" value={unit} />
@@ -330,6 +360,22 @@ function WorksheetFields({
             unit={unit}
             rbPlaceholder={yahooHint(screens.RB.cents, unit)}
             hoPlaceholder={yahooHint(screens.HO.cents, unit)}
+            rbHint={
+              sheet.rb.nymexScreen != null
+                ? "typed — not the Yahoo pull"
+                : screens.RB.status === "ok"
+                  ? `Yahoo ${screens.RB.asOfLabel ? `as of ${screens.RB.asOfLabel}` : "screen"} · used if this box stays blank`
+                  : screens.RB.note ?? "Yahoo screen blank"
+            }
+            hoHint={
+              sheet.ho.nymexScreen != null
+                ? "typed — not the Yahoo pull"
+                : screens.HO.status === "ok"
+                  ? `Yahoo ${screens.HO.asOfLabel ? `as of ${screens.HO.asOfLabel}` : "screen"} · used if this box stays blank`
+                  : screens.HO.note ?? "Yahoo screen blank"
+            }
+            rbTyped={sheet.rb.nymexScreen != null}
+            hoTyped={sheet.ho.nymexScreen != null}
           />
           <FieldRow label="Terminal differential vs screen" name="diff" rb={sheet.rb.terminalDiff} ho={sheet.ho.terminalDiff} unit={unit} />
           <FieldRow label="Inbound freight / pipeline / truck" name="freight" rb={sheet.rb.inboundFreight} ho={sheet.ho.inboundFreight} unit={unit} />
@@ -350,8 +396,18 @@ function WorksheetFields({
             rb={sheet.taxRb?.federal ?? null}
             ho={sheet.taxHo?.federal ?? null}
             unit={unit}
-            rbHint={prepared?.rb.tax.federal.sourceLabel ?? null}
-            hoHint={prepared?.ho.tax.federal.sourceLabel ?? null}
+            rbHint={
+              prepared?.rb.tax.federal.sourceLabel ??
+              (sheet.taxRb?.federal == null && sheet.tax.federal == null
+                ? "IRS federal gasoline · labeled default, clear to leave —"
+                : null)
+            }
+            hoHint={
+              prepared?.ho.tax.federal.sourceLabel ??
+              (sheet.taxHo?.federal == null && sheet.tax.federal == null
+                ? "IRS federal diesel · labeled default, clear to leave —"
+                : null)
+            }
           />
           <FieldRow
             label="Tax · state"
@@ -369,8 +425,10 @@ function WorksheetFields({
         <TaxField label="Tax · one line (replaces the split)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
       </div>
       <p className="px-3 pb-3 text-xs text-black/45">
-        {MARINE_TAX_NOTE} Federal and state are the strip. A missing federal or state leaves dock
-        ex-tax and remaining blank. One tax line overrides the split. Empty stays — , never $0.00.
+        {MARINE_TAX_NOTE} Federal gasoline / diesel can start as the published IRS figures — labeled
+        defaults you can clear. State is never filled from EIA or a guess. A missing federal or state
+        leaves dock ex-tax and remaining as —, never $0.00. Other / local is omitted when blank, not
+        treated as zero. One tax line overrides the split.
       </p>
     </div>
   );
@@ -386,6 +444,8 @@ function FieldRow({
   hoHint,
   rbPlaceholder,
   hoPlaceholder,
+  rbTyped,
+  hoTyped,
 }: {
   label: string;
   name: string;
@@ -396,6 +456,8 @@ function FieldRow({
   hoHint?: string | null;
   rbPlaceholder?: string;
   hoPlaceholder?: string;
+  rbTyped?: boolean;
+  hoTyped?: boolean;
 }) {
   return (
     <tr className="border-t border-black/10">
@@ -406,7 +468,12 @@ function FieldRow({
           inputMode="decimal"
           defaultValue={displayInputValue(rb, unit)}
           placeholder={rbPlaceholder}
-          className="h-9 w-full border border-black/15 px-2 font-mono text-sm"
+          data-typed={rbTyped ? "1" : "0"}
+          className={
+            rbTyped
+              ? "h-9 w-full border border-black/40 bg-[#f7f4ee] px-2 font-mono text-sm"
+              : "h-9 w-full border border-black/15 px-2 font-mono text-sm"
+          }
         />
         {rbHint ? <p className="mt-1 text-[11px] text-black/40">{rbHint}</p> : null}
       </td>
@@ -416,7 +483,12 @@ function FieldRow({
           inputMode="decimal"
           defaultValue={displayInputValue(ho, unit)}
           placeholder={hoPlaceholder}
-          className="h-9 w-full border border-black/15 px-2 font-mono text-sm"
+          data-typed={hoTyped ? "1" : "0"}
+          className={
+            hoTyped
+              ? "h-9 w-full border border-black/40 bg-[#f7f4ee] px-2 font-mono text-sm"
+              : "h-9 w-full border border-black/15 px-2 font-mono text-sm"
+          }
         />
         {hoHint ? <p className="mt-1 text-[11px] text-black/40">{hoHint}</p> : null}
       </td>
@@ -655,8 +727,13 @@ function WaterfallRungRow({
       className={rung.role === "start" || rung.role === "level" ? "pt-1" : ""}
     >
       <div className="flex items-baseline justify-between gap-3">
-        <span className={`text-xs ${isTax ? "font-medium text-black" : "font-medium text-black/70"}`}>
+        <span className={`text-xs ${winner || isTax ? "font-medium text-black" : "font-medium text-black/70"}`}>
           {rung.role === "level" || rung.role === "start" ? `= ${rung.label}` : rung.label}
+          {winner ? (
+            <span className="ml-2 text-[10px] uppercase tracking-[0.08em] text-[#8a2c12]" data-testid={`fattest-rung-${product.toLowerCase()}`}>
+              Fattest{negative ? " · negative" : ""}
+            </span>
+          ) : null}
         </span>
         <span className="font-mono text-xs tabular-nums">
           {empty ? "Call / —" : formatBoth(rung.cents)}

@@ -27,6 +27,7 @@ import {
   formatDollars,
   loadWholesaleCatalog,
   loadWholesaleTax,
+  netbackHasFigures,
   parseOptionalCents,
   rankTakes,
   resolveTaxForProduct,
@@ -38,6 +39,7 @@ import {
   tcnLabel,
   terminalsForArea,
   worksheetFromFields,
+  worksheetHasInputs,
 } from "../src/lib/wholesale";
 import { parseWholesaleDraft, serializeWholesaleDraft } from "../src/lib/wholesale-draft";
 import {
@@ -232,9 +234,12 @@ assert.equal(withDefaults.rb.tax.federal.cents, 18.4);
 assert.equal(withDefaults.rb.tax.federal.origin, "default");
 assert.equal(withDefaults.ho.tax.federal.cents, 24.4);
 assert.equal(withDefaults.ho.tax.federal.origin, "default");
+assert.equal(withDefaults.rb.tax.state.cents, null);
+assert.equal(withDefaults.ho.tax.state.cents, null);
 assert.equal(withDefaults.rb.input.inboundFreight, null);
 assert.equal(withDefaults.rb.input.nymexScreen, null);
 assert.equal(withDefaults.rb.input.postedRack, null);
+assert.equal(worksheetHasInputs(emptySheet), false);
 
 const typedTax = emptyWorksheet();
 typedTax.taxRb = { federal: 30, state: 10 };
@@ -244,21 +249,32 @@ assert.equal(override.rb.tax.federal.origin, "typed");
 assert.equal(override.rb.tax.state.cents, 10);
 assert.equal(override.ho.tax.federal.cents, 24.4);
 assert.equal(override.ho.tax.federal.origin, "default");
+assert.equal(override.ho.tax.state.cents, null);
 
 const defaultedBook = computeWorksheet(emptyWorksheet(), { state: "FL" });
 assert.equal(defaultedBook.RB.taxFederal, 18.4);
 assert.equal(defaultedBook.HO.taxFederal, 24.4);
-assert.equal(defaultedBook.RB.taxState, 40.096);
-assert.equal(defaultedBook.HO.taxState, 40.971);
+assert.equal(defaultedBook.RB.taxState, null);
+assert.equal(defaultedBook.HO.taxState, null);
+assert.equal(defaultedBook.RB.taxIncomplete, true);
+assert.equal(defaultedBook.RB.tax, null);
+assert.equal(defaultedBook.RB.dockRemaining, null);
 assert.equal(defaultedBook.RB.inboundRack, null);
 assert.equal(defaultedBook.RB.rungs.find((rung) => rung.key === "freight")?.cents, null);
 assert.ok(defaultedBook.RB.takes.every((take) => take.key !== "freight"));
 assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxFederal"));
-assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxState"));
+assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxState" && rung.cents == null));
+assert.equal(formatCents(defaultedBook.RB.taxState), "—");
+
+const clearedBook = computeWorksheet(emptyWorksheet(), { state: "TX", applyTaxDefaults: false });
+assert.equal(clearedBook.RB.taxFederal, null);
+assert.equal(clearedBook.RB.taxState, null);
+assert.equal(clearedBook.RB.taxIncomplete, false);
 
 const blankFreightRank = rankTakes(defaultedBook.RB.rungs);
 assert.ok(!blankFreightRank.some((take) => take.key === "freight"));
-assert.ok(blankFreightRank.some((take) => take.key === "taxFederal" || take.key === "taxState"));
+assert.ok(blankFreightRank.some((take) => take.key === "taxFederal"));
+assert.ok(!blankFreightRank.some((take) => take.key === "taxState"));
 
 const oneLineResolved = resolveTaxForProduct(
   { federal: 18.4, state: 20, other: null, oneLine: 62 },
@@ -311,8 +327,9 @@ const stripped = stripUnchangedDefaults(
   "TX",
   { areaId: "galveston-bay", docks },
 );
-assert.equal(stripped.taxRb?.federal, null);
-assert.equal(stripped.taxHo?.federal, null);
+assert.equal(stripped.taxRb?.federal, 18.4);
+assert.equal(stripped.taxHo?.federal, 24.4);
+assert.equal(stripped.taxRb?.state, 20);
 assert.equal(stripped.rb.dockPosted, null);
 
 const galvestonNotes = deskFootnotes(findArea("galveston-bay"));
@@ -338,6 +355,23 @@ assert.equal(incompleteTax.dockRemaining, null);
 assert.equal(formatCents(incompleteTax.dockExTax), "—");
 assert.equal(stepByKey(incompleteTax, "taxFederal")?.cents, 18.4);
 assert.equal(resolveTaxForProduct({ federal: 18.4, state: null, other: null, oneLine: null }, "RB").incomplete, true);
+const otherMissing = resolveTaxForProduct(
+  { federal: 18.4, state: 20, other: null, oneLine: null },
+  "RB",
+  { state: "TX", applyDefaults: true },
+);
+assert.equal(otherMissing.incomplete, false);
+assert.equal(otherMissing.strip.cents, 38.4);
+assert.equal(otherMissing.other.cents, null);
+const federalOnlyDefault = resolveTaxForProduct(
+  { federal: null, state: null, other: null, oneLine: null },
+  "RB",
+  { state: "TX", applyDefaults: true },
+);
+assert.equal(federalOnlyDefault.federal.cents, 18.4);
+assert.equal(federalOnlyDefault.state.cents, null);
+assert.equal(federalOnlyDefault.incomplete, true);
+assert.equal(federalOnlyDefault.strip.cents, null);
 
 const yahooFill = computeProductNetback(
   "RB",
@@ -380,6 +414,25 @@ const zeroFallback = computeProductNetback(
 );
 assert.equal(zeroFallback.steps[0]?.cents, null);
 assert.equal(zeroFallback.nymexSource, null);
+
+const underwater = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 200,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: null },
+);
+assert.ok(underwater.dockRemaining != null && underwater.dockRemaining < 0);
+assert.equal(underwater.fattestTake, "remaining");
+assert.ok(underwater.takes[0]!.cents < 0);
+assert.match(formatCents(underwater.dockRemaining), /−/);
+assert.equal(netbackHasFigures(underwater), true);
+assert.equal(netbackHasFigures(blank.RB), false);
 
 const applied = applyDiffRow(emptyWorksheet(), {
   id: "d1",

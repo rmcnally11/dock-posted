@@ -198,6 +198,15 @@ export interface BoardDockDefault {
   label: string;
 }
 
+export interface WorksheetContext {
+  state?: string;
+  areaId?: WholesaleAreaId;
+  docks?: Dock[];
+  saved?: TerminalWorksheet;
+  nymexFallback?: Partial<Record<WholesaleProduct, Cents>>;
+  applyTaxDefaults?: boolean;
+}
+
 export interface NetbackContext {
   state?: string;
   taxResolved?: ResolvedTax;
@@ -268,6 +277,44 @@ export function normalizeWorksheet(sheet: TerminalWorksheet | undefined | null):
     taxRb: { federal: base.taxRb?.federal ?? null, state: base.taxRb?.state ?? null },
     taxHo: { federal: base.taxHo?.federal ?? null, state: base.taxHo?.state ?? null },
   };
+}
+
+function productHasInput(row: ProductInputs): boolean {
+  return (
+    row.nymexScreen != null ||
+    row.terminalDiff != null ||
+    row.inboundFreight != null ||
+    row.postedRack != null ||
+    row.jobberSell != null ||
+    row.dockPosted != null
+  );
+}
+
+export function worksheetHasInputs(sheet: TerminalWorksheet): boolean {
+  const next = normalizeWorksheet(sheet);
+  return (
+    productHasInput(next.rb) ||
+    productHasInput(next.ho) ||
+    next.tax.federal != null ||
+    next.tax.state != null ||
+    next.tax.other != null ||
+    next.tax.oneLine != null ||
+    next.taxRb?.federal != null ||
+    next.taxRb?.state != null ||
+    next.taxHo?.federal != null ||
+    next.taxHo?.state != null
+  );
+}
+
+export function netbackHasFigures(book: ProductNetback): boolean {
+  return (
+    book.terminalSpot != null ||
+    book.inboundRack != null ||
+    book.rackMargin != null ||
+    book.jobberMargin != null ||
+    book.dockRemaining != null ||
+    book.impliedDiff != null
+  );
 }
 
 export function emptyWholesaleStore(): WholesaleStoreFile {
@@ -509,13 +556,7 @@ export function computeProductNetback(
 
 export function computeWorksheet(
   sheet: TerminalWorksheet,
-  context: {
-    state?: string;
-    areaId?: WholesaleAreaId;
-    docks?: Dock[];
-    saved?: TerminalWorksheet;
-    nymexFallback?: Partial<Record<WholesaleProduct, Cents>>;
-  } = {},
+  context: WorksheetContext = {},
 ): Record<WholesaleProduct, ProductNetback> {
   const prepared = applyWorksheetDefaults(sheet, context);
   return {
@@ -768,7 +809,8 @@ export function resolveTaxForProduct(
   const savedFederal = options.savedSlice?.federal ?? options.saved?.federal ?? null;
   const savedState = options.savedSlice?.state ?? options.saved?.state ?? null;
   const federal = coalesceTaxPart(typedFederal, savedFederal, defaults?.federal);
-  const state = coalesceTaxPart(typedState, savedState, defaults?.state);
+  // State is never defaulted. EIA table stays reference-only — a guessed state must not fill the strip.
+  const state = coalesceTaxPart(typedState, savedState, undefined);
   const other = labeled(tax.other, tax.other == null ? null : "typed", tax.other == null ? null : "typed");
 
   if (oneLine.cents != null) {
@@ -864,12 +906,7 @@ function prepareProduct(
   tax: TaxInputs,
   slice: ProductTaxSlice | undefined,
   product: WholesaleProduct,
-  context: {
-    state?: string;
-    areaId?: WholesaleAreaId;
-    docks?: Dock[];
-    saved?: TerminalWorksheet;
-  },
+  context: WorksheetContext,
 ): PreparedProduct {
   const origins: Partial<Record<keyof ProductInputs, ValueOrigin>> = {};
   const labels: Partial<Record<keyof ProductInputs, string | null>> = {};
@@ -901,7 +938,7 @@ function prepareProduct(
 
   const resolved = resolveTaxForProduct(tax, product, {
     state: context.state,
-    applyDefaults: Boolean(context.state),
+    applyDefaults: context.applyTaxDefaults ?? Boolean(context.state),
     slice,
     saved: context.saved?.tax,
     savedSlice: product === "RB" ? context.saved?.taxRb : context.saved?.taxHo,
@@ -912,12 +949,7 @@ function prepareProduct(
 
 export function applyWorksheetDefaults(
   sheet: TerminalWorksheet,
-  context: {
-    state?: string;
-    areaId?: WholesaleAreaId;
-    docks?: Dock[];
-    saved?: TerminalWorksheet;
-  } = {},
+  context: WorksheetContext = {},
 ): PreparedWorksheet {
   const normalized = normalizeWorksheet(sheet);
   return {
@@ -933,9 +965,8 @@ export function stripUnchangedDefaults(
   state: string,
   context: { areaId?: WholesaleAreaId; docks?: Dock[] } = {},
 ): TerminalWorksheet {
+  void state;
   const normalized = normalizeWorksheet(sheet);
-  const rbDefault = defaultTaxForTerminal(state, "RB");
-  const hoDefault = defaultTaxForTerminal(state, "HO");
   const stripPart = (value: Cents, fallback: Cents): Cents =>
     value != null && fallback != null && sameCents(value, fallback) ? null : value;
   const rbBoard =
@@ -943,6 +974,8 @@ export function stripUnchangedDefaults(
   const hoBoard =
     context.areaId && context.docks ? boardDockDefault(context.docks, context.areaId, "HO") : null;
 
+  // Persist submitted tax. Federal IRS figures stay if the desk sent them.
+  // Do not strip them back to null or print/region look like an empty book.
   return {
     ...normalized,
     rb: {
@@ -952,19 +985,6 @@ export function stripUnchangedDefaults(
     ho: {
       ...normalized.ho,
       dockPosted: stripPart(normalized.ho.dockPosted, hoBoard?.cents ?? null),
-    },
-    taxRb: {
-      federal: stripPart(normalized.taxRb?.federal ?? null, rbDefault.federal.cents),
-      state: stripPart(normalized.taxRb?.state ?? null, rbDefault.state.cents),
-    },
-    taxHo: {
-      federal: stripPart(normalized.taxHo?.federal ?? null, hoDefault.federal.cents),
-      state: stripPart(normalized.taxHo?.state ?? null, hoDefault.state.cents),
-    },
-    tax: {
-      ...normalized.tax,
-      federal: stripPart(normalized.tax.federal, rbDefault.federal.cents),
-      state: stripPart(normalized.tax.state, rbDefault.state.cents),
     },
   };
 }

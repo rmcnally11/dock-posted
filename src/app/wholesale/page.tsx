@@ -53,19 +53,22 @@ export default async function WholesalePage({
     docks,
     saved: usingDraft ? sheet : saved,
     nymexFallback: fallback,
+    applyTaxDefaults: !usingDraft,
   };
   const live = computeWorksheet(sheet, context);
   const prepared = applyWorksheetDefaults(sheet, context);
 
   const tableRows = attached.map(({ terminal, ref }) => {
     const stored = store.worksheets[terminal.id] ?? emptyWorksheet();
-    const computed = draft && draft.terminalId === terminal.id ? draft.sheet : stored;
+    const rowDraft = Boolean(draft && draft.terminalId === terminal.id);
+    const computed = rowDraft && draft ? draft.sheet : stored;
     const books = computeWorksheet(computed, {
       state: terminal.state,
       areaId,
       docks,
       saved: computed,
       nymexFallback: fallback,
+      applyTaxDefaults: !rowDraft,
     });
     return { terminal, ref, rb: books.RB, ho: books.HO };
   });
@@ -112,6 +115,11 @@ export default async function WholesalePage({
       ) : null}
 
       <TerminalTable area={area} rows={tableRows} selectedId={selectedId} unit={unit} />
+
+      <p className="mt-8 text-xs text-black/45" data-testid="desk-feed-footer">
+        Yahoo Finance public screen (RB=F / HO=F) when the pull succeeds, with as-of on the quote.
+        Platts is not used. Typed NYMEX cells are the desk&apos;s number, not a live market tile.
+      </p>
     </main>
   );
 }

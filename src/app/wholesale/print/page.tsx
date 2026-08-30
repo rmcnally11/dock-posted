@@ -8,6 +8,7 @@ import {
   emptyWorksheet,
   findArea,
   formatBoth,
+  netbackHasFigures,
   parseAreaId,
   tcnLabel,
   terminalsForArea,
@@ -37,16 +38,19 @@ export default async function WholesalePrintPage({
   const rows = terminalsForArea(areaId).map(({ terminal, ref }) => {
     const stored = store.worksheets[terminal.id] ?? emptyWorksheet();
     const computed = draft && draft.terminalId === terminal.id ? draft.sheet : stored;
+    const rowDraft = Boolean(draft && draft.terminalId === terminal.id);
     const books = computeWorksheet(computed, {
       state: terminal.state,
       areaId,
       docks,
       saved: computed,
       nymexFallback: fallback,
+      applyTaxDefaults: !rowDraft,
     });
     return { terminal, ref, rb: books.RB, ho: books.HO };
   });
   const footnotes = deskFootnotes(area);
+  const anyBook = rows.some((row) => netbackHasFigures(row.rb) || netbackHasFigures(row.ho));
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 print:px-0 print:py-0">
@@ -58,6 +62,17 @@ export default async function WholesalePrintPage({
             One region. Terminals as rows. Margin stack as columns. Not a blended Gulf number.
           </p>
           <p className="mt-2 text-xs text-black/45">{area.note}</p>
+          {anyBook ? (
+            <p className="mt-2 text-xs text-black/50">
+              Computed or saved books fill those terminals. Blank rows have not been computed or
+              saved. Remaining stays — until federal and state are both entered.
+            </p>
+          ) : (
+            <p className="mt-2 text-sm text-[#8a2c12]" data-testid="print-empty">
+              No computed or saved book for this region yet. Compute or Save on the desk — this
+              matrix stays — until then. Investor print cannot invent a book.
+            </p>
+          )}
           {footnotes.length > 0 ? (
             <ul className="mt-2 max-w-3xl space-y-1 text-xs text-black/45">
               {footnotes.map((note) => (
