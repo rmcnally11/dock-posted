@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BrandPhoto } from "@/components/brand-photo";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 
@@ -25,6 +26,7 @@ export default function SafeFuelPage() {
         E15 walk away. E10 runs. E0 sits better. Call if unlabeled.
       </p>
       <Waterline className="mt-3" />
+      <BrandPhoto name="pump" className="mt-8 aspect-[16/9] w-full max-w-2xl" />
 
       <section className="mt-8 max-w-2xl space-y-3">
         <h2 className="font-heading text-2xl text-[color:var(--navy)]">
