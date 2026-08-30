@@ -5,10 +5,19 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ETHANOLS, PRODUCTS, STATE_CODES, type Dock, type StateCode } from "@/lib/types";
 
-export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDockId?: string }) {
+export function ReportForm({
+  docks,
+  initialDockId,
+  initialWho,
+}: {
+  docks: Dock[];
+  initialDockId?: string;
+  initialWho?: string;
+}) {
   const startingDock =
     docks.find((dock) => dock.id === initialDockId)?.id ?? docks[0]?.id ?? "";
   const selected = docks.find((dock) => dock.id === startingDock) ?? null;
+  const owner = initialWho === "marina";
   const today = todayInput();
   const grouped = STATE_CODES.map((state) => ({
     state,
@@ -99,11 +108,18 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
       <fieldset className="space-y-2">
         <legend className="text-sm font-medium text-[color:var(--ink)]/80">Who posts</legend>
         <label className="flex min-h-11 items-center gap-3 text-base">
-          <input type="radio" name="who" value="boater" defaultChecked className="h-5 w-5" />
+          <input type="radio" name="who" value="boater" defaultChecked={!owner} className="h-5 w-5" />
           I fueled here
         </label>
         <label className="flex min-h-11 items-center gap-3 text-base">
-          <input type="radio" name="who" value="marina" className="h-5 w-5" />
+          <input
+            type="radio"
+            name="who"
+            value="marina"
+            defaultChecked={owner}
+            data-testid="who-marina"
+            className="h-5 w-5"
+          />
           I run this dock
         </label>
         <p className="text-xs text-[color:var(--ink)]/50">

@@ -49,6 +49,31 @@ function flagLabels(dock: Dock): string[] {
   return labels;
 }
 
+function dockJsonLd(dock: Dock) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: dock.name,
+    description: "The price they posted. If they didn’t write a number, it stays Call.",
+    url: `https://dock-posted.vercel.app/docks/${dock.id}`,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: dock.city,
+      addressRegion: dock.state,
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: dock.lat,
+      longitude: dock.lng,
+    },
+    ...(dock.phone ? { telephone: dock.phone } : {}),
+  };
+}
+
+function dockDescription(dock: Dock): string {
+  return `${dock.name}, ${dock.city}, ${dock.state}. The price they posted. If they didn’t write a number, it stays Call.`;
+}
+
 async function loadDock(id: string): Promise<Dock | null> {
   const docks = await readDocks();
   return docks.find((dock) => dock.id === id) ?? null;
@@ -62,9 +87,22 @@ export async function generateMetadata({
   const { id } = await params;
   const dock = await loadDock(id);
   if (!dock) return { title: "Dock" };
+  const description = dockDescription(dock);
   return {
     title: dock.name,
-    description: `${dock.name}, ${dock.city}, ${dock.state}. The price they posted. If they didn’t write a number, it stays Call.`,
+    description,
+    alternates: { canonical: `/docks/${dock.id}` },
+    openGraph: {
+      title: dock.name,
+      description,
+      url: `/docks/${dock.id}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: dock.name,
+      description,
+    },
   };
 }
 
@@ -205,6 +243,20 @@ export default async function DockPage({
           {trust === "verified" ? "Update this pin" : "Claim this pin"}
         </a>
       </p>
+      <p className="mt-3 max-w-xl text-sm text-[color:var(--ink)]/70">
+        <a
+          href={`/report?dock=${dock.id}&who=marina`}
+          data-testid="run-this-dock"
+          className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
+        >
+          I run this dock
+        </a>
+        . Truck day, or when you change the board.
+      </p>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(dockJsonLd(dock)) }}
+      />
       <SiteFooter />
     </main>
   );
