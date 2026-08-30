@@ -11,12 +11,12 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-30 bg-[color:var(--cream)]/90 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-x-3 px-3 py-1.5 sm:px-4 sm:py-2.5 md:px-6">
+      <div className="mx-auto flex max-w-7xl items-start justify-between gap-x-3 px-3 py-1.5 sm:items-center sm:px-4 sm:py-2.5 md:px-6">
         <a href="/" className="flex min-w-0 shrink-0 items-baseline gap-2" aria-label="Dock Posted">
           <Wordmark />
         </a>
         <nav
-          className="chip-scroll flex min-w-0 flex-nowrap items-center gap-x-0.5 overflow-x-auto overscroll-x-contain text-[13px] sm:text-sm"
+          className="flex min-w-0 flex-wrap items-center justify-end gap-x-0.5 gap-y-0 text-[13px] sm:text-sm"
           aria-label="Dock Posted"
         >
           <a className={navLink} href="/#board" aria-label="The board">
