@@ -377,6 +377,26 @@ export async function fetchPublicReport(url: string): Promise<FetchResult> {
   }
 }
 
+const FIRST_PARTY_OR_CALL = new Set([
+  "marina-bay-harbor",
+  "blue-marlin-seabrook",
+  "south-shore-harbour",
+  "houston-yacht-club",
+  "lakewood-yacht-club",
+]);
+
+function datedCall(quote: FuelQuote): FuelQuote {
+  if (quote.status === "not-sold") {
+    return { ...quote, pricePerGallon: null };
+  }
+  return {
+    ...quote,
+    pricePerGallon: null,
+    status: quote.status === "no-report" ? "no-report" : "call",
+    taxIncluded: null,
+  };
+}
+
 export function mergeParsedIntoDocks(
   docks: Dock[],
   parsed: ParsedMarina[],
@@ -405,21 +425,25 @@ export function mergeParsedIntoDocks(
       continue;
     }
 
+    const firstPartyOnly = FIRST_PARTY_OR_CALL.has(dock.id);
     for (const quote of marina.quotes) {
       const skipUnusedGas =
         quote.product !== "diesel" &&
         quote.status === "not-sold" &&
         !dock.quotes.some((item) => item.product === quote.product);
       if (skipUnusedGas) continue;
+      const incoming = firstPartyOnly ? datedCall(quote) : quote;
       const existing = dock.quotes.find((item) => item.product === quote.product);
-      if (existing) Object.assign(existing, quote);
-      else dock.quotes.push(quote);
+      if (existing) Object.assign(existing, incoming);
+      else dock.quotes.push(incoming);
     }
     dock.lastVerifiedAt = marina.lastUpdate;
     dock.lastVerifiedSource = "Waterway Guide";
-    dock.sourceUrl = sourceUrl;
-    if (marina.comments) {
-      dock.notes = marina.comments;
+    if (!firstPartyOnly) {
+      dock.sourceUrl = sourceUrl;
+      if (marina.comments) {
+        dock.notes = marina.comments;
+      }
     }
     if (marina.nonEthanol === true) dock.ethanol = "E0";
     if (marina.nonEthanol === false && dock.ethanol === "unknown") dock.ethanol = "E10";

@@ -41,7 +41,8 @@ export function DockBoard({
               </p>
               {query.corridor === "galveston-bay" && !query.state && !query.region && query.q.length < 2 ? (
                 <p className="mt-1 text-xs text-harbor/50">
-                  Clear Lake mouth first. Hours beat a posted price.
+                  Clear Lake mouth first. Hours beat a posted price. A 6:30 run cannot use
+                  South Shore.
                 </p>
               ) : null}
               {query.corridor === "upper-keys" && !query.state && !query.region && query.q.length < 2 ? (

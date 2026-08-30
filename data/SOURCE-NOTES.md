@@ -27,9 +27,15 @@ Key Largo home pins added as Call, no invented dollars:
 
 Islamorada docks stay in the Keys region. They are not on the Key Largo board.
 
-Blue Marlin Fuel Dock (Seabrook, west of 146): marina fuel-dock page lists regular, supreme, diesel and no hours. Directories disagree on the close. Card hours stay Call. Last-pump flag stays. Still-open is not claimed.
+Blue Marlin Fuel Dock (Seabrook, west of 146): marina fuel-dock page lists regular, supreme, diesel, ice, beer, bait — no pump dollars and no hours. Official pages conflict on Saturday close. Hours stay Call. WG dollars (even 08/28/26) stay off the card as a stale sample; the date of that last post stays. 93 has been listed E0.
 
-Marina Bay Harbor hose is Daily 7:30am–5:30pm. Fri–Sun 6am is the ship store, not the hose. Last light in August is after 6, so this pin is last-pump, not still-open.
+South Shore Harbour Fuel Pier: marina page lists ValvTect gasoline and diesel. Summer 8am–6pm daily; winter 8am–4:30pm. No ethanol-free line. Tenant pump-out is free and is not fuel. No ice on pages Tide pulled. WG dollars stay off the card. A 6:30 run cannot use this dock.
+
+Marina Bay Harbor hose is Daily 7:30am–5:30pm. Fri–Sun 6am is the ship store, not the hose. Last light in August is after 6, so this pin is last-pump, not still-open. Ethanol-free 93. Live shrimp by boat.
+
+Lakewood Yacht Club is private (fuel/pump-out 832-256-6923). Houston Yacht Club is members/reciprocal. Neither is a public pump.
+
+Watergate, Waterford, Legend Point, Portofino, Kemah Boardwalk, and TCYC are not fuel pins.
 
 Dropped from the coast set (no weekend routing / no fuel):
 

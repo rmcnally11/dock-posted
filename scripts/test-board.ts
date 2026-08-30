@@ -4,6 +4,7 @@ import path from "node:path";
 import { filterDocks, parseBoardQuery, matchesSearch } from "../src/lib/board-query";
 import { formatQuote } from "../src/lib/format";
 import { boardQuote, boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
+import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
 import seed from "../data/docks.seed.json";
 import type { Dock, StateCode } from "../src/lib/types";
 import { STATE_CODES } from "../src/lib/types";
@@ -16,7 +17,7 @@ assert.ok(docks.every((dock) => dock.region && dock.state && dock.city));
 assert.ok(docks.every((dock) => Number.isFinite(dock.lat) && Number.isFinite(dock.lng)));
 assert.ok(!docks.some((dock) => dock.id === "kemah-boardwalk-marina"));
 assert.ok(!docks.some((dock) => dock.id === "watergate-yachting-center"));
-assert.ok(!docks.some((dock) => /waterford|legend point|portofino/i.test(dock.name)));
+assert.ok(!docks.some((dock) => /waterford|legend point|portofino|tcyc|corinthian/i.test(`${dock.id} ${dock.name}`)));
 
 for (const dock of docks) {
   for (const quote of dock.quotes) {
@@ -120,15 +121,55 @@ assert.equal(pinTrust(gym), "verified");
 
 const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
 assert.ok(blueMarlin);
-assert.equal(pinTrust(blueMarlin), "last-seen");
+assert.equal(pinTrust(blueMarlin), "unverified");
 assert.equal(blueMarlin.hours, null);
 assert.equal(blueMarlin.flags?.includes("last-pump"), true);
+assert.equal(blueMarlin.flags?.includes("west-of-146"), true);
 assert.equal(blueMarlin.flags?.includes("still-open"), false);
-assert.equal(freshnessLabel(blueMarlin), "Last seen");
-assert.match(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)), /^\$/);
+assert.equal(blueMarlin.ethanol, "E0");
+assert.equal(freshnessLabel(blueMarlin), "Call ahead");
+assert.ok(blueMarlin.quotes.every((quote) => quote.pricePerGallon == null));
+assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)), "Call");
+assert.equal(blueMarlin.lastVerifiedAt, "2026-08-28");
 
 const lastMonth = Date.parse("2026-08-30T12:00:00Z") + 40 * 24 * 60 * 60 * 1000;
 assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null, lastMonth)), "Call");
+
+const wgReplay = mergeParsedIntoDocks(
+  [blueMarlin],
+  [
+    {
+      name: "Blue Marlin Fuel Dock",
+      city: "Seabrook, TX",
+      comments: "stale sample",
+      lastUpdate: "2026-08-14",
+      nonEthanol: true,
+      dockId: "blue-marlin-seabrook",
+      quotes: [
+        {
+          product: "93",
+          pricePerGallon: 5.99,
+          ethanol: "E0",
+          status: "posted",
+          taxIncluded: true,
+        },
+      ],
+    },
+  ],
+  "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx",
+);
+assert.equal(wgReplay.docks[0]?.quotes.find((quote) => quote.product === "93")?.pricePerGallon, null);
+assert.equal(wgReplay.docks[0]?.lastVerifiedAt, "2026-08-14");
+assert.notEqual(wgReplay.docks[0]?.notes, "stale sample");
+
+const southShore = docks.find((dock) => dock.id === "south-shore-harbour");
+assert.ok(southShore);
+assert.equal(southShore.ethanol, "E10");
+assert.ok(southShore.quotes.every((quote) => quote.pricePerGallon == null));
+assert.match(southShore.hours ?? "", /8am–6pm \(summer\)/);
+assert.match(southShore.hours ?? "", /Winter 8am–4:30pm/);
+assert.equal(southShore.lastVerifiedAt, "2026-08-28");
+assert.equal(formatQuote(southShore.quotes[0] ?? null), "Call");
 
 const houstonYacht = docks.find((dock) => dock.id === "houston-yacht-club");
 assert.ok(houstonYacht);
@@ -141,6 +182,8 @@ assert.equal(houstonYacht.access, "members");
 const lakewood = docks.find((dock) => dock.id === "lakewood-yacht-club");
 assert.ok(lakewood);
 assert.equal(lakewood.access, "private");
+assert.equal(lakewood.phone, "(832) 256-6923");
+assert.ok(lakewood.quotes.every((quote) => quote.pricePerGallon == null));
 
 const keyLargoHarbor = docks.find((dock) => dock.id === "key-largo-harbor");
 assert.ok(keyLargoHarbor);

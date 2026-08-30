@@ -68,7 +68,15 @@ function toDock(row: Addition): Dock {
   };
 }
 
-const DROP_IDS = new Set(["kemah-boardwalk-marina", "watergate-yachting-center"]);
+const DROP_IDS = new Set([
+  "kemah-boardwalk-marina",
+  "watergate-yachting-center",
+  "waterford-harbor",
+  "legend-point-marina",
+  "portofino-harbour",
+  "texas-corinthian-yacht-club",
+  "tcyc",
+]);
 
 const ISLAMORADA_IDS = new Set([
   "plantation-yacht-harbor",
@@ -81,39 +89,77 @@ const ISLAMORADA_IDS = new Set([
 
 const HOME_PATCHES: Record<
   string,
-  Partial<Pick<Dock, "name" | "lead" | "flags" | "notes" | "hours" | "corridor">>
+  Partial<
+    Pick<
+      Dock,
+      | "name"
+      | "lead"
+      | "flags"
+      | "notes"
+      | "hours"
+      | "corridor"
+      | "quotes"
+      | "ethanol"
+      | "phone"
+      | "access"
+      | "lastVerifiedAt"
+      | "lastVerifiedSource"
+      | "sourceUrl"
+    >
+  >
 > = {
   "marina-bay-harbor": {
     lead: 1,
     flags: ["last-pump"],
     hours: "Daily 7:30am–5:30pm. Fri–Sun ship store 6am — store only, not the hose.",
     notes:
-      "Last public pump at the Clear Lake mouth, south side of the channel, Clear Lake Shores. Ethanol-free 93. Live shrimp by boat. Ship store page (30 Aug 2026): Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Last light in August is after 6 — this hose is not still open then. Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. Does not sell diesel. Blank stays Call.",
+      "Last public pump at the Clear Lake mouth, south side of the channel, Clear Lake Shores. Ethanol-free 93. Live shrimp by boat. Ship store page (30 Aug 2026): Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Last light in August is after 6 — this hose is not still open then. Waterway Guide listed 87 and 93 as No Report. Does not sell diesel. Blank stays Call.",
   },
   "blue-marlin-seabrook": {
     name: "Blue Marlin Fuel Dock",
     lead: 2,
-    flags: ["last-pump"],
+    flags: ["last-pump", "west-of-146"],
     hours: null,
+    ethanol: "E0",
+    quotes: [
+      { product: "87", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+      { product: "93", pricePerGallon: null, ethanol: "E0", status: "call", taxIncluded: null },
+      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+    ],
+    lastVerifiedAt: "2026-08-28",
+    lastVerifiedSource: "Waterway Guide",
+    sourceUrl: "https://seabrookmarina.com/pages/seabrook-marina-fuel-dock",
     notes:
-      "Seabrook, west of SH 146. Fuel-dock page (30 Aug 2026) lists regular, supreme, diesel; no hours posted. Directories disagree on the close. Hours stay Call. Waterway Guide 08/28/26: diesel $5.280, 87 $4.980, 93 $5.990 E0, tax included.",
+      "Seabrook, west of SH 146. Fuel-dock page (30 Aug 2026) lists regular, supreme, diesel, ice, beer, bait; no pump dollars and no hours. Official pages conflict on Saturday close. Hours stay Call. WG last posted 08/28/26 — stale sample, not live. 93 has been listed E0. Trawlers diesel; outboards 93 E0.",
   },
   "south-shore-harbour": {
     name: "South Shore Harbour Fuel Pier",
     lead: 3,
     flags: [],
+    ethanol: "E10",
+    hours: "Daily 8am–6pm (summer). Winter 8am–4:30pm.",
+    quotes: [
+      { product: "89", pricePerGallon: null, ethanol: "E10", status: "call", taxIncluded: null },
+      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
+    ],
+    lastVerifiedAt: "2026-08-28",
+    lastVerifiedSource: "Waterway Guide",
+    sourceUrl: "https://southshoreharbourmarina.com/fuel-pier/",
     notes:
-      "League City fuel pier. Waterway Guide 08/28/26: diesel $5.000, 89 $5.500, tax included. Non-ethanol: No. Hours Daily 8am–6pm (summer hours on marina site). Hours beat a posted price.",
+      "League City fuel pier. Marina page (30 Aug 2026): ValvTect gasoline and diesel. Summer 8am–6pm daily; winter 8am–4:30pm. No ethanol-free line. Tenant pump-out is free — not fuel. No ice on the pages Tide pulled. WG dollars are a stale sample, not live. A 6:30 run cannot use this dock.",
   },
   "houston-yacht-club": {
     lead: 4,
+    access: "members",
     notes:
-      "Club only. Members' dock, not a public pump. Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never.",
+      "Club only. Members and reciprocal, not a public pump. Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never.",
   },
   "lakewood-yacht-club": {
     lead: 5,
+    access: "private",
+    phone: "(832) 256-6923",
     notes:
-      "Club only. Private. Not a public pump. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
+      "Club only. Private. Fuel and pump-out line 832-256-6923. Not a public pump. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
   },
   "watermans-harbor": {
     lead: 6,

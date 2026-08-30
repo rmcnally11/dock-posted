@@ -13,7 +13,7 @@
       "phone": "(281) 549-4772",
       "hours": "Daily 7:30am–5:30pm. Fri–Sun ship store 6am — store only, not the hose.",
       "website": "https://marinabayharbor.com/",
-      "notes": "Last public pump at the Clear Lake mouth, south side of the channel, Clear Lake Shores. Ethanol-free 93. Live shrimp by boat. Ship store page (30 Aug 2026): Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Last light in August is after 6 — this hose is not still open then. Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. Does not sell diesel. Blank stays Call.",
+      "notes": "Last public pump at the Clear Lake mouth, south side of the channel, Clear Lake Shores. Ethanol-free 93. Live shrimp by boat. Ship store page (30 Aug 2026): Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Last light in August is after 6 — this hose is not still open then. Waterway Guide listed 87 and 93 as No Report. Does not sell diesel. Blank stays Call.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -102,39 +102,40 @@
       "phone": "(281) 291-7497",
       "hours": null,
       "website": "https://seabrookmarina.com/pages/seabrook-marina-fuel-dock",
-      "notes": "Seabrook, west of SH 146. Fuel-dock page (30 Aug 2026) lists regular, supreme, diesel; no hours posted. Directories disagree on the close. Hours stay Call. Waterway Guide 08/28/26: diesel $5.280, 87 $4.980, 93 $5.990 E0, tax included.",
+      "notes": "Seabrook, west of SH 146. Fuel-dock page (30 Aug 2026) lists regular, supreme, diesel, ice, beer, bait; no pump dollars and no hours. Official pages conflict on Saturday close. Hours stay Call. WG last posted 08/28/26 — stale sample, not live. 93 has been listed E0. Trawlers diesel; outboards 93 E0.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
         {
           "product": "87",
-          "pricePerGallon": 4.98,
-          "ethanol": "E10",
-          "status": "posted",
-          "taxIncluded": true
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
         },
         {
           "product": "93",
-          "pricePerGallon": 5.99,
+          "pricePerGallon": null,
           "ethanol": "E0",
-          "status": "posted",
-          "taxIncluded": true
+          "status": "call",
+          "taxIncluded": null
         },
         {
           "product": "diesel",
-          "pricePerGallon": 5.28,
+          "pricePerGallon": null,
           "ethanol": "unknown",
-          "status": "posted",
-          "taxIncluded": true
+          "status": "call",
+          "taxIncluded": null
         }
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx",
+      "sourceUrl": "https://seabrookmarina.com/pages/seabrook-marina-fuel-dock",
       "region": "texas",
       "lead": 2,
       "flags": [
-        "last-pump"
+        "last-pump",
+        "west-of-146"
       ]
     },
     {
@@ -146,30 +147,30 @@
       "lat": 29.5475,
       "lng": -95.0664,
       "phone": "(281) 334-0515",
-      "hours": "Daily 8am–6pm (summer hours on marina site)",
+      "hours": "Daily 8am–6pm (summer). Winter 8am–4:30pm.",
       "website": "https://southshoreharbourmarina.com/fuel-pier/",
-      "notes": "League City fuel pier. Waterway Guide 08/28/26: diesel $5.000, 89 $5.500, tax included. Non-ethanol: No. Hours Daily 8am–6pm (summer hours on marina site). Hours beat a posted price.",
+      "notes": "League City fuel pier. Marina page (30 Aug 2026): ValvTect gasoline and diesel. Summer 8am–6pm daily; winter 8am–4:30pm. No ethanol-free line. Tenant pump-out is free — not fuel. No ice on the pages Tide pulled. WG dollars are a stale sample, not live. A 6:30 run cannot use this dock.",
       "access": "public",
       "ethanol": "E10",
       "quotes": [
         {
           "product": "89",
-          "pricePerGallon": 5.5,
+          "pricePerGallon": null,
           "ethanol": "E10",
-          "status": "posted",
-          "taxIncluded": true
+          "status": "call",
+          "taxIncluded": null
         },
         {
           "product": "diesel",
-          "pricePerGallon": 5,
+          "pricePerGallon": null,
           "ethanol": "unknown",
-          "status": "posted",
-          "taxIncluded": true
+          "status": "call",
+          "taxIncluded": null
         }
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx",
+      "sourceUrl": "https://southshoreharbourmarina.com/fuel-pier/",
       "region": "texas",
       "lead": 3,
       "flags": []
@@ -185,7 +186,7 @@
       "phone": "(281) 471-1255",
       "hours": "8am–5pm Wednesday–Sunday",
       "website": "https://www.houstonyachtclub.com/",
-      "notes": "Club only. Members' dock, not a public pump. Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never.",
+      "notes": "Club only. Members and reciprocal, not a public pump. Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never.",
       "access": "members",
       "ethanol": "E10",
       "quotes": [
@@ -218,10 +219,10 @@
       "state": "TX",
       "lat": 29.55833,
       "lng": -95.02983,
-      "phone": "(281) 474-2540",
+      "phone": "(832) 256-6923",
       "hours": null,
       "website": "https://www.lakewoodyachtclub.com/",
-      "notes": "Club only. Private. Not a public pump. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
+      "notes": "Club only. Private. Fuel and pump-out line 832-256-6923. Not a public pump. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
       "access": "private",
       "ethanol": "unknown",
       "quotes": [

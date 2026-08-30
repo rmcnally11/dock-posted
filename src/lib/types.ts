@@ -65,7 +65,7 @@ export type QuoteStatus = "posted" | "call" | "no-report" | "not-sold";
 
 export type DockAccess = "public" | "private" | "members";
 
-export type DockFlag = "last-pump" | "still-open";
+export type DockFlag = "last-pump" | "still-open" | "west-of-146";
 
 export interface FuelQuote {
   product: Product;

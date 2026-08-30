@@ -27,6 +27,7 @@ function flagLabels(dock: Dock): string[] {
   if (dock.closed) labels.push("Closed");
   if (dock.flags?.includes("last-pump")) labels.push("Last pump");
   if (dock.flags?.includes("still-open") && !dock.closed) labels.push("Still open");
+  if (dock.flags?.includes("west-of-146")) labels.push("West of 146");
   const access = accessLabel(dock);
   if (access) labels.push(access);
   if (dieselOnly(dock)) labels.push("Diesel only");

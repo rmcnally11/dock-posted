@@ -82,6 +82,24 @@ try {
   );
   check("clear lake 1 marina bay", texasNames[0] === "Marina Bay Harbor", texasNames[0]);
   check("clear lake 2 blue marlin", texasNames[1] === "Blue Marlin Fuel Dock", texasNames[1]);
+  const blueMarlinCard = await page.$eval(
+    "[data-testid=dock-card-blue-marlin-seabrook]",
+    (el) => el.textContent ?? "",
+  );
+  check("blue marlin hours call", /Hours\s*Call/.test(blueMarlinCard) || blueMarlinCard.includes("Call"), blueMarlinCard.slice(0, 200));
+  check("blue marlin no live wg dollar", !/\$5\.990|\$4\.980|\$5\.280/.test(blueMarlinCard));
+  check("blue marlin west of 146", /west of 146/i.test(blueMarlinCard));
+  const sshCard = await page.$eval(
+    "[data-testid=dock-card-south-shore-harbour]",
+    (el) => el.textContent ?? "",
+  );
+  check("south shore no live wg dollar", !/\$5\.500|\$5\.000/.test(sshCard));
+  check("south shore opens at 8", /8am–6pm/.test(sshCard));
+  const lycCard = await page.$eval(
+    "[data-testid=dock-card-lakewood-yacht-club]",
+    (el) => el.textContent ?? "",
+  );
+  check("lakewood is club only", /club only/i.test(lycCard));
   check(
     "clear lake 3 south shore",
     texasNames[2] === "South Shore Harbour Fuel Pier",
