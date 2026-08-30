@@ -3,60 +3,45 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CORRIDORS, ETHANOLS, PRODUCTS, type CorridorId, type Dock } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { ETHANOLS, PRODUCTS, STATE_CODES, type Dock, type StateCode } from "@/lib/types";
 
 export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDockId?: string }) {
   const startingDock =
     docks.find((dock) => dock.id === initialDockId)?.id ?? docks[0]?.id ?? "";
   const selected = docks.find((dock) => dock.id === startingDock) ?? null;
   const today = todayInput();
+  const grouped = STATE_CODES.map((state) => ({
+    state,
+    docks: docks.filter((dock) => dock.state === state),
+  })).filter((group) => group.docks.length > 0);
 
   return (
     <form action={submitPriceReport} autoComplete="off" className="space-y-5">
       <fieldset className="space-y-2">
         <legend className="text-sm font-medium text-harbor/80">Marina</legend>
-        {(Object.keys(CORRIDORS) as CorridorId[]).map((corridor) => (
-          <div key={corridor} className="space-y-1.5">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-harbor/45">
-              {CORRIDORS[corridor].label}
-            </p>
-            <div className="space-y-1">
-              {docks
-                .filter((dock) => dock.corridor === corridor)
-                .map((dock) => (
-                  <label
-                    key={dock.id}
-                    data-testid={`marina-${dock.id}`}
-                    className={cn(
-                      "flex cursor-pointer items-start gap-2 rounded-lg border px-3 py-2 text-sm",
-                      startingDock === dock.id
-                        ? "border-wake bg-sand"
-                        : "border-harbor/10 bg-white hover:border-harbor/25",
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      name="marina"
-                      value={dock.id}
-                      defaultChecked={startingDock === dock.id}
-                      className="mt-1"
-                    />
-                    <span>
-                      <span className="block font-medium text-harbor">{dock.name}</span>
-                      <span className="block text-xs text-harbor/55">
-                        {dock.city}, {dock.state}
-                        {dock.phone ? ` · ${dock.phone}` : ""}
-                      </span>
-                    </span>
-                  </label>
-                ))}
-            </div>
-          </div>
-        ))}
+        <Label htmlFor="marina" className="sr-only">
+          Marina
+        </Label>
+        <select
+          id="marina"
+          name="marina"
+          defaultValue={startingDock}
+          className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
+        >
+          {grouped.map((group) => (
+            <optgroup key={group.state} label={stateLabel(group.state)}>
+              {group.docks.map((dock) => (
+                <option key={dock.id} value={dock.id} data-testid={`marina-${dock.id}`}>
+                  {dock.name} · {dock.city}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
         {selected ? (
           <p data-testid="reporting-for" className="text-xs text-harbor/55">
-            Reporting for {selected.name}
+            {selected.name}, {selected.city} {selected.state}
+            {selected.phone ? ` · ${selected.phone}` : ""}
           </p>
         ) : null}
       </fieldset>
@@ -68,7 +53,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
             id="product"
             name="product"
             defaultValue="90"
-            className="h-11 w-full rounded-md border border-harbor/15 bg-white px-3 text-base md:text-sm"
+            className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
           >
             {PRODUCTS.map((item) => (
               <option key={item} value={item}>
@@ -83,11 +68,17 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
             id="ethanol"
             name="ethanol"
             defaultValue="E0"
-            className="h-11 w-full rounded-md border border-harbor/15 bg-white px-3 text-base md:text-sm"
+            className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
           >
             {ETHANOLS.map((item) => (
               <option key={item} value={item}>
-                {item === "E0" ? "E0 / ethanol-free" : item}
+                {item === "E0"
+                  ? "E0"
+                  : item === "E15"
+                    ? "E15 — not for boats"
+                    : item === "unknown"
+                      ? "Call"
+                      : item}
               </option>
             ))}
           </select>
@@ -97,11 +88,57 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="price">Price per gallon</Label>
-          <Input id="price" name="price" inputMode="decimal" placeholder="5.790" required />
+          <Input id="price" name="price" inputMode="decimal" placeholder="5.790" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="seenAt">When you saw it</Label>
           <Input id="seenAt" name="seenAt" type="date" defaultValue={today} required />
+        </div>
+      </div>
+
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium text-harbor/80">Who posts</legend>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="radio" name="who" value="boater" defaultChecked />
+          I fueled here
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="radio" name="who" value="marina" />
+          I run this dock
+        </label>
+        <p className="text-xs text-harbor/50">
+          Truck day, or when you change the board. Not every morning.
+        </p>
+      </fieldset>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="hours">Hours</Label>
+        <Input id="hours" name="hours" placeholder="Daily 7am–6pm" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="pay">Pay</Label>
+          <select
+            id="pay"
+            name="pay"
+            defaultValue=""
+            className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
+          >
+            <option value="">Call</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="both">Cash or card</option>
+          </select>
+        </div>
+        <div className="space-y-2 pt-6 text-sm">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="closed" value="1" />
+            Closed
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="dieselOnly" value="1" />
+            Diesel only
+          </label>
         </div>
       </div>
 
@@ -112,7 +149,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
           name="note"
           required={false}
           maxLength={400}
-          placeholder="Pump label said Rec-90. Attendant confirmed tax included."
+          placeholder="Rec-90 on the hose. Tax in."
         />
       </div>
 
@@ -121,14 +158,18 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
         <Input id="company" name="website_url" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <Button type="submit" className="w-full sm:w-auto">
-        Post this price
+      <Button type="submit" data-testid="post-price" className="w-full rounded-none sm:w-auto">
+        Post what you saw
       </Button>
       <p className="text-xs text-harbor/50">
-        No account. Do not invent a number. If the dock said Call, leave it off the form.
+        The number on the pump. A marina owns a verified pin. If they did not post, it stays Call.
       </p>
     </form>
   );
+}
+
+function stateLabel(state: StateCode): string {
+  return state;
 }
 
 function todayInput() {

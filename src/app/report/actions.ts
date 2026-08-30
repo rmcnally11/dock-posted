@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { addPriceReport } from "@/lib/store";
 import { clientKey, takeReportSlot } from "@/lib/rate-limit";
-import { ETHANOLS, PRODUCTS, type Ethanol, type Product } from "@/lib/types";
+import { ETHANOLS, PRODUCTS, type Ethanol, type PayKind, type Product } from "@/lib/types";
 
 export async function submitPriceReport(formData: FormData): Promise<void> {
   const honeypot = String(formData.get("website_url") ?? "").trim();
@@ -15,23 +15,36 @@ export async function submitPriceReport(formData: FormData): Promise<void> {
   const dockId = String(formData.get("marina") ?? "").trim();
   const product = String(formData.get("product") ?? "") as Product;
   const ethanolRaw = String(formData.get("ethanol") ?? "") as Ethanol;
-  const pricePerGallon = Number(formData.get("price"));
+  const priceRaw = String(formData.get("price") ?? "").trim();
+  const pricePerGallon = priceRaw === "" ? 0 : Number(priceRaw);
   const seenAt = String(formData.get("seenAt") ?? "").trim();
   const note = String(formData.get("note") ?? "").trim();
+  const marinaOwned = String(formData.get("who") ?? "") === "marina";
+  const hours = String(formData.get("hours") ?? "").trim();
+  const payRaw = String(formData.get("pay") ?? "").trim();
+  const pay: PayKind | null =
+    payRaw === "cash" || payRaw === "card" || payRaw === "both" ? payRaw : null;
+  const closed = formData.get("closed") === "1";
+  const dieselOnly = formData.get("dieselOnly") === "1";
 
   if (!dockId) {
-    redirect("/report?error=Pick%20a%20marina.");
+    redirect("/report?error=Pick%20the%20dock.");
   }
   if (!PRODUCTS.includes(product)) {
-    redirect(`/report?error=Pick%20a%20product.&dock=${encodeURIComponent(dockId)}`);
+    redirect(`/report?error=Pick%20the%20hose.&dock=${encodeURIComponent(dockId)}`);
   }
-  if (!Number.isFinite(pricePerGallon) || pricePerGallon <= 0 || pricePerGallon > 20) {
+  if (!marinaOwned && (!Number.isFinite(pricePerGallon) || pricePerGallon <= 0 || pricePerGallon > 20)) {
     redirect(
-      `/report?error=Enter%20the%20price%20you%20saw%20on%20the%20pump%2C%20per%20gallon.&dock=${encodeURIComponent(dockId)}`,
+      `/report?error=The%20number%20on%20the%20pump%2C%20per%20gallon.&dock=${encodeURIComponent(dockId)}`,
+    );
+  }
+  if (marinaOwned && priceRaw !== "" && (!Number.isFinite(pricePerGallon) || pricePerGallon <= 0 || pricePerGallon > 20)) {
+    redirect(
+      `/report?error=The%20number%20on%20the%20pump%2C%20per%20gallon.&dock=${encodeURIComponent(dockId)}`,
     );
   }
   if (!seenAt) {
-    redirect(`/report?error=Add%20the%20date%20you%20saw%20the%20price.&dock=${encodeURIComponent(dockId)}`);
+    redirect(`/report?error=When%20did%20you%20see%20it%3F&dock=${encodeURIComponent(dockId)}`);
   }
 
   const ethanol: Ethanol =
@@ -52,6 +65,11 @@ export async function submitPriceReport(formData: FormData): Promise<void> {
       pricePerGallon,
       seenAt,
       note: note || null,
+      marinaOwned,
+      hours: hours || null,
+      pay,
+      closed,
+      dieselOnly,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not save report";

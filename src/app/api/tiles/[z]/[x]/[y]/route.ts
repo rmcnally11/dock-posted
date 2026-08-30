@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const HOSTS = ["a", "b", "c"] as const;
-
 function asTileInt(value: string, max: number): number | null {
   const cleaned = value.replace(/\.png$/i, "");
   if (!/^\d+$/.test(cleaned)) return null;
@@ -24,10 +22,9 @@ export async function GET(
     return NextResponse.json({ error: "Invalid tile" }, { status: 400 });
   }
 
-  const host = HOSTS[Math.abs(tileX) % HOSTS.length];
-  const url = `https://${host}.basemaps.cartocdn.com/rastertiles/voyager/${zoom}/${tileX}/${tileY}.png`;
+  const url = `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
   const upstream = await fetch(url, {
-    headers: { "User-Agent": "DockPosted/1.0 (local marina map)" },
+    headers: { "User-Agent": "DockPosted/1.0 (+https://github.com/rmcnally11/dock-posted)" },
     cache: "force-cache",
   });
 

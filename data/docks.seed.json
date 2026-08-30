@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-30T00:00:00.000Z",
+  "generatedAt": "2026-08-30T12:00:00.000Z",
   "seedCapturedOn": "2026-08-30",
   "docks": [
     {
@@ -11,9 +11,9 @@
       "lat": 29.54435,
       "lng": -95.02692,
       "phone": "(281) 549-4772",
-      "hours": null,
+      "hours": "Daily 7:30am–5:30pm. Fri–Sun ship store 6am — store only, not the hose.",
       "website": "https://marinabayharbor.com/",
-      "notes": "Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. Dock sells 87 and 93; 93 is the non-ethanol product. Does not sell diesel. WG comment: call 281-535-2222 to verify.",
+      "notes": "Last public pump at the Clear Lake mouth, south side of the channel, Clear Lake Shores. Ethanol-free 93. Live shrimp by boat. Ship store page (30 Aug 2026): Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Last light in August is after 6 — this hose is not still open then. Waterway Guide listed 87 and 93 as No Report. Does not sell diesel. Blank stays Call.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -41,7 +41,12 @@
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx",
+      "region": "texas",
+      "lead": 1,
+      "flags": [
+        "last-pump"
+      ]
     },
     {
       "id": "galveston-yacht-marina",
@@ -54,7 +59,7 @@
       "phone": "(409) 765-3000",
       "hours": "Daily 9am–7pm (marina site, 30 Aug 2026)",
       "website": "https://galvestonyachtbasin.com/",
-      "notes": "Marina homepage on 30 Aug 2026 posted Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79. Matches Waterway Guide 08/28/26 (89 $4.450, 90 $5.790 E0, diesel $5.280, tax included).",
+      "notes": "Galveston Island, not the Clear Lake mouth. Marina homepage on 30 Aug 2026 posted Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79. Matches Waterway Guide 08/28/26.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -82,82 +87,93 @@
       ],
       "lastVerifiedAt": "2026-08-30",
       "lastVerifiedSource": "marina site",
-      "sourceUrl": "https://galvestonyachtbasin.com/"
+      "sourceUrl": "https://galvestonyachtbasin.com/",
+      "region": "texas",
+      "lead": 7
     },
     {
       "id": "blue-marlin-seabrook",
-      "name": "Seabrook Marina / Blue Marlin Fuel Dock",
+      "name": "Blue Marlin Fuel Dock",
       "corridor": "galveston-bay",
       "city": "Seabrook",
       "state": "TX",
       "lat": 29.54967,
       "lng": -95.02667,
       "phone": "(281) 291-7497",
-      "hours": "Daily 7am–6pm",
+      "hours": null,
       "website": "https://seabrookmarina.com/pages/seabrook-marina-fuel-dock",
-      "notes": "Waterway Guide 08/28/26: diesel $5.280, 87 $4.980, 93 $5.990, tax included. 93 is non-ethanol. Marina site confirms gas and diesel; no live pump prices on the marketing page.",
+      "notes": "Seabrook, west of SH 146. Fuel-dock page (30 Aug 2026) lists regular, supreme, diesel, ice, beer, bait; no pump dollars and no hours. Official pages conflict on Saturday close. Hours stay Call. WG last posted 08/28/26 — stale sample, not live. 93 has been listed E0. Trawlers diesel; outboards 93 E0.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
         {
           "product": "87",
-          "pricePerGallon": 4.98,
-          "ethanol": "E10",
-          "status": "posted",
-          "taxIncluded": true
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
         },
         {
           "product": "93",
-          "pricePerGallon": 5.99,
+          "pricePerGallon": null,
           "ethanol": "E0",
-          "status": "posted",
-          "taxIncluded": true
+          "status": "call",
+          "taxIncluded": null
         },
         {
           "product": "diesel",
-          "pricePerGallon": 5.28,
+          "pricePerGallon": null,
           "ethanol": "unknown",
-          "status": "posted",
-          "taxIncluded": true
+          "status": "call",
+          "taxIncluded": null
         }
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx"
+      "sourceUrl": "https://seabrookmarina.com/pages/seabrook-marina-fuel-dock",
+      "region": "texas",
+      "lead": 2,
+      "flags": [
+        "last-pump",
+        "west-of-146"
+      ]
     },
     {
       "id": "south-shore-harbour",
-      "name": "South Shore Harbour Marina",
+      "name": "South Shore Harbour Fuel Pier",
       "corridor": "galveston-bay",
       "city": "League City",
       "state": "TX",
       "lat": 29.5475,
       "lng": -95.0664,
       "phone": "(281) 334-0515",
-      "hours": "Daily 8am–6pm (summer hours on marina site)",
+      "hours": "Daily 8am–6pm (summer). Winter 8am–4:30pm.",
       "website": "https://southshoreharbourmarina.com/fuel-pier/",
-      "notes": "Waterway Guide 08/28/26: diesel $5.000, 89 $5.500, tax included. Non-ethanol: No. Marina fuel-pier page lists ValvTect gas and diesel and hours, no pump prices.",
+      "notes": "League City fuel pier. Marina page (30 Aug 2026): ValvTect gasoline and diesel. Summer 8am–6pm daily; winter 8am–4:30pm. No ethanol-free line. Tenant pump-out is free — not fuel. No ice on the pages Tide pulled. WG dollars are a stale sample, not live. A 6:30 run cannot use this dock.",
       "access": "public",
       "ethanol": "E10",
       "quotes": [
         {
           "product": "89",
-          "pricePerGallon": 5.5,
+          "pricePerGallon": null,
           "ethanol": "E10",
-          "status": "posted",
-          "taxIncluded": true
+          "status": "call",
+          "taxIncluded": null
         },
         {
           "product": "diesel",
-          "pricePerGallon": 5.0,
+          "pricePerGallon": null,
           "ethanol": "unknown",
-          "status": "posted",
-          "taxIncluded": true
+          "status": "call",
+          "taxIncluded": null
         }
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/11/gulf-coast-al-thru-tx"
+      "sourceUrl": "https://southshoreharbourmarina.com/fuel-pier/",
+      "region": "texas",
+      "lead": 3,
+      "flags": []
     },
     {
       "id": "houston-yacht-club",
@@ -170,7 +186,7 @@
       "phone": "(281) 471-1255",
       "hours": "8am–5pm Wednesday–Sunday",
       "website": "https://www.houstonyachtclub.com/",
-      "notes": "Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never. Fuel for members only.",
+      "notes": "Club only. Members and reciprocal, not a public pump. Waterway Guide listing: diesel Call, 89 Call. Last fuel update Never.",
       "access": "members",
       "ethanol": "E10",
       "quotes": [
@@ -191,7 +207,9 @@
       ],
       "lastVerifiedAt": null,
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/marina/houston-yacht-club"
+      "sourceUrl": "https://www.waterwayguide.com/marina/houston-yacht-club",
+      "region": "texas",
+      "lead": 4
     },
     {
       "id": "lakewood-yacht-club",
@@ -201,10 +219,10 @@
       "state": "TX",
       "lat": 29.55833,
       "lng": -95.02983,
-      "phone": "(281) 474-2540",
+      "phone": "(832) 256-6923",
       "hours": null,
       "website": "https://www.lakewoodyachtclub.com/",
-      "notes": "Private club. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
+      "notes": "Club only. Private. Fuel and pump-out line 832-256-6923. Not a public pump. Waterway Guide lists diesel and gas as Call. Last fuel update 06/24/25.",
       "access": "private",
       "ethanol": "unknown",
       "quotes": [
@@ -225,7 +243,9 @@
       ],
       "lastVerifiedAt": "2025-06-24",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/marina/lakewood-yacht-club"
+      "sourceUrl": "https://www.waterwayguide.com/marina/lakewood-yacht-club",
+      "region": "texas",
+      "lead": 5
     },
     {
       "id": "watermans-harbor",
@@ -252,7 +272,9 @@
       ],
       "lastVerifiedAt": null,
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/marina/watermans-harbor"
+      "sourceUrl": "https://www.waterwayguide.com/marina/watermans-harbor",
+      "region": "texas",
+      "lead": 6
     },
     {
       "id": "key-largo-harbor",
@@ -265,7 +287,7 @@
       "phone": "(305) 451-0045",
       "hours": null,
       "website": "https://keylargoharbormarina.com/",
-      "notes": "Waterway Guide service listing: diesel Call, 87–93 Call for pricing, non-ethanol Yes. Comments: fuel dock open, not posting, call marina. Last fuel update 08/26/2022.",
+      "notes": "Key Largo stretch. Waterway Guide: diesel Call, 87–93 Call, non-ethanol Yes. Last fuel update 08/26/2022. Call / unverified. Do not invent a 2026 price. Dock E0 is not the landside E10 hose.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -286,7 +308,9 @@
       ],
       "lastVerifiedAt": "2022-08-26",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/service/key-largo-harbor"
+      "sourceUrl": "https://www.waterwayguide.com/service/key-largo-harbor",
+      "region": "keys",
+      "lead": 1
     },
     {
       "id": "pilot-house-marina",
@@ -320,7 +344,9 @@
       ],
       "lastVerifiedAt": "2026-08-25",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
+      "region": "keys",
+      "lead": 3
     },
     {
       "id": "mangrove-marina",
@@ -354,12 +380,14 @@
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
+      "region": "keys",
+      "lead": 6
     },
     {
       "id": "plantation-yacht-harbor",
       "name": "Plantation Yacht Harbor Marina",
-      "corridor": "upper-keys",
+      "corridor": null,
       "city": "Islamorada",
       "state": "FL",
       "lat": 24.9733,
@@ -367,7 +395,7 @@
       "phone": "(305) 852-2381",
       "hours": "Open 8am–6pm daily; fuel and pump-out until 5pm",
       "website": null,
-      "notes": "Town of Islamorada marina. Waterway Guide 08/24/26: diesel $6.000, 90 $5.659, tax included, non-ethanol Yes.",
+      "notes": "Islamorada — a different run from Key Largo. Waterway Guide 08/24/26: diesel $6.000, 90 $5.659, tax included, non-ethanol Yes.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -380,7 +408,7 @@
         },
         {
           "product": "diesel",
-          "pricePerGallon": 6.0,
+          "pricePerGallon": 6,
           "ethanol": "unknown",
           "status": "posted",
           "taxIncluded": true
@@ -388,12 +416,14 @@
       ],
       "lastVerifiedAt": "2026-08-24",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
+      "region": "keys",
+      "lead": 20
     },
     {
       "id": "islamarina",
       "name": "IslaMarina",
-      "corridor": "upper-keys",
+      "corridor": null,
       "city": "Islamorada",
       "state": "FL",
       "lat": 24.9578,
@@ -401,7 +431,7 @@
       "phone": "(305) 664-3636",
       "hours": "6am–6pm",
       "website": "https://islamarina.net/",
-      "notes": "Waterway Guide 08/28/26: diesel $5.450, 90 $5.590, tax included, non-ethanol Yes.",
+      "notes": "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $5.450, 90 $5.590, tax included, non-ethanol Yes.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -422,12 +452,14 @@
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
+      "region": "keys",
+      "lead": 21
     },
     {
       "id": "snake-creek-marina",
       "name": "Snake Creek Marina (Islamorada Yacht Club)",
-      "corridor": "upper-keys",
+      "corridor": null,
       "city": "Islamorada",
       "state": "FL",
       "lat": 24.9536,
@@ -435,7 +467,7 @@
       "phone": "(305) 396-7724",
       "hours": "Daily 9am–5pm",
       "website": null,
-      "notes": "Listed on Waterway Guide as The Marina at Islamorada Yacht Club, now Snake Creek Marina. 08/28/26: does not sell diesel; 90 No Report This Week; non-ethanol Yes.",
+      "notes": "Islamorada — a different run from Key Largo. Listed on Waterway Guide as The Marina at Islamorada Yacht Club, now Snake Creek Marina. 08/28/26: does not sell diesel; 90 No Report This Week; non-ethanol Yes.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -456,12 +488,14 @@
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
+      "region": "keys",
+      "lead": 22
     },
     {
       "id": "three-waters-marina",
       "name": "Three Waters Resort and Marina",
-      "corridor": "upper-keys",
+      "corridor": null,
       "city": "Islamorada",
       "state": "FL",
       "lat": 24.9444,
@@ -469,7 +503,7 @@
       "phone": "(305) 433-9942",
       "hours": "6am–5pm",
       "website": null,
-      "notes": "Waterway Guide 08/28/26: diesel $6.250, 90 $5.500, tax included, non-ethanol Yes.",
+      "notes": "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $6.250, 90 $5.500, tax included, non-ethanol Yes.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -490,12 +524,14 @@
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
+      "region": "keys",
+      "lead": 23
     },
     {
       "id": "worldwide-sportsman",
       "name": "World Wide Sportsman / Bayside Marina",
-      "corridor": "upper-keys",
+      "corridor": null,
       "city": "Islamorada",
       "state": "FL",
       "lat": 24.9228,
@@ -503,7 +539,7 @@
       "phone": "(305) 664-3398",
       "hours": "6am–4pm; free pump-out 6am–5pm",
       "website": null,
-      "notes": "Waterway Guide 08/28/26: diesel $4.840 tax not included (7.50%), 90 $5.170 tax included, non-ethanol Yes.",
+      "notes": "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $4.840 tax not included (7.50%), 90 $5.170 tax included, non-ethanol Yes.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -524,12 +560,14 @@
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
+      "region": "keys",
+      "lead": 24
     },
     {
       "id": "bud-n-marys",
       "name": "Bud'n Mary's Fishing Marina",
-      "corridor": "upper-keys",
+      "corridor": null,
       "city": "Islamorada",
       "state": "FL",
       "lat": 24.9075,
@@ -537,7 +575,7 @@
       "phone": "(305) 664-2461",
       "hours": "7am–7pm",
       "website": "https://www.budnmarys.com/",
-      "notes": "Waterway Guide 08/28/26: diesel $6.290 (dyed diesel noted), 90 $6.190, tax included, non-ethanol Yes.",
+      "notes": "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $6.290 (dyed diesel noted), 90 $6.190, tax included, non-ethanol Yes.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
@@ -558,7 +596,9 @@
       ],
       "lastVerifiedAt": "2026-08-28",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys"
+      "sourceUrl": "https://www.waterwayguide.com/fuel-price-report/7/florida-keys",
+      "region": "keys",
+      "lead": 25
     },
     {
       "id": "tavernier-creek",
@@ -571,7 +611,7 @@
       "phone": "(305) 852-5854",
       "hours": "8am–5pm, seven days",
       "website": "http://www.taverniercreekmarina.com",
-      "notes": "Waterway Guide marina listing: gas Call, non-ethanol No, last fuel update Never.",
+      "notes": "Tavernier. Waterway Guide marina listing: gas Call, non-ethanol No (landside E10). Last fuel update Never. Call.",
       "access": "public",
       "ethanol": "unknown",
       "quotes": [
@@ -585,7 +625,9 @@
       ],
       "lastVerifiedAt": null,
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/marina/tavernier-creek-marina"
+      "sourceUrl": "https://www.waterwayguide.com/marina/tavernier-creek-marina",
+      "region": "keys",
+      "lead": 7
     },
     {
       "id": "garden-cove-marina",
@@ -598,7 +640,7 @@
       "phone": "(305) 451-4694",
       "hours": "Daily 8am–5pm",
       "website": "https://www.buzzardsroostkeylargo.com/garden-cove-marina/",
-      "notes": "Waterway Guide marina listing: 90 Call for pricing, non-ethanol No. Comments say call marina; last fuel update 06/29/23. Marina site confirms gas; no pump price.",
+      "notes": "Key Largo. Waterway Guide: 90 Call, non-ethanol No (landside E10, not dock E0). Last fuel update 06/29/23. Marina site confirms gas; no pump price. Call.",
       "access": "public",
       "ethanol": "unknown",
       "quotes": [
@@ -612,7 +654,4211 @@
       ],
       "lastVerifiedAt": "2023-06-29",
       "lastVerifiedSource": "Waterway Guide",
-      "sourceUrl": "https://www.waterwayguide.com/marina/garden-cove-marina"
+      "sourceUrl": "https://www.waterwayguide.com/marina/garden-cove-marina",
+      "region": "keys",
+      "lead": 4
+    },
+    {
+      "id": "marina-del-mar",
+      "name": "Marina Del Mar",
+      "corridor": "upper-keys",
+      "region": "keys",
+      "city": "Key Largo",
+      "state": "FL",
+      "lat": 25.0965,
+      "lng": -80.4378,
+      "phone": "(305) 451-4107",
+      "hours": null,
+      "website": "https://www.marinadelmar.com/",
+      "notes": "Key Largo, next to the harbor. CRYC sends boats here. First-party marina page (30 Aug 2026) listed slips, not a pump board. Directories disagree on whether a hose is on site. Call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.marinadelmar.com/",
+      "lead": 2
+    },
+    {
+      "id": "ocean-reef-club",
+      "name": "Ocean Reef Club",
+      "corridor": "upper-keys",
+      "region": "keys",
+      "city": "North Key Largo",
+      "state": "FL",
+      "lat": 25.3094,
+      "lng": -80.2778,
+      "phone": "(305) 367-2611",
+      "hours": "Daily 7am–6pm (club marina page)",
+      "website": "https://www.oceanreef.com/",
+      "notes": "Members only. Private marina. Club page lists the marina open daily 7am–6pm for members and their guests. A weekend guest who is not with a member cannot buy. No pump dollars posted. Call.",
+      "access": "members",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.oceanreef.com/",
+      "lead": 5
+    },
+    {
+      "id": "cove-harbor-rockport",
+      "name": "Cove Harbor Marina",
+      "corridor": null,
+      "region": "texas",
+      "city": "Rockport",
+      "state": "TX",
+      "lat": 28.0324,
+      "lng": -97.0462,
+      "phone": "(361) 729-8381",
+      "hours": null,
+      "website": "https://www.coveharbor.com/",
+      "notes": "Aransas Bay. Waterway Guide carries this dock on the Gulf report. Marina site has no live pump board (30 Aug 2026). Call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.coveharbor.com/"
+    },
+    {
+      "id": "island-moorings",
+      "name": "Island Moorings Marina",
+      "corridor": null,
+      "region": "texas",
+      "city": "Port Aransas",
+      "state": "TX",
+      "lat": 27.8342,
+      "lng": -97.0721,
+      "phone": "(361) 749-4100",
+      "hours": null,
+      "website": "https://www.islandmoorings.com/",
+      "notes": "Port Aransas basin. Public marina directory and marina site; no pump prices posted.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.islandmoorings.com/"
+    },
+    {
+      "id": "port-aransas-city-marina",
+      "name": "Port Aransas City Harbor",
+      "corridor": null,
+      "region": "texas",
+      "city": "Port Aransas",
+      "state": "TX",
+      "lat": 27.8381,
+      "lng": -97.0614,
+      "phone": "(361) 749-4158",
+      "hours": null,
+      "website": "https://www.cityofportaransas.org/",
+      "notes": "Municipal harbor. City pages list slips and services, not a fuel board.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.cityofportaransas.org/"
+    },
+    {
+      "id": "corpus-christi-marina",
+      "name": "Corpus Christi Municipal Marina",
+      "corridor": null,
+      "region": "texas",
+      "city": "Corpus Christi",
+      "state": "TX",
+      "lat": 27.7952,
+      "lng": -97.3906,
+      "phone": "(361) 826-3980",
+      "hours": null,
+      "website": "https://www.cctexas.com/departments/marina",
+      "notes": "City marina on the downtown bayfront. Municipal site; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.cctexas.com/departments/marina"
+    },
+    {
+      "id": "south-padre-island-marina",
+      "name": "South Padre Island Marina",
+      "corridor": null,
+      "region": "texas",
+      "city": "South Padre Island",
+      "state": "TX",
+      "lat": 26.1034,
+      "lng": -97.1682,
+      "phone": "(956) 761-5443",
+      "hours": null,
+      "website": null,
+      "notes": "Island wet slips on the Laguna Madre. Public harbor; no posted pump price found.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "sea-ranch-marina",
+      "name": "Sea Ranch Marina",
+      "corridor": null,
+      "region": "texas",
+      "city": "South Padre Island",
+      "state": "TX",
+      "lat": 26.0788,
+      "lng": -97.1589,
+      "phone": "(956) 761-4511",
+      "hours": null,
+      "website": "https://searanchmarina.com/",
+      "notes": "Lower Laguna. Marina site lists fuel; no dollars on the page.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://searanchmarina.com/"
+    },
+    {
+      "id": "freeport-municipal-harbor",
+      "name": "Freeport Municipal Harbor",
+      "corridor": null,
+      "region": "texas",
+      "city": "Freeport",
+      "state": "TX",
+      "lat": 28.9436,
+      "lng": -95.3082,
+      "phone": "(979) 233-3526",
+      "hours": null,
+      "website": "https://www.freeport.tx.us/",
+      "notes": "City harbor on the Old Brazos. Call the dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.freeport.tx.us/"
+    },
+    {
+      "id": "pleasure-island-marina",
+      "name": "Pleasure Island Marina",
+      "corridor": null,
+      "region": "texas",
+      "city": "Port Arthur",
+      "state": "TX",
+      "lat": 29.8664,
+      "lng": -93.9305,
+      "phone": "(409) 982-4675",
+      "hours": null,
+      "website": null,
+      "notes": "Sabine Lake / Pleasure Island. Public harbor listing; no pump board found.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "orleans-marina",
+      "name": "Orleans Marina",
+      "corridor": null,
+      "region": "louisiana",
+      "city": "New Orleans",
+      "state": "LA",
+      "lat": 30.0271,
+      "lng": -90.1134,
+      "phone": "(504) 288-2351",
+      "hours": null,
+      "website": "https://www.orleansmarina.com/",
+      "notes": "West End on Lake Pontchartrain. Marina site; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.orleansmarina.com/"
+    },
+    {
+      "id": "municipal-yacht-harbor-nola",
+      "name": "New Orleans Municipal Yacht Harbor",
+      "corridor": null,
+      "region": "louisiana",
+      "city": "New Orleans",
+      "state": "LA",
+      "lat": 30.0262,
+      "lng": -90.1186,
+      "phone": "(504) 288-1431",
+      "hours": null,
+      "website": "https://www.noych.org/",
+      "notes": "City yacht harbor, West End. Public listing; no pump prices.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.noych.org/"
+    },
+    {
+      "id": "cypress-cove-venice",
+      "name": "Cypress Cove Marina",
+      "corridor": null,
+      "region": "louisiana",
+      "city": "Venice",
+      "state": "LA",
+      "lat": 29.2486,
+      "lng": -89.3674,
+      "phone": "(985) 534-9289",
+      "hours": null,
+      "website": "https://www.cypresscovemarina.com/",
+      "notes": "Birdfoot launch. Site lists fuel and ice; no posted dollars.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.cypresscovemarina.com/"
+    },
+    {
+      "id": "venice-marina",
+      "name": "Venice Marina",
+      "corridor": null,
+      "region": "louisiana",
+      "city": "Venice",
+      "state": "LA",
+      "lat": 29.2772,
+      "lng": -89.3548,
+      "phone": "(985) 534-9357",
+      "hours": null,
+      "website": "https://www.venicemarina.com/",
+      "notes": "Venice jump-off. Marina site; call the dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.venicemarina.com/"
+    },
+    {
+      "id": "bridgeside-grand-isle",
+      "name": "Bridgeside Marina",
+      "corridor": null,
+      "region": "louisiana",
+      "city": "Grand Isle",
+      "state": "LA",
+      "lat": 29.2384,
+      "lng": -89.9871,
+      "phone": "(985) 787-2412",
+      "hours": null,
+      "website": null,
+      "notes": "Grand Isle bridge side. Public marina listing; call ahead.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "harborwalk-lake-charles",
+      "name": "Harborwalk Marina",
+      "corridor": null,
+      "region": "louisiana",
+      "city": "Lake Charles",
+      "state": "LA",
+      "lat": 30.2264,
+      "lng": -93.2281,
+      "phone": "(337) 433-6511",
+      "hours": null,
+      "website": null,
+      "notes": "Contraband Bayou downtown. City / tourism listings; no pump board.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "calcasieu-point-marina",
+      "name": "Calcasieu Point Marina",
+      "corridor": null,
+      "region": "louisiana",
+      "city": "Lake Charles",
+      "state": "LA",
+      "lat": 30.1188,
+      "lng": -93.3324,
+      "phone": "(337) 474-0248",
+      "hours": null,
+      "website": null,
+      "notes": "Calcasieu ship channel. Public directory; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "gulfport-small-craft-harbor",
+      "name": "Gulfport Small Craft Harbor",
+      "corridor": null,
+      "region": "mississippi",
+      "city": "Gulfport",
+      "state": "MS",
+      "lat": 30.3602,
+      "lng": -89.0864,
+      "phone": "(228) 868-5710",
+      "hours": null,
+      "website": "https://www.gulfport-ms.gov/",
+      "notes": "City small-craft harbor. Municipal pages; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.gulfport-ms.gov/"
+    },
+    {
+      "id": "biloxi-small-craft-harbor",
+      "name": "Biloxi Small Craft Harbor",
+      "corridor": null,
+      "region": "mississippi",
+      "city": "Biloxi",
+      "state": "MS",
+      "lat": 30.3928,
+      "lng": -88.8852,
+      "phone": "(228) 436-9324",
+      "hours": null,
+      "website": "https://www.biloxi.ms.us/",
+      "notes": "Downtown Biloxi harbor. City listing; no posted pump price.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.biloxi.ms.us/"
+    },
+    {
+      "id": "ocean-springs-harbor",
+      "name": "Ocean Springs Harbor",
+      "corridor": null,
+      "region": "mississippi",
+      "city": "Ocean Springs",
+      "state": "MS",
+      "lat": 30.4112,
+      "lng": -88.8276,
+      "phone": "(228) 875-6712",
+      "hours": null,
+      "website": "https://www.oceansprings-ms.gov/",
+      "notes": "Municipal harbor. Call the harbor master.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.oceansprings-ms.gov/"
+    },
+    {
+      "id": "bay-st-louis-harbor",
+      "name": "Bay St. Louis Harbor",
+      "corridor": null,
+      "region": "mississippi",
+      "city": "Bay St. Louis",
+      "state": "MS",
+      "lat": 30.3084,
+      "lng": -89.3261,
+      "phone": "(228) 466-8961",
+      "hours": null,
+      "website": "https://www.baystlouis-ms.gov/",
+      "notes": "City harbor on the bay. Public listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.baystlouis-ms.gov/"
+    },
+    {
+      "id": "pass-christian-harbor",
+      "name": "Pass Christian Harbor",
+      "corridor": null,
+      "region": "mississippi",
+      "city": "Pass Christian",
+      "state": "MS",
+      "lat": 30.3152,
+      "lng": -89.2474,
+      "phone": "(228) 452-3312",
+      "hours": null,
+      "website": "https://www.pass-christian.com/",
+      "notes": "Municipal harbor. City site; no fuel board.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.pass-christian.com/"
+    },
+    {
+      "id": "orange-beach-marina",
+      "name": "Orange Beach Marina",
+      "corridor": null,
+      "region": "alabama",
+      "city": "Orange Beach",
+      "state": "AL",
+      "lat": 30.2786,
+      "lng": -87.5724,
+      "phone": "(251) 981-4207",
+      "hours": null,
+      "website": "https://www.orangebeachmarina.com/",
+      "notes": "Inland waterway. Marina site lists fuel; no pump dollars posted.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.orangebeachmarina.com/"
+    },
+    {
+      "id": "sportsman-marina",
+      "name": "Sportsman Marina",
+      "corridor": null,
+      "region": "alabama",
+      "city": "Orange Beach",
+      "state": "AL",
+      "lat": 30.2789,
+      "lng": -87.5568,
+      "phone": "(251) 981-6247",
+      "hours": null,
+      "website": "https://www.sportsmanmarina.com/",
+      "notes": "Orange Beach. Site confirms gas and diesel; call for today's board.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.sportsmanmarina.com/"
+    },
+    {
+      "id": "the-wharf-marina",
+      "name": "The Wharf Marina",
+      "corridor": null,
+      "region": "alabama",
+      "city": "Orange Beach",
+      "state": "AL",
+      "lat": 30.2904,
+      "lng": -87.6282,
+      "phone": "(251) 224-1900",
+      "hours": null,
+      "website": "https://www.thewharforangebeach.com/",
+      "notes": "Wharf complex slips. Marketing site; no live prices.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.thewharforangebeach.com/"
+    },
+    {
+      "id": "homeport-marina-gulf-shores",
+      "name": "Homeport Marina",
+      "corridor": null,
+      "region": "alabama",
+      "city": "Gulf Shores",
+      "state": "AL",
+      "lat": 30.2536,
+      "lng": -87.6871,
+      "phone": "(251) 968-4528",
+      "hours": null,
+      "website": null,
+      "notes": "Gulf Shores / ICW. Public marina listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "dog-river-marina",
+      "name": "Dog River Marina",
+      "corridor": null,
+      "region": "alabama",
+      "city": "Mobile",
+      "state": "AL",
+      "lat": 30.5648,
+      "lng": -88.0882,
+      "phone": "(251) 471-5449",
+      "hours": null,
+      "website": "https://www.dogrivermarina.com/",
+      "notes": "Mobile's Dog River. Yard and fuel dock; no posted pump price.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.dogrivermarina.com/"
+    },
+    {
+      "id": "fly-creek-marina",
+      "name": "Fly Creek Marina",
+      "corridor": null,
+      "region": "alabama",
+      "city": "Fairhope",
+      "state": "AL",
+      "lat": 30.5458,
+      "lng": -87.9114,
+      "phone": "(251) 928-1288",
+      "hours": null,
+      "website": null,
+      "notes": "Eastern Shore, Fly Creek. Public listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "destin-harbor-boardwalk",
+      "name": "Destin Harbor Boardwalk Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Destin",
+      "state": "FL",
+      "lat": 30.3918,
+      "lng": -86.5116,
+      "phone": "(850) 337-7210",
+      "hours": null,
+      "website": "https://www.destinharborboardwalk.com/",
+      "notes": "HarborWalk. Transient fuel on the harbor; no dollars on the page.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.destinharborboardwalk.com/"
+    },
+    {
+      "id": "panama-city-marina",
+      "name": "Panama City Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Panama City",
+      "state": "FL",
+      "lat": 30.1524,
+      "lng": -85.6618,
+      "phone": "(850) 872-3840",
+      "hours": null,
+      "website": "https://www.panamacity.gov/marina",
+      "notes": "City marina downtown. Municipal site; call the dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.panamacity.gov/marina"
+    },
+    {
+      "id": "apalachicola-city-marina",
+      "name": "Apalachicola City Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Apalachicola",
+      "state": "FL",
+      "lat": 29.7256,
+      "lng": -84.9831,
+      "phone": "(850) 653-9524",
+      "hours": null,
+      "website": "https://www.cityofapalachicola.com/",
+      "notes": "Water Street basin. City harbor; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.cityofapalachicola.com/"
+    },
+    {
+      "id": "marina-jack-sarasota",
+      "name": "Marina Jack",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Sarasota",
+      "state": "FL",
+      "lat": 27.3324,
+      "lng": -82.5458,
+      "phone": "(941) 365-4232",
+      "hours": null,
+      "website": "https://www.marinajack.com/",
+      "notes": "Downtown Sarasota. Site lists fuel; no pump board.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.marinajack.com/"
+    },
+    {
+      "id": "st-pete-municipal-marina",
+      "name": "St. Petersburg Municipal Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "St. Petersburg",
+      "state": "FL",
+      "lat": 27.7712,
+      "lng": -82.6284,
+      "phone": "(727) 893-7329",
+      "hours": null,
+      "website": "https://www.stpete.org/marina",
+      "notes": "City marina on the downtown waterfront. Call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.stpete.org/marina"
+    },
+    {
+      "id": "clearwater-beach-marina",
+      "name": "Clearwater Beach Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Clearwater",
+      "state": "FL",
+      "lat": 27.9776,
+      "lng": -82.8271,
+      "phone": "(727) 462-6954",
+      "hours": null,
+      "website": "https://www.myclearwater.com/",
+      "notes": "City beach marina. Municipal listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.myclearwater.com/"
+    },
+    {
+      "id": "naples-city-dock",
+      "name": "Naples City Dock",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Naples",
+      "state": "FL",
+      "lat": 26.1362,
+      "lng": -81.7884,
+      "phone": "(239) 213-3070",
+      "hours": null,
+      "website": "https://www.naplesgov.com/",
+      "notes": "Municipal dock at 12th Avenue South. City pages; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.naplesgov.com/"
+    },
+    {
+      "id": "moss-marine-ft-myers-beach",
+      "name": "Moss Marine",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Fort Myers Beach",
+      "state": "FL",
+      "lat": 26.4558,
+      "lng": -81.9532,
+      "phone": "(239) 463-6137",
+      "hours": null,
+      "website": "https://www.mossmarine.com/",
+      "notes": "Matanzas Pass. Yard and fuel; no live prices on the site.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.mossmarine.com/"
+    },
+    {
+      "id": "tarpon-point-marina",
+      "name": "Tarpon Point Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Cape Coral",
+      "state": "FL",
+      "lat": 26.5486,
+      "lng": -82.0084,
+      "phone": "(239) 549-4900",
+      "hours": null,
+      "website": "https://www.tarponpoint.com/",
+      "notes": "Cape Coral / Caloosahatchee. Resort marina; call the fuel dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.tarponpoint.com/"
+    },
+    {
+      "id": "faro-blanco-marathon",
+      "name": "Faro Blanco Resort & Yacht Club",
+      "corridor": null,
+      "region": "keys",
+      "city": "Marathon",
+      "state": "FL",
+      "lat": 24.7114,
+      "lng": -81.0952,
+      "phone": "(305) 289-0000",
+      "hours": null,
+      "website": "https://www.faroblancoresort.com/",
+      "notes": "Marathon bayside. Resort marina; no pump board on the marketing page.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.faroblancoresort.com/"
+    },
+    {
+      "id": "marathon-marina",
+      "name": "Marathon Marina",
+      "corridor": null,
+      "region": "keys",
+      "city": "Marathon",
+      "state": "FL",
+      "lat": 24.7096,
+      "lng": -81.0941,
+      "phone": "(305) 743-6575",
+      "hours": null,
+      "website": "https://www.marathonmarina.com/",
+      "notes": "Boot Key Harbor side. Site lists fuel; call for today's number.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.marathonmarina.com/"
+    },
+    {
+      "id": "hawks-cay-marina",
+      "name": "Hawks Cay Marina",
+      "corridor": null,
+      "region": "keys",
+      "city": "Duck Key",
+      "state": "FL",
+      "lat": 24.7752,
+      "lng": -80.9094,
+      "phone": "(305) 743-9000",
+      "hours": null,
+      "website": "https://www.hawkscay.com/",
+      "notes": "Duck Key resort basin. Call the dockhouse.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.hawkscay.com/"
+    },
+    {
+      "id": "key-west-bight-marina",
+      "name": "Key West Bight Marina",
+      "corridor": null,
+      "region": "keys",
+      "city": "Key West",
+      "state": "FL",
+      "lat": 24.5618,
+      "lng": -81.8002,
+      "phone": "(305) 809-3981",
+      "hours": null,
+      "website": "https://www.cityofkeywest-fl.gov/",
+      "notes": "Historic Bight, city docks. Municipal pages; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.cityofkeywest-fl.gov/"
+    },
+    {
+      "id": "conch-harbor-marina",
+      "name": "Conch Harbor Marina",
+      "corridor": null,
+      "region": "keys",
+      "city": "Key West",
+      "state": "FL",
+      "lat": 24.5626,
+      "lng": -81.8018,
+      "phone": "(305) 294-8704",
+      "hours": null,
+      "website": "https://www.conchharbormarina.com/",
+      "notes": "Key West Bight. Marina site; no live pump prices.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.conchharbormarina.com/"
+    },
+    {
+      "id": "galleon-marina",
+      "name": "The Galleon Marina",
+      "corridor": null,
+      "region": "keys",
+      "city": "Key West",
+      "state": "FL",
+      "lat": 24.5574,
+      "lng": -81.8076,
+      "phone": "(305) 292-1292",
+      "hours": null,
+      "website": "https://www.galleonresort.com/",
+      "notes": "Old Town waterfront. Resort marina; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.galleonresort.com/"
+    },
+    {
+      "id": "stock-island-marina",
+      "name": "Stock Island Marina Village",
+      "corridor": null,
+      "region": "keys",
+      "city": "Stock Island",
+      "state": "FL",
+      "lat": 24.5692,
+      "lng": -81.7358,
+      "phone": "(305) 294-2288",
+      "hours": null,
+      "website": "https://www.stockislandmarina.com/",
+      "notes": "East of Key West. Large public marina; no posted dollars.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.stockislandmarina.com/"
+    },
+    {
+      "id": "miami-beach-marina",
+      "name": "Miami Beach Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Miami Beach",
+      "state": "FL",
+      "lat": 25.7704,
+      "lng": -80.1398,
+      "phone": "(305) 673-6000",
+      "hours": null,
+      "website": "https://www.miamibeachmarina.com/",
+      "notes": "Government Cut. Marina site lists fuel; call for the board.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.miamibeachmarina.com/"
+    },
+    {
+      "id": "crandon-park-marina",
+      "name": "Crandon Park Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Key Biscayne",
+      "state": "FL",
+      "lat": 25.7216,
+      "lng": -80.1552,
+      "phone": "(305) 361-1281",
+      "hours": null,
+      "website": "https://www.miamidade.gov/parks/crandon-marina.asp",
+      "notes": "Miami-Dade park marina. County pages; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.miamidade.gov/parks/crandon-marina.asp"
+    },
+    {
+      "id": "dinner-key-marina",
+      "name": "Dinner Key Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Coconut Grove",
+      "state": "FL",
+      "lat": 25.7268,
+      "lng": -80.2346,
+      "phone": "(305) 579-6980",
+      "hours": null,
+      "website": "https://www.miami.gov/",
+      "notes": "City of Miami marina. Municipal listing; call the dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.miami.gov/"
+    },
+    {
+      "id": "bahia-mar-fort-lauderdale",
+      "name": "Bahia Mar Yachting Center",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Fort Lauderdale",
+      "state": "FL",
+      "lat": 26.1182,
+      "lng": -80.1076,
+      "phone": "(954) 627-6309",
+      "hours": null,
+      "website": "https://www.bahiamarhotel.com/",
+      "notes": "A1A / Intracoastal. Fuel dock on site; no pump prices posted.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.bahiamarhotel.com/"
+    },
+    {
+      "id": "las-olas-marina",
+      "name": "Las Olas Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Fort Lauderdale",
+      "state": "FL",
+      "lat": 26.1196,
+      "lng": -80.1088,
+      "phone": "(954) 828-7200",
+      "hours": null,
+      "website": "https://www.fortlauderdale.gov/",
+      "notes": "City marina at the inlet. Municipal pages; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.fortlauderdale.gov/"
+    },
+    {
+      "id": "sailfish-marina-palm-beach",
+      "name": "Sailfish Marina Resort",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Palm Beach Shores",
+      "state": "FL",
+      "lat": 26.7732,
+      "lng": -80.0418,
+      "phone": "(561) 844-1724",
+      "hours": null,
+      "website": "https://www.sailfishmarina.com/",
+      "notes": "Lake Worth Inlet. Classic sportfish dock; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.sailfishmarina.com/"
+    },
+    {
+      "id": "riviera-beach-marina",
+      "name": "Riviera Beach Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Riviera Beach",
+      "state": "FL",
+      "lat": 26.7694,
+      "lng": -80.0496,
+      "phone": "(561) 842-7806",
+      "hours": null,
+      "website": "https://www.rivierabch.com/",
+      "notes": "Municipal marina. City site; no pump board.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.rivierabch.com/"
+    },
+    {
+      "id": "fort-pierce-city-marina",
+      "name": "Fort Pierce City Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Fort Pierce",
+      "state": "FL",
+      "lat": 27.4472,
+      "lng": -80.3234,
+      "phone": "(772) 464-1245",
+      "hours": null,
+      "website": "https://www.cityoffortpierce.com/",
+      "notes": "Downtown municipal docks. Call the marina office.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.cityoffortpierce.com/"
+    },
+    {
+      "id": "vera-beach-municipal-marina",
+      "name": "Vero Beach Municipal Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Vero Beach",
+      "state": "FL",
+      "lat": 27.6348,
+      "lng": -80.3726,
+      "phone": "(772) 978-4960",
+      "hours": null,
+      "website": "https://www.covb.org/",
+      "notes": "City marina on the ICW. Municipal listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.covb.org/"
+    },
+    {
+      "id": "port-canaveral-sunrise",
+      "name": "Sunrise Marina at Port Canaveral",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Cape Canaveral",
+      "state": "FL",
+      "lat": 28.4106,
+      "lng": -80.6272,
+      "phone": "(321) 783-9535",
+      "hours": null,
+      "website": null,
+      "notes": "Port Canaveral basin. Public marina listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "daytona-beach-marina",
+      "name": "Daytona Beach Municipal Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Daytona Beach",
+      "state": "FL",
+      "lat": 29.2186,
+      "lng": -81.0174,
+      "phone": "(386) 671-3630",
+      "hours": null,
+      "website": "https://www.codb.us/",
+      "notes": "Halifax River city docks. Call the marina.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.codb.us/"
+    },
+    {
+      "id": "st-augustine-municipal-marina",
+      "name": "St. Augustine Municipal Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "St. Augustine",
+      "state": "FL",
+      "lat": 29.8914,
+      "lng": -81.3098,
+      "phone": "(904) 825-1026",
+      "hours": null,
+      "website": "https://www.citystaug.com/marina",
+      "notes": "City marina under the Bridge of Lions. Municipal site; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.citystaug.com/marina"
+    },
+    {
+      "id": "fernandina-harbor-marina",
+      "name": "Fernandina Harbor Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Fernandina Beach",
+      "state": "FL",
+      "lat": 30.6712,
+      "lng": -81.4654,
+      "phone": "(904) 491-2090",
+      "hours": null,
+      "website": "https://www.fbfl.us/",
+      "notes": "Amelia Island waterfront. City / marina pages; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.fbfl.us/"
+    },
+    {
+      "id": "golden-isles-marina",
+      "name": "Golden Isles Marina",
+      "corridor": null,
+      "region": "georgia",
+      "city": "St. Simons Island",
+      "state": "GA",
+      "lat": 31.1682,
+      "lng": -81.4068,
+      "phone": "(912) 634-1128",
+      "hours": null,
+      "website": "https://www.goldenislesmarina.com/",
+      "notes": "Frederica River. Marina site lists fuel; no pump dollars.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.goldenislesmarina.com/"
+    },
+    {
+      "id": "brunswick-landing-marina",
+      "name": "Brunswick Landing Marina",
+      "corridor": null,
+      "region": "georgia",
+      "city": "Brunswick",
+      "state": "GA",
+      "lat": 31.1496,
+      "lng": -81.4972,
+      "phone": "(912) 262-9264",
+      "hours": null,
+      "website": "https://www.brunswicklandingmarina.com/",
+      "notes": "East River downtown. Site; call the dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.brunswicklandingmarina.com/"
+    },
+    {
+      "id": "thunderbolt-marina",
+      "name": "Thunderbolt Marine",
+      "corridor": null,
+      "region": "georgia",
+      "city": "Thunderbolt",
+      "state": "GA",
+      "lat": 32.0364,
+      "lng": -81.0518,
+      "phone": "(912) 352-4931",
+      "hours": null,
+      "website": "https://www.thunderboltmarine.us/",
+      "notes": "Wilmington River yard. Fuel on site; no posted price.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.thunderboltmarine.us/"
+    },
+    {
+      "id": "isle-of-hope-marina",
+      "name": "Isle of Hope Marina",
+      "corridor": null,
+      "region": "georgia",
+      "city": "Savannah",
+      "state": "GA",
+      "lat": 31.9816,
+      "lng": -81.0564,
+      "phone": "(912) 354-8187",
+      "hours": null,
+      "website": "https://www.isleofhopemarina.com/",
+      "notes": "Skidaway River. Long-running public marina; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.isleofhopemarina.com/"
+    },
+    {
+      "id": "bahia-bleu-savannah",
+      "name": "Bahia Bleu Marina",
+      "corridor": null,
+      "region": "georgia",
+      "city": "Thunderbolt",
+      "state": "GA",
+      "lat": 32.0338,
+      "lng": -81.0496,
+      "phone": "(912) 354-2283",
+      "hours": null,
+      "website": null,
+      "notes": "Thunderbolt waterfront. Public listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "charleston-city-marina",
+      "name": "Charleston City Marina",
+      "corridor": null,
+      "region": "south-carolina",
+      "city": "Charleston",
+      "state": "SC",
+      "lat": 32.7764,
+      "lng": -79.9532,
+      "phone": "(843) 722-4968",
+      "hours": null,
+      "website": "https://www.charlestoncitymarina.com/",
+      "notes": "Ashley River. MegaDock and fuel; no live pump board.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.charlestoncitymarina.com/"
+    },
+    {
+      "id": "charleston-harbor-marina",
+      "name": "Charleston Harbor Marina",
+      "corridor": null,
+      "region": "south-carolina",
+      "city": "Mount Pleasant",
+      "state": "SC",
+      "lat": 32.7902,
+      "lng": -79.9054,
+      "phone": "(843) 284-7485",
+      "hours": null,
+      "website": "https://www.charlestonharbormarina.com/",
+      "notes": "Patriots Point. Marina site; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.charlestonharbormarina.com/"
+    },
+    {
+      "id": "beaufort-downtown-marina",
+      "name": "Downtown Marina of Beaufort",
+      "corridor": null,
+      "region": "south-carolina",
+      "city": "Beaufort",
+      "state": "SC",
+      "lat": 32.4296,
+      "lng": -80.6748,
+      "phone": "(843) 524-4422",
+      "hours": null,
+      "website": "https://www.downtownmarinabeaufort.com/",
+      "notes": "Beaufort River. Transient docks; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.downtownmarinabeaufort.com/"
+    },
+    {
+      "id": "shelter-cove-harbour",
+      "name": "Shelter Cove Harbour",
+      "corridor": null,
+      "region": "south-carolina",
+      "city": "Hilton Head Island",
+      "state": "SC",
+      "lat": 32.1814,
+      "lng": -80.7256,
+      "phone": "(843) 842-7001",
+      "hours": null,
+      "website": "https://www.sheltercovehhi.com/",
+      "notes": "Broad Creek. Resort harbor; no posted pump price.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.sheltercovehhi.com/"
+    },
+    {
+      "id": "harbour-town-yacht-basin",
+      "name": "Harbour Town Yacht Basin",
+      "corridor": null,
+      "region": "south-carolina",
+      "city": "Hilton Head Island",
+      "state": "SC",
+      "lat": 32.1392,
+      "lng": -80.8124,
+      "phone": "(843) 671-2704",
+      "hours": null,
+      "website": "https://www.seapines.com/",
+      "notes": "Sea Pines lighthouse basin. Call the yacht basin.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.seapines.com/"
+    },
+    {
+      "id": "georgetown-harborwalk",
+      "name": "Harborwalk Marina",
+      "corridor": null,
+      "region": "south-carolina",
+      "city": "Georgetown",
+      "state": "SC",
+      "lat": 33.3672,
+      "lng": -79.2814,
+      "phone": "(843) 546-4250",
+      "hours": null,
+      "website": null,
+      "notes": "Georgetown waterfront. Public listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "beaufort-docks-nc",
+      "name": "Beaufort Docks",
+      "corridor": null,
+      "region": "north-carolina",
+      "city": "Beaufort",
+      "state": "NC",
+      "lat": 34.7178,
+      "lng": -76.6638,
+      "phone": "(252) 728-2503",
+      "hours": null,
+      "website": "https://www.beaufortdocks.com/",
+      "notes": "Taylor's Creek downtown. Classic transient docks; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.beaufortdocks.com/"
+    },
+    {
+      "id": "morehead-city-waterfront",
+      "name": "Morehead City Waterfront",
+      "corridor": null,
+      "region": "north-carolina",
+      "city": "Morehead City",
+      "state": "NC",
+      "lat": 34.7196,
+      "lng": -76.7142,
+      "phone": "(252) 726-6862",
+      "hours": null,
+      "website": "https://www.moreheadcitync.org/",
+      "notes": "City waterfront slips. Municipal / tourism listings; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.moreheadcitync.org/"
+    },
+    {
+      "id": "hatteras-harbor-marina",
+      "name": "Hatteras Harbor Marina",
+      "corridor": null,
+      "region": "north-carolina",
+      "city": "Hatteras",
+      "state": "NC",
+      "lat": 35.2084,
+      "lng": -75.6902,
+      "phone": "(252) 986-2166",
+      "hours": null,
+      "website": "https://www.hatterasharbor.com/",
+      "notes": "Hatteras village. Sportfish docks; call the fuel dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.hatterasharbor.com/"
+    },
+    {
+      "id": "oregon-inlet-fishing-center",
+      "name": "Oregon Inlet Fishing Center",
+      "corridor": null,
+      "region": "north-carolina",
+      "city": "Nags Head",
+      "state": "NC",
+      "lat": 35.7688,
+      "lng": -75.5264,
+      "phone": "(252) 441-6301",
+      "hours": null,
+      "website": "https://www.oregon-inlet.com/",
+      "notes": "National Park Service concession at the inlet. Call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.oregon-inlet.com/"
+    },
+    {
+      "id": "manteo-waterfront-marina",
+      "name": "Manteo Waterfront Marina",
+      "corridor": null,
+      "region": "north-carolina",
+      "city": "Manteo",
+      "state": "NC",
+      "lat": 35.9082,
+      "lng": -75.6696,
+      "phone": "(252) 468-1001",
+      "hours": null,
+      "website": null,
+      "notes": "Shallowbag Bay. Public waterfront listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "southport-marina-nc",
+      "name": "Southport Marina",
+      "corridor": null,
+      "region": "north-carolina",
+      "city": "Southport",
+      "state": "NC",
+      "lat": 33.9168,
+      "lng": -78.0186,
+      "phone": "(910) 457-9900",
+      "hours": null,
+      "website": "https://www.southport-marina.com/",
+      "notes": "Cape Fear mouth. Marina site; no pump dollars posted.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.southport-marina.com/"
+    },
+    {
+      "id": "wrightsville-seapath",
+      "name": "Seapath Yacht Club",
+      "corridor": null,
+      "region": "north-carolina",
+      "city": "Wrightsville Beach",
+      "state": "NC",
+      "lat": 34.2086,
+      "lng": -77.7964,
+      "phone": "(910) 256-3747",
+      "hours": null,
+      "website": "https://www.seapath.com/",
+      "notes": "Banks Channel. Yacht club / marina; call.",
+      "access": "members",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.seapath.com/"
+    },
+    {
+      "id": "carolina-beach-state-marina",
+      "name": "Carolina Beach State Park Marina",
+      "corridor": null,
+      "region": "north-carolina",
+      "city": "Carolina Beach",
+      "state": "NC",
+      "lat": 34.0482,
+      "lng": -77.9126,
+      "phone": "(910) 458-7770",
+      "hours": null,
+      "website": "https://www.ncparks.gov/carolina-beach-state-park",
+      "notes": "State park marina on the Cape Fear. Park pages; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.ncparks.gov/carolina-beach-state-park"
+    },
+    {
+      "id": "hampton-public-piers",
+      "name": "Hampton Public Piers",
+      "corridor": null,
+      "region": "virginia",
+      "city": "Hampton",
+      "state": "VA",
+      "lat": 37.0254,
+      "lng": -76.3448,
+      "phone": "(757) 727-1276",
+      "hours": null,
+      "website": "https://hampton.gov/",
+      "notes": "Downtown Hampton waterfront. City piers; call for fuel nearby.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://hampton.gov/"
+    },
+    {
+      "id": "waterside-marina-norfolk",
+      "name": "Waterside Marina",
+      "corridor": null,
+      "region": "virginia",
+      "city": "Norfolk",
+      "state": "VA",
+      "lat": 36.8436,
+      "lng": -76.2902,
+      "phone": "(757) 625-3625",
+      "hours": null,
+      "website": "https://www.watersidemarina.com/",
+      "notes": "Elizabeth River downtown. Marina site; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.watersidemarina.com/"
+    },
+    {
+      "id": "ocean-marine-portsmouth",
+      "name": "Ocean Marine Yacht Center",
+      "corridor": null,
+      "region": "virginia",
+      "city": "Portsmouth",
+      "state": "VA",
+      "lat": 36.8352,
+      "lng": -76.2974,
+      "phone": "(757) 399-2920",
+      "hours": null,
+      "website": "https://www.oceanmarinenc.com/",
+      "notes": "Portsmouth waterfront yard. Fuel on site; no posted price.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.oceanmarinenc.com/"
+    },
+    {
+      "id": "rudee-inlet-station",
+      "name": "Rudee Inlet Station Marina",
+      "corridor": null,
+      "region": "virginia",
+      "city": "Virginia Beach",
+      "state": "VA",
+      "lat": 36.8304,
+      "lng": -75.9736,
+      "phone": "(757) 422-2999",
+      "hours": null,
+      "website": null,
+      "notes": "Rudee Inlet. Public marina listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "cape-charles-harbor",
+      "name": "Cape Charles Harbor",
+      "corridor": null,
+      "region": "virginia",
+      "city": "Cape Charles",
+      "state": "VA",
+      "lat": 37.2678,
+      "lng": -76.0164,
+      "phone": "(757) 331-2357",
+      "hours": null,
+      "website": "https://www.capecharles.org/",
+      "notes": "Eastern Shore harbor. Town pages; call the harbor master.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.capecharles.org/"
+    },
+    {
+      "id": "yorktown-riverwalk",
+      "name": "Yorktown Riverwalk Landing",
+      "corridor": null,
+      "region": "virginia",
+      "city": "Yorktown",
+      "state": "VA",
+      "lat": 37.2348,
+      "lng": -76.5086,
+      "phone": "(757) 890-3370",
+      "hours": null,
+      "website": "https://www.yorkcounty.gov/",
+      "notes": "County docks on the York. Transient; call about fuel nearby.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.yorkcounty.gov/"
+    },
+    {
+      "id": "annapolis-city-dock",
+      "name": "Annapolis City Dock",
+      "corridor": null,
+      "region": "maryland",
+      "city": "Annapolis",
+      "state": "MD",
+      "lat": 38.9766,
+      "lng": -76.4848,
+      "phone": "(410) 263-7973",
+      "hours": null,
+      "website": "https://www.annapolis.gov/",
+      "notes": "Ego Alley / Market House. City dock; fuel is at nearby harbors — call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.annapolis.gov/"
+    },
+    {
+      "id": "port-annapolis-marina",
+      "name": "Port Annapolis Marina",
+      "corridor": null,
+      "region": "maryland",
+      "city": "Annapolis",
+      "state": "MD",
+      "lat": 38.9532,
+      "lng": -76.4842,
+      "phone": "(410) 269-1993",
+      "hours": null,
+      "website": "https://www.portannapolis.com/",
+      "notes": "Back Creek. Full-service marina; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.portannapolis.com/"
+    },
+    {
+      "id": "herrington-harbour-north",
+      "name": "Herrington Harbour North",
+      "corridor": null,
+      "region": "maryland",
+      "city": "Deale",
+      "state": "MD",
+      "lat": 38.7916,
+      "lng": -76.5418,
+      "phone": "(410) 867-4343",
+      "hours": null,
+      "website": "https://www.herringtonharbour.com/",
+      "notes": "West River / Tracey's Creek. Large public marina; no pump board on the site.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.herringtonharbour.com/"
+    },
+    {
+      "id": "zahnisers-solomons",
+      "name": "Zahniser's Yachting Center",
+      "corridor": null,
+      "region": "maryland",
+      "city": "Solomons",
+      "state": "MD",
+      "lat": 38.3174,
+      "lng": -76.4536,
+      "phone": "(410) 326-2166",
+      "hours": null,
+      "website": "https://www.zahnisers.com/",
+      "notes": "Patuxent River. Classic Solomons dock; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.zahnisers.com/"
+    },
+    {
+      "id": "white-marlin-marina",
+      "name": "White Marlin Marina",
+      "corridor": null,
+      "region": "maryland",
+      "city": "Ocean City",
+      "state": "MD",
+      "lat": 38.3286,
+      "lng": -75.0912,
+      "phone": "(410) 289-6470",
+      "hours": null,
+      "website": "https://www.whitemarlinmarina.com/",
+      "notes": "Ocean City inlet. Sportfish docks; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.whitemarlinmarina.com/"
+    },
+    {
+      "id": "st-michaels-harbour-inn",
+      "name": "St. Michaels Harbour Inn Marina",
+      "corridor": null,
+      "region": "maryland",
+      "city": "St. Michaels",
+      "state": "MD",
+      "lat": 38.7854,
+      "lng": -76.2238,
+      "phone": "(410) 745-9001",
+      "hours": null,
+      "website": "https://www.harbourinn.com/",
+      "notes": "Miles River. Inn marina; call the dockhouse.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.harbourinn.com/"
+    },
+    {
+      "id": "canyon-club-cape-may",
+      "name": "Canyon Club Resort Marina",
+      "corridor": null,
+      "region": "new-jersey",
+      "city": "Cape May",
+      "state": "NJ",
+      "lat": 38.9486,
+      "lng": -74.9068,
+      "phone": "(609) 884-0199",
+      "hours": null,
+      "website": "https://www.canyonclubmarina.com/",
+      "notes": "Cape May harbor. Resort marina; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.canyonclubmarina.com/"
+    },
+    {
+      "id": "utschs-marina",
+      "name": "Utsch's Marina",
+      "corridor": null,
+      "region": "new-jersey",
+      "city": "Cape May",
+      "state": "NJ",
+      "lat": 38.9498,
+      "lng": -74.9014,
+      "phone": "(609) 884-2051",
+      "hours": null,
+      "website": "https://www.utschsmarina.com/",
+      "notes": "Cape May. Long-running yard and fuel dock; no posted dollars.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.utschsmarina.com/"
+    },
+    {
+      "id": "farley-state-marina",
+      "name": "Senator Frank S. Farley State Marina",
+      "corridor": null,
+      "region": "new-jersey",
+      "city": "Atlantic City",
+      "state": "NJ",
+      "lat": 39.3764,
+      "lng": -74.4292,
+      "phone": "(609) 441-8482",
+      "hours": null,
+      "website": "https://www.golden-nugget.com/",
+      "notes": "Clam Creek / Golden Nugget. State marina; call the fuel dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.golden-nugget.com/"
+    },
+    {
+      "id": "hoffmans-point-pleasant",
+      "name": "Hoffman's Marina",
+      "corridor": null,
+      "region": "new-jersey",
+      "city": "Brielle",
+      "state": "NJ",
+      "lat": 40.1076,
+      "lng": -74.0518,
+      "phone": "(732) 528-6160",
+      "hours": null,
+      "website": "https://www.hoffmansmarina.com/",
+      "notes": "Manasquan River. Public marina; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.hoffmansmarina.com/"
+    },
+    {
+      "id": "atlantic-highlands-municipal",
+      "name": "Atlantic Highlands Municipal Harbor",
+      "corridor": null,
+      "region": "new-jersey",
+      "city": "Atlantic Highlands",
+      "state": "NJ",
+      "lat": 40.4138,
+      "lng": -74.0356,
+      "phone": "(732) 291-1670",
+      "hours": null,
+      "website": "https://www.ahnj.com/",
+      "notes": "Sandy Hook Bay. Municipal harbor; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.ahnj.com/"
+    },
+    {
+      "id": "liberty-landing-marina",
+      "name": "Liberty Landing Marina",
+      "corridor": null,
+      "region": "new-jersey",
+      "city": "Jersey City",
+      "state": "NJ",
+      "lat": 40.7108,
+      "lng": -74.0486,
+      "phone": "(201) 985-8000",
+      "hours": null,
+      "website": "https://www.libertylandingmarina.com/",
+      "notes": "Hudson, Liberty State Park. Transient fuel; no pump board on the site.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.libertylandingmarina.com/"
+    },
+    {
+      "id": "montauk-marine-basin",
+      "name": "Montauk Marine Basin",
+      "corridor": null,
+      "region": "new-york",
+      "city": "Montauk",
+      "state": "NY",
+      "lat": 41.0716,
+      "lng": -71.9348,
+      "phone": "(631) 668-5900",
+      "hours": null,
+      "website": "https://www.montaukmarinebasin.com/",
+      "notes": "Montauk Harbor. Classic canyon dock; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.montaukmarinebasin.com/"
+    },
+    {
+      "id": "star-island-yacht-club",
+      "name": "Star Island Yacht Club",
+      "corridor": null,
+      "region": "new-york",
+      "city": "Montauk",
+      "state": "NY",
+      "lat": 41.0732,
+      "lng": -71.9364,
+      "phone": "(631) 668-5052",
+      "hours": null,
+      "website": "https://www.starislandyc.com/",
+      "notes": "Lake Montauk. Yacht club marina; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.starislandyc.com/"
+    },
+    {
+      "id": "greenport-docks",
+      "name": "Mitchell Park Marina",
+      "corridor": null,
+      "region": "new-york",
+      "city": "Greenport",
+      "state": "NY",
+      "lat": 41.1034,
+      "lng": -72.3596,
+      "phone": "(631) 477-2200",
+      "hours": null,
+      "website": "https://www.villageofgreenport.org/",
+      "notes": "Village waterfront. Municipal marina; call about fuel nearby.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.villageofgreenport.org/"
+    },
+    {
+      "id": "sag-harbor-yacht-club",
+      "name": "Sag Harbor Yacht Club",
+      "corridor": null,
+      "region": "new-york",
+      "city": "Sag Harbor",
+      "state": "NY",
+      "lat": 41.0028,
+      "lng": -72.2954,
+      "phone": "(631) 725-0567",
+      "hours": null,
+      "website": "https://www.sagharboryc.com/",
+      "notes": "Sag Harbor cove. Club docks; call.",
+      "access": "members",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.sagharboryc.com/"
+    },
+    {
+      "id": "freeport-hudson-canal",
+      "name": "Freeport Municipal Marina",
+      "corridor": null,
+      "region": "new-york",
+      "city": "Freeport",
+      "state": "NY",
+      "lat": 40.6348,
+      "lng": -73.5816,
+      "phone": "(516) 378-8100",
+      "hours": null,
+      "website": "https://www.freeportny.gov/",
+      "notes": "Nautical Mile / Woodcleft. Village marina; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.freeportny.gov/"
+    },
+    {
+      "id": "great-kills-yacht-club",
+      "name": "Great Kills Yacht Club",
+      "corridor": null,
+      "region": "new-york",
+      "city": "Staten Island",
+      "state": "NY",
+      "lat": 40.5436,
+      "lng": -74.1338,
+      "phone": "(718) 356-2267",
+      "hours": null,
+      "website": null,
+      "notes": "Great Kills Harbor. Club / public listings; call.",
+      "access": "members",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "mystic-shipyard",
+      "name": "Mystic Shipyard",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Mystic",
+      "state": "CT",
+      "lat": 41.3498,
+      "lng": -71.9632,
+      "phone": "(860) 536-6588",
+      "hours": null,
+      "website": "https://www.mysticshipyard.com/",
+      "notes": "Mystic River. Yard and fuel; no posted pump price.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.mysticshipyard.com/"
+    },
+    {
+      "id": "saybrook-point-marina",
+      "name": "Saybrook Point Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Old Saybrook",
+      "state": "CT",
+      "lat": 41.2836,
+      "lng": -72.3524,
+      "phone": "(860) 395-3080",
+      "hours": null,
+      "website": "https://www.saybrook.com/",
+      "notes": "Connecticut River mouth. Resort marina; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.saybrook.com/"
+    },
+    {
+      "id": "brewer-yacht-haven",
+      "name": "Brewer Yacht Haven Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Stamford",
+      "state": "CT",
+      "lat": 41.0386,
+      "lng": -73.5348,
+      "phone": "(203) 359-4500",
+      "hours": null,
+      "website": "https://byy.com/",
+      "notes": "Stamford Harbor. Brewer yard; call the fuel dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://byy.com/"
+    },
+    {
+      "id": "newport-yachting-center",
+      "name": "Newport Yachting Center",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Newport",
+      "state": "RI",
+      "lat": 41.4862,
+      "lng": -71.3164,
+      "phone": "(401) 847-9040",
+      "hours": null,
+      "website": "https://www.newportyachtingcenter.com/",
+      "notes": "America's Cup Avenue. Transient docks; call for fuel nearby.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.newportyachtingcenter.com/"
+    },
+    {
+      "id": "goat-island-marina",
+      "name": "Goat Island Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Newport",
+      "state": "RI",
+      "lat": 41.4916,
+      "lng": -71.3278,
+      "phone": "(401) 849-5655",
+      "hours": null,
+      "website": "https://www.goatislandmarina.com/",
+      "notes": "Newport Harbor west. Marina site; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.goatislandmarina.com/"
+    },
+    {
+      "id": "paynes-dock-block-island",
+      "name": "Payne's Dock",
+      "corridor": null,
+      "region": "new-england",
+      "city": "New Shoreham",
+      "state": "RI",
+      "lat": 41.1738,
+      "lng": -71.5572,
+      "phone": "(401) 466-5572",
+      "hours": null,
+      "website": null,
+      "notes": "Block Island New Harbor. Public dock listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "constitution-marina",
+      "name": "Constitution Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Boston",
+      "state": "MA",
+      "lat": 42.3724,
+      "lng": -71.0568,
+      "phone": "(617) 241-9640",
+      "hours": null,
+      "website": "https://www.constitutionmarina.com/",
+      "notes": "Charlestown Navy Yard. Transient marina; call about fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.constitutionmarina.com/"
+    },
+    {
+      "id": "hyannis-marina",
+      "name": "Hyannis Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Hyannis",
+      "state": "MA",
+      "lat": 41.6508,
+      "lng": -70.2806,
+      "phone": "(508) 790-4000",
+      "hours": null,
+      "website": "https://www.hyannismarina.com/",
+      "notes": "Lewis Bay. Cape Cod fuel dock; no posted dollars.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.hyannismarina.com/"
+    },
+    {
+      "id": "nantucket-boat-basin",
+      "name": "Nantucket Boat Basin",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Nantucket",
+      "state": "MA",
+      "lat": 41.2856,
+      "lng": -70.0964,
+      "phone": "(508) 325-1355",
+      "hours": null,
+      "website": "https://www.nantucketboatbasin.com/",
+      "notes": "Town pier basin. Marina site; call for fuel.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.nantucketboatbasin.com/"
+    },
+    {
+      "id": "vineyard-haven-marina",
+      "name": "Vineyard Haven Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Vineyard Haven",
+      "state": "MA",
+      "lat": 41.4562,
+      "lng": -70.5984,
+      "phone": "(508) 693-0720",
+      "hours": null,
+      "website": null,
+      "notes": "Martha's Vineyard harbor. Public listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "plymouth-town-wharf",
+      "name": "Plymouth Town Wharf",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Plymouth",
+      "state": "MA",
+      "lat": 41.9602,
+      "lng": -70.6624,
+      "phone": "(508) 830-4096",
+      "hours": null,
+      "website": "https://www.plymouth-ma.gov/",
+      "notes": "Town wharf on the harbor. Municipal pages; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.plymouth-ma.gov/"
+    },
+    {
+      "id": "gloucester-harbor-loop",
+      "name": "Gloucester House / Harbor Loop",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Gloucester",
+      "state": "MA",
+      "lat": 42.6108,
+      "lng": -70.6592,
+      "phone": "(978) 283-1812",
+      "hours": null,
+      "website": null,
+      "notes": "Inner Harbor commercial / transient docks. Call the harbor master.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "wentworth-by-the-sea-marina",
+      "name": "Wentworth by the Sea Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "New Castle",
+      "state": "NH",
+      "lat": 43.0586,
+      "lng": -70.7254,
+      "phone": "(603) 433-5050",
+      "hours": null,
+      "website": "https://www.wentworth.com/",
+      "notes": "Portsmouth Harbor. Resort marina; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.wentworth.com/"
+    },
+    {
+      "id": "hampton-river-marina",
+      "name": "Hampton River Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Hampton",
+      "state": "NH",
+      "lat": 42.8948,
+      "lng": -70.8162,
+      "phone": "(603) 929-1422",
+      "hours": null,
+      "website": null,
+      "notes": "Hampton Harbor. Public listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "dimillos-portland",
+      "name": "DiMillo's Old Port Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Portland",
+      "state": "ME",
+      "lat": 43.6564,
+      "lng": -70.2502,
+      "phone": "(207) 773-7251",
+      "hours": null,
+      "website": "https://www.dimillos.com/",
+      "notes": "Portland waterfront. Restaurant marina; call for fuel nearby.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.dimillos.com/"
+    },
+    {
+      "id": "portland-yacht-services",
+      "name": "Portland Yacht Services",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Portland",
+      "state": "ME",
+      "lat": 43.6618,
+      "lng": -70.2486,
+      "phone": "(207) 774-1067",
+      "hours": null,
+      "website": "https://www.portlandyacht.com/",
+      "notes": "East End yard. Fuel and service; no posted pump price.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.portlandyacht.com/"
+    },
+    {
+      "id": "chicks-marina-kennebunkport",
+      "name": "Chicks Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Kennebunkport",
+      "state": "ME",
+      "lat": 43.3586,
+      "lng": -70.4768,
+      "phone": "(207) 967-2782",
+      "hours": null,
+      "website": "https://www.chicksmarina.com/",
+      "notes": "Kennebunk River. Classic Maine dock; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.chicksmarina.com/"
+    },
+    {
+      "id": "camden-harbor-dock",
+      "name": "Camden Harbor Park & Amphitheatre Docks",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Camden",
+      "state": "ME",
+      "lat": 44.2096,
+      "lng": -69.0638,
+      "phone": "(207) 236-3353",
+      "hours": null,
+      "website": "https://www.camdenmaine.gov/",
+      "notes": "Town harbor. Harbor master; call about fuel at adjoining yards.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.camdenmaine.gov/"
+    },
+    {
+      "id": "boothbay-harbor-marina",
+      "name": "Boothbay Harbor Marina",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Boothbay Harbor",
+      "state": "ME",
+      "lat": 43.8524,
+      "lng": -69.6272,
+      "phone": "(207) 633-6003",
+      "hours": null,
+      "website": null,
+      "notes": "Inner harbor. Public marina listing; call.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": null,
+      "sourceUrl": null
+    },
+    {
+      "id": "bar-harbor-town-pier",
+      "name": "Bar Harbor Town Pier",
+      "corridor": null,
+      "region": "new-england",
+      "city": "Bar Harbor",
+      "state": "ME",
+      "lat": 44.3912,
+      "lng": -68.2046,
+      "phone": "(207) 288-5571",
+      "hours": null,
+      "website": "https://www.barharbormaine.gov/",
+      "notes": "Municipal pier. Harbor master; call for fuel at the town docks.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "87",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.barharbormaine.gov/"
     }
   ]
 }

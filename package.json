@@ -8,12 +8,14 @@
     "start": "next start --port 43123",
     "lint": "eslint",
     "seed": "tsx scripts/seed.ts",
+    "seed:coast": "tsx scripts/build-coast-seed.ts",
     "fetch:wg": "tsx scripts/fetch-waterway-guide.ts",
     "test:parser": "tsx scripts/test-parser.ts",
     "test:board": "tsx scripts/test-board.ts",
     "test:ui": "node scripts/verify-ui.mjs"
   },
   "dependencies": {
+    "@vercel/blob": "^2.3.1",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

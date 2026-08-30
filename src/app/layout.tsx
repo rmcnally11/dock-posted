@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { IBM_Plex_Mono, Newsreader, Source_Sans_3 } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 const newsreader = Newsreader({
@@ -19,20 +20,27 @@ const newsreader = Newsreader({
   style: ["normal", "italic"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#efe3cc",
+};
+
 export const metadata: Metadata = {
-  title: "Dock Posted — Sabine to Key West marina fuel",
+  title: "Dock Posted — Sabine to Key West",
   description:
-    "Posted gas and diesel for the Gulf coast, Texas down to Florida. Call ahead. We do not sell fuel. Sister instrument to On This Water.",
+    "The last number they wrote on the board. If they did not post, it stays Call.",
   icons: { icon: "/favicon.svg" },
-}
+};
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
+      className={`${sourceSans.variable} ${ibmPlexMono.variable} ${newsreader.variable} h-full antialiased`}
     >
-      <body className="flex h-full min-h-full flex-col overflow-y-auto font-sans text-[color:var(--cream)]">
+      <body className="flex h-full min-h-full flex-col overflow-y-auto bg-paper font-sans text-harbor">
         <SiteHeader />
         {children}
       </body>

@@ -1,30 +1,21 @@
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-30 border-b border-[color:var(--line)] bg-[color:var(--ink)]/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-6">
-        <a href="/" className="flex min-w-0 items-baseline gap-2">
-          <span className="font-heading text-lg tracking-tight text-[color:var(--cream)]">
+    <header className="sticky top-0 z-40 border-b border-harbor/15 bg-paper">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5">
+        <a href="/" className="min-w-0" data-testid="wordmark">
+          <span className="inline-block border-2 border-harbor bg-sand px-2.5 py-1 font-serif text-[1.05rem] leading-none text-harbor">
             Dock Posted
           </span>
-          <span className="hidden text-[10px] uppercase tracking-[0.22em] text-[color:var(--sea)] sm:inline">
-            Sabine to Key West
-          </span>
         </a>
-        <nav className="flex items-center gap-1 text-sm">
-          <a className="rounded-md px-2.5 py-1.5 text-[color:var(--cream)]/75 hover:text-[color:var(--cream)]" href="/">
-            Today
+        <nav className="flex items-center gap-0.5 text-sm">
+          <a className="rounded-sm px-2.5 py-2 text-harbor/75 hover:bg-harbor/5 hover:text-harbor" href="/">
+            Board
           </a>
-          <a className="rounded-md px-2.5 py-1.5 text-[color:var(--cream)]/75 hover:text-[color:var(--cream)]" href="/report">
+          <a className="rounded-sm px-2.5 py-2 text-harbor/75 hover:bg-harbor/5 hover:text-harbor" href="/report">
             Report
           </a>
-          <a className="rounded-md px-2.5 py-1.5 text-[color:var(--cream)]/75 hover:text-[color:var(--cream)]" href="/safe-fuel">
+          <a className="rounded-sm px-2.5 py-2 text-harbor/75 hover:bg-harbor/5 hover:text-harbor" href="/safe-fuel">
             Safe fuel
-          </a>
-          <a
-            className="hidden rounded-md px-2.5 py-1.5 text-[color:var(--sea)] sm:inline"
-            href="https://onthiswater.com"
-          >
-            On This Water
           </a>
         </nav>
       </div>

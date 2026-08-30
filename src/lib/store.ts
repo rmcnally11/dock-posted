@@ -1,94 +1,70 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import {
+  readOverlayFile,
+  readReportFile,
+  writeOverlayFile,
+  writeReportFile,
+} from "./persist";
 import type {
   Dock,
+  DockOverlay,
   DockStoreFile,
+  PayKind,
   PriceReport,
   Product,
-  ReportStoreFile,
 } from "./types";
 
 const SEED_PATH = path.join(process.cwd(), "data", "docks.seed.json");
-const GULF_CALL_PATH = path.join(process.cwd(), "data", "gulf-call.json");
 
-type CallDockRow = Pick<
-  Dock,
-  "id" | "name" | "corridor" | "city" | "state" | "lat" | "lng" | "phone" | "website"
->;
+async function readSeed(): Promise<DockStoreFile> {
+  const raw = await readFile(SEED_PATH, "utf8");
+  return JSON.parse(raw) as DockStoreFile;
+}
 
-function expandCallDock(row: CallDockRow): Dock {
+function applyOverlay(dock: Dock, overlay: DockOverlay | undefined): Dock {
+  if (!overlay) return dock;
   return {
-    ...row,
-    hours: null,
-    notes:
-      "On the Texas–Florida chain. No public board captured — card says Call until someone posts what they saw.",
-    access: "public",
-    ethanol: "unknown",
-    quotes: [
-      { product: "90", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
-      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
-    ],
-    lastVerifiedAt: null,
-    lastVerifiedSource: null,
-    sourceUrl: null,
+    ...dock,
+    quotes: overlay.quotes ? overlay.quotes.map((quote) => ({ ...quote })) : dock.quotes,
+    ethanol: overlay.ethanol ?? dock.ethanol,
+    lastVerifiedAt:
+      overlay.lastVerifiedAt !== undefined ? overlay.lastVerifiedAt : dock.lastVerifiedAt,
+    lastVerifiedSource:
+      overlay.lastVerifiedSource !== undefined
+        ? overlay.lastVerifiedSource
+        : dock.lastVerifiedSource,
+    sourceUrl: overlay.sourceUrl !== undefined ? overlay.sourceUrl : dock.sourceUrl,
+    notes: overlay.notes !== undefined ? overlay.notes : dock.notes,
+    hours: overlay.hours !== undefined ? overlay.hours : dock.hours,
+    pay: overlay.pay !== undefined ? overlay.pay : dock.pay,
+    closed: overlay.closed !== undefined ? overlay.closed : dock.closed,
   };
 }
 
-export async function loadCombinedSeed(): Promise<DockStoreFile> {
-  const base = JSON.parse(await readFile(SEED_PATH, "utf8")) as DockStoreFile;
-  const extra = JSON.parse(await readFile(GULF_CALL_PATH, "utf8")) as { docks: CallDockRow[] };
-  const have = new Set(base.docks.map((dock) => dock.id));
-  const added = extra.docks.filter((row) => !have.has(row.id)).map(expandCallDock);
+function overlayFromDock(dock: Dock): DockOverlay {
   return {
-    ...base,
-    generatedAt: new Date().toISOString(),
-    docks: [...base.docks, ...added],
+    quotes: dock.quotes.map((quote) => ({ ...quote })),
+    ethanol: dock.ethanol,
+    lastVerifiedAt: dock.lastVerifiedAt,
+    lastVerifiedSource: dock.lastVerifiedSource,
+    sourceUrl: dock.sourceUrl,
+    notes: dock.notes,
+    hours: dock.hours,
+    pay: dock.pay ?? null,
+    closed: dock.closed ?? false,
   };
-}
-
-function runtimeDir() {
-  if (process.env.DATA_DIR) return process.env.DATA_DIR;
-  if (process.env.VERCEL) return "/tmp/dock-posted";
-  return path.join(process.cwd(), "data", "runtime");
-}
-
-function docksPath() {
-  return path.join(runtimeDir(), "docks.json");
-}
-
-function reportsPath() {
-  return path.join(runtimeDir(), "reports.json");
-}
-
-async function ensureRuntime(): Promise<void> {
-  await mkdir(runtimeDir(), { recursive: true });
-  const combined = await loadCombinedSeed();
-  try {
-    const raw = await readFile(docksPath(), "utf8");
-    const current = JSON.parse(raw) as DockStoreFile;
-    const have = new Set(current.docks.map((dock) => dock.id));
-    const missing = combined.docks.filter((dock) => !have.has(dock.id));
-    if (missing.length > 0) {
-      current.docks.push(...missing);
-      current.generatedAt = new Date().toISOString();
-      await writeFile(docksPath(), JSON.stringify(current, null, 2), "utf8");
-    }
-  } catch {
-    await writeFile(docksPath(), JSON.stringify(combined, null, 2), "utf8");
-  }
-  try {
-    await readFile(reportsPath(), "utf8");
-  } catch {
-    const empty: ReportStoreFile = { reports: [] };
-    await writeFile(reportsPath(), JSON.stringify(empty, null, 2), "utf8");
-  }
 }
 
 export async function readDockStore(): Promise<DockStoreFile> {
-  await ensureRuntime();
-  const raw = await readFile(docksPath(), "utf8");
-  return JSON.parse(raw) as DockStoreFile;
+  const seed = await readSeed();
+  const { overlays } = await readOverlayFile();
+  return {
+    ...seed,
+    generatedAt: new Date().toISOString(),
+    docks: seed.docks.map((dock) => applyOverlay(dock, overlays[dock.id])),
+  };
 }
 
 export async function readDocks(): Promise<Dock[]> {
@@ -97,46 +73,70 @@ export async function readDocks(): Promise<Dock[]> {
 }
 
 export async function readReports(): Promise<PriceReport[]> {
-  await ensureRuntime();
-  const raw = await readFile(reportsPath(), "utf8");
-  const parsed = JSON.parse(raw) as ReportStoreFile;
-  return parsed.reports;
+  const file = await readReportFile();
+  return file.reports;
+}
+
+function sameOverlay(left: Dock, right: Dock): boolean {
+  return JSON.stringify(overlayFromDock(left)) === JSON.stringify(overlayFromDock(right));
 }
 
 export async function writeDockStore(store: DockStoreFile): Promise<void> {
-  await ensureRuntime();
-  await writeFile(docksPath(), JSON.stringify(store, null, 2), "utf8");
+  const seed = await readSeed();
+  const { overlays } = await readOverlayFile();
+  for (const dock of store.docks) {
+    const baseline = seed.docks.find((item) => item.id === dock.id);
+    if (!baseline) continue;
+    if (sameOverlay(baseline, dock)) {
+      delete overlays[dock.id];
+    } else {
+      overlays[dock.id] = overlayFromDock(dock);
+    }
+  }
+  await writeOverlayFile({ overlays });
 }
 
 export async function writeReports(reports: PriceReport[]): Promise<void> {
-  await ensureRuntime();
-  const file: ReportStoreFile = { reports };
-  await writeFile(reportsPath(), JSON.stringify(file, null, 2), "utf8");
+  await writeReportFile({ reports });
 }
 
 export async function resetFromSeed(): Promise<DockStoreFile> {
-  await mkdir(runtimeDir(), { recursive: true });
-  const combined = await loadCombinedSeed();
-  await writeFile(docksPath(), JSON.stringify(combined, null, 2), "utf8");
   await writeReports([]);
-  return combined;
+  await writeOverlayFile({ overlays: {} });
+  return readDockStore();
 }
 
-function applyReportToDock(dock: Dock, report: PriceReport): Dock {
+function applyReportToDock(
+  dock: Dock,
+  report: PriceReport,
+  claim: {
+    marinaOwned: boolean;
+    hours: string | null;
+    pay: PayKind | null;
+    closed: boolean;
+    dieselOnly: boolean;
+  },
+): Dock {
   const nextQuotes = dock.quotes.map((quote) => ({ ...quote }));
-  const existing = nextQuotes.find((quote) => quote.product === report.product);
-  const updated = {
-    product: report.product,
-    pricePerGallon: report.pricePerGallon,
-    ethanol: report.ethanol,
-    status: "posted" as const,
-    taxIncluded: null,
-  };
-
-  if (existing) {
-    Object.assign(existing, updated);
-  } else {
-    nextQuotes.push(updated);
+  if (report.pricePerGallon > 0) {
+    const existing = nextQuotes.find((quote) => quote.product === report.product);
+    const updated = {
+      product: report.product,
+      pricePerGallon: report.pricePerGallon,
+      ethanol: report.ethanol,
+      status: "posted" as const,
+      taxIncluded: null,
+    };
+    if (existing) Object.assign(existing, updated);
+    else nextQuotes.push(updated);
+  }
+  if (claim.dieselOnly) {
+    for (const quote of nextQuotes) {
+      if (quote.product !== "diesel") {
+        quote.status = "not-sold";
+        quote.pricePerGallon = null;
+      }
+    }
   }
 
   const ethanol =
@@ -151,11 +151,14 @@ function applyReportToDock(dock: Dock, report: PriceReport): Dock {
     quotes: nextQuotes,
     ethanol,
     lastVerifiedAt: report.seenAt,
-    lastVerifiedSource: "user report",
+    lastVerifiedSource: claim.marinaOwned ? "marina" : "user report",
     sourceUrl: null,
     notes: report.note
       ? `${dock.notes ? `${dock.notes} ` : ""}User report ${report.seenAt}: ${report.note}`.trim()
       : dock.notes,
+    hours: claim.hours ?? dock.hours,
+    pay: claim.marinaOwned ? (claim.pay ?? dock.pay ?? null) : dock.pay,
+    closed: claim.marinaOwned ? claim.closed : dock.closed,
   };
 }
 
@@ -166,6 +169,11 @@ export async function addPriceReport(input: {
   pricePerGallon: number;
   seenAt: string;
   note: string | null;
+  marinaOwned?: boolean;
+  hours?: string | null;
+  pay?: PayKind | null;
+  closed?: boolean;
+  dieselOnly?: boolean;
 }): Promise<{ report: PriceReport; dock: Dock }> {
   const store = await readDockStore();
   const dockIndex = store.docks.findIndex((dock) => dock.id === input.dockId);
@@ -184,7 +192,13 @@ export async function addPriceReport(input: {
     createdAt: new Date().toISOString(),
   };
 
-  const updatedDock = applyReportToDock(store.docks[dockIndex], report);
+  const updatedDock = applyReportToDock(store.docks[dockIndex], report, {
+    marinaOwned: Boolean(input.marinaOwned),
+    hours: input.hours?.trim() || null,
+    pay: input.pay ?? null,
+    closed: Boolean(input.closed),
+    dieselOnly: Boolean(input.dieselOnly),
+  });
   store.docks[dockIndex] = updatedDock;
   store.generatedAt = new Date().toISOString();
 
