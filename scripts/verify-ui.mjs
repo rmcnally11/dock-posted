@@ -28,12 +28,34 @@ try {
   const kicker = await page.$eval("[data-testid=hero-kicker]", (el) => el.textContent?.trim());
   const headline = await page.$eval("[data-testid=hero-headline]", (el) => el.textContent?.trim());
   const deck = await page.$eval("[data-testid=hero-deck]", (el) => el.textContent?.trim());
+  const geo = await page.$eval("[data-testid=hero-geo]", (el) => el.textContent?.trim());
   const extra = await page.$eval("[data-testid=hero-extra]", (el) => el.textContent?.trim());
   const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
-  check("hero kicker present", kicker === "What the dock posted", kicker);
-  check("hero headline present", headline === "Sabine to Key West", headline);
-  check("hero deck present", deck === "The last number they wrote on the board. If they did not post, it stays Call.", deck);
+  check("hero kicker present", kicker === "Marina fuel", kicker);
+  check("hero headline present", headline === "The price they posted", headline);
+  check(
+    "hero deck present",
+    deck === "Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+    deck,
+  );
+  check("hero geo is quiet", geo === "Sabine to Key West.", geo);
+  check("headline is not the range", headline !== "Sabine to Key West", headline);
+  const heroSizes = await page.$$eval(
+    "[data-testid=hero-headline], [data-testid=hero-deck], [data-testid=hero-geo]",
+    (els) => els.map((el) => Number.parseFloat(getComputedStyle(el).fontSize)),
+  );
+  check("geo smaller than deck", heroSizes[2] < heroSizes[1] && heroSizes[1] < heroSizes[0], heroSizes.join(","));
   check("hero extra line", extra === "We don’t sell a gallon. We don’t lift a boat.", extra);
+  const pageTitle = await page.title();
+  const metaDescription = await page.$eval('meta[name="description"]', (el) => el.getAttribute("content"));
+  check("title is marina fuel", pageTitle === "Dock Posted — Marina fuel", pageTitle);
+  check("title is not the range", !/Sabine to Key West/.test(pageTitle), pageTitle);
+  check(
+    "meta is posted prices",
+    metaDescription ===
+      "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+    metaDescription,
+  );
   const landing = await page.$("[data-testid=landing]");
   const boardSection = await page.$("[data-testid=board]");
   check("landing on home", Boolean(landing));
@@ -226,7 +248,7 @@ try {
   const waterdogHref = await page.$eval("[data-testid=waterdog-credit] a", (el) => el.getAttribute("href"));
   check("pins have no waterdog", !/waterdog|coastal cavaliers|platts|nymex|\bTCN\b|\brack\b/i.test(dockListCopy));
   check("map has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(mapCopy));
-  check("hero has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(`${kicker} ${headline} ${deck} ${extra} ${tally}`));
+  check("hero has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(`${kicker} ${headline} ${deck} ${geo} ${extra} ${tally}`));
   const landingCopy = await page.$eval("[data-testid=landing]", (el) => el.textContent ?? "");
   check("landing has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(landingCopy));
   check("landing has no waitlist", !/waitlist|stripe|email capture/i.test(landingCopy));

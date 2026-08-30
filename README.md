@@ -2,7 +2,7 @@
 
 Public marina **posted pump** chart. Sabine to Key West, then the rest of the US saltwater recreational coast.
 
-The last number they wrote on the board. If they did not post, it stays Call.
+Diesel and gas from the dock. If they didn’t write a number, it stays Call.
 
 This is a consumer board. It does **not** sell, broker, bid, or source gallons. No accounts. No marina POS. No rack, OPIS, Argus, Platts, delivered, RINs, invoices, throughput, or savings pitch.
 

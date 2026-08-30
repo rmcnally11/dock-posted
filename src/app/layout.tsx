@@ -28,11 +28,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Dock Posted — Sabine to Key West",
+    default: "Dock Posted — Marina fuel",
     template: "%s — Dock Posted",
   },
   description:
-    "The last number they wrote on the board. If they did not post, it stays Call.",
+    "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
   icons: { icon: "/favicon.svg" },
 };
 
