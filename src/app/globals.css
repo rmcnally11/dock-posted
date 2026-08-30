@@ -30,7 +30,14 @@
 
 html,
 body {
-  height: 100%;
+  min-height: 100%;
+}
+
+@media (min-width: 1024px) {
+  html,
+  body {
+    height: 100%;
+  }
 }
 
 body {
@@ -53,19 +60,75 @@ body {
   border: 1px solid rgba(11, 31, 51, 0.12);
 }
 
+.fuel-map-board {
+  --map-tile: 256px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  aspect-ratio: var(--map-cols) / var(--map-rows);
+  transform: translate(-50%, -50%);
+}
+
+@media (min-width: 1024px) {
+  .fuel-map-board {
+    width: calc(var(--map-cols) * var(--map-tile));
+    height: calc(var(--map-rows) * var(--map-tile));
+    aspect-ratio: auto;
+    transform: none;
+    margin-left: calc(var(--map-cols) * var(--map-tile) / -2);
+    margin-top: calc(var(--map-rows) * var(--map-tile) / -2);
+  }
+}
+
+.fuel-map-tiles {
+  display: grid;
+  grid-template-columns: repeat(var(--map-cols), minmax(0, 1fr));
+  width: 100%;
+  height: 100%;
+}
+
+.fuel-map-tiles img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .dock-pin {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.dock-pin-dot {
   width: 18px;
   height: 18px;
   border: 2px solid #ffffff;
   border-radius: 999px;
   box-shadow: 0 2px 8px rgb(11 31 51 / 0.35);
-  cursor: pointer;
+  pointer-events: none;
 }
 
-.dock-pin[data-selected="true"] {
+.dock-pin[data-selected="true"] .dock-pin-dot {
   width: 22px;
   height: 22px;
   outline: 3px solid rgb(29 126 196 / 0.45);
+}
+
+.chip-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.chip-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes waterline-drift {

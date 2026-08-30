@@ -40,9 +40,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} h-full scroll-smooth antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} min-h-full overflow-x-hidden scroll-smooth antialiased lg:h-full`}
     >
-      <body className="flex h-full min-h-full flex-col overflow-y-auto font-sans text-[color:var(--cream)]">
+      <body className="flex min-h-full flex-col overflow-x-hidden font-sans text-[color:var(--cream)] lg:h-full lg:overflow-y-auto">
         <SiteHeader />
         {children}
       </body>

@@ -51,12 +51,12 @@ export function OwnerPlanForm() {
 
       <fieldset className="space-y-2">
         <legend className="text-sm font-medium text-[color:var(--cream)]/80">Where the boat sits</legend>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="radio" name="berth" value="in-water" defaultChecked />
+        <label className="flex min-h-11 items-center gap-3 text-base">
+          <input type="radio" name="berth" value="in-water" defaultChecked className="h-5 w-5" />
           In-water
         </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="radio" name="berth" value="trailer" />
+        <label className="flex min-h-11 items-center gap-3 text-base">
+          <input type="radio" name="berth" value="trailer" className="h-5 w-5" />
           Trailer
         </label>
       </fieldset>

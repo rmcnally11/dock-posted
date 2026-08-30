@@ -471,6 +471,177 @@ try {
   check("phone landing fills first screen", phoneLanding > 600, `h=${phoneLanding}`);
   check("map may sit below the fold on a phone", phoneMapTop > 700, `mapTop=${phoneMapTop}`);
 
+  for (const phone of [
+    { width: 390, height: 844 },
+    { width: 430, height: 932 },
+  ]) {
+    await page.setViewport({ width: phone.width, height: phone.height, isMobile: true, hasTouch: true });
+    await page.goto(`${base}/?corridor=galveston-bay`, { waitUntil: "networkidle0" });
+
+    const landingOnHome = await page.$("[data-testid=landing]");
+    const seeBoard = await page.$eval("[data-testid=see-the-board]", (el) => el.getAttribute("href"));
+    check(`phone ${phone.width} landing stays first`, Boolean(landingOnHome));
+    check(`phone ${phone.width} see the board is #board`, seeBoard === "#board");
+
+    const fold = await page.evaluate(() => {
+      const landing = document.querySelector("[data-testid=landing]");
+      const map = document.querySelector("[data-testid=fuel-map]");
+      return {
+        landingH: landing?.getBoundingClientRect().height ?? 0,
+        mapTop: map?.getBoundingClientRect().top ?? 0,
+      };
+    });
+    check(`phone ${phone.width} landing first screen`, fold.landingH > 600, JSON.stringify(fold));
+    check(`phone ${phone.width} map below fold`, fold.mapTop > 700, JSON.stringify(fold));
+
+    const metrics = await page.evaluate(() => {
+      const main = document.querySelector("main");
+      const board = document.querySelector("[data-testid=board]");
+      const mainStyle = main ? getComputedStyle(main) : null;
+      const boardStyle = board ? getComputedStyle(board) : null;
+      return {
+        docScroll: document.documentElement.scrollHeight,
+        bodyScroll: document.body.scrollHeight,
+        inner: window.innerHeight,
+        mainOverflowY: mainStyle?.overflowY ?? "",
+        boardOverflowY: boardStyle?.overflowY ?? "",
+        docOverflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      };
+    });
+    const pageCanScroll = Math.max(metrics.docScroll, metrics.bodyScroll) > metrics.inner + 80;
+    check(
+      `phone ${phone.width} document scrolls`,
+      pageCanScroll && metrics.mainOverflowY !== "hidden" && metrics.boardOverflowY !== "hidden",
+      JSON.stringify(metrics),
+    );
+    check(`phone ${phone.width} no overflow-x`, !metrics.docOverflowX, JSON.stringify(metrics));
+
+    await page.goto(`${base}/?corridor=galveston-bay#board`, { waitUntil: "networkidle0" });
+    await page.waitForSelector("[data-testid=dock-card-marina-bay-harbor]");
+    const cardReach = await page.evaluate((viewH) => {
+      const root = document.documentElement;
+      const prev = root.style.scrollBehavior;
+      root.style.scrollBehavior = "auto";
+      const before = window.scrollY;
+      document.getElementById("board")?.scrollIntoView({ behavior: "instant", block: "start" });
+      const card = document.querySelector("[data-testid=dock-card-marina-bay-harbor]");
+      card?.scrollIntoView({ behavior: "instant", block: "start" });
+      root.scrollTop = Math.max(0, (card?.getBoundingClientRect().top ?? 0) + root.scrollTop - 64);
+      const r = card?.getBoundingClientRect();
+      root.style.scrollBehavior = prev;
+      return {
+        before,
+        after: window.scrollY || root.scrollTop,
+        top: r?.top ?? -1,
+        bottom: r?.bottom ?? -1,
+        viewH,
+      };
+    }, phone.height);
+    check(
+      `phone ${phone.width} first card in view after #board scroll`,
+      cardReach.after > 200 && cardReach.top < phone.height && cardReach.bottom > 0,
+      JSON.stringify(cardReach),
+    );
+
+    const mapBox = await page.$eval("[data-testid=fuel-map]", (el) => {
+      const r = el.getBoundingClientRect();
+      return { width: r.width, height: r.height };
+    });
+    check(
+      `phone ${phone.width} map pane narrower than 1024`,
+      mapBox.width < 1024 && mapBox.width <= phone.width + 1,
+      JSON.stringify(mapBox),
+    );
+    check(
+      `phone ${phone.width} map not 46vh crop`,
+      mapBox.height <= phone.height * 0.34,
+      JSON.stringify(mapBox),
+    );
+
+    const boardBox = await page.$eval("[data-testid=fuel-map-board]", (el) => {
+      const r = el.getBoundingClientRect();
+      return { width: r.width, height: r.height };
+    });
+    check(
+      `phone ${phone.width} map board fills pane width`,
+      Math.abs(boardBox.width - mapBox.width) < 3,
+      JSON.stringify({ boardBox, mapBox }),
+    );
+
+    const tel = await page.$eval("[data-testid=dock-card-marina-bay-harbor]", (el) => {
+      const root = el.closest("article") ?? el;
+      const a = root.querySelector("a[href^='tel:']");
+      return { href: a?.getAttribute("href") ?? "", text: a?.textContent?.trim() ?? "" };
+    });
+    check(
+      `phone ${phone.width} marina bay tel`,
+      tel.href === "tel:+12815494772" && /\(281\)\s*549-4772/.test(tel.text) && /call the dock/i.test(tel.text),
+      JSON.stringify(tel),
+    );
+
+    const searchSize = await page.$eval("#dock-search", (el) => parseFloat(getComputedStyle(el).fontSize));
+    check(`phone ${phone.width} search 16px`, searchSize >= 16, String(searchSize));
+
+    const headerBox = await page.$eval("header", (el) => {
+      const wordmark = el.querySelector("[data-testid=wordmark]");
+      const nav = el.querySelector("nav");
+      const wr = wordmark?.getBoundingClientRect();
+      const nr = nav?.getBoundingClientRect();
+      return {
+        overflow: el.scrollWidth > el.clientWidth + 1,
+        oneRow: wr && nr ? Math.abs(wr.top - nr.top) < 24 : false,
+        height: el.getBoundingClientRect().height,
+      };
+    });
+    check(`phone ${phone.width} header no overflow`, !headerBox.overflow, JSON.stringify(headerBox));
+    check(`phone ${phone.width} header one row`, headerBox.oneRow && headerBox.height < 80, JSON.stringify(headerBox));
+
+    const chipTops = await page.$$eval("[data-testid=coast-jumps] a", (els) =>
+      els.map((el) => el.getBoundingClientRect().top),
+    );
+    check(
+      `phone ${phone.width} coast chips one row`,
+      chipTops.length > 1 && Math.max(...chipTops) - Math.min(...chipTops) < 16,
+      JSON.stringify(chipTops.slice(0, 6)),
+    );
+
+    const pinHit = await page.$eval(".dock-pin", (el) => {
+      const r = el.getBoundingClientRect();
+      return { w: r.width, h: r.height };
+    });
+    check(`phone ${phone.width} pin tap 44`, pinHit.w >= 44 && pinHit.h >= 44, JSON.stringify(pinHit));
+
+    const hours = await page.$eval("[data-testid=dock-card-marina-bay-harbor]", (el) => {
+      const dts = [...el.querySelectorAll("dt")];
+      const hoursDt = dts.find((dt) => dt.textContent?.trim() === "Hours");
+      const regularDt = dts.find((dt) => dt.textContent?.trim() === "Regular");
+      if (!hoursDt?.parentElement || !regularDt?.parentElement) return null;
+      return {
+        hoursW: hoursDt.parentElement.getBoundingClientRect().width,
+        regularW: regularDt.parentElement.getBoundingClientRect().width,
+      };
+    });
+    check(
+      `phone ${phone.width} hours full width`,
+      Boolean(hours && hours.hoursW > hours.regularW * 1.4),
+      JSON.stringify(hours),
+    );
+
+    await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
+    const haul = await page.evaluate(() => ({
+      overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      docScroll: document.documentElement.scrollHeight,
+      inner: window.innerHeight,
+    }));
+    check(`phone ${phone.width} haul-out no overflow-x`, !haul.overflowX, JSON.stringify(haul));
+    check(`phone ${phone.width} haul-out scrolls`, haul.docScroll > haul.inner, JSON.stringify(haul));
+    const radioHit = await page.$eval("[data-testid=owner-plan-form] label:has(input[type=radio])", (el) => {
+      const r = el.getBoundingClientRect();
+      return { h: r.height };
+    });
+    check(`phone ${phone.width} haul-out radio 44`, radioHit.h >= 44, JSON.stringify(radioHit));
+  }
+
   const wholesaleRes = await page.goto(`${base}/wholesale`, { waitUntil: "domcontentloaded" });
   check("wholesale 404 without password", wholesaleRes?.status() === 404, String(wholesaleRes?.status()));
   const wholesaleCopy = await page.$eval("body", (el) => el.textContent ?? "");

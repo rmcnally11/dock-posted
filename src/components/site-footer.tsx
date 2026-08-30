@@ -3,7 +3,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
     <footer
       className={
         compact
-          ? "border-t border-[color:var(--line)] px-3 py-2 text-[11px] leading-4 text-[color:var(--cream)]/45"
+          ? "border-t border-[color:var(--line)] px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-[11px] leading-4 text-[color:var(--cream)]/45"
           : "border-t border-[color:var(--line)] px-4 py-8 pb-[max(1.75rem,env(safe-area-inset-bottom))] text-center"
       }
     >

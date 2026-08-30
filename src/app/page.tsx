@@ -30,7 +30,7 @@ export default async function Home({
     : null;
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col">
+    <main className="flex min-w-0 flex-1 flex-col">
       <section
         data-testid="landing"
         className="flex min-h-[calc(100dvh-3.6rem)] flex-col justify-center border-b border-[color:var(--line)] px-4 py-16 md:px-6 md:py-24"
@@ -96,21 +96,21 @@ export default async function Home({
             <a
               data-testid="landing-link-board"
               href="#board"
-              className="underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
+              className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
             >
               The board
             </a>
             <a
               data-testid="landing-link-named-storm"
               href="/haul-out"
-              className="underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
+              className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
             >
               When they name it
             </a>
             <a
               data-testid="landing-link-about"
               href="/about"
-              className="underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
+              className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
             >
               About
             </a>
@@ -120,7 +120,7 @@ export default async function Home({
       <section
         id="board"
         data-testid="board"
-        className="flex min-h-[calc(100dvh-3.6rem)] scroll-mt-[3.6rem] flex-col lg:h-[calc(100dvh-3.6rem)]"
+        className="flex min-w-0 flex-col scroll-mt-[3.6rem] lg:h-[calc(100dvh-3.6rem)] lg:min-h-0 lg:overflow-hidden"
       >
         {query.reported ? (
           <p

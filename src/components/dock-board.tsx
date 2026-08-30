@@ -18,18 +18,18 @@ export function DockBoard({
   const filtered = query.e0Only || query.freshOnly || query.q.length >= 2;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col lg:h-full lg:flex-row">
-      <section className="relative isolate h-[46vh] min-h-[280px] lg:h-auto lg:min-h-[28rem] lg:flex-1">
+    <div className="flex min-w-0 flex-1 flex-col lg:h-full lg:min-h-0 lg:flex-row">
+      <section className="relative isolate h-[32vh] max-h-[32vh] min-h-[10.5rem] min-w-0 lg:h-auto lg:max-h-none lg:min-h-[28rem] lg:flex-1">
         <FuelMap docks={visible} query={query} />
-        <div className="pointer-events-none absolute left-2 top-2 z-[600] hidden max-w-[calc(100%-1rem)] flex-wrap gap-1.5 sm:flex">
+        <div className="pointer-events-none absolute left-2 top-2 z-[600] flex max-w-[calc(100%-1rem)] flex-nowrap gap-1.5 overflow-x-auto">
           <HomePills query={query} />
         </div>
       </section>
 
-      <aside className="relative z-20 flex w-full flex-col border-t border-[color:var(--line)] bg-[color:var(--ink)]/70 lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
+      <aside className="relative z-20 flex min-w-0 w-full flex-col border-t border-[color:var(--line)] bg-[color:var(--ink)]/70 lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
         <div className="border-b border-[color:var(--line)] px-3 py-3">
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <h2
                 data-testid="corridor-heading"
                 className="font-heading text-xl text-[color:var(--cream)]"
@@ -56,7 +56,7 @@ export function DockBoard({
             </div>
             <a
               href={selected ? `/report?dock=${selected.id}` : "/report"}
-              className="inline-flex h-8 items-center rounded-md bg-[color:var(--cream)] px-3 text-xs font-medium text-[color:var(--ink)] hover:bg-[color:var(--cream)]/90"
+              className="inline-flex h-11 shrink-0 items-center rounded-md bg-[color:var(--cream)] px-3 text-xs font-medium text-[color:var(--ink)] hover:bg-[color:var(--cream)]/90 lg:h-8"
             >
               Post a number
             </a>
@@ -76,17 +76,20 @@ export function DockBoard({
               name="q"
               defaultValue={query.q}
               placeholder="Marina or city"
-              className="h-9 min-w-0 flex-1 rounded-md border border-[color:var(--line)] bg-white px-3 text-sm text-[color:var(--cream)] placeholder:text-[color:var(--cream)]/40 focus:outline-none focus:ring-2 focus:ring-[color:var(--sea)]/40"
+              className="h-11 min-w-0 flex-1 rounded-md border border-[color:var(--line)] bg-white px-3 text-base text-[color:var(--cream)] placeholder:text-[color:var(--cream)]/40 focus:outline-none focus:ring-2 focus:ring-[color:var(--sea)]/40 lg:h-9 lg:text-sm"
             />
             <button
               type="submit"
-              className="h-9 rounded-md border border-[color:var(--line)] bg-[color:var(--panel)] px-3 text-xs font-medium text-[color:var(--cream)] hover:bg-white"
+              className="h-11 rounded-md border border-[color:var(--line)] bg-[color:var(--panel)] px-3 text-sm font-medium text-[color:var(--cream)] hover:bg-white lg:h-9 lg:text-xs"
             >
               Find
             </button>
           </form>
 
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div
+            data-testid="coast-jumps"
+            className="chip-scroll mt-3 flex flex-nowrap gap-1.5 overflow-x-auto overscroll-x-contain"
+          >
             {COAST_JUMPS.map((jump) => {
               const active =
                 jump.kind === "corridor"
@@ -109,7 +112,7 @@ export function DockBoard({
                   key={`${jump.kind}-${jump.id}`}
                   href={href}
                   className={cn(
-                    "shrink-0 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.14em]",
+                    "inline-flex h-11 shrink-0 items-center rounded-full border px-3 text-[11px] uppercase tracking-[0.14em] lg:h-auto lg:py-1",
                     active
                       ? "border-[color:var(--sea)] bg-[color:var(--sea)]/20 text-[color:var(--cream)]"
                       : "border-[color:var(--line)] text-[color:var(--cream)]/60 hover:text-[color:var(--cream)]",
@@ -137,7 +140,10 @@ export function DockBoard({
           </div>
         </div>
 
-        <div data-testid="dock-list" className="flex-1 space-y-2.5 overflow-y-auto p-3">
+        <div
+          data-testid="dock-list"
+          className="flex-1 space-y-2.5 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:overflow-y-auto"
+        >
           {visible.length === 0 ? (
             <EmptyList query={query} />
           ) : (
@@ -179,7 +185,7 @@ function HomePills({ query }: { query: BoardQuery }) {
             reported: null,
           })}
           className={cn(
-            "pointer-events-auto rounded-full border px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] shadow-sm",
+            "pointer-events-auto inline-flex h-11 shrink-0 items-center rounded-full border px-2.5 text-[11px] uppercase tracking-[0.14em] shadow-sm lg:h-auto lg:py-1",
             query.corridor === item.id && !query.state && !query.region
               ? "border-[color:var(--sea)] bg-[color:var(--sea)]/20 text-[color:var(--cream)]"
               : "border-[color:var(--line)] bg-[color:var(--ink)]/90 text-[color:var(--cream)]",
@@ -206,7 +212,7 @@ function FilterChip({
       href={href}
       aria-pressed={active}
       className={cn(
-        "rounded-md border px-2.5 py-1 text-xs",
+        "inline-flex h-11 items-center rounded-md border px-2.5 text-xs lg:h-auto lg:py-1",
         active
           ? "border-[color:var(--cream)] text-[color:var(--cream)]"
           : "border-[color:var(--line)] text-[color:var(--cream)]/55",

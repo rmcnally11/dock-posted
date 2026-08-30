@@ -3,6 +3,7 @@ import { latToTileY, lngToTileX } from "@/lib/geo";
 import { pinTrust } from "@/lib/freshness";
 import { tileGridForZoom, viewForBoard } from "@/lib/map-view";
 import type { Dock } from "@/lib/types";
+import type { CSSProperties } from "react";
 
 const TILE = 256;
 
@@ -34,22 +35,16 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
       data-testid="fuel-map"
     >
       <div
-        className="absolute left-1/2 top-1/2"
-        style={{
-          width: COLS * TILE,
-          height: ROWS * TILE,
-          marginLeft: -(COLS * TILE) / 2,
-          marginTop: -(ROWS * TILE) / 2,
-        }}
+        className="fuel-map-board"
+        data-testid="fuel-map-board"
+        style={
+          {
+            "--map-cols": COLS,
+            "--map-rows": ROWS,
+          } as CSSProperties
+        }
       >
-        <div
-          className="grid"
-          style={{
-            gridTemplateColumns: `repeat(${COLS}, ${TILE}px)`,
-            width: COLS * TILE,
-            height: ROWS * TILE,
-          }}
-        >
+        <div className="fuel-map-tiles">
           {tiles.map((tile) => (
             <img
               key={`${tile.x}-${tile.y}`}
@@ -78,11 +73,12 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
                 position: "absolute",
                 left: `${left}%`,
                 top: `${top}%`,
-                background: pinColor(dock),
                 transform: "translate(-50%, -100%)",
                 zIndex: selected ? 3 : 2,
               }}
-            />
+            >
+              <span className="dock-pin-dot" style={{ background: pinColor(dock) }} />
+            </a>
           );
         })}
       </div>

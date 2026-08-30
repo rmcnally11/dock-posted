@@ -98,12 +98,12 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
 
       <fieldset className="space-y-2">
         <legend className="text-sm font-medium text-[color:var(--cream)]/80">Who posts</legend>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="radio" name="who" value="boater" defaultChecked />
+        <label className="flex min-h-11 items-center gap-3 text-base">
+          <input type="radio" name="who" value="boater" defaultChecked className="h-5 w-5" />
           I fueled here
         </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="radio" name="who" value="marina" />
+        <label className="flex min-h-11 items-center gap-3 text-base">
+          <input type="radio" name="who" value="marina" className="h-5 w-5" />
           I run this dock
         </label>
         <p className="text-xs text-[color:var(--cream)]/50">
@@ -131,12 +131,12 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
           </select>
         </div>
         <div className="space-y-2 pt-6 text-sm">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="closed" value="1" />
+          <label className="flex min-h-11 items-center gap-3">
+            <input type="checkbox" name="closed" value="1" className="h-5 w-5" />
             Closed
           </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="dieselOnly" value="1" />
+          <label className="flex min-h-11 items-center gap-3">
+            <input type="checkbox" name="dieselOnly" value="1" className="h-5 w-5" />
             Diesel only
           </label>
         </div>
