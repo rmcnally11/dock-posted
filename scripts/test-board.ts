@@ -9,8 +9,7 @@ import seed from "../data/docks.seed.json";
 import type { Dock, StateCode } from "../src/lib/types";
 import { STATE_CODES } from "../src/lib/types";
 
-async function main() {
-  const { docks } = await loadCombinedSeed();
+const docks = seed.docks as Dock[];
 
 assert.ok(docks.length >= 90, `expected a coastal set, got ${docks.length}`);
 assert.ok(docks.every((dock) => dock.region && dock.state && dock.city));
@@ -78,9 +77,10 @@ const marinaDelMar = docks.find((dock) => dock.id === "marina-del-mar");
 assert.ok(marinaDelMar);
 assert.ok(marinaDelMar.quotes.every((quote) => quote.pricePerGallon == null));
 
-  const keys = filterDocks(docks, parseBoardQuery({ corridor: "upper-keys" }));
-  assert.equal(keys.inCorridor.length, 11);
-  assert.ok(keys.visible.some((dock) => dock.id === "key-largo-harbor"));
+const e0 = filterDocks(docks, parseBoardQuery({ e0: "1" }));
+assert.ok(e0.visible.length < e0.inCorridor.length);
+assert.ok(e0.visible.every((dock) => dock.ethanol === "E0"));
+assert.ok(!e0.visible.some((dock) => dock.id === "south-shore-harbour"));
 
 const fresh = filterDocks(docks, parseBoardQuery({ fresh: "1" }));
 assert.ok(fresh.visible.length < fresh.inCorridor.length);

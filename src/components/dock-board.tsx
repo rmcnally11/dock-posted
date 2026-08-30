@@ -1,4 +1,3 @@
-import { CoastChips } from "@/components/coast-chips";
 import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
 import { SiteFooter } from "@/components/site-footer";
@@ -34,7 +33,7 @@ export function DockBoard({
               <h2 data-testid="corridor-heading" className="font-serif text-xl text-harbor">
                 {viewLabel(query)}
               </h2>
-              <p data-testid="dock-count" className="text-sm text-[color:var(--cream)]/55">
+              <p data-testid="dock-count" className="text-sm text-harbor/60">
                 {filtered
                   ? `Showing ${visible.length} of ${inCorridor.length} docks`
                   : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"}`}
@@ -120,25 +119,15 @@ export function DockBoard({
           </div>
 
           <div className="mt-2 flex flex-wrap gap-2">
-            <a
+            <FilterChip
+              active={query.e0Only}
               href={boardHref({ ...query, e0Only: !query.e0Only, dock: null })}
-              aria-pressed={query.e0Only}
-              className={
-                query.e0Only
-                  ? "rounded-full border border-[color:var(--sea)] bg-[color:var(--sea)]/10 px-3 py-1 text-xs text-[color:var(--sea)]"
-                  : "rounded-full border border-[color:var(--line)] bg-white px-3 py-1 text-xs text-[color:var(--cream)]/70"
-              }
             >
               E0 only
-            </a>
-            <a
+            </FilterChip>
+            <FilterChip
+              active={query.freshOnly}
               href={boardHref({ ...query, freshOnly: !query.freshOnly, dock: null })}
-              aria-pressed={query.freshOnly}
-              className={
-                query.freshOnly
-                  ? "rounded-full border border-[color:var(--sea)] bg-[color:var(--sea)]/10 px-3 py-1 text-xs text-[color:var(--sea)]"
-                  : "rounded-full border border-[color:var(--line)] bg-white px-3 py-1 text-xs text-[color:var(--cream)]/70"
-              }
             >
               This week
             </FilterChip>

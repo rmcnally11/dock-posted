@@ -30,17 +30,6 @@
   --font-mono: var(--font-ibm-plex-mono);
 }
 
-:root {
-  --ink: #ffffff;
-  --cream: #0b1f33;
-  --copper: #e23b3b;
-  --coral: #ff6b4a;
-  --gold: #e3b01c;
-  --sea: #1d7ec4;
-  --line: rgba(11, 31, 51, 0.12);
-  --panel: #f4f8fc;
-}
-
 html,
 body {
   height: 100%;

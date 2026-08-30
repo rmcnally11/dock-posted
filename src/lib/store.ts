@@ -17,42 +17,6 @@ import type {
 } from "./types";
 
 const SEED_PATH = path.join(process.cwd(), "data", "docks.seed.json");
-const GULF_CALL_PATH = path.join(process.cwd(), "data", "gulf-call.json");
-
-type CallDockRow = Pick<
-  Dock,
-  "id" | "name" | "corridor" | "city" | "state" | "lat" | "lng" | "phone" | "website"
->;
-
-function expandCallDock(row: CallDockRow): Dock {
-  return {
-    ...row,
-    hours: null,
-    notes:
-      "On the Texas–Florida chain. No public board captured — card says Call until someone posts what they saw.",
-    access: "public",
-    ethanol: "unknown",
-    quotes: [
-      { product: "90", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
-      { product: "diesel", pricePerGallon: null, ethanol: "unknown", status: "call", taxIncluded: null },
-    ],
-    lastVerifiedAt: null,
-    lastVerifiedSource: null,
-    sourceUrl: null,
-  };
-}
-
-export async function loadCombinedSeed(): Promise<DockStoreFile> {
-  const base = JSON.parse(await readFile(SEED_PATH, "utf8")) as DockStoreFile;
-  const extra = JSON.parse(await readFile(GULF_CALL_PATH, "utf8")) as { docks: CallDockRow[] };
-  const have = new Set(base.docks.map((dock) => dock.id));
-  const added = extra.docks.filter((row) => !have.has(row.id)).map(expandCallDock);
-  return {
-    ...base,
-    generatedAt: new Date().toISOString(),
-    docks: [...base.docks, ...added],
-  };
-}
 
 async function readSeed(): Promise<DockStoreFile> {
   const raw = await readFile(SEED_PATH, "utf8");

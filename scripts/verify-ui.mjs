@@ -23,10 +23,6 @@ function check(name, ok, detail = "") {
 
 try {
   await page.goto(base, { waitUntil: "networkidle0" });
-  const homeTitle = await page.$eval("h1", (el) => el.textContent);
-  check("all-water home", homeTitle?.includes("What the dock last posted"));
-
-  await page.goto(`${base}/?corridor=galveston-bay`, { waitUntil: "networkidle0" });
   await page.waitForSelector("[data-testid=corridor-heading]");
 
   const kicker = await page.$eval("[data-testid=hero-kicker]", (el) => el.textContent?.trim());
@@ -166,11 +162,11 @@ try {
   check("e0 count copy", e0Count?.startsWith("Showing"));
   check("e0 hides south shore", !e0Names.includes("South Shore Harbour Fuel Pier"));
 
-  await page.goto(`${base}/?corridor=galveston-bay&fresh=1`, { waitUntil: "networkidle0" });
+  await page.goto(`${base}/?fresh=1`, { waitUntil: "networkidle0" });
   const freshCount = await page.$eval("[data-testid=dock-count]", (el) => el.textContent);
   check("fresh count copy", freshCount?.startsWith("Showing"));
 
-  await page.goto(`${base}/?corridor=galveston-bay&dock=galveston-yacht-marina`, { waitUntil: "networkidle0" });
+  await page.goto(`${base}/?dock=galveston-yacht-marina`, { waitUntil: "networkidle0" });
   const selected = await page.$eval(
     "[data-testid=dock-card-galveston-yacht-marina]",
     (el) => el.getAttribute("aria-current") === "true",

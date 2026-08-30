@@ -17,12 +17,6 @@ export function SiteHeader() {
           <a className="rounded-sm px-2.5 py-2 text-harbor/75 hover:bg-harbor/5 hover:text-harbor" href="/safe-fuel">
             Safe fuel
           </a>
-          <a
-            className="hidden rounded-md px-2.5 py-1.5 text-[color:var(--sea)] sm:inline"
-            href="https://onthiswater.com"
-          >
-            On This Water
-          </a>
         </nav>
       </div>
     </header>
