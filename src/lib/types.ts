@@ -151,8 +151,8 @@ export const CORRIDORS: Record<
   "galveston-bay": {
     label: "Galveston Bay / Clear Lake",
     short: "Clear Lake",
-    center: [-95.02, 29.54],
-    zoom: 10.2,
+    center: [-95.03, 29.56],
+    zoom: 11.2,
   },
   "upper-keys": {
     label: "Key Largo / Upper Keys",
