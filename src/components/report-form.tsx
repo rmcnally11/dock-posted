@@ -18,7 +18,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
   return (
     <form action={submitPriceReport} autoComplete="off" className="space-y-5">
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-[color:var(--cream)]/80">Marina</legend>
+        <legend className="text-sm font-medium text-[color:var(--ink)]/80">Marina</legend>
         <Label htmlFor="marina" className="sr-only">
           Marina
         </Label>
@@ -39,7 +39,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
           ))}
         </select>
         {selected ? (
-          <p data-testid="reporting-for" className="text-xs text-[color:var(--cream)]/55">
+          <p data-testid="reporting-for" className="text-xs text-[color:var(--ink)]/55">
             {selected.name}, {selected.city} {selected.state}
             {selected.phone ? ` · ${selected.phone}` : ""}
           </p>
@@ -97,7 +97,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
       </div>
 
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-[color:var(--cream)]/80">Who posts</legend>
+        <legend className="text-sm font-medium text-[color:var(--ink)]/80">Who posts</legend>
         <label className="flex min-h-11 items-center gap-3 text-base">
           <input type="radio" name="who" value="boater" defaultChecked className="h-5 w-5" />
           I fueled here
@@ -106,7 +106,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
           <input type="radio" name="who" value="marina" className="h-5 w-5" />
           I run this dock
         </label>
-        <p className="text-xs text-[color:var(--cream)]/50">
+        <p className="text-xs text-[color:var(--ink)]/50">
           Truck day, or when you change the board. Not every morning.
         </p>
       </fieldset>
@@ -161,7 +161,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
       <Button type="submit" data-testid="post-price" className="w-full sm:w-auto">
         Send it
       </Button>
-      <p className="text-xs text-[color:var(--cream)]/50">
+      <p className="text-xs text-[color:var(--ink)]/50">
         The number on the pump. If they did not post, it stays Call.
       </p>
     </form>

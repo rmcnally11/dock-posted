@@ -78,15 +78,15 @@ export function XTimeline({ handle }: { handle: string }) {
 
   return (
     <section id="on-x" data-testid="on-x" className="mt-12 max-w-xl">
-      <h2 className="font-heading text-2xl text-[color:var(--cream)]">On X</h2>
+      <h2 className="font-heading text-2xl text-[color:var(--navy)]">On X</h2>
       {status !== "ready" ? (
         <p
           data-testid="on-x-fallback"
-          className="mt-3 text-sm leading-6 text-[color:var(--cream)]/70"
+          className="mt-3 text-sm leading-6 text-[color:var(--ink)]/70"
         >
           Nothing on X yet.{" "}
           <a
-            className="text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2"
+            className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
             href={profile}
           >
             {profile}

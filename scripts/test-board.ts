@@ -135,7 +135,16 @@ assert.equal(formatQuote(marinaBay.quotes.find((quote) => quote.product === "87"
 assert.equal(marinaBay.flags?.includes("last-pump"), true);
 assert.equal(marinaBay.flags?.includes("still-open"), false);
 assert.match(marinaBay.hours ?? "", /store only, not the hose/);
+assert.equal(marinaBay.phone, "(281) 535-2222");
+assert.doesNotMatch(marinaBay.phone ?? "", /549-4772/);
 assert.equal(pinTrust(marinaBay), "unverified");
+
+const hemingwayHome = ["key-west-bight-marina", "conch-harbor-marina", "galleon-marina"];
+for (const id of hemingwayHome) {
+  const dock = docks.find((row) => row.id === id);
+  assert.ok(dock, `missing Hemingway home dock ${id}`);
+  assert.equal(dock.access, "public", `${id} must stay unlocked`);
+}
 
 const gym = docks.find((dock) => dock.id === "galveston-yacht-marina");
 assert.ok(gym);
@@ -405,6 +414,8 @@ const haulSource = readFileSync(path.join(process.cwd(), "src/app/haul-out/page.
 assert.match(haulSource, /Leftover seats/);
 assert.match(haulSource, /data-testid="haul-out-headline"[\s\S]*Named storm/);
 assert.match(haulSource, /When they name it, you need a hole/);
+assert.match(haulSource, /If you won.t say the number, the boats don.t come/);
+assert.match(haulSource, /Wet slips stay Coastal Cavaliers/);
 assert.match(haulSource, /File the boat/);
 assert.match(haulSource, /Two yards that fit/);
 assert.match(haulSource, /When they name it, we text what.s left/);
@@ -439,6 +450,12 @@ assert.match(
   /Diesel and gas from the dock\. If they didn.t write a number, it stays Call\./,
 );
 assert.match(homeSource, /data-testid="hero-geo"[\s\S]*Sabine to Key West\./);
+assert.match(homeSource, /Then the rest of the saltwater coast\./);
+assert.match(homeSource, /<Masthead/);
+const wordmarkSource = readFileSync(path.join(process.cwd(), "src/components/wordmark.tsx"), "utf8");
+assert.match(wordmarkSource, /data-testid="masthead"/);
+assert.match(wordmarkSource, /\/logo\.svg/);
+assert.match(homeSource, /That is the\s+product working, not failing\./);
 assert.doesNotMatch(
   homeSource,
   /data-testid="hero-headline"[\s\S]*Sabine to Key West[\s\S]*data-testid="hero-deck"/,
@@ -505,8 +522,11 @@ const safeSource = readFileSync(path.join(process.cwd(), "src/app/safe-fuel/page
 const footerSource = readFileSync(path.join(process.cwd(), "src/components/site-footer.tsx"), "utf8");
 assert.doesNotMatch(reportSource, /What the dock posted/);
 assert.doesNotMatch(safeSource, /What the dock posted/);
+assert.match(safeSource, /Don.t guess the hose/);
+assert.match(safeSource, /E15 walk away\. E10 runs\. E0 sits better\. Call if unlabeled\./);
 assert.match(reportSource, /Post a number/);
 assert.match(reportSource, /You were there\. What did they have up\./);
+assert.match(reportSource, /Post the number\. Save the next boat a phone call\./);
 assert.doesNotMatch(reportSource, /submit a price/i);
 assert.doesNotMatch(reportSource, /If you saw it, write it/);
 const reportActions = readFileSync(path.join(process.cwd(), "src/app/report/actions.ts"), "utf8");
@@ -587,7 +607,10 @@ assert.match(cardSource, />Hours</);
 assert.match(cardSource, />Date</);
 assert.match(cardSource, /telHref/);
 assert.match(cardSource, /Call the dock · \$\{dock\.phone\}/);
-assert.equal(telHref("(281) 549-4772"), "tel:+12815494772");
+assert.match(cardSource, /quoteTone/);
+assert.match(cardSource, /--signal/);
+assert.match(cardSource, /--diesel/);
+assert.equal(telHref("(281) 535-2222"), "tel:+12815352222");
 assert.equal(telHref("(832) 256-6923"), "tel:+18322566923");
 assert.equal(telHref("not a phone"), null);
 
@@ -601,6 +624,7 @@ assert.doesNotMatch(fuelMapSource, /leaflet|mapbox|webgl/i);
 
 const boardSource = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
 assert.match(boardSource, /action="\/#board"/);
+assert.match(boardSource, /Call is a fact\. Silence is not a price\./);
 assert.doesNotMatch(boardSource, /waterdog|Waterdog|nymex|platts|\bTCN\b/i);
 assert.match(boardSource, /text-base/);
 assert.match(boardSource, /coast-jumps/);
@@ -619,6 +643,46 @@ assert.match(ownerFormSource, /h-5 w-5/);
 const tally = boardTally(docks);
 assert.ok(tally.postedThisWeek > 0);
 assert.ok(tally.call > tally.postedThisWeek);
+
+const cssSource = readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");
+assert.match(cssSource, /--navy:\s*#0b1f33/i);
+assert.match(cssSource, /--ink:\s*#16324a/i);
+assert.match(cssSource, /--signal:\s*#e23b3b/i);
+assert.match(cssSource, /--diesel:\s*#2f8fd6/i);
+assert.match(cssSource, /--fog:\s*#f4f6f8/i);
+assert.match(cssSource, /--cream:\s*#fbf8f3/i);
+assert.doesNotMatch(cssSource, /--copper:/);
+assert.doesNotMatch(cssSource, /--sea:/);
+
+const logoSvg = readFileSync(path.join(process.cwd(), "public/logo.svg"), "utf8");
+const markSvg = readFileSync(path.join(process.cwd(), "public/dp-mark.svg"), "utf8");
+const faviconSvg = readFileSync(path.join(process.cwd(), "public/favicon.svg"), "utf8");
+for (const [name, svg] of [
+  ["logo.svg", logoSvg],
+  ["dp-mark.svg", markSvg],
+  ["favicon.svg", faviconSvg],
+] as const) {
+  assert.match(svg, /#E23B3B/i, `${name} missing signal red`);
+  assert.match(svg, /#2F8FD6/i, `${name} missing diesel blue`);
+  assert.ok((svg.match(/<path/g) ?? []).length >= 2, `${name} must keep the dual waterline`);
+}
+assert.match(logoSvg, /MARINA FUEL/);
+assert.match(logoSvg, /Dock Posted/);
+assert.doesNotMatch(logoSvg, /DOCK POSTED/);
+assert.doesNotMatch(logoSvg, /\$\d|Regular|Diesel/);
+assert.match(markSvg, />DP</);
+assert.match(faviconSvg, />DP</);
+assert.match(layoutSource, /\/favicon\.svg/);
+assert.match(layoutSource, /\/dp-mark\.svg/);
+
+const waterlineSource = readFileSync(path.join(process.cwd(), "src/components/waterline.tsx"), "utf8");
+assert.match(waterlineSource, /#E23B3B/);
+assert.match(waterlineSource, /#2F8FD6/);
+assert.match(waterlineSource, /translate\(0 8\)/);
+assert.doesNotMatch(waterlineSource, /waterline-a|waterline-b/);
+
+assert.match(headerSource, /BrandSpine|Waterline/);
+assert.match(headerSource, /Wordmark/);
 
 console.log(
   `board filters ok — seed ${docks.length}, coast ${coast.visible.length}, bay ${texas.visible.length}, keys ${keys.visible.length}, tx-state ${texasState.visible.length}, ne ${newEngland.visible.length}, e0 ${e0.visible.length}, fresh ${fresh.visible.length}, search ${search.visible.length}, posted-this-week ${tally.postedThisWeek}, call ${tally.call}, stale ${tally.stale}`,

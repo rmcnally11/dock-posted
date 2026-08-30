@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="markTitle markDesc">
+  <title id="markTitle">DP</title>
+  <desc id="markDesc">Dock Posted app mark. Navy tile, cream DP, dual waterline.</desc>
+  <rect width="512" height="512" rx="96" fill="#0B1F33"/>
+  <text x="256" y="292" text-anchor="middle" fill="#FBF8F3" font-family="Newsreader, 'Libre Baskerville', Georgia, 'Times New Roman', serif" font-size="168" font-weight="600">DP</text>
+  <path d="M96 392 C 156 378, 216 378, 276 392 S 396 420, 456 404" fill="none" stroke="#E23B3B" stroke-width="4" stroke-linecap="round"/>
+  <path d="M96 412 C 156 398, 216 398, 276 412 S 396 440, 456 424" fill="none" stroke="#2F8FD6" stroke-width="4" stroke-linecap="round"/>
+</svg>

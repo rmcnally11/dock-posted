@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">Dock Posted</title>
+  <desc id="logoDesc">Marina fuel wordmark. Dual waterline, signal red over diesel blue. Sabine to Key West.</desc>
+  <rect width="720" height="280" fill="#0B1F33"/>
+  <text x="360" y="64" text-anchor="middle" fill="#E23B3B" font-family="Geist, Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" letter-spacing="6.4">MARINA FUEL</text>
+  <text x="360" y="142" text-anchor="middle" fill="#FBF8F3" font-family="Newsreader, 'Libre Baskerville', Georgia, 'Times New Roman', serif" font-size="64" font-weight="500">Dock Posted</text>
+  <path d="M150 172 C 230 160, 310 160, 390 172 S 550 196, 630 176" fill="none" stroke="#E23B3B" stroke-width="1.35" stroke-linecap="round"/>
+  <path d="M150 182 C 230 170, 310 170, 390 182 S 550 206, 630 186" fill="none" stroke="#2F8FD6" stroke-width="1.35" stroke-linecap="round"/>
+  <text x="360" y="232" text-anchor="middle" fill="#FBF8F3" font-family="Geist, Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" letter-spacing="4.8">SABINE TO KEY WEST</text>
+</svg>

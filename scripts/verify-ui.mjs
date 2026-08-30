@@ -38,7 +38,11 @@ try {
     deck === "Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
     deck,
   );
-  check("hero geo is quiet", geo === "Sabine to Key West.", geo);
+  check(
+    "hero geo is quiet",
+    geo === "Sabine to Key West. Then the rest of the saltwater coast.",
+    geo,
+  );
   check("headline is not the range", headline !== "Sabine to Key West", headline);
   const heroSizes = await page.$$eval(
     "[data-testid=hero-headline], [data-testid=hero-deck], [data-testid=hero-geo]",
@@ -96,6 +100,7 @@ try {
   const tally = await page.$eval("[data-testid=board-tally]", (el) => el.textContent?.trim());
   check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
   check("week line still call", /\d+ posted this week\.\s+\d+ still Call\./.test(tally ?? ""), tally);
+  check("proof is live counts", /that is the product working, not failing/i.test(tally ?? ""), tally);
   check("no invent compliance", !/never invent a price/i.test(homeCopy));
   check(
     "no campaign nouns",
@@ -108,6 +113,24 @@ try {
   const headerCopy = await page.$eval("header", (el) => el.textContent ?? "");
   check("distinct wordmark", wordmark === "Dock Posted", wordmark);
   check("header is not a family lockup", !/what the dock posted/i.test(headerCopy), headerCopy);
+  const masthead = await page.$eval("[data-testid=masthead] img", (el) => el.getAttribute("src"));
+  check("masthead uses official wordmark", masthead === "/logo.svg", masthead);
+  const waterlineStrokes = await page.$$eval("[data-testid=waterline] path", (els) =>
+    els.map((el) => (el.getAttribute("stroke") ?? "").toUpperCase()),
+  );
+  check(
+    "dual waterline pair",
+    waterlineStrokes.includes("#E23B3B") && waterlineStrokes.includes("#2F8FD6") && waterlineStrokes.length >= 2,
+    waterlineStrokes.join(","),
+  );
+  const favicon = await page.$eval('link[rel="icon"]', (el) => el.getAttribute("href"));
+  check("favicon is dp mark lineage", /favicon\.svg/.test(favicon ?? ""), favicon);
+  const landingBg = await page.$eval("[data-testid=landing]", (el) => getComputedStyle(el).backgroundColor);
+  check("landing is navy night cover", landingBg === "rgb(11, 31, 51)", landingBg);
+  const paperBg = await page.$eval("body", (el) => getComputedStyle(el).backgroundColor);
+  check("paper pages are cream", paperBg === "rgb(251, 248, 243)", paperBg);
+  const boardFact = await page.$eval("[data-testid=board-fact]", (el) => el.textContent?.trim());
+  check("board fact line", boardFact === "Call is a fact. Silence is not a price.", boardFact);
   check("nav the board", /The board/.test(headerCopy));
   check("nav named storm", /Named storm/.test(headerCopy) && !/Haul-out/.test(headerCopy));
   check("nav post a number", /Post a number/.test(headerCopy));
@@ -149,6 +172,24 @@ try {
   check("card hours", cardFields.includes("Hours"), cardFields.join(","));
   check("card date", dateLine.includes("Date"), dateLine);
   check("marina bay stays call", /Call/.test(marinaBayCard));
+  const regularTone = await page.$eval(
+    "[data-testid=quote-regular-marina-bay-harbor]",
+    (el) => ({ text: el.textContent?.trim(), color: getComputedStyle(el).color }),
+  );
+  check(
+    "call badge is signal red",
+    regularTone.text === "Call" && regularTone.color === "rgb(226, 59, 59)",
+    JSON.stringify(regularTone),
+  );
+  const dieselTone = await page.$eval(
+    "[data-testid=quote-diesel-galveston-yacht-marina]",
+    (el) => ({ text: el.textContent?.trim() ?? "", color: getComputedStyle(el).color }),
+  );
+  check(
+    "posted diesel is diesel blue",
+    /\$/.test(dieselTone.text) && dieselTone.color === "rgb(47, 143, 214)",
+    JSON.stringify(dieselTone),
+  );
   check(
     "marina bay hours as-is",
     /7:30am–5:30pm/.test(marinaBayCard) && /store only, not the hose/.test(marinaBayCard),
@@ -337,6 +378,8 @@ try {
   await page.goto(`${base}/safe-fuel`, { waitUntil: "networkidle0" });
   const safe = await page.$eval("main", (el) => el.textContent ?? "");
   check("safe fuel", /E15 is not for boats/i.test(safe));
+  check("safe fuel don't guess", /don.t guess the hose/i.test(safe));
+  check("safe fuel four states", /e15 walk away/i.test(safe) && /call if unlabeled/i.test(safe));
   check("safe fuel is a warning", /walk away/i.test(safe) && !/save|deal|cheap/i.test(safe));
   check("safe fuel ethanol honesty", /ethanol is what the sticker says/i.test(safe));
   check(
@@ -380,6 +423,7 @@ try {
   check("five yards line", /Five yards still have not said what.s left/.test(haulCopy));
   check("yard post heading", /Yard: post what.s left/.test(haulCopy));
   check("we are not the yard", /We are not the yard/.test(haulCopy));
+  check("yards line", /If you won.t say the number, the boats don.t come/.test(haulCopy));
   check(
     "haul-out no campaign nouns",
     !/the take|the book|come in|where the cents went|four doors|a leftover seat, said out loud|call is the honest number/i.test(
@@ -400,6 +444,7 @@ try {
     page.$eval("main", (el) => el.textContent ?? ""),
   );
   check("report headline", /Post a number/.test(reportCopy) && /You were there\. What did they have up\./.test(reportCopy));
+  check("report community line", /Post the number\. Save the next boat a phone call\./.test(reportCopy));
   check("report send it button", /Send it/.test(reportCopy) && !/submit a price/i.test(reportCopy));
   check(
     "report no campaign nouns",
@@ -610,7 +655,7 @@ try {
     });
     check(
       `phone ${phone.width} marina bay tel`,
-      tel.href === "tel:+12815494772" && /\(281\)\s*549-4772/.test(tel.text) && /call the dock/i.test(tel.text),
+      tel.href === "tel:+12815352222" && /\(281\)\s*535-2222/.test(tel.text) && /call the dock/i.test(tel.text),
       JSON.stringify(tel),
     );
 

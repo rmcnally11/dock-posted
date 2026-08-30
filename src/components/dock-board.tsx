@@ -26,29 +26,32 @@ export function DockBoard({
         </div>
       </section>
 
-      <aside className="relative z-20 flex min-w-0 w-full flex-col border-t border-[color:var(--line)] bg-[color:var(--ink)]/70 lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
+      <aside className="relative z-20 flex min-w-0 w-full flex-col border-t border-[color:var(--line)] bg-[color:var(--cream)] lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
         <div className="border-b border-[color:var(--line)] px-3 py-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h2
                 data-testid="corridor-heading"
-                className="font-heading text-xl text-[color:var(--cream)]"
+                className="font-heading text-xl text-[color:var(--navy)]"
               >
                 {viewLabel(query)}
               </h2>
-              <p data-testid="dock-count" className="text-sm text-[color:var(--cream)]/60">
+              <p data-testid="dock-count" className="text-sm text-[color:var(--ink)]/70">
                 {filtered
                   ? `Showing ${visible.length} of ${inCorridor.length} docks`
                   : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"}`}
               </p>
+              <p data-testid="board-fact" className="mt-1 text-xs text-[color:var(--ink)]/55">
+                Call is a fact. Silence is not a price.
+              </p>
               {query.corridor === "galveston-bay" && !query.state && !query.region && query.q.length < 2 ? (
-                <p className="mt-1 text-xs text-[color:var(--cream)]/50">
+                <p className="mt-1 text-xs text-[color:var(--ink)]/50">
                   Clear Lake mouth first. Hours beat a posted price. A 6:30 run cannot use
                   South Shore.
                 </p>
               ) : null}
               {query.corridor === "upper-keys" && !query.state && !query.region && query.q.length < 2 ? (
-                <p className="mt-1 text-xs text-[color:var(--cream)]/50">
+                <p className="mt-1 text-xs text-[color:var(--ink)]/50">
                   E0 still pumping at first light, this side of the island. Islamorada is a
                   different run.
                 </p>
@@ -56,7 +59,7 @@ export function DockBoard({
             </div>
             <a
               href={selected ? `/report?dock=${selected.id}` : "/report"}
-              className="inline-flex h-11 shrink-0 items-center rounded-md bg-[color:var(--cream)] px-3 text-xs font-medium text-[color:var(--ink)] hover:bg-[color:var(--cream)]/90 lg:h-8"
+              className="inline-flex h-11 shrink-0 items-center rounded-md bg-[color:var(--navy)] px-3 text-xs font-medium text-[color:var(--cream)] hover:bg-[color:var(--navy)]/90 lg:h-8"
             >
               Post a number
             </a>
@@ -76,11 +79,11 @@ export function DockBoard({
               name="q"
               defaultValue={query.q}
               placeholder="Marina or city"
-              className="h-11 min-w-0 flex-1 rounded-md border border-[color:var(--line)] bg-white px-3 text-base text-[color:var(--cream)] placeholder:text-[color:var(--cream)]/40 focus:outline-none focus:ring-2 focus:ring-[color:var(--sea)]/40 lg:h-9 lg:text-sm"
+              className="h-11 min-w-0 flex-1 rounded-md border border-[color:var(--line)] bg-white px-3 text-base text-[color:var(--navy)] placeholder:text-[color:var(--ink)]/40 focus:outline-none focus:ring-2 focus:ring-[color:var(--diesel)]/40 lg:h-9 lg:text-sm"
             />
             <button
               type="submit"
-              className="h-11 rounded-md border border-[color:var(--line)] bg-[color:var(--panel)] px-3 text-sm font-medium text-[color:var(--cream)] hover:bg-white lg:h-9 lg:text-xs"
+              className="h-11 rounded-md border border-[color:var(--line)] bg-[color:var(--fog)] px-3 text-sm font-medium text-[color:var(--navy)] hover:bg-white lg:h-9 lg:text-xs"
             >
               Find
             </button>
@@ -114,8 +117,8 @@ export function DockBoard({
                   className={cn(
                     "inline-flex h-11 shrink-0 items-center rounded-full border px-3 text-[11px] uppercase tracking-[0.14em] lg:h-auto lg:py-1",
                     active
-                      ? "border-[color:var(--sea)] bg-[color:var(--sea)]/20 text-[color:var(--cream)]"
-                      : "border-[color:var(--line)] text-[color:var(--cream)]/60 hover:text-[color:var(--cream)]",
+                      ? "border-[color:var(--diesel)] bg-[color:var(--diesel)]/15 text-[color:var(--navy)]"
+                      : "border-[color:var(--line)] text-[color:var(--ink)]/60 hover:text-[color:var(--navy)]",
                   )}
                 >
                   {jump.short}
@@ -187,8 +190,8 @@ function HomePills({ query }: { query: BoardQuery }) {
           className={cn(
             "pointer-events-auto inline-flex h-11 shrink-0 items-center rounded-full border px-2.5 text-[11px] uppercase tracking-[0.14em] shadow-sm lg:h-auto lg:py-1",
             query.corridor === item.id && !query.state && !query.region
-              ? "border-[color:var(--sea)] bg-[color:var(--sea)]/20 text-[color:var(--cream)]"
-              : "border-[color:var(--line)] bg-[color:var(--ink)]/90 text-[color:var(--cream)]",
+              ? "border-[color:var(--diesel)] bg-[color:var(--diesel)]/15 text-[color:var(--navy)]"
+              : "border-[color:var(--line)] bg-[color:var(--cream)]/90 text-[color:var(--navy)]",
           )}
         >
           {item.short}
@@ -214,8 +217,8 @@ function FilterChip({
       className={cn(
         "inline-flex h-11 items-center rounded-md border px-2.5 text-xs lg:h-auto lg:py-1",
         active
-          ? "border-[color:var(--cream)] text-[color:var(--cream)]"
-          : "border-[color:var(--line)] text-[color:var(--cream)]/55",
+          ? "border-[color:var(--navy)] text-[color:var(--navy)]"
+          : "border-[color:var(--line)] text-[color:var(--ink)]/55",
       )}
     >
       {children}
@@ -225,7 +228,7 @@ function FilterChip({
 
 function EmptyList({ query }: { query: BoardQuery }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] p-6 text-sm text-[color:var(--cream)]/70">
+    <div className="rounded-2xl border border-dashed border-[color:var(--line)] bg-[color:var(--fog)] p-6 text-sm text-[color:var(--ink)]/70">
       {query.q.length >= 2
         ? `Nothing named “${query.q}”. Try Seabrook, Key Largo, or Beaufort.`
         : query.freshOnly || query.e0Only

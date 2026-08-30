@@ -24,14 +24,17 @@ export default async function ReportPage({
 
   return (
     <main className="mx-auto flex w-full max-w-7xl min-w-0 flex-1 flex-col overflow-x-hidden px-4 py-4 md:px-6 lg:py-6">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]">
         The board
       </p>
-      <h1 className="mt-1 font-heading text-2xl text-[color:var(--cream)] lg:text-5xl">
+      <h1 className="mt-1 font-heading text-2xl text-[color:var(--navy)] lg:text-5xl">
         Post a number
       </h1>
-      <p className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
+      <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
         You were there. What did they have up.
+      </p>
+      <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/55">
+        Post the number. Save the next boat a phone call.
       </p>
       <Waterline className="mt-3 hidden lg:block" />
 
@@ -49,30 +52,30 @@ export default async function ReportPage({
         />
         <button
           type="submit"
-          className="h-10 rounded-md border border-[color:var(--line)] bg-[color:var(--panel)] px-3 text-sm"
+          className="h-10 rounded-md border border-[color:var(--line)] bg-[color:var(--fog)] px-3 text-sm"
         >
           Find
         </button>
       </form>
 
-      <div className="mt-6 max-w-xl rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
+      <div className="mt-6 max-w-xl rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] p-5">
         {params.error ? (
-          <p className="mb-4 rounded-md bg-[color:var(--copper)]/10 px-3 py-2 text-sm text-[color:var(--copper)]">
+          <p className="mb-4 rounded-md bg-[color:var(--signal)]/10 px-3 py-2 text-sm text-[color:var(--signal)]">
             {params.error}
           </p>
         ) : null}
         {visible.length === 0 ? (
-          <p className="text-sm text-[color:var(--cream)]/70">
+          <p className="text-sm text-[color:var(--ink)]/70">
             No marina by that name. Try Seabrook, Key Largo, or Beaufort.
           </p>
         ) : (
           <ReportForm docks={visible} initialDockId={params.dock} />
         )}
       </div>
-      <p className="mt-6 text-sm text-[color:var(--cream)]/55">
+      <p className="mt-6 text-sm text-[color:var(--ink)]/55">
         Wrong hose?{" "}
         <a
-          className="text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2"
+          className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/safe-fuel"
         >
           E15 is not for boats

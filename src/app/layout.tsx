@@ -23,7 +23,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#ffffff",
+  themeColor: "#0B1F33",
 };
 
 export const metadata: Metadata = {
@@ -33,7 +33,10 @@ export const metadata: Metadata = {
   },
   description:
     "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
-  icons: { icon: "/favicon.svg" },
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: "/dp-mark.svg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -42,7 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} min-h-full overflow-x-hidden scroll-smooth antialiased lg:h-full`}
     >
-      <body className="flex min-h-full flex-col overflow-x-hidden font-sans text-[color:var(--cream)] lg:h-full lg:overflow-y-auto">
+      <body className="flex min-h-full flex-col overflow-x-hidden font-sans text-[color:var(--navy)] lg:h-full lg:overflow-y-auto">
         <SiteHeader />
         {children}
       </body>
