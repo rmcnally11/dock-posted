@@ -31,6 +31,11 @@ export function wholesaleSessionValid(cookie: string | undefined): boolean {
   return sameBytes(cookie, wholesaleSessionToken());
 }
 
+/** Writes fail closed unless the request carries a valid session cookie. Env alone is not enough. */
+export function wholesaleWriteAllowed(cookie: string | undefined): boolean {
+  return wholesaleSessionValid(cookie);
+}
+
 export function wholesalePasswordMatches(candidate: string): boolean {
   const expected = process.env.WHOLESALE_PASSWORD;
   if (!expected) return false;

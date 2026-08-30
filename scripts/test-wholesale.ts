@@ -2,17 +2,24 @@ import assert from "node:assert/strict";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { wholesalePasswordConfigured } from "../src/lib/wholesale-auth";
+import {
+  wholesalePasswordConfigured,
+  wholesaleSessionToken,
+  wholesaleSessionValid,
+  wholesaleWriteAllowed,
+} from "../src/lib/wholesale-auth";
 import seed from "../data/docks.seed.json";
 import type { Dock } from "../src/lib/types";
 import {
   WHOLESALE_AREA_ORDER,
   addCents,
+  applyDiffRow,
   applyWorksheetDefaults,
   boardDockDefault,
   computeProductNetback,
   computeWorksheet,
   defaultTaxForTerminal,
+  deskFootnotes,
   emptyWorksheet,
   findArea,
   findTerminal,
@@ -20,22 +27,39 @@ import {
   formatDollars,
   loadWholesaleCatalog,
   loadWholesaleTax,
+  netbackHasFigures,
   parseOptionalCents,
   rankTakes,
   resolveTaxForProduct,
+  sourceLabel,
+  stepByKey,
   stripUnchangedDefaults,
   subCents,
   taxCents,
   tcnLabel,
   terminalsForArea,
   worksheetFromFields,
+  worksheetHasInputs,
 } from "../src/lib/wholesale";
+import { parseWholesaleDraft, serializeWholesaleDraft } from "../src/lib/wholesale-draft";
+import {
+  NYMEX_YAHOO_TICKERS,
+  dollarsPerGalToCents,
+  isYahooQuoteStale,
+  parseYahooChart,
+} from "../src/lib/wholesale-nymex";
 
 const previousPassword = process.env.WHOLESALE_PASSWORD;
 delete process.env.WHOLESALE_PASSWORD;
 assert.equal(wholesalePasswordConfigured(), false);
 process.env.WHOLESALE_PASSWORD = "test-only";
 assert.equal(wholesalePasswordConfigured(), true);
+const liveSession = wholesaleSessionToken();
+assert.equal(wholesaleWriteAllowed(undefined), false);
+assert.equal(wholesaleSessionValid("not-the-session"), false);
+assert.equal(wholesaleWriteAllowed(liveSession), true);
+delete process.env.WHOLESALE_PASSWORD;
+assert.equal(wholesaleWriteAllowed(liveSession), false, "leftover cookie must not write when password is unset");
 if (previousPassword) process.env.WHOLESALE_PASSWORD = previousPassword;
 else delete process.env.WHOLESALE_PASSWORD;
 
@@ -110,6 +134,7 @@ assert.equal(subCents(250, null), null);
 assert.equal(taxCents({ federal: 18.4, state: 20, other: null, oneLine: null }), 38.4);
 assert.equal(taxCents({ federal: 18.4, state: 20, other: 5, oneLine: 40 }), 40);
 assert.equal(taxCents({ federal: null, state: null, other: null, oneLine: null }), null);
+assert.equal(taxCents({ federal: 18.4, state: null, other: null, oneLine: null }), null);
 
 const blank = computeWorksheet(emptyWorksheet());
 assert.equal(blank.RB.rackMargin, null);
@@ -209,9 +234,12 @@ assert.equal(withDefaults.rb.tax.federal.cents, 18.4);
 assert.equal(withDefaults.rb.tax.federal.origin, "default");
 assert.equal(withDefaults.ho.tax.federal.cents, 24.4);
 assert.equal(withDefaults.ho.tax.federal.origin, "default");
+assert.equal(withDefaults.rb.tax.state.cents, 20);
+assert.equal(withDefaults.ho.tax.state.cents, 20);
 assert.equal(withDefaults.rb.input.inboundFreight, null);
 assert.equal(withDefaults.rb.input.nymexScreen, null);
 assert.equal(withDefaults.rb.input.postedRack, null);
+assert.equal(worksheetHasInputs(emptySheet), false);
 
 const typedTax = emptyWorksheet();
 typedTax.taxRb = { federal: 30, state: 10 };
@@ -221,17 +249,24 @@ assert.equal(override.rb.tax.federal.origin, "typed");
 assert.equal(override.rb.tax.state.cents, 10);
 assert.equal(override.ho.tax.federal.cents, 24.4);
 assert.equal(override.ho.tax.federal.origin, "default");
+assert.equal(override.ho.tax.state.cents, 20);
 
 const defaultedBook = computeWorksheet(emptyWorksheet(), { state: "FL" });
 assert.equal(defaultedBook.RB.taxFederal, 18.4);
 assert.equal(defaultedBook.HO.taxFederal, 24.4);
 assert.equal(defaultedBook.RB.taxState, 40.096);
 assert.equal(defaultedBook.HO.taxState, 40.971);
+assert.equal(defaultedBook.RB.taxIncomplete, false);
 assert.equal(defaultedBook.RB.inboundRack, null);
 assert.equal(defaultedBook.RB.rungs.find((rung) => rung.key === "freight")?.cents, null);
 assert.ok(defaultedBook.RB.takes.every((take) => take.key !== "freight"));
 assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxFederal"));
 assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxState"));
+
+const clearedBook = computeWorksheet(emptyWorksheet(), { state: "TX", applyTaxDefaults: false });
+assert.equal(clearedBook.RB.taxFederal, null);
+assert.equal(clearedBook.RB.taxState, null);
+assert.equal(clearedBook.RB.taxIncomplete, false);
 
 const blankFreightRank = rankTakes(defaultedBook.RB.rungs);
 assert.ok(!blankFreightRank.some((take) => take.key === "freight"));
@@ -290,7 +325,200 @@ const stripped = stripUnchangedDefaults(
 );
 assert.equal(stripped.taxRb?.federal, null);
 assert.equal(stripped.taxHo?.federal, null);
+assert.equal(stripped.taxRb?.state, null);
 assert.equal(stripped.rb.dockPosted, null);
+
+const galvestonNotes = deskFootnotes(findArea("galveston-bay"));
+assert.ok(!galvestonNotes.some((note) => /Atlanta \/ Birmingham hubs can be added later/i.test(note)));
+assert.ok(!galvestonNotes.some((note) => /can be added later/i.test(note)));
+
+const incompleteTax = computeProductNetback(
+  "HO",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 360,
+  },
+  { federal: 18.4, state: null, other: null, oneLine: null },
+);
+assert.equal(incompleteTax.tax, null);
+assert.equal(incompleteTax.taxIncomplete, true);
+assert.equal(incompleteTax.dockExTax, null);
+assert.equal(incompleteTax.dockRemaining, null);
+assert.equal(formatCents(incompleteTax.dockExTax), "—");
+assert.equal(stepByKey(incompleteTax, "taxFederal")?.cents, 18.4);
+assert.equal(resolveTaxForProduct({ federal: 18.4, state: null, other: null, oneLine: null }, "RB").incomplete, true);
+const otherMissing = resolveTaxForProduct(
+  { federal: 18.4, state: 20, other: null, oneLine: null },
+  "RB",
+  { state: "TX", applyDefaults: true },
+);
+assert.equal(otherMissing.incomplete, false);
+assert.equal(otherMissing.strip.cents, 38.4);
+assert.equal(otherMissing.other.cents, null);
+const federalOnlyDefault = resolveTaxForProduct(
+  { federal: null, state: null, other: null, oneLine: null },
+  "RB",
+  { state: "TX", applyDefaults: true },
+);
+assert.equal(federalOnlyDefault.federal.cents, 18.4);
+assert.equal(federalOnlyDefault.state.cents, 20);
+assert.equal(federalOnlyDefault.incomplete, false);
+assert.equal(federalOnlyDefault.strip.cents, 38.4);
+const unverifiedState = resolveTaxForProduct(
+  { federal: 18.4, state: null, other: null, oneLine: null },
+  "RB",
+  { state: "ZZ", applyDefaults: true },
+);
+assert.equal(unverifiedState.federal.cents, 18.4);
+assert.equal(unverifiedState.state.cents, null);
+assert.equal(unverifiedState.incomplete, true);
+assert.equal(unverifiedState.strip.cents, null);
+
+const yahooFill = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: null,
+    terminalDiff: 8,
+    inboundFreight: null,
+    postedRack: null,
+    jobberSell: null,
+    dockPosted: null,
+  },
+  { federal: null, state: null, other: null, oneLine: null },
+  { nymexFallback: 210 },
+);
+assert.equal(yahooFill.terminalSpot, 218);
+assert.equal(yahooFill.nymexSource, "yahoo");
+assert.equal(sourceLabel(stepByKey(yahooFill, "nymex")!), "yahoo");
+
+const typedWins = computeProductNetback(
+  "HO",
+  {
+    nymexScreen: 199,
+    terminalDiff: 5,
+    inboundFreight: null,
+    postedRack: null,
+    jobberSell: null,
+    dockPosted: null,
+  },
+  { federal: null, state: null, other: null, oneLine: null },
+  { nymexFallback: 210 },
+);
+assert.equal(typedWins.terminalSpot, 204);
+assert.equal(typedWins.nymexSource, "typed");
+
+const zeroFallback = computeProductNetback(
+  "RB",
+  emptyWorksheet().rb,
+  emptyWorksheet().tax,
+  { nymexFallback: 0 },
+);
+assert.equal(zeroFallback.steps[0]?.cents, null);
+assert.equal(zeroFallback.nymexSource, null);
+
+const underwater = computeProductNetback(
+  "RB",
+  {
+    nymexScreen: 200,
+    terminalDiff: 8,
+    inboundFreight: 4,
+    postedRack: 230,
+    jobberSell: 245,
+    dockPosted: 200,
+  },
+  { federal: 18.4, state: 21.6, other: null, oneLine: null },
+);
+assert.ok(underwater.dockRemaining != null && underwater.dockRemaining < 0);
+assert.equal(underwater.fattestTake, "remaining");
+assert.ok(underwater.takes[0]!.cents < 0);
+assert.match(formatCents(underwater.dockRemaining), /−/);
+assert.equal(netbackHasFigures(underwater), true);
+assert.equal(netbackHasFigures(blank.RB), false);
+
+const applied = applyDiffRow(emptyWorksheet(), {
+  id: "d1",
+  terminalId: "t-76-tx-2809",
+  name: "Pasadena vs screen",
+  product: "RB",
+  centsVsScreen: 12.5,
+});
+assert.equal(applied.rb.terminalDiff, 12.5);
+assert.equal(applied.ho.terminalDiff, null);
+assert.equal(applied.rb.nymexScreen, null);
+
+const draftRound = parseWholesaleDraft(serializeWholesaleDraft({ terminalId: "t-76-tx-2809", sheet: applied }));
+assert.equal(draftRound?.terminalId, "t-76-tx-2809");
+assert.equal(draftRound?.sheet.rb.terminalDiff, 12.5);
+
+assert.equal(NYMEX_YAHOO_TICKERS.RB, "RB=F");
+assert.equal(NYMEX_YAHOO_TICKERS.HO, "HO=F");
+assert.equal(dollarsPerGalToCents(3.0502), 305.02);
+assert.equal(dollarsPerGalToCents(0), null);
+assert.equal(isYahooQuoteStale(Date.now() - 6 * 24 * 60 * 60 * 1000, Date.now()), true);
+
+const now = Date.parse("2026-08-30T17:00:00Z");
+const yahooOk = parseYahooChart(
+  {
+    chart: {
+      result: [
+        {
+          meta: {
+            currency: "USD",
+            symbol: "RB=F",
+            regularMarketPrice: 3.0502,
+            regularMarketTime: Date.parse("2026-08-28T20:59:58Z") / 1000,
+            shortName: "RBOB Gasoline Oct 26",
+          },
+        },
+      ],
+      error: null,
+    },
+  },
+  "RB",
+  now,
+);
+assert.equal(yahooOk.status, "ok");
+assert.equal(yahooOk.cents, 305.02);
+
+const yahooStale = parseYahooChart(
+  {
+    chart: {
+      result: [
+        {
+          meta: {
+            currency: "USD",
+            symbol: "HO=F",
+            regularMarketPrice: 4.249,
+            regularMarketTime: Date.parse("2026-08-20T20:59:56Z") / 1000,
+            shortName: "Heating Oil Oct 26",
+          },
+        },
+      ],
+      error: null,
+    },
+  },
+  "HO",
+  now,
+);
+assert.equal(yahooStale.status, "stale");
+assert.equal(yahooStale.cents, null);
+
+const yahooZero = parseYahooChart(
+  {
+    chart: {
+      result: [{ meta: { currency: "USD", symbol: "RB=F", regularMarketPrice: 0, regularMarketTime: now / 1000 } }],
+      error: null,
+    },
+  },
+  "RB",
+  now,
+);
+assert.equal(yahooZero.status, "unparseable");
+assert.equal(yahooZero.cents, null);
 
 const partial = worksheetFromFields({ nymex_rb: "210" }, "cent");
 assert.equal(partial.rb.nymexScreen, 210);

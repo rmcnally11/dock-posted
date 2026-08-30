@@ -5,9 +5,11 @@ import {
   WHOLESALE_PRODUCTS,
   areaLabel,
   displayInputValue,
+  deskFootnotes,
   fattestTakeAcross,
   formatBoth,
   formatCents,
+  netbackHasFigures,
   tcnLabel,
   type AreaTerminalRef,
   type DiffRow,
@@ -21,7 +23,16 @@ import {
   type WholesaleProduct,
   type WholesaleTerminal,
 } from "@/lib/wholesale";
-import { addTerminalDiff, loginWholesale, logoutWholesale, removeTerminalDiff, saveWholesaleWorksheet } from "./actions";
+import type { NymexScreenPull } from "@/lib/wholesale-nymex";
+import {
+  addTerminalDiff,
+  applyTerminalDiff,
+  computeWholesaleWorksheet,
+  loginWholesale,
+  logoutWholesale,
+  removeTerminalDiff,
+  saveWholesaleWorksheet,
+} from "./actions";
 
 export function DeskLogout() {
   return (
@@ -73,10 +84,23 @@ export function TerminalTable({
   unit: InputUnit;
 }) {
   void unit;
+  const selected = rows.find((row) => row.terminal.id === selectedId);
+  const selectedFilled = Boolean(
+    selected && (netbackHasFigures(selected.rb) || netbackHasFigures(selected.ho)),
+  );
+  const anyFilled = rows.some((row) => netbackHasFigures(row.rb) || netbackHasFigures(row.ho));
+  const regionNote = !anyFilled
+    ? "Region rack / remaining / implied Δ stay — until you Compute or Save a worksheet on a terminal. Compute writes the same book this table and investor print read."
+    : selected && !selectedFilled
+      ? "This terminal’s row stays — until you Compute or Save its worksheet. Other rows fill only after that terminal’s book is computed or saved."
+      : "A computed or saved book fills that terminal’s row. Other terminals stay — until you Compute or Save them.";
   return (
     <section className="mt-8">
       <h2 className="text-sm font-medium">Terminals for this region</h2>
       <p className="mt-1 max-w-3xl text-sm leading-6 text-black/55">{area.note}</p>
+      <p className="mt-2 max-w-3xl text-xs leading-5 text-black/50" data-testid="region-empty-note">
+        {regionNote}
+      </p>
       <div className="mt-3 overflow-x-auto border border-black/15 bg-white">
         <table className="min-w-full text-left text-xs" data-testid="region-terminals">
           <thead className="border-b border-black/10 bg-black/[0.03] text-[11px] uppercase tracking-[0.08em] text-black/45">
@@ -84,8 +108,8 @@ export function TerminalTable({
               <th className="px-3 py-2 font-medium">Terminal</th>
               <th className="px-3 py-2 font-medium">TCN_IRS</th>
               <th className="px-3 py-2 font-medium">Operator</th>
-              <th className="px-3 py-2 font-medium">RB rack</th>
-              <th className="px-3 py-2 font-medium">HO rack</th>
+              <th className="px-3 py-2 font-medium">RB rack margin</th>
+              <th className="px-3 py-2 font-medium">HO rack margin</th>
               <th className="px-3 py-2 font-medium">RB remaining</th>
               <th className="px-3 py-2 font-medium">HO remaining</th>
               <th className="px-3 py-2 font-medium">RB implied Δ</th>
@@ -129,13 +153,44 @@ export function TerminalTable({
           </tbody>
         </table>
       </div>
-      {area.footnotes.length > 0 ? (
+      {deskFootnotes(area).length > 0 ? (
         <ul className="mt-3 max-w-3xl space-y-1 text-xs leading-5 text-black/45">
-          {area.footnotes.map((note) => (
+          {deskFootnotes(area).map((note) => (
             <li key={note}>{note}</li>
           ))}
         </ul>
       ) : null}
+    </section>
+  );
+}
+
+export function NymexBanner({ screens }: { screens: NymexScreenPull }) {
+  return (
+    <section className="mt-6 border border-black/15 bg-white p-4" data-testid="nymex-yahoo">
+      <h2 className="text-sm font-medium">NYMEX screen · Yahoo Finance (public)</h2>
+      <p className="mt-1 text-xs text-black/45">
+        RB=F (RBOB / gasoline) and HO=F (NY Harbor ULSD / heating oil). Server pull only. Not Platts,
+        OPIS, DTN, or a paid vendor. Typed screen wins — a typed cell is your number, not the live
+        pull. Failed or stale quotes stay —.
+      </p>
+      <ul className="mt-3 space-y-1 text-sm">
+        {WHOLESALE_PRODUCTS.map((product) => {
+          const quote = screens[product];
+          const asOf = quote.asOfLabel ?? "no as-of";
+          const price = formatBoth(quote.cents);
+          const status =
+            quote.status === "ok"
+              ? `as of ${asOf}`
+              : quote.note ?? `${quote.status} — screen left blank`;
+          return (
+            <li key={product} data-testid={`nymex-${product.toLowerCase()}`}>
+              <span className="font-medium">{product}</span> · {quote.ticker}
+              {quote.shortName ? ` · ${quote.shortName}` : ""} · {price}
+              <span className="text-black/45"> · {status}</span>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
@@ -147,6 +202,8 @@ export function Worksheet({
   prepared,
   unit,
   diffs,
+  screens,
+  draft,
   error,
   saved,
 }: {
@@ -156,30 +213,42 @@ export function Worksheet({
   prepared?: PreparedWorksheet;
   unit: InputUnit;
   diffs: DiffRow[];
+  screens: NymexScreenPull;
+  draft?: boolean;
   error?: string;
   saved?: boolean;
 }) {
   const unitLabel = unit === "dollar" ? "$/gal" : "¢/gal";
   const display: TerminalWorksheet = {
-    rb: prepared?.rb.input ?? sheet.rb,
-    ho: prepared?.ho.input ?? sheet.ho,
+    rb: sheet.rb,
+    ho: sheet.ho,
     tax: sheet.tax,
     taxRb: {
-      federal: prepared?.rb.tax.federal.cents ?? sheet.taxRb?.federal ?? sheet.tax.federal,
-      state: prepared?.rb.tax.state.cents ?? sheet.taxRb?.state ?? sheet.tax.state,
+      federal: sheet.taxRb?.federal ?? sheet.tax.federal ?? prepared?.rb.tax.federal.cents ?? null,
+      state: sheet.taxRb?.state ?? sheet.tax.state ?? prepared?.rb.tax.state.cents ?? null,
     },
     taxHo: {
-      federal: prepared?.ho.tax.federal.cents ?? sheet.taxHo?.federal ?? sheet.tax.federal,
-      state: prepared?.ho.tax.state.cents ?? sheet.taxHo?.state ?? sheet.tax.state,
+      federal: sheet.taxHo?.federal ?? sheet.tax.federal ?? prepared?.ho.tax.federal.cents ?? null,
+      state: sheet.taxHo?.state ?? sheet.tax.state ?? prepared?.ho.tax.state.cents ?? null,
     },
   };
+  const formKey = JSON.stringify({
+    terminal: terminal.id,
+    unit,
+    rb: display.rb,
+    ho: display.ho,
+    tax: display.tax,
+    taxRb: display.taxRb,
+    taxHo: display.taxHo,
+  });
   return (
     <section className="mt-8" data-testid="worksheet">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-sm font-medium">Override strip</h2>
           <p className="mt-1 text-sm text-black/55">
-            {terminal.city} · {tcnLabel(terminal)} · {terminal.operator}. Market cells stay blank until typed.
+            {terminal.city} · {tcnLabel(terminal)} · {terminal.operator}. Empty stays blank. Freight
+            is typed tariff only — miles are labels, not cents.
           </p>
         </div>
         <div className="flex gap-2 text-xs print:hidden">
@@ -206,62 +275,51 @@ export function Worksheet({
 
       {error ? <p className="mt-3 text-sm text-[#8a2c12]">{error}</p> : null}
       {saved ? <p className="mt-3 text-sm text-black/55">Saved for this terminal.</p> : null}
+      {draft ? (
+        <p className="mt-3 text-sm text-black/55" data-testid="compute-draft">
+          Computed book for this terminal. The boxes below are the same figures — still editable.
+        </p>
+      ) : null}
 
-      <form action="" method="get" className="mt-4 print:hidden">
+      <form className="mt-4 print:hidden" key={formKey}>
         <input type="hidden" name="area" value={areaId} />
         <input type="hidden" name="terminal" value={terminal.id} />
         <input type="hidden" name="unit" value={unit} />
-        <WorksheetFields sheet={display} prepared={prepared} unit={unit} unitLabel={unitLabel} />
-        <button type="submit" className="mt-4 h-9 border border-black/20 bg-white px-3 text-sm">
-          Compute
-        </button>
+        <WorksheetFields
+          sheet={display}
+          prepared={prepared}
+          unit={unit}
+          unitLabel={unitLabel}
+          screens={screens}
+        />
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="submit"
+            formAction={computeWholesaleWorksheet}
+            className="h-9 border border-black/20 bg-white px-3 text-sm"
+            data-testid="compute-worksheet"
+          >
+            Compute
+          </button>
+          <button
+            type="submit"
+            formAction={saveWholesaleWorksheet}
+            className="h-9 border border-black bg-black px-3 text-sm text-white"
+            data-testid="save-worksheet"
+          >
+            Save terminal
+          </button>
+        </div>
       </form>
 
-      <form action={saveWholesaleWorksheet} className="mt-3 print:hidden">
-        <input type="hidden" name="area" value={areaId} />
-        <input type="hidden" name="terminal" value={terminal.id} />
-        <input type="hidden" name="unit" value="cent" />
-        <HiddenSheet sheet={display} />
-        <button type="submit" className="h-9 border border-black bg-black px-3 text-sm text-white">
-          Save terminal
-        </button>
-      </form>
-
-      <DiffEditor areaId={areaId} terminalId={terminal.id} unit={unit} diffs={diffs} />
+      <DiffEditor areaId={areaId} terminalId={terminal.id} unit={unit} diffs={diffs} sheet={sheet} />
     </section>
   );
 }
 
-function HiddenSheet({ sheet }: { sheet: TerminalWorksheet }) {
-  const pairs: Array<[string, number | null]> = [
-    ["nymex_rb", sheet.rb.nymexScreen],
-    ["diff_rb", sheet.rb.terminalDiff],
-    ["freight_rb", sheet.rb.inboundFreight],
-    ["rack_rb", sheet.rb.postedRack],
-    ["jobber_rb", sheet.rb.jobberSell],
-    ["dock_rb", sheet.rb.dockPosted],
-    ["nymex_ho", sheet.ho.nymexScreen],
-    ["diff_ho", sheet.ho.terminalDiff],
-    ["freight_ho", sheet.ho.inboundFreight],
-    ["rack_ho", sheet.ho.postedRack],
-    ["jobber_ho", sheet.ho.jobberSell],
-    ["dock_ho", sheet.ho.dockPosted],
-    ["tax_federal", sheet.tax.federal],
-    ["tax_state", sheet.tax.state],
-    ["tax_federal_rb", sheet.taxRb?.federal ?? null],
-    ["tax_state_rb", sheet.taxRb?.state ?? null],
-    ["tax_federal_ho", sheet.taxHo?.federal ?? null],
-    ["tax_state_ho", sheet.taxHo?.state ?? null],
-    ["tax_other", sheet.tax.other],
-    ["tax_one", sheet.tax.oneLine],
-  ];
-  return (
-    <>
-      {pairs.map(([name, value]) => (
-        <input key={name} type="hidden" name={name} value={value == null ? "" : String(value)} />
-      ))}
-    </>
-  );
+function yahooHint(cents: number | null, unit: InputUnit): string {
+  if (cents == null) return "";
+  return `${displayInputValue(cents, unit)} yahoo`;
 }
 
 function WorksheetFields({
@@ -269,11 +327,13 @@ function WorksheetFields({
   prepared,
   unit,
   unitLabel,
+  screens,
 }: {
   sheet: TerminalWorksheet;
   prepared?: PreparedWorksheet;
   unit: InputUnit;
   unitLabel: string;
+  screens: NymexScreenPull;
 }) {
   return (
     <div className="overflow-x-auto border border-black/15 bg-white">
@@ -286,7 +346,31 @@ function WorksheetFields({
           </tr>
         </thead>
         <tbody>
-          <FieldRow label="NYMEX screen" name="nymex" rb={sheet.rb.nymexScreen} ho={sheet.ho.nymexScreen} unit={unit} />
+          <FieldRow
+            label="NYMEX screen"
+            name="nymex"
+            rb={sheet.rb.nymexScreen}
+            ho={sheet.ho.nymexScreen}
+            unit={unit}
+            rbPlaceholder={yahooHint(screens.RB.cents, unit)}
+            hoPlaceholder={yahooHint(screens.HO.cents, unit)}
+            rbHint={
+              sheet.rb.nymexScreen != null
+                ? "typed — not the Yahoo pull"
+                : screens.RB.status === "ok"
+                  ? `Yahoo ${screens.RB.asOfLabel ? `as of ${screens.RB.asOfLabel}` : "screen"} · used if this box stays blank`
+                  : screens.RB.note ?? "Yahoo screen blank"
+            }
+            hoHint={
+              sheet.ho.nymexScreen != null
+                ? "typed — not the Yahoo pull"
+                : screens.HO.status === "ok"
+                  ? `Yahoo ${screens.HO.asOfLabel ? `as of ${screens.HO.asOfLabel}` : "screen"} · used if this box stays blank`
+                  : screens.HO.note ?? "Yahoo screen blank"
+            }
+            rbTyped={sheet.rb.nymexScreen != null}
+            hoTyped={sheet.ho.nymexScreen != null}
+          />
           <FieldRow label="Terminal differential vs screen" name="diff" rb={sheet.rb.terminalDiff} ho={sheet.ho.terminalDiff} unit={unit} />
           <FieldRow label="Inbound freight / pipeline / truck" name="freight" rb={sheet.rb.inboundFreight} ho={sheet.ho.inboundFreight} unit={unit} />
           <FieldRow label="Posted rack" name="rack" rb={sheet.rb.postedRack} ho={sheet.ho.postedRack} unit={unit} />
@@ -324,7 +408,11 @@ function WorksheetFields({
         <TaxField label="Tax · other / local" name="tax_other" value={sheet.tax.other} unit={unit} />
         <TaxField label="Tax · one line (replaces the split)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
       </div>
-      <p className="px-3 pb-3 text-xs text-black/45">{MARINE_TAX_NOTE}</p>
+      <p className="px-3 pb-3 text-xs text-black/45">
+        {MARINE_TAX_NOTE} Published federal and state defaults come from the IRS / EIA table on this
+        desk. A missing federal or state leaves dock ex-tax and remaining as —, never $0.00. One tax
+        line overrides the split.
+      </p>
     </div>
   );
 }
@@ -337,6 +425,10 @@ function FieldRow({
   unit,
   rbHint,
   hoHint,
+  rbPlaceholder,
+  hoPlaceholder,
+  rbTyped,
+  hoTyped,
 }: {
   label: string;
   name: string;
@@ -345,6 +437,10 @@ function FieldRow({
   unit: InputUnit;
   rbHint?: string | null;
   hoHint?: string | null;
+  rbPlaceholder?: string;
+  hoPlaceholder?: string;
+  rbTyped?: boolean;
+  hoTyped?: boolean;
 }) {
   return (
     <tr className="border-t border-black/10">
@@ -354,7 +450,13 @@ function FieldRow({
           name={`${name}_rb`}
           inputMode="decimal"
           defaultValue={displayInputValue(rb, unit)}
-          className="h-9 w-full border border-black/15 px-2 font-mono text-sm"
+          placeholder={rbPlaceholder}
+          data-typed={rbTyped ? "1" : "0"}
+          className={
+            rbTyped
+              ? "h-9 w-full border border-black/40 bg-[#f7f4ee] px-2 font-mono text-sm"
+              : "h-9 w-full border border-black/15 px-2 font-mono text-sm"
+          }
         />
         {rbHint ? <p className="mt-1 text-[11px] text-black/40">{rbHint}</p> : null}
       </td>
@@ -363,7 +465,13 @@ function FieldRow({
           name={`${name}_ho`}
           inputMode="decimal"
           defaultValue={displayInputValue(ho, unit)}
-          className="h-9 w-full border border-black/15 px-2 font-mono text-sm"
+          placeholder={hoPlaceholder}
+          data-typed={hoTyped ? "1" : "0"}
+          className={
+            hoTyped
+              ? "h-9 w-full border border-black/40 bg-[#f7f4ee] px-2 font-mono text-sm"
+              : "h-9 w-full border border-black/15 px-2 font-mono text-sm"
+          }
         />
         {hoHint ? <p className="mt-1 text-[11px] text-black/40">{hoHint}</p> : null}
       </td>
@@ -400,37 +508,62 @@ function DiffEditor({
   terminalId,
   unit,
   diffs,
+  sheet,
 }: {
   areaId: WholesaleAreaId;
   terminalId: string;
   unit: InputUnit;
   diffs: DiffRow[];
+  sheet: TerminalWorksheet;
 }) {
   return (
     <div className="mt-6 border border-black/15 bg-white p-4 print:hidden">
       <h3 className="text-sm font-medium">Differentials for this terminal</h3>
       <p className="mt-1 text-xs text-black/45">
-        Named ¢/gal vs the screen. Empty cents stay blank. Not copied from a neighbor hub.
+        Named rows are a separate book from the worksheet Δ. Apply writes that ¢ into this
+        terminal&apos;s Δ and saves it. Until you apply, they are not the same number. Empty cents
+        stay blank. Not copied from a neighbor hub.
       </p>
       {diffs.length === 0 ? (
         <p className="mt-3 text-sm text-black/50">No saved rows. Add one.</p>
       ) : (
         <ul className="mt-3 space-y-2">
-          {diffs.map((row) => (
-            <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
-              <span>
-                {row.name} · {row.product} · {formatBoth(row.centsVsScreen)}
-              </span>
-              <form action={removeTerminalDiff}>
-                <input type="hidden" name="area" value={areaId} />
-                <input type="hidden" name="terminal" value={terminalId} />
-                <input type="hidden" name="diffId" value={row.id} />
-                <button type="submit" className="text-xs text-black/45 underline-offset-2 hover:underline">
-                  Remove
-                </button>
-              </form>
-            </li>
-          ))}
+          {diffs.map((row) => {
+            const live = row.product === "RB" ? sheet.rb.terminalDiff : sheet.ho.terminalDiff;
+            const matches = row.centsVsScreen != null && live === row.centsVsScreen;
+            return (
+              <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                <span>
+                  {row.name} · {row.product} · {formatBoth(row.centsVsScreen)}
+                  <span className="text-black/45">
+                    {matches ? " · in worksheet Δ" : " · not in worksheet Δ"}
+                  </span>
+                </span>
+                <span className="flex gap-3">
+                  <form action={applyTerminalDiff}>
+                    <input type="hidden" name="area" value={areaId} />
+                    <input type="hidden" name="terminal" value={terminalId} />
+                    <input type="hidden" name="diffId" value={row.id} />
+                    <button
+                      type="submit"
+                      className="text-xs text-black/55 underline-offset-2 hover:underline"
+                      data-testid={`apply-diff-${row.id}`}
+                    >
+                      Apply to worksheet Δ
+                    </button>
+                  </form>
+                  <form action={removeTerminalDiff}>
+                    <input type="hidden" name="area" value={areaId} />
+                    <input type="hidden" name="terminal" value={terminalId} />
+                    <input type="hidden" name="diffId" value={row.id} />
+                    <button type="submit" className="text-xs text-black/45 underline-offset-2 hover:underline">
+                      Remove
+                    </button>
+                  </form>
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
       <form action={addTerminalDiff} className="mt-4 grid gap-2 sm:grid-cols-4">
@@ -452,7 +585,11 @@ function DiffEditor({
           placeholder={unit === "dollar" ? "$/gal vs screen" : "¢/gal vs screen"}
           className="h-9 border border-black/15 px-2 font-mono text-sm"
         />
-        <button type="submit" className="h-9 border border-black/20 bg-white px-3 text-sm sm:col-span-4 sm:w-auto">
+        <button
+          type="submit"
+          className="h-9 border border-black/20 bg-white px-3 text-sm sm:col-span-4 sm:w-auto"
+          data-testid="add-diff"
+        >
           Add row
         </button>
       </form>
@@ -510,6 +647,8 @@ function WaterfallColumn({
     <div
       className="border border-black/15 bg-white p-4"
       data-testid={`waterfall-${product.toLowerCase()}`}
+      data-nymex-source={book.nymexSource ?? ""}
+      data-tax-incomplete={book.taxIncomplete ? "1" : "0"}
     >
       <div className="flex items-baseline justify-between gap-2">
         <h3 className="text-sm font-medium">{PRODUCT_LABEL[product]}</h3>
@@ -526,10 +665,16 @@ function WaterfallColumn({
           <WaterfallRungRow key={rung.key} rung={rung} scale={scale} winner={winner === rung.takeKey} product={product} />
         ))}
       </ol>
+      {book.taxIncomplete ? (
+        <p className="mt-3 text-xs text-[#8a2c12]" data-testid={`tax-incomplete-${product.toLowerCase()}`}>
+          Tax strip incomplete. Federal and state stay visible. Dock remaining stays —.
+        </p>
+      ) : null}
       <p className="mt-4 text-[11px] text-black/45" data-testid={`implied-${product.toLowerCase()}`}>
         Implied Δ {formatBoth(book.impliedDiff)}
         {book.typedDiff != null ? ` · typed Δ ${formatBoth(book.typedDiff)}` : ""}
         {book.edgeVsTyped != null ? ` · edge ${formatBoth(book.edgeVsTyped)}` : ""}
+        {book.nymexSource ? ` · NYMEX source ${book.nymexSource}` : ""}
       </p>
     </div>
   );
@@ -556,6 +701,7 @@ function WaterfallRungRow({
       data-testid={`rung-${product.toLowerCase()}-${rung.key}`}
       data-empty={empty ? "1" : "0"}
       data-winner={winner ? "1" : "0"}
+      data-source={rung.origin ?? ""}
       className={rung.role === "start" || rung.role === "level" ? "pt-1" : ""}
     >
       <div className="flex items-baseline justify-between gap-3">
@@ -590,8 +736,10 @@ function WaterfallRungRow({
       ) : (
         <div className="mt-1 border-b border-black/10" />
       )}
-      {rung.sourceLabel ? (
-        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/40">{rung.sourceLabel}</p>
+      {rung.sourceLabel || rung.origin === "incomplete" ? (
+        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/40">
+          {rung.origin === "incomplete" ? "incomplete" : rung.sourceLabel}
+        </p>
       ) : empty && isTake ? (
         <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/35">Call / —</p>
       ) : null}
