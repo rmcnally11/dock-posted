@@ -49,12 +49,20 @@ try {
   check("distinct wordmark", wordmark === "Dock Posted", wordmark);
   check("header is not a family lockup", !/what the dock posted/i.test(headerCopy), headerCopy);
 
+  const cardFields = await page.$$eval(
+    "[data-testid=dock-card-marina-bay-harbor] dt",
+    (els) => els.map((el) => el.textContent?.trim()),
+  );
   const firstCard = await page.$eval("[data-testid=dock-list] article", (el) => el.textContent ?? "");
-  check("card regular", /\bRegular\b/.test(firstCard));
-  check("card diesel", /\bDiesel\b/.test(firstCard));
-  check("card blend", /\bBlend\b/.test(firstCard));
-  check("card hours", /\bHours\b/.test(firstCard));
-  check("card date", /\bDate\b/.test(firstCard));
+  const dateLine = await page.$eval(
+    "[data-testid=pin-trust-marina-bay-harbor]",
+    (el) => el.textContent ?? "",
+  );
+  check("card regular", cardFields.includes("Regular"), cardFields.join(","));
+  check("card diesel", cardFields.includes("Diesel"), cardFields.join(","));
+  check("card blend", cardFields.includes("Blend"), cardFields.join(","));
+  check("card hours", cardFields.includes("Hours"), cardFields.join(","));
+  check("card date", dateLine.includes("Date"), dateLine);
   check("marina bay stays call", /Call/.test(firstCard));
 
   const texasHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
