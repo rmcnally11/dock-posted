@@ -12,7 +12,7 @@ export default async function Home({
   const params = await searchParams;
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <main className="flex min-h-0 flex-1 flex-col overflow-hidden lg:h-[calc(100dvh-3.75rem)]">
       <section className="border-b border-harbor/10 bg-sand px-4 py-4 md:px-6">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>

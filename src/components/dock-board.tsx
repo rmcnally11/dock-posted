@@ -14,51 +14,48 @@ export function DockBoard({ docks }: { docks: Dock[] }) {
   const [e0Only, setE0Only] = useState(false);
   const [freshOnly, setFreshOnly] = useState(false);
 
+  const inCorridor = useMemo(
+    () => docks.filter((dock) => dock.corridor === corridor),
+    [docks, corridor],
+  );
+
   const visible = useMemo(() => {
-    return docks
-      .filter((dock) => dock.corridor === corridor)
+    return inCorridor
       .filter((dock) => (e0Only ? dock.ethanol === "E0" : true))
       .filter((dock) => (freshOnly ? freshness(dock) === "fresh" : true));
-  }, [docks, corridor, e0Only, freshOnly]);
+  }, [inCorridor, e0Only, freshOnly]);
 
   const selected = visible.find((dock) => dock.id === selectedId) ?? null;
+  const filtered = e0Only || freshOnly;
+
+  function chooseCorridor(id: CorridorId) {
+    setCorridor(id);
+    setSelectedId(null);
+  }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-      <section className="relative h-[52vh] min-h-[280px] lg:h-auto lg:min-h-0 lg:flex-1">
+    <div className="flex min-h-0 flex-1 flex-col lg:min-h-[calc(100dvh-14rem)] lg:flex-row">
+      <section className="relative isolate h-[52vh] min-h-[320px] lg:h-auto lg:min-h-[28rem] lg:flex-1">
         <FuelMap
           docks={visible}
           corridor={corridor}
           selectedId={selectedId}
           onSelect={setSelectedId}
         />
-        <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-4.5rem)] flex-wrap gap-2">
-          {(Object.keys(CORRIDORS) as CorridorId[]).map((id) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => {
-                setCorridor(id);
-                setSelectedId(null);
-              }}
-              className={cn(
-                "rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm",
-                corridor === id ? "bg-harbor text-foam" : "bg-white/95 text-harbor",
-              )}
-            >
-              {CORRIDORS[id].short}
-            </button>
-          ))}
+        <div className="pointer-events-none absolute left-3 top-3 z-20 flex max-w-[calc(100%-4.5rem)] flex-wrap gap-2">
+          <CorridorSwitch corridor={corridor} onChange={chooseCorridor} />
         </div>
       </section>
 
-      <aside className="flex w-full flex-col border-t border-harbor/10 bg-foam lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
+      <aside className="relative z-20 flex w-full flex-col border-t border-harbor/10 bg-foam lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
         <div className="border-b border-harbor/10 px-4 py-3">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="font-serif text-xl text-harbor">{CORRIDORS[corridor].label}</h2>
               <p className="text-sm text-harbor/60">
-                {visible.length} dock{visible.length === 1 ? "" : "s"} · prices go stale after 7 days
+                {filtered
+                  ? `Showing ${visible.length} of ${inCorridor.length} docks`
+                  : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"} · prices go stale after 7 days`}
               </p>
             </div>
             <Link
@@ -69,6 +66,9 @@ export function DockBoard({ docks }: { docks: Dock[] }) {
             </Link>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
+            <CorridorSwitch corridor={corridor} onChange={chooseCorridor} />
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2">
             <FilterChip active={e0Only} onClick={() => setE0Only((value) => !value)}>
               E0 only
             </FilterChip>
@@ -97,6 +97,32 @@ export function DockBoard({ docks }: { docks: Dock[] }) {
   );
 }
 
+function CorridorSwitch({
+  corridor,
+  onChange,
+}: {
+  corridor: CorridorId;
+  onChange: (id: CorridorId) => void;
+}) {
+  return (
+    <>
+      {(Object.keys(CORRIDORS) as CorridorId[]).map((id) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => onChange(id)}
+          className={cn(
+            "pointer-events-auto rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm",
+            corridor === id ? "bg-harbor text-foam" : "bg-white text-harbor ring-1 ring-harbor/15",
+          )}
+        >
+          {CORRIDORS[id].short}
+        </button>
+      ))}
+    </>
+  );
+}
+
 function FilterChip({
   active,
   onClick,
@@ -110,6 +136,7 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
         "rounded-full border px-3 py-1 text-xs font-medium",
         active

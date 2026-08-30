@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { freshness } from "@/lib/freshness";
 import { CORRIDORS, type CorridorId, type Dock } from "@/lib/types";
 import { formatQuote } from "@/lib/format";
 import { displayDiesel, displayGas } from "@/lib/freshness";
-
-const VECTOR_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
 const RASTER_STYLE: maplibregl.StyleSpecification = {
   version: 8,
@@ -49,46 +47,59 @@ export function FuelMap({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
   const onSelectRef = useRef(onSelect);
+  const [status, setStatus] = useState<"loading" | "ready" | "failed">("loading");
 
   useEffect(() => {
     onSelectRef.current = onSelect;
   }, [onSelect]);
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
+    const container = containerRef.current;
+    if (!container || mapRef.current) return;
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: VECTOR_STYLE,
-      center: CORRIDORS[corridor].center,
-      zoom: CORRIDORS[corridor].zoom,
-      attributionControl: false,
-    });
-
-    let usedFallback = false;
-    map.on("error", () => {
-      if (usedFallback) return;
-      usedFallback = true;
-      map.setStyle(RASTER_STYLE);
-    });
+    let map: maplibregl.Map;
+    try {
+      map = new maplibregl.Map({
+        container,
+        style: RASTER_STYLE,
+        center: CORRIDORS[corridor].center,
+        zoom: CORRIDORS[corridor].zoom,
+        attributionControl: false,
+        fadeDuration: 0,
+      });
+    } catch {
+      setStatus("failed");
+      return;
+    }
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     map.addControl(
       new maplibregl.AttributionControl({
         compact: true,
-        customAttribution: "© OpenStreetMap © OpenFreeMap",
+        customAttribution: "© OpenStreetMap © CARTO",
       }),
     );
-    map.addControl(
-      new maplibregl.GeolocateControl({
-        positionOptions: { enableHighAccuracy: true },
-        trackUserLocation: false,
-      }),
-      "top-right",
-    );
+
+    const resize = () => {
+      map.resize();
+    };
+
+    map.on("load", () => {
+      resize();
+      setStatus("ready");
+    });
+    map.on("error", () => {
+      if (!map.isStyleLoaded()) setStatus("failed");
+    });
+
+    const observer = new ResizeObserver(resize);
+    observer.observe(container);
+    window.addEventListener("resize", resize);
 
     mapRef.current = map;
     return () => {
+      window.removeEventListener("resize", resize);
+      observer.disconnect();
       map.remove();
       mapRef.current = null;
     };
@@ -98,14 +109,14 @@ export function FuelMap({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || status !== "ready") return;
     const view = CORRIDORS[corridor];
     map.easeTo({ center: view.center, zoom: view.zoom, duration: 600 });
-  }, [corridor]);
+  }, [corridor, status]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || status !== "ready") return;
 
     for (const marker of markersRef.current) marker.remove();
     markersRef.current = [];
@@ -132,15 +143,29 @@ export function FuelMap({
         .addTo(map);
       markersRef.current.push(marker);
     }
-  }, [docks, selectedId]);
+  }, [docks, selectedId, status]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !selectedId) return;
+    if (!map || status !== "ready" || !selectedId) return;
     const dock = docks.find((item) => item.id === selectedId);
     if (!dock) return;
     map.easeTo({ center: [dock.lng, dock.lat], zoom: Math.max(map.getZoom(), 12), duration: 450 });
-  }, [selectedId, docks]);
+  }, [selectedId, docks, status]);
 
-  return <div ref={containerRef} className="h-full min-h-[320px] w-full" />;
+  return (
+    <div className="absolute inset-0 bg-sand">
+      <div ref={containerRef} className="absolute inset-0" />
+      {status === "loading" ? (
+        <p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-md bg-white/90 px-2 py-1 text-xs text-harbor/70">
+          Loading chart…
+        </p>
+      ) : null}
+      {status === "failed" ? (
+        <p className="absolute bottom-3 left-3 z-10 max-w-xs rounded-md bg-white/95 px-3 py-2 text-xs text-harbor/70 shadow-sm">
+          Chart tiles did not load in this browser. The dock list on the right still works.
+        </p>
+      ) : null}
+    </div>
+  );
 }

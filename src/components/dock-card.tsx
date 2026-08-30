@@ -22,12 +22,15 @@ export function DockCard({
       type="button"
       onClick={() => onSelect?.(dock.id)}
       className={cn(
-        "w-full rounded-xl border bg-white p-4 text-left shadow-sm transition",
-        selected ? "border-wake ring-2 ring-wake/30" : "border-harbor/10 hover:border-harbor/25",
+        "w-full rounded-xl border p-4 text-left shadow-sm transition",
+        selected
+          ? "border-wake bg-sand ring-2 ring-wake/40"
+          : "border-harbor/10 bg-white hover:border-harbor/25",
         state === "call" && !selected && "border-l-4 border-l-rust",
         state === "stale" && !selected && "border-l-4 border-l-amber",
         state === "fresh" && !selected && "border-l-4 border-l-fresh",
       )}
+      aria-pressed={selected}
     >
       <div className="flex items-start justify-between gap-3">
         <div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,9 @@ import { ETHANOLS, PRODUCTS, type Dock, type Ethanol, type Product } from "@/lib
 
 export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDockId?: string }) {
   const router = useRouter();
-  const [dockId, setDockId] = useState(initialDockId ?? docks[0]?.id ?? "");
+  const startingDock =
+    docks.find((dock) => dock.id === initialDockId)?.id ?? docks[0]?.id ?? "";
+  const [dockId, setDockId] = useState(startingDock);
   const [product, setProduct] = useState<Product>("90");
   const [ethanol, setEthanol] = useState<Ethanol>("E0");
   const [price, setPrice] = useState("");
@@ -25,7 +27,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
     [docks, dockId],
   );
 
-  async function onSubmit(event: FormEvent) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     const pricePerGallon = Number(price);
@@ -68,13 +70,15 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
-      <Field label="Marina">
+    <form onSubmit={onSubmit} autoComplete="off" noValidate className="space-y-5">
+      <div className="space-y-1.5">
+        <Label htmlFor="marina">Marina</Label>
         <select
+          id="marina"
+          name="marina"
           className="h-11 w-full rounded-md border border-harbor/15 bg-white px-3 text-base text-harbor md:text-sm"
           value={dockId}
           onChange={(event) => setDockId(event.target.value)}
-          required
         >
           {docks.map((dock) => (
             <option key={dock.id} value={dock.id}>
@@ -82,14 +86,20 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
             </option>
           ))}
         </select>
-        {selected?.phone ? (
-          <p className="mt-1 text-xs text-harbor/55">Listed phone {selected.phone}</p>
+        {selected ? (
+          <p className="text-xs text-harbor/55">
+            Reporting for {selected.name}
+            {selected.phone ? ` · ${selected.phone}` : ""}
+          </p>
         ) : null}
-      </Field>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Product">
+        <div className="space-y-1.5">
+          <Label htmlFor="product">Product</Label>
           <select
+            id="product"
+            name="product"
             className="h-11 w-full rounded-md border border-harbor/15 bg-white px-3 text-base md:text-sm"
             value={product}
             onChange={(event) => setProduct(event.target.value as Product)}
@@ -100,9 +110,12 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
               </option>
             ))}
           </select>
-        </Field>
-        <Field label="Ethanol">
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="ethanol">Ethanol</Label>
           <select
+            id="ethanol"
+            name="ethanol"
             className="h-11 w-full rounded-md border border-harbor/15 bg-white px-3 text-base md:text-sm"
             value={ethanol}
             onChange={(event) => setEthanol(event.target.value as Ethanol)}
@@ -114,42 +127,51 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
               </option>
             ))}
           </select>
-        </Field>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Price per gallon">
+        <div className="space-y-1.5">
+          <Label htmlFor="price">Price per gallon</Label>
           <Input
+            id="price"
+            name="price"
             inputMode="decimal"
             placeholder="5.790"
             value={price}
             onChange={(event) => setPrice(event.target.value)}
-            required
           />
-        </Field>
-        <Field label="When you saw it">
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="seenAt">When you saw it</Label>
           <Input
+            id="seenAt"
+            name="seenAt"
             type="date"
             value={seenAt}
             onChange={(event) => setSeenAt(event.target.value)}
-            required
           />
-        </Field>
+        </div>
       </div>
 
-      <Field label="Note (optional)">
+      <div className="space-y-1.5">
+        <Label htmlFor="note">Note (optional)</Label>
         <Textarea
+          id="note"
+          name="note"
+          required={false}
           maxLength={400}
           placeholder="Pump label said Rec-90. Attendant confirmed tax included."
           value={note}
           onChange={(event) => setNote(event.target.value)}
         />
-      </Field>
+      </div>
 
       <div className="hidden" aria-hidden="true">
         <Label htmlFor="company">Company</Label>
         <Input
           id="company"
+          name="website_url"
           tabIndex={-1}
           autoComplete="off"
           value={company}
@@ -168,15 +190,6 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
         No account. Do not invent a number. If the dock said Call, leave it off the form.
       </p>
     </form>
-  );
-}
-
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="space-y-1.5">
-      <Label>{label}</Label>
-      {children}
-    </div>
   );
 }
 
