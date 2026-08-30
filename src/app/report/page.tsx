@@ -1,5 +1,6 @@
 import { ReportForm } from "@/components/report-form";
 import { SiteFooter } from "@/components/site-footer";
+import { Waterline } from "@/components/waterline";
 import { matchesSearch } from "@/lib/board-query";
 import { readDocks } from "@/lib/store";
 
@@ -17,10 +18,14 @@ export default async function ReportPage({
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-4 py-8">
-      <h1 className="font-serif text-4xl text-harbor">Post the number</h1>
-      <p className="mt-3 text-sm leading-6 text-harbor/70">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]">
+        The board
+      </p>
+      <h1 className="mt-1 font-heading text-4xl text-[color:var(--cream)]">Post the number</h1>
+      <p className="mt-3 text-sm leading-6 text-[color:var(--cream)]/70">
         When the truck comes, or when they change the board. If they did not post, it stays Call.
       </p>
+      <Waterline className="mt-3" />
 
       <form action="/report" method="get" className="mt-6 flex gap-2">
         {params.dock ? <input type="hidden" name="dock" value={params.dock} /> : null}
@@ -32,28 +37,36 @@ export default async function ReportPage({
           name="q"
           defaultValue={q}
           placeholder="Find a marina or town"
-          className="h-10 min-w-0 flex-1 border border-harbor/15 bg-white px-3 text-sm"
+          className="h-10 min-w-0 flex-1 rounded-md border border-[color:var(--line)] bg-white px-3 text-sm"
         />
-        <button type="submit" className="h-10 border border-harbor/20 bg-sand px-3 text-sm">
+        <button
+          type="submit"
+          className="h-10 rounded-md border border-[color:var(--line)] bg-[color:var(--panel)] px-3 text-sm"
+        >
           Find
         </button>
       </form>
 
-      <div className="mt-6 border border-harbor/12 bg-white p-5">
+      <div className="mt-6 rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
         {params.error ? (
-          <p className="mb-4 bg-rust/10 px-3 py-2 text-sm text-rust">{params.error}</p>
+          <p className="mb-4 rounded-md bg-[color:var(--copper)]/10 px-3 py-2 text-sm text-[color:var(--copper)]">
+            {params.error}
+          </p>
         ) : null}
         {visible.length === 0 ? (
-          <p className="text-sm text-harbor/70">
+          <p className="text-sm text-[color:var(--cream)]/70">
             No marina by that name. Try Seabrook, Key Largo, or Beaufort.
           </p>
         ) : (
           <ReportForm docks={visible} initialDockId={params.dock} />
         )}
       </div>
-      <p className="mt-6 text-sm text-harbor/55">
+      <p className="mt-6 text-sm text-[color:var(--cream)]/55">
         Wrong hose?{" "}
-        <a className="text-wake underline-offset-2 hover:underline" href="/safe-fuel">
+        <a
+          className="text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2"
+          href="/safe-fuel"
+        >
           E15 is not for boats
         </a>
         .

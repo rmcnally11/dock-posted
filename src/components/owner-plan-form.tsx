@@ -7,7 +7,7 @@ import { NAMED_STORM_PLAN_PRICE } from "@/lib/haul-out";
 export function OwnerPlanForm() {
   return (
     <form action={submitNamedStormPlan} autoComplete="off" className="space-y-4" data-testid="owner-plan-form">
-      <p className="text-sm text-harbor/70">
+      <p className="text-sm text-[color:var(--cream)]/70">
         Named Storm Plan is {NAMED_STORM_PLAN_PRICE}. One page: primary, backup, and a
         text when NHC names a storm in the cone. No checkout on this page. File the boat.
       </p>
@@ -50,7 +50,7 @@ export function OwnerPlanForm() {
       </div>
 
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-harbor/80">Where the boat sits</legend>
+        <legend className="text-sm font-medium text-[color:var(--cream)]/80">Where the boat sits</legend>
         <label className="flex items-center gap-2 text-sm">
           <input type="radio" name="berth" value="in-water" defaultChecked />
           In-water
@@ -67,7 +67,7 @@ export function OwnerPlanForm() {
       </div>
 
       <Button type="submit">File the boat</Button>
-      <p className="text-xs text-harbor/50">
+      <p className="text-xs text-[color:var(--cream)]/50">
         We do not haul, store, or insure. You call the yard. Blank leftover seats stay Call.
       </p>
     </form>

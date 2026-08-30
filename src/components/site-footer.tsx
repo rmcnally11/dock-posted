@@ -3,11 +3,11 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
     <footer
       className={
         compact
-          ? "border-t border-harbor/10 px-3 py-2 text-[11px] leading-4 text-harbor/45"
-          : "border-t border-harbor/15 px-4 py-8 pb-[max(1.75rem,env(safe-area-inset-bottom))] text-center"
+          ? "border-t border-[color:var(--line)] px-3 py-2 text-[11px] leading-4 text-[color:var(--cream)]/45"
+          : "border-t border-[color:var(--line)] px-4 py-8 pb-[max(1.75rem,env(safe-area-inset-bottom))] text-center"
       }
     >
-      <p className={compact ? "" : "text-xs leading-5 text-harbor/50"}>
+      <p className={compact ? "" : "text-xs leading-5 text-[color:var(--cream)]/50"}>
         What the boater saw. Call the dock.
       </p>
     </footer>

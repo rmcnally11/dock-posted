@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 export function YardLeftoverForm() {
   return (
     <form action={submitYardLeftover} autoComplete="off" className="space-y-3" data-testid="yard-leftover-form">
-      <p className="text-xs leading-5 text-harbor/60">
+      <p className="text-xs leading-5 text-[color:var(--cream)]/60">
         Yard: post leftover seats. Blank stays Call. If you will not say what is left, you
         get no boats.
       </p>

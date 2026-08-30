@@ -26,26 +26,29 @@ export function DockBoard({
         </div>
       </section>
 
-      <aside className="relative z-20 flex w-full flex-col border-t border-harbor/15 bg-paper lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
-        <div className="border-b border-harbor/10 px-3 py-3">
+      <aside className="relative z-20 flex w-full flex-col border-t border-[color:var(--line)] bg-[color:var(--ink)]/70 lg:h-full lg:max-w-md lg:border-l lg:border-t-0">
+        <div className="border-b border-[color:var(--line)] px-3 py-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 data-testid="corridor-heading" className="font-serif text-xl text-harbor">
+              <h2
+                data-testid="corridor-heading"
+                className="font-heading text-xl text-[color:var(--cream)]"
+              >
                 {viewLabel(query)}
               </h2>
-              <p data-testid="dock-count" className="text-sm text-harbor/60">
+              <p data-testid="dock-count" className="text-sm text-[color:var(--cream)]/60">
                 {filtered
                   ? `Showing ${visible.length} of ${inCorridor.length} docks`
                   : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"}`}
               </p>
               {query.corridor === "galveston-bay" && !query.state && !query.region && query.q.length < 2 ? (
-                <p className="mt-1 text-xs text-harbor/50">
+                <p className="mt-1 text-xs text-[color:var(--cream)]/50">
                   Clear Lake mouth first. Hours beat a posted price. A 6:30 run cannot use
                   South Shore.
                 </p>
               ) : null}
               {query.corridor === "upper-keys" && !query.state && !query.region && query.q.length < 2 ? (
-                <p className="mt-1 text-xs text-harbor/50">
+                <p className="mt-1 text-xs text-[color:var(--cream)]/50">
                   E0 still pumping at first light, this side of the island. Islamorada is a
                   different run.
                 </p>
@@ -53,7 +56,7 @@ export function DockBoard({
             </div>
             <a
               href={selected ? `/report?dock=${selected.id}` : "/report"}
-              className="inline-flex h-8 items-center border border-harbor bg-harbor px-3 text-xs font-medium text-sand hover:bg-harbor-soft"
+              className="inline-flex h-8 items-center rounded-md bg-[color:var(--cream)] px-3 text-xs font-medium text-[color:var(--ink)] hover:bg-[color:var(--cream)]/90"
             >
               Report
             </a>
@@ -73,11 +76,11 @@ export function DockBoard({
               name="q"
               defaultValue={query.q}
               placeholder="Marina or city"
-              className="h-9 min-w-0 flex-1 border border-harbor/20 bg-white px-3 text-sm text-harbor placeholder:text-harbor/40 focus:outline-none focus:ring-2 focus:ring-wake/40"
+              className="h-9 min-w-0 flex-1 rounded-md border border-[color:var(--line)] bg-white px-3 text-sm text-[color:var(--cream)] placeholder:text-[color:var(--cream)]/40 focus:outline-none focus:ring-2 focus:ring-[color:var(--sea)]/40"
             />
             <button
               type="submit"
-              className="h-9 border border-harbor/20 bg-sand px-3 text-xs font-medium text-harbor hover:bg-white"
+              className="h-9 rounded-md border border-[color:var(--line)] bg-[color:var(--panel)] px-3 text-xs font-medium text-[color:var(--cream)] hover:bg-white"
             >
               Find
             </button>
@@ -106,10 +109,10 @@ export function DockBoard({
                   key={`${jump.kind}-${jump.id}`}
                   href={href}
                   className={cn(
-                    "shrink-0 border px-2.5 py-1 text-[11px]",
+                    "shrink-0 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.14em]",
                     active
-                      ? "border-harbor bg-harbor text-sand"
-                      : "border-harbor/15 bg-white text-harbor/70",
+                      ? "border-[color:var(--sea)] bg-[color:var(--sea)]/20 text-[color:var(--cream)]"
+                      : "border-[color:var(--line)] text-[color:var(--cream)]/60 hover:text-[color:var(--cream)]",
                   )}
                 >
                   {jump.short}
@@ -176,10 +179,10 @@ function HomePills({ query }: { query: BoardQuery }) {
             reported: null,
           })}
           className={cn(
-            "pointer-events-auto border px-2.5 py-1 text-[11px] shadow-sm",
+            "pointer-events-auto rounded-full border px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] shadow-sm",
             query.corridor === item.id && !query.state && !query.region
-              ? "border-harbor bg-harbor text-sand"
-              : "border-harbor/20 bg-paper/95 text-harbor",
+              ? "border-[color:var(--sea)] bg-[color:var(--sea)]/20 text-[color:var(--cream)]"
+              : "border-[color:var(--line)] bg-[color:var(--ink)]/95 text-[color:var(--cream)]",
           )}
         >
           {item.short}
@@ -203,10 +206,10 @@ function FilterChip({
       href={href}
       aria-pressed={active}
       className={cn(
-        "border px-3 py-1 text-xs font-medium",
+        "rounded-md border px-2.5 py-1 text-xs",
         active
-          ? "border-wake bg-wake/10 text-wake-deep"
-          : "border-harbor/15 bg-white text-harbor/70",
+          ? "border-[color:var(--cream)] text-[color:var(--cream)]"
+          : "border-[color:var(--line)] text-[color:var(--cream)]/55",
       )}
     >
       {children}
@@ -216,7 +219,7 @@ function FilterChip({
 
 function EmptyList({ query }: { query: BoardQuery }) {
   return (
-    <div className="border border-dashed border-harbor/25 bg-white p-6 text-sm text-harbor/70">
+    <div className="rounded-2xl border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] p-6 text-sm text-[color:var(--cream)]/70">
       {query.q.length >= 2
         ? `Nothing named “${query.q}”. Try Seabrook, Key Largo, or Beaufort.`
         : query.freshOnly || query.e0Only
