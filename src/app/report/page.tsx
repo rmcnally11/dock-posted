@@ -17,8 +17,7 @@ export default async function ReportPage({
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-4 py-8">
-      <p className="kicker text-wake-deep">What the dock posted</p>
-      <h1 className="mt-2 font-serif text-4xl text-harbor">Post the number</h1>
+      <h1 className="font-serif text-4xl text-harbor">Post the number</h1>
       <p className="mt-3 text-sm leading-6 text-harbor/70">
         When the truck comes, or when they change the board. If they did not post, it stays Call.
       </p>

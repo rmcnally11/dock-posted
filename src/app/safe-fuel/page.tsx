@@ -3,8 +3,7 @@ import { SiteFooter } from "@/components/site-footer";
 export default function SafeFuelPage() {
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10">
-      <p className="kicker text-wake-deep">What the dock posted</p>
-      <h1 className="mt-2 font-serif text-4xl text-harbor">E15 is not for boats</h1>
+      <h1 className="font-serif text-4xl text-harbor">E15 is not for boats</h1>
       <p className="mt-3 text-base leading-7 text-harbor/75">
         If the sticker says 15% ethanol, walk away. That hose stays Call.
       </p>

@@ -145,7 +145,7 @@ assert.doesNotMatch(tiles, /carto/i);
 assert.match(tiles, /DockPosted\/1\.0/);
 
 const fence =
-  /waterdog|coastal cavaliers|cheapest fuel|bargain map|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning/i;
+  /waterdog|coastal cavaliers|cheapest fuel|bargain map|on this water|instrument family|field letter|almanac|onthiswater|wind is the tide|sister page|field board|us saltwater docks|the board at the dock|seven letter|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning/i;
 for (const file of [
   "src/app/page.tsx",
   "src/app/layout.tsx",
@@ -162,6 +162,30 @@ for (const file of [
   const text = readFileSync(path.join(process.cwd(), file), "utf8");
   assert.doesNotMatch(text, fence, `${file} leaked a fuel-desk term`);
 }
+
+const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-header.tsx"), "utf8");
+assert.match(headerSource, /Dock Posted/);
+assert.doesNotMatch(headerSource, /What the dock posted/);
+
+const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
+assert.match(homeSource, /What the dock posted/);
+assert.match(homeSource, /Sabine to Key West/);
+assert.match(
+  homeSource,
+  /The last number they wrote on the board\. If they did not post, it stays Call\./,
+);
+
+const reportSource = readFileSync(path.join(process.cwd(), "src/app/report/page.tsx"), "utf8");
+const safeSource = readFileSync(path.join(process.cwd(), "src/app/safe-fuel/page.tsx"), "utf8");
+assert.doesNotMatch(reportSource, /What the dock posted/);
+assert.doesNotMatch(safeSource, /What the dock posted/);
+
+const cardSource = readFileSync(path.join(process.cwd(), "src/components/dock-card.tsx"), "utf8");
+assert.match(cardSource, />Regular</);
+assert.match(cardSource, />Diesel</);
+assert.match(cardSource, />Blend</);
+assert.match(cardSource, />Hours</);
+assert.match(cardSource, />Date</);
 
 const tally = boardTally(docks);
 assert.ok(tally.postedThisWeek > 0);

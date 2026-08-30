@@ -44,6 +44,19 @@ try {
   check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
   check("no invent compliance", !/never invent a price/i.test(homeCopy));
 
+  const wordmark = await page.$eval("[data-testid=wordmark]", (el) => el.textContent?.trim());
+  const headerCopy = await page.$eval("header", (el) => el.textContent ?? "");
+  check("distinct wordmark", wordmark === "Dock Posted", wordmark);
+  check("header is not a family lockup", !/what the dock posted/i.test(headerCopy), headerCopy);
+
+  const firstCard = await page.$eval("[data-testid=dock-list] article", (el) => el.textContent ?? "");
+  check("card regular", /\bRegular\b/.test(firstCard));
+  check("card diesel", /\bDiesel\b/.test(firstCard));
+  check("card blend", /\bBlend\b/.test(firstCard));
+  check("card hours", /\bHours\b/.test(firstCard));
+  check("card date", /\bDate\b/.test(firstCard));
+  check("marina bay stays call", /Call/.test(firstCard));
+
   const texasHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
   check("texas heading", texasHeading?.includes("Galveston Bay"));
 
@@ -135,6 +148,10 @@ try {
   check("selected card", selected);
 
   await page.goto(`${base}/report?dock=galveston-yacht-marina`, { waitUntil: "networkidle0" });
+  const reportHero = await page.$eval("main h1", (el) => el.textContent?.trim());
+  const reportHeader = await page.$eval("header", (el) => el.textContent ?? "");
+  check("report is its own page", reportHero === "Post the number", reportHero);
+  check("report header is not a family lockup", !/what the dock posted/i.test(reportHeader));
   const reporting = await page.$eval("[data-testid=reporting-for]", (el) => el.textContent);
   check("report marina label", reporting?.includes("Galveston Yacht Marina"));
   await page.type("#price", "5.280");

@@ -106,7 +106,7 @@ export function DockBoard({
                   key={`${jump.kind}-${jump.id}`}
                   href={href}
                   className={cn(
-                    "shrink-0 border px-2.5 py-1 text-[11px] font-semibold tracking-wide",
+                    "shrink-0 border px-2.5 py-1 text-[11px]",
                     active
                       ? "border-harbor bg-harbor text-sand"
                       : "border-harbor/15 bg-white text-harbor/70",
@@ -186,7 +186,7 @@ function HomePills({ query }: { query: BoardQuery }) {
             reported: null,
           })}
           className={cn(
-            "pointer-events-auto border px-2.5 py-1 text-[11px] font-semibold shadow-sm",
+            "pointer-events-auto border px-2.5 py-1 text-[11px] shadow-sm",
             query.corridor === item.id && !query.state && !query.region
               ? "border-harbor bg-harbor text-sand"
               : "border-harbor/20 bg-paper/95 text-harbor",

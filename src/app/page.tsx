@@ -34,9 +34,9 @@ export default async function Home({
 
   return (
     <main className="flex min-h-0 flex-1 flex-col overflow-hidden lg:h-[calc(100dvh-3.6rem)]">
-      <section className="border-b border-harbor/15 bg-sand/80 px-4 py-3 md:px-6 paper-grain">
+      <section className="border-b border-harbor/15 bg-sand/70 px-4 py-3 md:px-6">
         <div className="mx-auto flex max-w-6xl flex-col gap-2">
-          <p data-testid="hero-kicker" className="text-sm font-medium text-wake-deep">
+          <p data-testid="hero-kicker" className="text-sm text-harbor/70">
             What the dock posted
           </p>
           <h1 data-testid="hero-headline" className="font-serif text-3xl text-harbor md:text-4xl">

@@ -1,11 +1,10 @@
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-harbor bg-sand/95 text-harbor backdrop-blur paper-grain">
+    <header className="sticky top-0 z-40 border-b border-harbor/15 bg-paper">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5">
-        <a href="/" className="min-w-0 leading-tight">
-          <span className="block font-serif text-xl leading-none text-harbor">Dock Posted</span>
-          <span className="mt-1 block text-[11px] font-medium text-harbor/55">
-            What the dock posted
+        <a href="/" className="min-w-0" data-testid="wordmark">
+          <span className="inline-block border-2 border-harbor bg-sand px-2.5 py-1 font-serif text-[1.05rem] leading-none text-harbor">
+            Dock Posted
           </span>
         </a>
         <nav className="flex items-center gap-0.5 text-sm">

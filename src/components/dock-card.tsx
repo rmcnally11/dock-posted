@@ -82,31 +82,31 @@ export function DockCard({
 
         <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
           <div className="bg-sand px-3 py-2">
-            <dt className="kicker text-harbor/45">Regular</dt>
+            <dt className="text-[11px] text-harbor/50">Regular</dt>
             <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
               {formatQuote(gas)}
             </dd>
           </div>
           <div className="bg-sand px-3 py-2">
-            <dt className="kicker text-harbor/45">Diesel</dt>
+            <dt className="text-[11px] text-harbor/50">Diesel</dt>
             <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
               {formatQuote(diesel)}
             </dd>
           </div>
           <div className="bg-sand px-3 py-2">
-            <dt className="kicker text-harbor/45">Blend</dt>
+            <dt className="text-[11px] text-harbor/50">Blend</dt>
             <dd className="font-mono text-[15px] font-medium tabular-nums text-harbor">
               {ethanolCopy(dock.ethanol)}
             </dd>
           </div>
           <div className="bg-sand px-3 py-2">
-            <dt className="kicker text-harbor/45">Hours</dt>
+            <dt className="text-[11px] text-harbor/50">Hours</dt>
             <dd className="text-[15px] font-medium text-harbor">{dock.hours ?? "Call"}</dd>
           </div>
         </dl>
 
         <p className="mt-3 text-xs text-harbor/50" data-testid={`pin-trust-${dock.id}`}>
-          <span className="kicker mr-2 text-harbor/45">Date</span>
+          <span className="mr-2 text-[11px] text-harbor/50">Date</span>
           {formatDate(dock.lastVerifiedAt)}
           {trust === "verified"
             ? ` · Verified · ${sourceLabel(dock.lastVerifiedSource)}`
