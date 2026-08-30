@@ -54,6 +54,9 @@ export default async function Home({
           <p data-testid="board-tally" className="mt-2 text-sm text-[color:var(--cream)]/55">
             {tally.postedThisWeek} posted this week. {tally.call} still Call.
           </p>
+          <p data-testid="honest-number" className="mt-2 text-sm text-[color:var(--cream)]/55">
+            Call is the honest number.
+          </p>
           <Waterline className="mt-3" />
         </div>
         {query.reported ? (

@@ -229,6 +229,9 @@ assert.doesNotMatch(headerSource, />Board</);
 assert.doesNotMatch(headerSource, />Report</);
 
 const haulSource = readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8");
+assert.match(haulSource, /What.s left/);
+assert.match(haulSource, />Named storm</);
+assert.match(haulSource, /A leftover seat, said out loud\./);
 assert.match(haulSource, /Four doors\. One cone\./);
 assert.match(haulSource, /File the boat/);
 assert.match(haulSource, /Two yards that fit/);
@@ -236,6 +239,7 @@ assert.match(haulSource, /The cone gets a name/);
 assert.match(haulSource, /You call the yard/);
 assert.doesNotMatch(haulSource, /\bKill\b/);
 assert.match(haulSource, /Five yards still have not said/);
+assert.doesNotMatch(haulSource, /Named storm parking/);
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /What the dock posted/);
@@ -247,8 +251,18 @@ assert.match(
 
 const reportSource = readFileSync(path.join(process.cwd(), "src/app/report/page.tsx"), "utf8");
 const safeSource = readFileSync(path.join(process.cwd(), "src/app/safe-fuel/page.tsx"), "utf8");
+const footerSource = readFileSync(path.join(process.cwd(), "src/components/site-footer.tsx"), "utf8");
 assert.doesNotMatch(reportSource, /What the dock posted/);
 assert.doesNotMatch(safeSource, /What the dock posted/);
+assert.match(reportSource, /If you saw it, write it/);
+assert.doesNotMatch(reportSource, /submit a price/i);
+assert.match(footerSource, /We publish the pin\. We do not sell the gallon\./);
+assert.match(footerSource, /OpenStreetMap/);
+assert.doesNotMatch(footerSource, /What the boater saw/);
+assert.match(homeSource, /Call is the honest number\./);
+assert.doesNotMatch(reportSource, /Call is the honest number/);
+assert.doesNotMatch(safeSource, /Call is the honest number/);
+assert.doesNotMatch(haulSource, /Call is the honest number/);
 
 const cardSource = readFileSync(path.join(process.cwd(), "src/components/dock-card.tsx"), "utf8");
 assert.match(cardSource, />Regular</);

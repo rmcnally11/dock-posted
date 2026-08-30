@@ -59,10 +59,10 @@ export default async function WholesalePage({
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.16em] text-black/45">Not a public board</p>
-          <h1 className="mt-1 text-3xl font-medium tracking-tight">Wholesale</h1>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-black/45">The take</p>
+          <h1 className="mt-1 text-3xl font-medium tracking-tight">Terminal to the hose</h1>
           <p className="mt-2 text-sm text-black/55">
-            Terminal to retail. The fattest take is the one hacking the gallon.
+            From the rack to the dock. Taxes stay on the page. The fat cut lights up.
           </p>
         </div>
         <DeskLogout />

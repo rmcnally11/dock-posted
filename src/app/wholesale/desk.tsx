@@ -199,7 +199,7 @@ export function Worksheet({
             href={`/wholesale/print?area=${areaId}`}
             className="text-black/55 underline-offset-2 hover:underline"
           >
-            Investor print
+            The book
           </a>
         </div>
       </div>
@@ -301,7 +301,7 @@ function WorksheetFields({
             hoHint={prepared?.ho.labels.dockPosted ?? null}
           />
           <FieldRow
-            label="Tax · federal"
+            label="Federal"
             name="tax_federal"
             rb={sheet.taxRb?.federal ?? null}
             ho={sheet.taxHo?.federal ?? null}
@@ -310,7 +310,7 @@ function WorksheetFields({
             hoHint={prepared?.ho.tax.federal.sourceLabel ?? null}
           />
           <FieldRow
-            label="Tax · state"
+            label="State"
             name="tax_state"
             rb={sheet.taxRb?.state ?? null}
             ho={sheet.taxHo?.state ?? null}
@@ -321,8 +321,8 @@ function WorksheetFields({
         </tbody>
       </table>
       <div className="grid gap-3 border-t border-black/10 p-3 sm:grid-cols-2">
-        <TaxField label="Tax · other / local" name="tax_other" value={sheet.tax.other} unit={unit} />
-        <TaxField label="Tax · one line (replaces the split)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
+        <TaxField label="Other / local" name="tax_other" value={sheet.tax.other} unit={unit} />
+        <TaxField label="One line (replaces Federal and State)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
       </div>
       <p className="px-3 pb-3 text-xs text-black/45">{MARINE_TAX_NOTE}</p>
     </div>
@@ -471,11 +471,10 @@ export function Waterfall({
   return (
     <section className="mt-8" data-testid="waterfall">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.16em] text-black/45">Terminal → retail</p>
-        <h2 className="mt-1 text-sm font-medium">Which take is hacking the gallon</h2>
+        <h2 className="text-sm font-medium">The take</h2>
         <p className="mt-1 max-w-3xl text-xs text-black/45">
-          Each cut is a take. The longest bar is the fattest bite. Empty rungs stay Call / — , never $0.
-          Tax is a first-class take — federal, state, and other when present — not folded into leftover.
+          Each cut is a take. The longest bar is the fat cut. Empty rungs stay Call / — , never $0.
+          Tax is a first-class take — Federal, State, and other when present — not folded into leftover.
         </p>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -602,8 +601,10 @@ function WaterfallRungRow({
 export function LoginPanel({ error }: { error?: string }) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-16">
-      <h1 className="text-2xl font-medium tracking-tight">Wholesale</h1>
-      <p className="mt-2 text-sm text-black/55">Password. Not a public board.</p>
+      <h1 className="text-2xl font-medium tracking-tight">The book</h1>
+      <p className="mt-2 text-sm text-black/55">
+        Terminal to the hose. Every cut stays on the page.
+      </p>
       <form action={loginWholesale} className="mt-8 space-y-4" autoComplete="off">
         {error ? <p className="text-sm text-[#8a2c12]">{error}</p> : null}
         <label className="block text-sm">
@@ -617,7 +618,7 @@ export function LoginPanel({ error }: { error?: string }) {
           />
         </label>
         <button type="submit" className="h-10 border border-black bg-black px-4 text-sm text-white">
-          Enter
+          Open the book
         </button>
       </form>
     </main>

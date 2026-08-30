@@ -5,8 +5,8 @@ import { wholesalePasswordConfigured } from "@/lib/wholesale-auth";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Wholesale",
-  description: "Password-gated netback desk.",
+  title: "The book",
+  description: "Terminal to the hose. Every cut stays on the page.",
   robots: { index: false, follow: false },
 };
 

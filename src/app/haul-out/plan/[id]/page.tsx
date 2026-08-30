@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   return {
-    title: `Named Storm Plan ${id.slice(0, 8)} — Dock Posted`,
+    title: `Named Storm Plan ${id.slice(0, 8)}`,
     description: "Printable Named Storm Plan. Primary and backup stay Call until a yard posts leftover seats.",
   };
 }

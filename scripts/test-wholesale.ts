@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -299,6 +300,22 @@ assert.equal(partial.ho.nymexScreen, null);
 const partialBook = computeWorksheet(partial);
 assert.equal(partialBook.RB.terminalSpot, null);
 assert.equal(formatCents(partialBook.RB.rackMargin), "—");
+
+const deskSource = readFileSync(path.join(process.cwd(), "src/app/wholesale/desk.tsx"), "utf8");
+const wholesalePage = readFileSync(path.join(process.cwd(), "src/app/wholesale/page.tsx"), "utf8");
+const printPage = readFileSync(path.join(process.cwd(), "src/app/wholesale/print/page.tsx"), "utf8");
+assert.match(deskSource, /The book/);
+assert.match(deskSource, /Open the book/);
+assert.match(deskSource, />The take</);
+assert.doesNotMatch(deskSource, /hacking the gallon/);
+assert.doesNotMatch(deskSource, /Investor print/);
+assert.doesNotMatch(deskSource, /Sign in to dashboard/);
+assert.match(wholesalePage, /Terminal to the hose/);
+assert.match(wholesalePage, /From the rack to the dock/);
+assert.match(printPage, /The book/);
+assert.doesNotMatch(printPage, /Investor/);
+assert.equal(filled.rungs.find((rung) => rung.key === "taxFederal")?.label, "Federal");
+assert.equal(filled.rungs.find((rung) => rung.key === "taxState")?.label, "State");
 
 async function storeRoundtrip() {
   const dir = await mkdtemp(path.join(tmpdir(), "dock-posted-wholesale-"));

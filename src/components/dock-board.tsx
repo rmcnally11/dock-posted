@@ -58,7 +58,7 @@ export function DockBoard({
               href={selected ? `/report?dock=${selected.id}` : "/report"}
               className="inline-flex h-8 items-center rounded-md bg-[color:var(--cream)] px-3 text-xs font-medium text-[color:var(--ink)] hover:bg-[color:var(--cream)]/90"
             >
-              Report
+              Post a number
             </a>
           </div>
 

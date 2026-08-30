@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { OwnerPlanForm } from "@/components/owner-plan-form";
+import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { YardBoard } from "@/components/yard-board";
 import { YardLeftoverForm } from "@/components/yard-leftover-form";
@@ -9,7 +10,7 @@ import { readYards } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Named storm — Named Storm Plan — Dock Posted",
+  title: "Named storm",
   description:
     "Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say what was left, it stays Call.",
 };
@@ -29,13 +30,13 @@ export default async function HaulOutPage({
         data-testid="haul-out-kicker"
         className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]"
       >
-        Leftover seats
+        What’s left
       </p>
       <h1
         data-testid="haul-out-headline"
         className="mt-2 font-heading text-4xl text-[color:var(--cream)] md:text-5xl"
       >
-        Named storm parking
+        Named storm
       </h1>
       <p data-testid="haul-out-deck" className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
         Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say
@@ -43,6 +44,9 @@ export default async function HaulOutPage({
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/60">
         We are not the yard. We do not haul, store, or insure. We do not sell wet slips.
+      </p>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/60">
+        A leftover seat, said out loud.
       </p>
       <Waterline className="mt-3" />
 
@@ -124,6 +128,7 @@ export default async function HaulOutPage({
         </p>
         <p className="mt-3">Five yards still have not said what’s left.</p>
       </section>
+      <SiteFooter />
     </main>
   );
 }

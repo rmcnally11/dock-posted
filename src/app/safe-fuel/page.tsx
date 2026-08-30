@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
+
+export const metadata: Metadata = {
+  title: "E15 is not for boats",
+  description: "If the sticker says 15% ethanol, walk away. That hose stays Call.",
+};
 
 export default function SafeFuelPage() {
   return (
@@ -11,7 +17,8 @@ export default function SafeFuelPage() {
         E15 is not for boats
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
-        If the sticker says 15% ethanol, walk away. That hose stays Call.
+        If the sticker says 15% ethanol, walk away. That hose stays Call. Ethanol is
+        what the sticker says, not what the octane implies.
       </p>
       <Waterline className="mt-3" />
 
