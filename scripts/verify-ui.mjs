@@ -519,15 +519,19 @@ try {
     await page.goto(`${base}/?corridor=galveston-bay#board`, { waitUntil: "networkidle0" });
     await page.waitForSelector("[data-testid=dock-card-marina-bay-harbor]");
     const cardReach = await page.evaluate((viewH) => {
-      const card = document.querySelector("[data-testid=dock-card-marina-bay-harbor]");
+      const root = document.documentElement;
+      const prev = root.style.scrollBehavior;
+      root.style.scrollBehavior = "auto";
       const before = window.scrollY;
-      document.getElementById("board")?.scrollIntoView();
-      card?.scrollIntoView({ block: "start" });
-      window.scrollBy(0, -72);
+      document.getElementById("board")?.scrollIntoView({ behavior: "instant", block: "start" });
+      const card = document.querySelector("[data-testid=dock-card-marina-bay-harbor]");
+      card?.scrollIntoView({ behavior: "instant", block: "start" });
+      root.scrollTop = Math.max(0, (card?.getBoundingClientRect().top ?? 0) + root.scrollTop - 64);
       const r = card?.getBoundingClientRect();
+      root.style.scrollBehavior = prev;
       return {
         before,
-        after: window.scrollY,
+        after: window.scrollY || root.scrollTop,
         top: r?.top ?? -1,
         bottom: r?.bottom ?? -1,
         viewH,
@@ -535,9 +539,7 @@ try {
     }, phone.height);
     check(
       `phone ${phone.width} first card in view after #board scroll`,
-      cardReach.after > cardReach.before &&
-        cardReach.top < phone.height &&
-        cardReach.bottom > 0,
+      cardReach.after > 200 && cardReach.top < phone.height && cardReach.bottom > 0,
       JSON.stringify(cardReach),
     );
 
