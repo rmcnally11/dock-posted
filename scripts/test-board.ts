@@ -422,14 +422,25 @@ assert.doesNotMatch(layoutSource, /body className="flex h-full min-h-full/);
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /data-testid="landing"/);
-assert.match(homeSource, /What the dock posted/);
-assert.match(homeSource, /Sabine to Key West/);
+assert.match(homeSource, /data-testid="hero-kicker"[\s\S]*Marina fuel/);
+assert.match(homeSource, /data-testid="hero-headline"[\s\S]*The price they posted/);
 assert.match(
   homeSource,
-  /The last number they wrote on the board\. If they did not post, it stays Call\./,
+  /data-testid="hero-deck"[\s\S]*Diesel and gas from the dock\. If they didn.t write a number, it stays Call\./,
 );
+assert.match(homeSource, /data-testid="hero-quiet"[\s\S]*Sabine to Key West/);
 assert.match(homeSource, /We don.t sell a gallon\. We don.t lift a boat\./);
 assert.match(homeSource, /data-testid="hero-extra"/);
+assert.doesNotMatch(homeSource, /What the dock posted/);
+assert.doesNotMatch(homeSource, /The last number they wrote on the board/);
+assert.ok(
+  homeSource.indexOf("Sabine to Key West") > homeSource.indexOf("The price they posted"),
+  "quiet line sits under the headline",
+);
+assert.ok(
+  homeSource.indexOf("We don") > homeSource.indexOf("Sabine to Key West"),
+  "gallon line sits under the quiet line",
+);
 assert.match(homeSource, /See the board/);
 assert.match(homeSource, /data-testid="see-the-board"[\s\S]*href="#board"/);
 assert.match(homeSource, /data-testid="landing-report"[\s\S]*href="\/report"/);

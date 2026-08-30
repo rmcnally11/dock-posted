@@ -40,23 +40,29 @@ export default async function Home({
             data-testid="hero-kicker"
             className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]"
           >
-            What the dock posted
+            Marina fuel
           </p>
           <h1
             data-testid="hero-headline"
             className="mt-4 max-w-4xl font-heading text-5xl leading-[1.05] text-[color:var(--cream)] md:text-7xl"
           >
-            Sabine to Key West
+            The price they posted
           </h1>
           <p
             data-testid="hero-deck"
             className="mt-6 max-w-xl text-base leading-7 text-[color:var(--cream)]/70 md:text-lg"
           >
-            The last number they wrote on the board. If they did not post, it stays Call.
+            Diesel and gas from the dock. If they didn’t write a number, it stays Call.
+          </p>
+          <p
+            data-testid="hero-quiet"
+            className="mt-3 text-sm text-[color:var(--cream)]/55"
+          >
+            Sabine to Key West
           </p>
           <p
             data-testid="hero-extra"
-            className="mt-3 max-w-xl text-sm leading-6 text-[color:var(--cream)]/55"
+            className="mt-2 max-w-xl text-sm leading-6 text-[color:var(--cream)]/45"
           >
             We don’t sell a gallon. We don’t lift a boat.
           </p>

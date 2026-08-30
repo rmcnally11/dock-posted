@@ -28,11 +28,17 @@ try {
   const kicker = await page.$eval("[data-testid=hero-kicker]", (el) => el.textContent?.trim());
   const headline = await page.$eval("[data-testid=hero-headline]", (el) => el.textContent?.trim());
   const deck = await page.$eval("[data-testid=hero-deck]", (el) => el.textContent?.trim());
+  const quiet = await page.$eval("[data-testid=hero-quiet]", (el) => el.textContent?.trim());
   const extra = await page.$eval("[data-testid=hero-extra]", (el) => el.textContent?.trim());
   const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
-  check("hero kicker present", kicker === "What the dock posted", kicker);
-  check("hero headline present", headline === "Sabine to Key West", headline);
-  check("hero deck present", deck === "The last number they wrote on the board. If they did not post, it stays Call.", deck);
+  check("hero kicker present", kicker === "Marina fuel", kicker);
+  check("hero headline present", headline === "The price they posted", headline);
+  check(
+    "hero deck present",
+    deck === "Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+    deck,
+  );
+  check("hero quiet line", quiet === "Sabine to Key West", quiet);
   check("hero extra line", extra === "We don’t sell a gallon. We don’t lift a boat.", extra);
   const landing = await page.$("[data-testid=landing]");
   const boardSection = await page.$("[data-testid=board]");
