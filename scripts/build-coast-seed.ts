@@ -111,6 +111,7 @@ const HOME_PATCHES: Record<
   "marina-bay-harbor": {
     lead: 1,
     flags: ["last-pump"],
+    phone: "(281) 535-2222",
     hours: "Daily 7:30am–5:30pm. Fri–Sun ship store 6am — store only, not the hose.",
     notes:
       "Last public pump at the Clear Lake mouth, south side of the channel, Clear Lake Shores. Ethanol-free 93. Live shrimp by boat. Ship store page (30 Aug 2026): Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Last light in August is after 6 — this hose is not still open then. Waterway Guide listed 87 and 93 as No Report. Does not sell diesel. Blank stays Call.",

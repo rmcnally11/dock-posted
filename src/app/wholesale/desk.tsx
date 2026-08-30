@@ -748,9 +748,9 @@ function WaterfallRungRow({
 export function LoginPanel({ error }: { error?: string }) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-16">
-      <h1 className="text-2xl font-medium tracking-tight">Wholesale</h1>
-      <p className="mt-2 text-sm text-black/55">
-        What it cost. What they posted.
+      <h1 className="font-heading text-2xl text-[color:var(--navy)]">Wholesale</h1>
+      <p className="mt-2 text-sm text-[color:var(--ink)]/70">
+        What it cost. What they posted. Locked door.
       </p>
       <form action={loginWholesale} className="mt-8 space-y-4" autoComplete="off">
         {error ? <p className="text-sm text-[#8a2c12]">{error}</p> : null}

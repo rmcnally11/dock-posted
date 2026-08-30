@@ -16,13 +16,13 @@ export default function AboutPage() {
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6">
       <h1
         data-testid="about-headline"
-        className="font-heading text-4xl text-[color:var(--cream)] md:text-5xl"
+        className="font-heading text-4xl text-[color:var(--navy)] md:text-5xl"
       >
         About
       </h1>
       <p
         data-testid="about-deck"
-        className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65"
+        className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70"
       >
         We write what they posted. If they didn’t, it’s Call.
       </p>
@@ -30,7 +30,7 @@ export default function AboutPage() {
 
       <section
         data-testid="about-body"
-        className="mt-8 max-w-2xl space-y-3 text-sm leading-7 text-[color:var(--cream)]/80"
+        className="mt-8 max-w-2xl space-y-3 text-sm leading-7 text-[color:var(--ink)]/80"
       >
         <p>
           Dock Posted is the number on the board at the fuel dock. Sabine to Key West, then
@@ -45,7 +45,7 @@ export default function AboutPage() {
         <p>
           If you were at the dock, send the number.{" "}
           <a
-            className="text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2"
+            className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
             href="/report"
           >Post a number</a>
           .
@@ -54,9 +54,9 @@ export default function AboutPage() {
 
       <section
         data-testid="waterdog-fuel"
-        className="mt-10 max-w-2xl space-y-3 text-sm leading-7 text-[color:var(--cream)]/80"
+        className="mt-10 max-w-2xl space-y-3 text-sm leading-7 text-[color:var(--ink)]/80"
       >
-        <h2 className="font-heading text-2xl text-[color:var(--cream)]">Waterdog Fuel</h2>
+        <h2 className="font-heading text-2xl text-[color:var(--navy)]">Waterdog Fuel</h2>
         <p>
           Waterdog Fuel brings the gallon from the Houston rack to the first-water dock. Clear
           Lake, Kemah, Seabrook. Opens 2027. Not selling gallons yet.
@@ -64,7 +64,7 @@ export default function AboutPage() {
         <p>
           Reach them at{" "}
           <a
-            className="text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2"
+            className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
             href="mailto:orders@coastalcavaliers.com"
           >
             orders@coastalcavaliers.com

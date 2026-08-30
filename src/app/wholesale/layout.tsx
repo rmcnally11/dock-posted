@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Wholesale",
-  description: "What it cost. What they posted.",
+  description: "What it cost. What they posted. Locked door.",
   robots: { index: false, follow: false },
 };
 

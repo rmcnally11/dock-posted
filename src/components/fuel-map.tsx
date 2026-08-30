@@ -9,9 +9,9 @@ const TILE = 256;
 
 function pinColor(dock: Dock): string {
   const trust = pinTrust(dock);
-  if (trust === "verified") return "#1d7ec4";
-  if (trust === "last-seen") return "#e3b01c";
-  return "#e23b3b";
+  if (trust === "verified") return "#2F8FD6";
+  if (trust === "last-seen") return "#c4a046";
+  return "#E23B3B";
 }
 
 export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) {
@@ -82,7 +82,7 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
           );
         })}
       </div>
-      <p className="pointer-events-none absolute bottom-2 left-2 z-[2] rounded-md bg-white/90 px-1.5 py-0.5 font-mono text-[10px] text-[color:var(--cream)]/55">
+      <p className="pointer-events-none absolute bottom-2 left-2 z-[2] rounded-md bg-[color:var(--cream)]/90 px-1.5 py-0.5 font-mono text-[10px] text-[color:var(--ink)]/55">
         {view.center[1].toFixed(2)}N {Math.abs(view.center[0]).toFixed(2)}W · z{zoom} · © OpenStreetMap
       </p>
     </div>

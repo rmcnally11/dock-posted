@@ -40,29 +40,29 @@ export default async function NamedStormPlanPage({
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 print:px-0 print:py-0 md:px-6">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)] print:text-black">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)] print:text-black">
         Named Storm Plan
       </p>
-      <h1 className="mt-1 font-heading text-4xl text-[color:var(--cream)] print:text-black md:text-5xl">
+      <h1 className="mt-1 font-heading text-4xl text-[color:var(--navy)] print:text-black md:text-5xl">
         Primary and backup
       </h1>
-      <p className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65 print:text-black">
+      <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70 print:text-black">
         When NHC names a storm in the cone we text what’s left and the yard number. You
         call the yard. We do not lift.
       </p>
       <Waterline className="mt-3 print:hidden" />
 
       <dl className="mt-8 grid gap-3 text-sm sm:grid-cols-2" data-testid="plan-preview">
-        <div className="rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-4">
-          <dt className="text-[11px] uppercase tracking-[0.14em] text-[color:var(--copper)]">
+        <div className="rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] p-4">
+          <dt className="text-[11px] uppercase tracking-[0.14em] text-[color:var(--signal)]">
             Primary
           </dt>
           <dd data-testid="plan-primary" className="mt-1 font-heading text-2xl">
             {yardDisplayName(primary)}
           </dd>
         </div>
-        <div className="rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-4">
-          <dt className="text-[11px] uppercase tracking-[0.14em] text-[color:var(--copper)]">
+        <div className="rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] p-4">
+          <dt className="text-[11px] uppercase tracking-[0.14em] text-[color:var(--signal)]">
             Backup
           </dt>
           <dd data-testid="plan-backup" className="mt-1 font-heading text-2xl">
@@ -71,13 +71,13 @@ export default async function NamedStormPlanPage({
         </div>
       </dl>
 
-      <p data-testid="plan-leftover-note" className="mt-4 text-sm text-[color:var(--cream)]/65 print:text-black">
+      <p data-testid="plan-leftover-note" className="mt-4 text-sm text-[color:var(--ink)]/70 print:text-black">
         {leftoverNote}
       </p>
 
-      <section className="mt-8 rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5 text-sm leading-6">
-        <h2 className="font-heading text-xl text-[color:var(--cream)] print:text-black">Boat</h2>
-        <ul className="mt-3 space-y-1 text-[color:var(--cream)]/75 print:text-black">
+      <section className="mt-8 rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] p-5 text-sm leading-6">
+        <h2 className="font-heading text-xl text-[color:var(--navy)] print:text-black">Boat</h2>
+        <ul className="mt-3 space-y-1 text-[color:var(--ink)]/75 print:text-black">
           <li>Owner: {plan.ownerName}</li>
           <li>Phone: {plan.phone}</li>
           <li>Email: {plan.email}</li>
@@ -89,7 +89,7 @@ export default async function NamedStormPlanPage({
         </ul>
       </section>
 
-      <p className="mt-6 text-xs leading-6 text-[color:var(--cream)]/50 print:text-black">
+      <p className="mt-6 text-xs leading-6 text-[color:var(--ink)]/50 print:text-black">
         Offer: {NAMED_STORM_PLAN_PRICE}. No checkout on this page. We are not the yard.
         We do not haul, store, or insure. We do not sell wet slips.
         {leftoverNote === EMPTY_LEFTOVER_NOTE ? ` ${EMPTY_LEFTOVER_NOTE}` : ""}
@@ -98,7 +98,7 @@ export default async function NamedStormPlanPage({
       <div className="mt-8 flex items-center gap-4">
         <PrintButton />
         <a
-          className="text-sm text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2 print:hidden"
+          className="text-sm text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2 print:hidden"
           href="/haul-out"
         >
           Back to named storm

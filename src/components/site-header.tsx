@@ -1,26 +1,19 @@
 import { headers } from "next/headers";
+import { BrandSpine, Wordmark } from "@/components/wordmark";
 import { wholesalePasswordConfigured } from "@/lib/wholesale-auth";
 
 const navLink =
-  "inline-flex h-11 shrink-0 items-center rounded-md px-2 text-[color:var(--cream)]/75 transition hover:bg-[color:var(--cream)]/6 hover:text-[color:var(--cream)] sm:h-auto sm:px-2.5 sm:py-1.5";
+  "inline-flex h-11 shrink-0 items-center rounded-md px-2 text-[color:var(--ink)]/75 transition hover:bg-[color:var(--navy)]/6 hover:text-[color:var(--navy)] sm:h-auto sm:px-2.5 sm:py-1.5";
 
 export async function SiteHeader() {
   await headers();
   const wholesaleOpen = wholesalePasswordConfigured();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[color:var(--line)] bg-[color:var(--ink)]/80 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden">
+    <header className="sticky top-0 z-30 bg-[color:var(--cream)]/90 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-x-3 px-3 py-1.5 sm:px-4 sm:py-2.5 md:px-6">
         <a href="/" className="flex min-w-0 shrink-0 items-baseline gap-2" aria-label="Dock Posted">
-          <span
-            data-testid="wordmark"
-            className="font-heading text-lg tracking-tight text-[color:var(--cream)]"
-          >
-            Dock Posted
-          </span>
-          <span className="hidden text-[10px] uppercase tracking-[0.22em] text-[color:var(--sea)] sm:inline">
-            Sabine to Key West
-          </span>
+          <Wordmark />
         </a>
         <nav
           className="chip-scroll flex min-w-0 flex-nowrap items-center gap-x-0.5 overflow-x-auto overscroll-x-contain text-[13px] sm:text-sm"
@@ -53,6 +46,7 @@ export async function SiteHeader() {
           ) : null}
         </nav>
       </div>
+      <BrandSpine />
     </header>
   );
 }

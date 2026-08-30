@@ -1,5 +1,5 @@
 import { DockBoard } from "@/components/dock-board";
-import { Waterline } from "@/components/waterline";
+import { Masthead } from "@/components/wordmark";
 import { filterDocks, parseBoardQuery } from "@/lib/board-query";
 import { boardTally } from "@/lib/freshness";
 import { readDocks } from "@/lib/store";
@@ -33,12 +33,13 @@ export default async function Home({
     <main className="flex min-w-0 flex-1 flex-col">
       <section
         data-testid="landing"
-        className="flex min-h-[calc(100dvh-3.6rem)] flex-col justify-center border-b border-[color:var(--line)] px-4 py-16 md:px-6 md:py-24"
+        className="flex min-h-[calc(100dvh-3.6rem)] flex-col justify-center bg-[color:var(--navy)] px-4 py-16 text-[color:var(--cream)] md:px-6 md:py-24"
       >
         <div className="mx-auto flex w-full max-w-7xl flex-col">
+          <Masthead className="mb-8" />
           <p
             data-testid="hero-kicker"
-            className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]"
+            className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]"
           >
             Marina fuel
           </p>
@@ -58,7 +59,7 @@ export default async function Home({
             data-testid="hero-geo"
             className="mt-3 max-w-xl text-sm leading-6 text-[color:var(--cream)]/45"
           >
-            Sabine to Key West.
+            Sabine to Key West. Then the rest of the saltwater coast.
           </p>
           <p
             data-testid="hero-extra"
@@ -67,20 +68,21 @@ export default async function Home({
             We don’t sell a gallon. We don’t lift a boat.
           </p>
           <p data-testid="board-tally" className="mt-6 text-sm text-[color:var(--cream)]/55">
-            {tally.postedThisWeek} posted this week. {tally.call} still Call.
+            {tally.postedThisWeek} posted this week. {tally.call} still Call. That is the
+            product working, not failing.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <a
               data-testid="see-the-board"
               href="#board"
-              className="inline-flex h-12 items-center rounded-md bg-[color:var(--cream)] px-5 text-sm font-medium text-[color:var(--ink)] hover:bg-[color:var(--cream)]/90"
+              className="inline-flex h-12 items-center rounded-md bg-[color:var(--cream)] px-5 text-sm font-medium text-[color:var(--navy)] hover:bg-[color:var(--cream)]/90"
             >
               See the board
             </a>
             <a
               data-testid="landing-report"
               href="/report"
-              className="inline-flex h-12 items-center rounded-md border border-[color:var(--line)] bg-white px-5 text-sm font-medium text-[color:var(--cream)] hover:bg-[color:var(--panel)]"
+              className="inline-flex h-12 items-center rounded-md border border-[color:var(--cream)]/25 bg-transparent px-5 text-sm font-medium text-[color:var(--cream)] hover:bg-[color:var(--cream)]/8"
             >
               Post a number
             </a>
@@ -93,7 +95,6 @@ export default async function Home({
               Who writes this.
             </a>
           </p>
-          <Waterline className="mt-8" />
           <nav
             data-testid="landing-links"
             aria-label="More"
@@ -126,7 +127,7 @@ export default async function Home({
       <section
         id="board"
         data-testid="board"
-        className="flex min-w-0 flex-col scroll-mt-[3.6rem] lg:h-[calc(100dvh-3.6rem)] lg:min-h-0 lg:overflow-hidden"
+        className="flex min-w-0 flex-col scroll-mt-[3.6rem] bg-[color:var(--cream)] lg:h-[calc(100dvh-3.6rem)] lg:min-h-0 lg:overflow-hidden"
       >
         {query.reported ? (
           <p

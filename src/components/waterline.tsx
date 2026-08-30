@@ -1,26 +1,37 @@
-export function Waterline({ className = "" }: { className?: string }) {
+const PAIR =
+  "M0 14 C 150 6, 300 6, 450 14 S 750 28, 900 18 1050 8, 1200 14";
+
+export function Waterline({
+  className = "",
+  compact = false,
+}: {
+  className?: string;
+  compact?: boolean;
+}) {
   return (
     <svg
-      viewBox="0 0 1200 48"
-      className={`waterline-svg pointer-events-none h-10 w-full opacity-70 ${className}`}
+      viewBox="0 0 1200 32"
+      className={`waterline-svg pointer-events-none w-full ${compact ? "h-2" : "h-6"} ${className}`}
       preserveAspectRatio="none"
       aria-hidden
+      data-testid="waterline"
     >
       <path
-        className="waterline-a"
-        d="M0 24 C 80 8, 160 40, 240 24 S 400 8, 480 24 640 40, 720 24 880 8, 960 24 1120 40, 1200 24"
+        className="waterline-pair"
+        d={PAIR}
         fill="none"
-        stroke="#e23b3b"
-        strokeWidth="1.4"
-        strokeOpacity="0.55"
+        stroke="#E23B3B"
+        strokeWidth="1.2"
+        strokeLinecap="round"
       />
       <path
-        className="waterline-b"
-        d="M0 30 C 90 18, 170 42, 260 30 S 430 16, 520 30 700 44, 790 30 970 16, 1060 30 1200 42, 1200 30"
+        className="waterline-pair"
+        d={PAIR}
+        transform="translate(0 8)"
         fill="none"
-        stroke="#2f8fd6"
-        strokeWidth="1.1"
-        strokeOpacity="0.4"
+        stroke="#2F8FD6"
+        strokeWidth="1.2"
+        strokeLinecap="round"
       />
     </svg>
   );
