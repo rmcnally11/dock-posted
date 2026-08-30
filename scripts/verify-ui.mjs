@@ -95,7 +95,7 @@ try {
   await page.type("#price", "5.280");
   await Promise.all([
     page.waitForNavigation({ waitUntil: "networkidle0" }),
-    page.click("button[type=submit]"),
+    page.click("[data-testid=post-price]"),
   ]);
   const saved = await page.$("[data-testid=report-saved]");
   check("report saved banner", Boolean(saved));

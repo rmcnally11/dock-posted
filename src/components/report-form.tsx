@@ -106,7 +106,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
         <Input id="company" name="website_url" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <Button type="submit" className="w-full rounded-none sm:w-auto">
+      <Button type="submit" data-testid="post-price" className="w-full rounded-none sm:w-auto">
         Post what you saw
       </Button>
       <p className="text-xs text-harbor/50">
