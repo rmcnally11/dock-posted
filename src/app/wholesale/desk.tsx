@@ -546,8 +546,9 @@ function WaterfallRungRow({
   winner: boolean;
   product: WholesaleProduct;
 }) {
-  const empty = rung.cents == null;
-  const width = empty || scale === 0 ? 0 : Math.max(6, (Math.abs(rung.cents) / scale) * 100);
+  const cents = rung.cents;
+  const empty = cents == null;
+  const width = cents == null || scale === 0 ? 0 : Math.max(6, (Math.abs(cents) / scale) * 100);
   const isTake = rung.role === "take" || rung.role === "leftover";
   const isTax = rung.takeKey === "tax" || rung.takeKey === "taxFederal" || rung.takeKey === "taxState" || rung.takeKey === "taxOther";
   return (
