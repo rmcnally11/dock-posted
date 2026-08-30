@@ -35,7 +35,23 @@ Marina Bay Harbor hose is Daily 7:30am–5:30pm. Fri–Sun 6am is the ship store
 
 Lakewood Yacht Club is private (fuel/pump-out 832-256-6923). Houston Yacht Club is members/reciprocal. Neither is a public pump.
 
-Watergate, Waterford, Legend Point, Portofino, Kemah Boardwalk, and TCYC are not fuel pins.
+Watergate, Waterford, Legend Point, Portofino, Kemah Boardwalk, and TCYC are not fuel pins. Rechecked 30 Aug 2026 on first-party pages: Watergate says fuel is available elsewhere on Clear Lake, not this marina. Waterford amenities list slips, pump-out, and the grill — no hose. Legend Point is a condo marina page with no fuel. Kemah Boardwalk’s site is rides and dining. TCYC’s club site does not advertise a public pump. They stay dropped.
+
+Galveston Bay pins added 30 Aug 2026 from first-party (or current fuel-directory) pages. Quotes stay Call. No Waterway Guide dollars copied onto the board.
+
+- Bayland Marina (Baytown / Tabbs Bay) — baylandmarina.com rules page: fuel dock during regular business hours; office Tue–Sun 8am–5pm. Store (281) 422-8900. Snag-A-Slip and Waterway Guide name ValvTect gas and diesel.
+- MarineMax Houston (3001 NASA Pkwy, Seabrook) — marinemax.com/pages/locations/houston: wet slips exclusive to customers, with high-speed fueling. Members’ dock. Not a public pump.
+- HarborWalk Marina (Hitchcock / West Bay) — harborwalk.com marina services: five pumps, marine-grade diesel and regular gasoline.
+- Eagle Point Fishing Camp (San Leon) — eaglepointfishingcamp.com/services.html: gasoline dock by boat. Diesel is not named there.
+- Pelican Rest Marina (Offatts Bayou) — pelicanrestmarina.com: gasoline and diesel. Supplies page Daily 8am–5pm.
+
+Skipped (no first-party hose, or wet slips only):
+
+- Galveston Yacht Club — sailing club pages; no fuel dock. Galveston Yacht Marina is already the island pump.
+- Tiki Island marina(s) — residential canals; a future fueling station is marketing copy, not a hose.
+- San Leon Marina / Bay Harbor as named — no first-party page documenting a hose. Eagle Point is the San Leon gasoline dock.
+- Moody Gardens Marina — own marina page: “No fuel.” Nearby hose is Pelican Rest.
+- April Fool Point and other directory names without a current marina page that names gas or diesel.
 
 Dropped from the coast set (no weekend routing / no fuel):
 

@@ -6,7 +6,7 @@ The last number they wrote on the board. If they did not post, it stays Call.
 
 This is a consumer board. It does **not** sell, broker, bid, or source gallons. No accounts. No marina POS. No rack, OPIS, Argus, Platts, delivered, RINs, invoices, throughput, or savings pitch.
 
-Clear Lake opens on the mouth: **Marina Bay Harbor**, **Blue Marlin Fuel Dock** (Seabrook, west of 146), then **South Shore Harbour Fuel Pier**. Galveston Island is not the stretch poster. No Kemah Boardwalk weekend routing. Lakewood and Houston Yacht Club are club-only. No fuel at Watergate, Waterford, Legend Point, or Portofino.
+`/` opens on a landing. See the board jumps to `#board`. That board, with no corridor/state/region/q, is the full coastal set — Sabine through Maine. The Clear Lake chip still filters to Galveston Bay and opens on the mouth: **Marina Bay Harbor**, **Blue Marlin Fuel Dock** (Seabrook, west of 146), then **South Shore Harbour Fuel Pier**. Galveston Island is not the stretch poster. No Kemah Boardwalk weekend routing. Lakewood, Houston Yacht Club, and MarineMax Houston are club- or customer-only. No fuel at Watergate, Waterford, Legend Point, or Portofino.
 
 Key Largo is Key Largo — Marina Del Mar and Ocean Reef (members only), not just Pilot House. Islamorada is a different run. Dock E0 is not the landside E10 hose. A 2022 Call stays Call.
 
@@ -24,7 +24,7 @@ npm run dev           # http://127.0.0.1:43123
 
 Then:
 
-- `/` — chart + list
+- `/` — landing, then `#board` (chart + list)
 - `/haul-out` — leftover haul-out seats (Clear Lake / Kemah / Upper Keys). Blank = Call
 - `/haul-out/plan/[id]` — Named Storm Plan one-pager
 - `/report` — post a price (honeypot + 8 reports/hour/IP)

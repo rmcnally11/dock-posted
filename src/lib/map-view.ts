@@ -40,9 +40,15 @@ export function viewForBoard(docks: Dock[], query: BoardQuery): MapView {
     };
   }
   if (docks.length > 0) {
-    const lng = docks.reduce((sum, dock) => sum + dock.lng, 0) / docks.length;
-    const lat = docks.reduce((sum, dock) => sum + dock.lat, 0) / docks.length;
-    return { center: [lng, lat], zoom: zoomForSpread(docks) };
+    const lngs = docks.map((dock) => dock.lng);
+    const lats = docks.map((dock) => dock.lat);
+    return {
+      center: [
+        (Math.min(...lngs) + Math.max(...lngs)) / 2,
+        (Math.min(...lats) + Math.max(...lats)) / 2,
+      ],
+      zoom: zoomForSpread(docks),
+    };
   }
   return { center: CORRIDORS["galveston-bay"].center, zoom: CORRIDORS["galveston-bay"].zoom };
 }

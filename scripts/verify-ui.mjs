@@ -113,7 +113,10 @@ try {
     "[data-testid=dock-card-marina-bay-harbor] dt",
     (els) => els.map((el) => el.textContent?.trim()),
   );
-  const firstCard = await page.$eval("[data-testid=dock-list] article", (el) => el.textContent ?? "");
+  const marinaBayCard = await page.$eval(
+    "[data-testid=dock-card-marina-bay-harbor]",
+    (el) => el.textContent ?? "",
+  );
   const dateLine = await page.$eval(
     "[data-testid=pin-trust-marina-bay-harbor]",
     (el) => el.textContent ?? "",
@@ -123,15 +126,22 @@ try {
   check("card blend", cardFields.includes("Blend"), cardFields.join(","));
   check("card hours", cardFields.includes("Hours"), cardFields.join(","));
   check("card date", dateLine.includes("Date"), dateLine);
-  check("marina bay stays call", /Call/.test(firstCard));
+  check("marina bay stays call", /Call/.test(marinaBayCard));
   check(
     "marina bay hours as-is",
-    /7:30am–5:30pm/.test(firstCard) && /store only, not the hose/.test(firstCard),
-    firstCard.slice(0, 280),
+    /7:30am–5:30pm/.test(marinaBayCard) && /store only, not the hose/.test(marinaBayCard),
+    marinaBayCard.slice(0, 280),
   );
 
-  const texasHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
-  check("texas heading", texasHeading?.includes("Galveston Bay"));
+  const coastHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
+  check("coast heading", coastHeading?.includes("Sabine to Maine"), coastHeading);
+  const coastCount = await page.$eval("[data-testid=dock-count]", (el) => el.textContent ?? "");
+  const coastCountMatch = coastCount.match(/(\d+) docks/);
+  check(
+    "coast shows full seed",
+    Number(coastCountMatch?.[1] ?? 0) > 90,
+    coastCount,
+  );
 
   await page.waitForSelector('img[src*="/api/tiles/"]');
   const tileCount = await page.$$eval('img[src*="/api/tiles/"]', (tiles) =>
@@ -141,17 +151,14 @@ try {
 
   const attribution = await page.$eval("[data-testid=fuel-map]", (el) => el.textContent ?? "");
   check("no carto attribution", !/carto/i.test(attribution), attribution);
-  check(
-    "galveston bay frame",
-    /29\.56N 95\.03W · z11 · © OpenStreetMap/.test(attribution),
-    attribution,
-  );
+  check("coast map is not the lake frame", !/29\.56N 95\.03W · z11/.test(attribution), attribution);
+  check("coast map zoomed out", / · z5 · © OpenStreetMap/.test(attribution), attribution);
   const tileSrcs = await page.$$eval('img[src*="/api/tiles/"]', (tiles) =>
     tiles.map((img) => img.getAttribute("src") ?? ""),
   );
   check(
     "cache-bust tile url",
-    tileSrcs.every((src) => /\/api\/tiles\/11\/\d+\/\d+\.png\?v=2$/.test(src)),
+    tileSrcs.every((src) => /\/api\/tiles\/5\/\d+\/\d+\.png\?v=2$/.test(src)),
     tileSrcs[0],
   );
   check("no waller z10 grid", !tileSrcs.some((src) => /\/api\/tiles\/10\/239\//.test(src)));
@@ -163,13 +170,19 @@ try {
     /29\.56N 95\.03W · z11 · © OpenStreetMap/.test(corridorMap),
     corridorMap,
   );
-  await page.goto(base, { waitUntil: "networkidle0" });
+  const bayHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
+  check("bay heading", bayHeading?.includes("Galveston Bay"), bayHeading);
+  const bayCount = await page.$eval("[data-testid=dock-count]", (el) => el.textContent ?? "");
+  const bayCountMatch = bayCount.match(/(\d+) docks/);
+  check("bay denser than seven", Number(bayCountMatch?.[1] ?? 0) > 7, bayCount);
 
   const texasNames = await page.$$eval("[data-testid=dock-list] h3", (nodes) =>
     nodes.map((node) => node.textContent),
   );
   check("clear lake 1 marina bay", texasNames[0] === "Marina Bay Harbor", texasNames[0]);
   check("clear lake 2 blue marlin", texasNames[1] === "Blue Marlin Fuel Dock", texasNames[1]);
+  check("bayland on corridor", texasNames.includes("Bayland Marina"));
+  check("marinemax on corridor", texasNames.includes("MarineMax Houston"));
   const blueMarlinCard = await page.$eval(
     "[data-testid=dock-card-blue-marlin-seabrook]",
     (el) => el.textContent ?? "",
