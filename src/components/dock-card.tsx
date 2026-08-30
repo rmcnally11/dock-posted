@@ -1,6 +1,6 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { ethanolCopy, formatDate, formatQuote, sourceLabel } from "@/lib/format";
-import { displayDiesel, displayGas, freshness } from "@/lib/freshness";
+import { displayDiesel, displayGas, freshness, hasPostedPrice } from "@/lib/freshness";
 import type { Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -88,10 +88,14 @@ export function DockCard({
         </div>
       </dl>
 
-      <p className="mt-3 text-xs text-harbor/50">
+      <p className="mt-3 text-xs text-harbor/50" data-testid={`pin-trust-${dock.id}`}>
         <span className="kicker mr-2 text-harbor/45">Date</span>
         {formatDate(dock.lastVerifiedAt)}
-        {dock.lastVerifiedAt ? ` · ${sourceLabel(dock.lastVerifiedSource)}` : ""}
+        {hasPostedPrice(dock)
+          ? ` · ${sourceLabel(dock.lastVerifiedSource)}`
+          : dock.lastVerifiedAt
+            ? " · Unverified"
+            : ""}
       </p>
       {dock.phone ? <p className="mt-1 text-xs text-harbor/70">{dock.phone}</p> : null}
     </a>

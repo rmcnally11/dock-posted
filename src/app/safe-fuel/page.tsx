@@ -40,7 +40,7 @@ export default function SafeFuelPage() {
         <h2 className="font-serif text-2xl text-harbor">What to do</h2>
         <ul className="list-disc space-y-2 pl-5 text-sm leading-7 text-harbor/80">
           <li>Read the pump sticker. Walk away from E15.</li>
-          <li>If the card says Call — call the dock. We do not invent a price.</li>
+          <li>If the card says Call — call the dock.</li>
           <li>Ask whether the high-octane hose is E0 or just 93 with ethanol.</li>
           <li>Then post what you saw so the next boat is not guessing.</li>
         </ul>

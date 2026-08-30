@@ -72,13 +72,14 @@ const DROP_IDS = new Set(["kemah-boardwalk-marina", "watergate-yachting-center"]
 
 const HOME_PATCHES: Record<
   string,
-  Partial<Pick<Dock, "name" | "lead" | "flags" | "notes">>
+  Partial<Pick<Dock, "name" | "lead" | "flags" | "notes" | "hours">>
 > = {
   "marina-bay-harbor": {
     lead: 1,
-    flags: ["last-pump"],
+    flags: ["last-pump", "still-open"],
+    hours: "Daily 7:30am–5:30pm. Fri–Sun ship store 6am — store only, not the hose.",
     notes:
-      "Last public pump at the Clear Lake mouth, Clear Lake Shores. Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. 93 is the E0 hose. Does not sell diesel. Blank stays Call.",
+      "Last public pump at the Clear Lake mouth, Clear Lake Shores. Ship store page (30 Aug 2026) lists Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. 93 is the E0 hose. Does not sell diesel. Blank stays Call.",
   },
   "blue-marlin-seabrook": {
     name: "Blue Marlin Fuel Dock",
