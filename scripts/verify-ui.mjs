@@ -28,10 +28,49 @@ try {
   const kicker = await page.$eval("[data-testid=hero-kicker]", (el) => el.textContent?.trim());
   const headline = await page.$eval("[data-testid=hero-headline]", (el) => el.textContent?.trim());
   const deck = await page.$eval("[data-testid=hero-deck]", (el) => el.textContent?.trim());
+  const extra = await page.$eval("[data-testid=hero-extra]", (el) => el.textContent?.trim());
   const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
-  check("hero kicker present", Boolean(kicker), kicker);
-  check("hero headline present", Boolean(headline), headline);
-  check("hero deck present", Boolean(deck), deck);
+  check("hero kicker present", kicker === "What the dock posted", kicker);
+  check("hero headline present", headline === "Sabine to Key West", headline);
+  check("hero deck present", deck === "The last number they wrote on the board. If they did not post, it stays Call.", deck);
+  check("hero extra line", extra === "We don’t sell a gallon. We don’t lift a boat.", extra);
+  const landing = await page.$("[data-testid=landing]");
+  const boardSection = await page.$("[data-testid=board]");
+  check("landing on home", Boolean(landing));
+  check("board section on home", Boolean(boardSection));
+  const landingHeight = await page.$eval("[data-testid=landing]", (el) => el.getBoundingClientRect().height);
+  check("landing is a first screen", landingHeight > 500, `h=${landingHeight}`);
+  const seeBoard = await page.$eval("[data-testid=see-the-board]", (el) => ({
+    text: el.textContent?.trim(),
+    href: el.getAttribute("href"),
+  }));
+  check("see the board jump", seeBoard.text === "See the board" && seeBoard.href === "#board", JSON.stringify(seeBoard));
+  const landingReport = await page.$eval("[data-testid=landing-report]", (el) => ({
+    text: el.textContent?.trim(),
+    href: el.getAttribute("href"),
+  }));
+  check("landing post a number", landingReport.text === "Post a number" && landingReport.href === "/report", JSON.stringify(landingReport));
+  const landingLinks = await page.$$eval("[data-testid=landing-links] a", (els) =>
+    els.map((el) => ({ text: el.textContent?.trim(), href: el.getAttribute("href") })),
+  );
+  check("three quiet links", landingLinks.length === 3, JSON.stringify(landingLinks));
+  check(
+    "link the board",
+    landingLinks[0]?.text === "The board" && landingLinks[0]?.href === "#board",
+    JSON.stringify(landingLinks[0]),
+  );
+  check(
+    "link when they name it",
+    landingLinks[1]?.text === "When they name it" && landingLinks[1]?.href === "/haul-out",
+    JSON.stringify(landingLinks[1]),
+  );
+  check(
+    "link about",
+    landingLinks[2]?.text === "About" && landingLinks[2]?.href === "/about",
+    JSON.stringify(landingLinks[2]),
+  );
+  const landingMarkup = await page.$eval("[data-testid=landing]", (el) => el.innerHTML);
+  check("no campaign cards", !/grid-cols-4|four doors/i.test(landingMarkup));
   const tally = await page.$eval("[data-testid=board-tally]", (el) => el.textContent?.trim());
   check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
   check("week line still call", /\d+ posted this week\.\s+\d+ still Call\./.test(tally ?? ""), tally);
@@ -57,6 +96,18 @@ try {
     href: el.getAttribute("href"),
   }));
   check("who writes this", whoWrites.text === "Who writes this." && whoWrites.href === "/about", JSON.stringify(whoWrites));
+
+  await page.click("[data-testid=see-the-board]");
+  await page.waitForFunction(() => {
+    const el = document.getElementById("board");
+    if (!el) return false;
+    const top = el.getBoundingClientRect().top;
+    return location.hash === "#board" && top >= 0 && top < 140;
+  });
+  const boardTop = await page.$eval("#board", (el) => el.getBoundingClientRect().top);
+  check("see the board reaches #board", boardTop >= 0 && boardTop < 140, `top=${boardTop}`);
+  check("board still after jump", Boolean(await page.$("[data-testid=corridor-heading]")));
+  await page.evaluate(() => window.scrollTo(0, 0));
 
   const cardFields = await page.$$eval(
     "[data-testid=dock-card-marina-bay-harbor] dt",
@@ -162,7 +213,10 @@ try {
   const waterdogHref = await page.$eval("[data-testid=waterdog-credit] a", (el) => el.getAttribute("href"));
   check("pins have no waterdog", !/waterdog|coastal cavaliers|platts|nymex|\bTCN\b|\brack\b/i.test(dockListCopy));
   check("map has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(mapCopy));
-  check("hero has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(`${kicker} ${headline} ${deck} ${tally}`));
+  check("hero has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(`${kicker} ${headline} ${deck} ${extra} ${tally}`));
+  const landingCopy = await page.$eval("[data-testid=landing]", (el) => el.textContent ?? "");
+  check("landing has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b/i.test(landingCopy));
+  check("landing has no waitlist", !/waitlist|stripe|email capture/i.test(landingCopy));
   check("waterdog footer credit", /Waterdog Fuel\. Rack to dock\./.test(footerCopy), footerCopy);
   check("waterdog footer link", waterdogHref === "https://coastalcavaliers.com", waterdogHref);
   check("no invented waterdog domain", !/waterdogfuel\.com/i.test(homeCopy));
@@ -409,6 +463,18 @@ try {
   });
   check("header does not overflow at 375", !headerOverflow);
   check("about nav readable at 375", aboutNavBox.width > 20 && aboutNavBox.height > 10, JSON.stringify(aboutNavBox));
+
+  await page.setViewport({ width: 375, height: 812 });
+  await page.goto(base, { waitUntil: "networkidle0" });
+  const phoneLanding = await page.$eval("[data-testid=landing]", (el) => el.getBoundingClientRect().height);
+  const phoneMapTop = await page.$eval("[data-testid=fuel-map]", (el) => el.getBoundingClientRect().top);
+  check("phone landing fills first screen", phoneLanding > 600, `h=${phoneLanding}`);
+  check("map may sit below the fold on a phone", phoneMapTop > 700, `mapTop=${phoneMapTop}`);
+
+  const wholesaleRes = await page.goto(`${base}/wholesale`, { waitUntil: "domcontentloaded" });
+  check("wholesale 404 without password", wholesaleRes?.status() === 404, String(wholesaleRes?.status()));
+  const wholesaleCopy = await page.$eval("body", (el) => el.textContent ?? "");
+  check("wholesale 404 has no desk book", !/nymex|platts|\bTCN\b|differential/i.test(wholesaleCopy));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));
   console.error(error);

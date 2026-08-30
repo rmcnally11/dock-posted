@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { filterDocks, parseBoardQuery, matchesSearch } from "../src/lib/board-query";
+import { boardHref, filterDocks, parseBoardQuery, matchesSearch } from "../src/lib/board-query";
 import { formatQuote } from "../src/lib/format";
 import { boardQuote, boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
@@ -305,6 +305,7 @@ const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-
 assert.match(headerSource, /Dock Posted/);
 assert.doesNotMatch(headerSource, /What the dock posted/);
 assert.match(headerSource, /The board/);
+assert.match(headerSource, /href="\/#board"/);
 assert.match(headerSource, /Named storm/);
 assert.match(headerSource, /Post a number/);
 assert.match(headerSource, /href="\/about"/);
@@ -334,10 +335,66 @@ assert.doesNotMatch(haulSource, /Named storm parking/);
 assert.doesNotMatch(haulSource, /A leftover seat, said out loud/);
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
+assert.match(homeSource, /data-testid="landing"/);
+assert.match(homeSource, /What the dock posted/);
+assert.match(homeSource, /Sabine to Key West/);
+assert.match(
+  homeSource,
+  /The last number they wrote on the board\. If they did not post, it stays Call\./,
+);
+assert.match(homeSource, /We don.t sell a gallon\. We don.t lift a boat\./);
+assert.match(homeSource, /data-testid="hero-extra"/);
+assert.match(homeSource, /See the board/);
+assert.match(homeSource, /data-testid="see-the-board"[\s\S]*href="#board"/);
+assert.match(homeSource, /data-testid="landing-report"[\s\S]*href="\/report"/);
+assert.match(homeSource, /id="board"/);
+assert.match(homeSource, /data-testid="board"/);
+assert.match(homeSource, /<DockBoard/);
 assert.match(homeSource, /Who writes this\./);
 assert.match(homeSource, /href="\/about"/);
 assert.match(homeSource, /data-testid="who-writes-this"/);
+assert.match(homeSource, /data-testid="landing-links"/);
+assert.match(homeSource, /data-testid="landing-link-board"[\s\S]*href="#board"/);
+assert.match(homeSource, /data-testid="landing-link-named-storm"[\s\S]*href="\/haul-out"/);
+assert.match(homeSource, />\s*When they name it\s*</);
+assert.match(homeSource, /data-testid="landing-link-about"[\s\S]*href="\/about"/);
 assert.doesNotMatch(homeSource, /Twitter feed|social/i);
+assert.doesNotMatch(homeSource, /waterdog|Waterdog/i);
+assert.doesNotMatch(homeSource, /waitlist|stripe|email capture|newsletter/i);
+assert.doesNotMatch(homeSource, /four-door|campaign card|grid-cols-4/i);
+assert.doesNotMatch(homeSource, /href="\/board"/);
+assert.equal(existsSync(path.join(process.cwd(), "src/app/board/page.tsx")), false);
+
+assert.equal(
+  boardHref({
+    corridor: "galveston-bay",
+    state: null,
+    region: null,
+    q: "",
+    e0Only: false,
+    freshOnly: false,
+    dock: null,
+    reported: null,
+  }),
+  "/?corridor=galveston-bay#board",
+);
+assert.equal(
+  boardHref({
+    corridor: null,
+    state: null,
+    region: null,
+    q: "",
+    e0Only: false,
+    freshOnly: false,
+    dock: null,
+    reported: null,
+  }),
+  "/#board",
+);
+
+const boardSource = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
+assert.match(boardSource, /action="\/#board"/);
+assert.doesNotMatch(boardSource, /waterdog|Waterdog|nymex|platts|\bTCN\b/i);
 
 const reportSource = readFileSync(path.join(process.cwd(), "src/app/report/page.tsx"), "utf8");
 const safeSource = readFileSync(path.join(process.cwd(), "src/app/safe-fuel/page.tsx"), "utf8");
@@ -348,6 +405,8 @@ assert.match(reportSource, /Post a number/);
 assert.match(reportSource, /You were there\. What did they have up\./);
 assert.doesNotMatch(reportSource, /submit a price/i);
 assert.doesNotMatch(reportSource, /If you saw it, write it/);
+const reportActions = readFileSync(path.join(process.cwd(), "src/app/report/actions.ts"), "utf8");
+assert.match(reportActions, /redirect\(`\/\?reported=\$\{dockId\}#board`\)/);
 assert.match(footerSource, /If they didn.t post it, it.s Call\./);
 assert.match(footerSource, /OpenStreetMap/);
 assert.match(footerSource, /Waterdog Fuel\. Rack to dock\./);
