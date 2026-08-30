@@ -2,8 +2,21 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import {
+  assignYards,
+  seedYardFromRow,
+  slugYardName,
+  type HaulOutStoreFile,
+  type HaulYard,
+  type NamedStormPlan,
+  type OwnerPlanInput,
+  type YardLeftoverInput,
+  type YardSeedRow,
+} from "./haul-out";
+import {
+  readHaulOutFile,
   readOverlayFile,
   readReportFile,
+  writeHaulOutFile,
   writeOverlayFile,
   writeReportFile,
 } from "./persist";
@@ -17,10 +30,24 @@ import type {
 } from "./types";
 
 const SEED_PATH = path.join(process.cwd(), "data", "docks.seed.json");
+const YARDS_SEED_PATH = path.join(process.cwd(), "data", "yards.seed.json");
 
 async function readSeed(): Promise<DockStoreFile> {
   const raw = await readFile(SEED_PATH, "utf8");
   return JSON.parse(raw) as DockStoreFile;
+}
+
+async function loadYardSeed(): Promise<HaulYard[]> {
+  const raw = JSON.parse(await readFile(YARDS_SEED_PATH, "utf8")) as { yards: YardSeedRow[] };
+  return raw.yards.map(seedYardFromRow);
+}
+
+async function emptyHaulOutStore(): Promise<HaulOutStoreFile> {
+  return {
+    generatedAt: new Date().toISOString(),
+    yards: await loadYardSeed(),
+    plans: [],
+  };
 }
 
 function applyOverlay(dock: Dock, overlay: DockOverlay | undefined): Dock {
@@ -103,7 +130,91 @@ export async function writeReports(reports: PriceReport[]): Promise<void> {
 export async function resetFromSeed(): Promise<DockStoreFile> {
   await writeReports([]);
   await writeOverlayFile({ overlays: {} });
+  await writeHaulOutFile(await emptyHaulOutStore());
   return readDockStore();
+}
+
+export async function readHaulOutStore(): Promise<HaulOutStoreFile> {
+  const seeded = await loadYardSeed();
+  const current = await readHaulOutFile();
+  const have = new Set(current.yards.map((yard) => yard.id));
+  const missing = seeded.filter((yard) => !have.has(yard.id));
+  if (current.yards.length === 0) {
+    const fresh = await emptyHaulOutStore();
+    fresh.plans = current.plans;
+    return fresh;
+  }
+  if (missing.length === 0) return current;
+  return {
+    ...current,
+    generatedAt: new Date().toISOString(),
+    yards: [...current.yards, ...missing],
+  };
+}
+
+export async function writeHaulOutStore(store: HaulOutStoreFile): Promise<void> {
+  store.generatedAt = new Date().toISOString();
+  await writeHaulOutFile(store);
+}
+
+export async function readYards(): Promise<HaulYard[]> {
+  const store = await readHaulOutStore();
+  return store.yards;
+}
+
+export async function readPlan(id: string): Promise<NamedStormPlan | null> {
+  const store = await readHaulOutStore();
+  return store.plans.find((plan) => plan.id === id) ?? null;
+}
+
+export async function addNamedStormPlan(input: OwnerPlanInput): Promise<NamedStormPlan> {
+  const store = await readHaulOutStore();
+  const match = assignYards(store.yards, input.lengthFt);
+  const plan: NamedStormPlan = {
+    id: randomUUID(),
+    ownerName: input.ownerName,
+    phone: input.phone,
+    email: input.email,
+    homeDock: input.homeDock,
+    lengthFt: input.lengthFt,
+    beamFt: input.beamFt,
+    insuranceCarrier: input.insuranceCarrier,
+    berth: input.berth,
+    primaryYardId: match.primary?.id ?? null,
+    backupYardId: match.backup?.id ?? null,
+    createdAt: new Date().toISOString(),
+  };
+  store.plans.unshift(plan);
+  await writeHaulOutStore(store);
+  return plan;
+}
+
+export async function postYardLeftover(input: YardLeftoverInput): Promise<HaulYard> {
+  const store = await readHaulOutStore();
+  const needle = input.name.trim().toLowerCase();
+  let yard = store.yards.find(
+    (row) => row.name.toLowerCase() === needle || row.id === slugYardName(input.name),
+  );
+
+  if (!yard) {
+    yard = seedYardFromRow({
+      id: slugYardName(input.name) || randomUUID(),
+      name: input.name.trim(),
+      area: "clear-lake",
+      city: "",
+      state: "TX",
+    });
+    store.yards.push(yard);
+  }
+
+  yard.indoorLeftover = input.indoorLeftover;
+  yard.lotLeftover = input.lotLeftover;
+  yard.maxLengthFt = input.maxLengthFt;
+  yard.phone = input.phone;
+  yard.leftoverPostedAt = new Date().toISOString();
+
+  await writeHaulOutStore(store);
+  return yard;
 }
 
 function applyReportToDock(

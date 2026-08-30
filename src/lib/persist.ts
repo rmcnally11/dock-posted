@@ -1,9 +1,11 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import type { HaulOutStoreFile } from "./haul-out";
 import type { OverlayStoreFile, ReportStoreFile } from "./types";
 
 const REPORTS_BLOB = "dock-posted/reports.json";
 const OVERLAYS_BLOB = "dock-posted/overlays.json";
+const HAUL_OUT_BLOB = "dock-posted/haul-out.json";
 
 function runtimeDir() {
   if (process.env.DATA_DIR) return process.env.DATA_DIR;
@@ -17,6 +19,10 @@ function reportsPath() {
 
 function overlaysPath() {
   return path.join(runtimeDir(), "overlays.json");
+}
+
+function haulOutPath() {
+  return path.join(runtimeDir(), "haul-out.json");
 }
 
 export function blobConfigured(): boolean {
@@ -99,4 +105,31 @@ export async function writeOverlayFile(file: OverlayStoreFile): Promise<void> {
     return;
   }
   await writeJsonFile(overlaysPath(), file);
+}
+
+const emptyHaulOut = (): HaulOutStoreFile => ({
+  generatedAt: new Date().toISOString(),
+  yards: [],
+  plans: [],
+});
+
+export async function readHaulOutFile(): Promise<HaulOutStoreFile> {
+  const empty = emptyHaulOut();
+  if (blobConfigured()) {
+    try {
+      return (await readBlobJson<HaulOutStoreFile>(HAUL_OUT_BLOB)) ?? empty;
+    } catch (error) {
+      console.warn("Blob haul-out read failed; using empty store.", error);
+      return empty;
+    }
+  }
+  return readJsonFile(haulOutPath(), empty);
+}
+
+export async function writeHaulOutFile(file: HaulOutStoreFile): Promise<void> {
+  if (blobConfigured()) {
+    await writeBlobJson(HAUL_OUT_BLOB, file);
+    return;
+  }
+  await writeJsonFile(haulOutPath(), file);
 }

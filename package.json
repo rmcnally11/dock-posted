@@ -12,6 +12,7 @@
     "fetch:wg": "tsx scripts/fetch-waterway-guide.ts",
     "test:parser": "tsx scripts/test-parser.ts",
     "test:board": "tsx scripts/test-board.ts",
+    "test:haul-out": "tsx scripts/test-haul-out.ts",
     "test:ui": "node scripts/verify-ui.mjs"
   },
   "dependencies": {
