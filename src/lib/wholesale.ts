@@ -423,7 +423,7 @@ export function computeProductNetback(
     steps.push(
       {
         key: "taxFederal",
-        label: "Federal",
+        label: "Federal tax",
         cents: resolved.federal.cents,
         kind: "take",
         source: resolved.federal.origin,
@@ -431,7 +431,7 @@ export function computeProductNetback(
       },
       {
         key: "taxState",
-        label: "State",
+        label: "State tax",
         cents: resolved.state.cents,
         kind: "take",
         source: resolved.state.origin,
@@ -991,7 +991,7 @@ export function buildWaterfallRungs(
     rungs.push(
       rung(
         "taxFederal",
-        "Federal",
+        "Federal tax",
         resolved.federal.cents,
         "take",
         resolved.federal.origin,
@@ -1000,7 +1000,7 @@ export function buildWaterfallRungs(
       ),
       rung(
         "taxState",
-        "State",
+        "State tax",
         resolved.state.cents,
         "take",
         resolved.state.origin,

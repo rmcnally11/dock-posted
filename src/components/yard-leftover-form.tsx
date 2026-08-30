@@ -36,7 +36,7 @@ export function YardLeftoverForm() {
         <Input id="yard-company" name="website_url" tabIndex={-1} autoComplete="off" />
       </div>
       <Button type="submit" variant="outline" size="sm">
-        Post what’s left
+        Post leftover seats
       </Button>
     </form>
   );

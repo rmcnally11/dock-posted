@@ -30,7 +30,7 @@ export default async function HaulOutPage({
         data-testid="haul-out-kicker"
         className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]"
       >
-        What’s left
+        Leftover seats
       </p>
       <h1
         data-testid="haul-out-headline"
@@ -44,9 +44,6 @@ export default async function HaulOutPage({
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/60">
         We are not the yard. We do not haul, store, or insure. We do not sell wet slips.
-      </p>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/60">
-        A leftover seat, said out loud.
       </p>
       <Waterline className="mt-3" />
 

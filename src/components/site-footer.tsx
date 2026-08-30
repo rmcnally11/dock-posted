@@ -8,7 +8,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
       }
     >
       <p className={compact ? "" : "text-xs leading-5 text-[color:var(--cream)]/50"}>
-        We publish the pin. We do not sell the gallon.{" "}
+        If they didn’t post it, it’s Call.{" "}
         <a
           href="https://www.openstreetmap.org/copyright"
           className="underline-offset-2 hover:underline"

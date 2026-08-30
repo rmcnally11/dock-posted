@@ -8,8 +8,8 @@ import { readDocks } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "If you saw it, write it",
-  description: "If you saw it, write it. If they did not post, it stays Call.",
+  title: "What did they post",
+  description: "What did they post. If they did not post, it stays Call.",
 };
 
 export default async function ReportPage({
@@ -28,7 +28,7 @@ export default async function ReportPage({
         The board
       </p>
       <h1 className="mt-1 font-heading text-4xl text-[color:var(--cream)] md:text-5xl">
-        If you saw it, write it
+        What did they post
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
         When the truck comes, or when they change the board. If they did not post, it stays Call.

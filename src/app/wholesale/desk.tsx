@@ -199,7 +199,7 @@ export function Worksheet({
             href={`/wholesale/print?area=${areaId}`}
             className="text-black/55 underline-offset-2 hover:underline"
           >
-            The book
+            Print
           </a>
         </div>
       </div>
@@ -301,7 +301,7 @@ function WorksheetFields({
             hoHint={prepared?.ho.labels.dockPosted ?? null}
           />
           <FieldRow
-            label="Federal"
+            label="Federal tax"
             name="tax_federal"
             rb={sheet.taxRb?.federal ?? null}
             ho={sheet.taxHo?.federal ?? null}
@@ -310,7 +310,7 @@ function WorksheetFields({
             hoHint={prepared?.ho.tax.federal.sourceLabel ?? null}
           />
           <FieldRow
-            label="State"
+            label="State tax"
             name="tax_state"
             rb={sheet.taxRb?.state ?? null}
             ho={sheet.taxHo?.state ?? null}
@@ -322,7 +322,7 @@ function WorksheetFields({
       </table>
       <div className="grid gap-3 border-t border-black/10 p-3 sm:grid-cols-2">
         <TaxField label="Other / local" name="tax_other" value={sheet.tax.other} unit={unit} />
-        <TaxField label="One line (replaces Federal and State)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
+        <TaxField label="One line (replaces federal tax and state tax)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
       </div>
       <p className="px-3 pb-3 text-xs text-black/45">{MARINE_TAX_NOTE}</p>
     </div>
@@ -471,10 +471,10 @@ export function Waterfall({
   return (
     <section className="mt-8" data-testid="waterfall">
       <div>
-        <h2 className="text-sm font-medium">The take</h2>
+        <h2 className="text-sm font-medium">From the terminal to the dock</h2>
         <p className="mt-1 max-w-3xl text-xs text-black/45">
-          Each cut is a take. The longest bar is the fat cut. Empty rungs stay Call / — , never $0.
-          Tax is a first-class take — Federal, State, and other when present — not folded into leftover.
+          Where the cents went. Empty stays Call / —, never $0. Federal tax and state tax sit on
+          their own rows, not folded into leftover.
         </p>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -601,9 +601,9 @@ function WaterfallRungRow({
 export function LoginPanel({ error }: { error?: string }) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-16">
-      <h1 className="text-2xl font-medium tracking-tight">The book</h1>
+      <h1 className="text-2xl font-medium tracking-tight">Wholesale</h1>
       <p className="mt-2 text-sm text-black/55">
-        Terminal to the hose. Every cut stays on the page.
+        From the terminal to what they wrote on the board.
       </p>
       <form action={loginWholesale} className="mt-8 space-y-4" autoComplete="off">
         {error ? <p className="text-sm text-[#8a2c12]">{error}</p> : null}
@@ -618,7 +618,7 @@ export function LoginPanel({ error }: { error?: string }) {
           />
         </label>
         <button type="submit" className="h-10 border border-black bg-black px-4 text-sm text-white">
-          Open the book
+          Come in
         </button>
       </form>
     </main>
