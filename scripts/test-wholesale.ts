@@ -36,6 +36,7 @@ import {
   resolveTaxForProduct,
   sourceLabel,
   stepByKey,
+  rememberClearedTax,
   stripUnchangedDefaults,
   subCents,
   taxCents,
@@ -401,6 +402,100 @@ assert.equal(unverifiedState.federal.cents, 18.4);
 assert.equal(unverifiedState.state.cents, null);
 assert.equal(unverifiedState.incomplete, true);
 assert.equal(unverifiedState.strip.cents, null);
+
+const loadedTax = applyWorksheetDefaults(emptyWorksheet(), { state: "TX" });
+assert.equal(loadedTax.rb.tax.federal.cents, 18.4);
+assert.equal(loadedTax.rb.tax.state.cents, 20);
+const clearedFederalSheet = worksheetFromFields(
+  {
+    rack_rb: "230",
+    freight_rb: "4",
+    hose_rb: "10",
+    invoice_rb: "400",
+    tax_federal_rb: "",
+    tax_state_rb: "20",
+    tax_federal_ho: "24.4",
+    tax_state_ho: "20",
+  },
+  "cent",
+);
+assert.equal(clearedFederalSheet.taxRb?.federal, null);
+assert.equal(clearedFederalSheet.taxRb?.state, 20);
+assert.equal(clearedFederalSheet.taxRb?.touched, true);
+assert.notEqual(clearedFederalSheet.taxRb?.federal, 18.4);
+const clearedFederalBook = computeWorksheet(clearedFederalSheet, { state: "TX" });
+assert.equal(clearedFederalBook.RB.taxIncomplete, true);
+assert.equal(clearedFederalBook.RB.taxFederal, null);
+assert.equal(clearedFederalBook.RB.taxState, 20);
+assert.notEqual(clearedFederalBook.RB.taxFederal, 18.4);
+assert.equal(clearedFederalBook.RB.dap, null);
+assert.equal(clearedFederalBook.RB.shouldBe, null);
+assert.equal(formatCents(clearedFederalBook.RB.dap), "—");
+assert.equal(formatCents(clearedFederalBook.RB.shouldBe), "—");
+assert.equal(formatDollars(clearedFederalBook.RB.dap), "—");
+assert.notEqual(clearedFederalBook.RB.dap, 0);
+assert.equal(clearedFederalBook.HO.taxFederal, 24.4);
+assert.equal(clearedFederalBook.HO.taxIncomplete, false);
+
+const clearedStateSheet = {
+  ...clearedFederalSheet,
+  taxRb: { federal: 18.4, state: null, touched: true as const },
+};
+const clearedStateBook = computeWorksheet(clearedStateSheet, { state: "TX" });
+assert.equal(clearedStateBook.RB.taxIncomplete, true);
+assert.equal(clearedStateBook.RB.taxState, null);
+assert.notEqual(clearedStateBook.RB.taxState, 20);
+assert.equal(clearedStateBook.RB.dap, null);
+assert.equal(clearedStateBook.RB.shouldBe, null);
+
+const bothClearedSheet = worksheetFromFields(
+  {
+    rack_rb: "230",
+    freight_rb: "4",
+    hose_rb: "10",
+    tax_federal_rb: "",
+    tax_state_rb: "",
+  },
+  "cent",
+);
+assert.equal(bothClearedSheet.taxRb?.touched, true);
+const bothClearedBook = computeWorksheet(bothClearedSheet, { state: "TX" });
+assert.equal(bothClearedBook.RB.taxIncomplete, true);
+assert.equal(bothClearedBook.RB.taxFederal, null);
+assert.equal(bothClearedBook.RB.taxState, null);
+assert.equal(bothClearedBook.RB.dap, null);
+assert.equal(bothClearedBook.RB.shouldBe, null);
+
+const oneLineThenCleared = rememberClearedTax(
+  { ...emptyWorksheet(), tax: { federal: null, state: null, other: null, oneLine: null } },
+  { ...emptyWorksheet(), tax: { federal: 18.4, state: 20, other: null, oneLine: 62 } },
+);
+assert.equal(oneLineThenCleared.tax.oneLineCleared, true);
+const oneLineClearedBook = computeWorksheet(
+  {
+    ...oneLineThenCleared,
+    rb: { ...oneLineThenCleared.rb, postedRack: 230, inboundFreight: 4, fairHose: 10 },
+    taxRb: { federal: 18.4, state: 20, touched: true },
+  },
+  { state: "TX" },
+);
+assert.equal(oneLineClearedBook.RB.taxIncomplete, true);
+assert.equal(oneLineClearedBook.RB.dap, null);
+assert.equal(oneLineClearedBook.RB.shouldBe, null);
+
+const retypedOneLine = rememberClearedTax(
+  { ...emptyWorksheet(), tax: { federal: null, state: null, other: null, oneLine: 55 } },
+  oneLineThenCleared,
+);
+assert.equal(retypedOneLine.tax.oneLineCleared, undefined);
+
+const partialKept = stripUnchangedDefaults(
+  { ...emptyWorksheet(), taxRb: { federal: null, state: 20, touched: true } },
+  "TX",
+);
+assert.equal(partialKept.taxRb?.federal, null);
+assert.equal(partialKept.taxRb?.state, 20);
+assert.equal(partialKept.taxRb?.touched, true);
 
 const yahooFill = computeProductNetback(
   "RB",

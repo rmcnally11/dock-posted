@@ -30,14 +30,18 @@ function isProductInputs(value: unknown): boolean {
 function isTaxInputs(value: unknown): boolean {
   if (!value || typeof value !== "object") return false;
   const row = value as Record<string, unknown>;
-  return isCents(row.federal) && isCents(row.state) && isCents(row.other) && isCents(row.oneLine);
+  if (!(isCents(row.federal) && isCents(row.state) && isCents(row.other) && isCents(row.oneLine))) {
+    return false;
+  }
+  return row.oneLineCleared === undefined || row.oneLineCleared === true || row.oneLineCleared === false;
 }
 
 function isTaxSlice(value: unknown): boolean {
   if (value == null) return true;
   if (typeof value !== "object") return false;
   const row = value as Record<string, unknown>;
-  return isCents(row.federal) && isCents(row.state);
+  if (!isCents(row.federal) || !isCents(row.state)) return false;
+  return row.touched === undefined || row.touched === true || row.touched === false;
 }
 
 export function parseWholesaleDraft(raw: string | undefined): WholesaleDraft | null {
@@ -57,9 +61,21 @@ export function parseWholesaleDraft(raw: string | undefined): WholesaleDraft | n
       sheet: {
         rb: { ...blank.rb, ...sheet.rb, fairHose: sheet.rb.fairHose ?? null, invoiceDelivered: sheet.rb.invoiceDelivered ?? null },
         ho: { ...blank.ho, ...sheet.ho, fairHose: sheet.ho.fairHose ?? null, invoiceDelivered: sheet.ho.invoiceDelivered ?? null },
-        tax: { ...blank.tax, ...sheet.tax },
-        taxRb: { federal: sheet.taxRb?.federal ?? null, state: sheet.taxRb?.state ?? null },
-        taxHo: { federal: sheet.taxHo?.federal ?? null, state: sheet.taxHo?.state ?? null },
+        tax: {
+          ...blank.tax,
+          ...sheet.tax,
+          ...(sheet.tax.oneLineCleared && sheet.tax.oneLine == null ? { oneLineCleared: true } : {}),
+        },
+        taxRb: {
+          federal: sheet.taxRb?.federal ?? null,
+          state: sheet.taxRb?.state ?? null,
+          ...(sheet.taxRb?.touched ? { touched: true } : {}),
+        },
+        taxHo: {
+          federal: sheet.taxHo?.federal ?? null,
+          state: sheet.taxHo?.state ?? null,
+          ...(sheet.taxHo?.touched ? { touched: true } : {}),
+        },
       },
     };
   } catch {
