@@ -87,36 +87,26 @@ export function DockCard({
 
         <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
           <div className="rounded-lg bg-[color:var(--panel)] px-3 py-2">
-            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">
-              Regular
-            </dt>
+            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Regular</dt>
             <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
               {formatQuote(gas)}
             </dd>
           </div>
           <div className="rounded-lg bg-[color:var(--panel)] px-3 py-2">
-            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">
-              Diesel
-            </dt>
+            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Diesel</dt>
             <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
               {formatQuote(diesel)}
             </dd>
           </div>
           <div className="rounded-lg bg-[color:var(--panel)] px-3 py-2">
-            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">
-              Blend
-            </dt>
+            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Blend</dt>
             <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
               {ethanolCopy(dock.ethanol)}
             </dd>
           </div>
           <div className="rounded-lg bg-[color:var(--panel)] px-3 py-2">
-            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">
-              Hours
-            </dt>
-            <dd className="text-[15px] font-medium text-[color:var(--cream)]">
-              {dock.hours ?? "Call"}
-            </dd>
+            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Hours</dt>
+            <dd className="text-[15px] font-medium text-[color:var(--cream)]">{dock.hours ?? "Call"}</dd>
           </div>
         </dl>
 
