@@ -252,7 +252,7 @@ assert.equal(galvestonView.zoom, 11.2);
 
 const lakeMouth = pinPercent(-95.03, 29.56, galvestonView);
 assert.equal(lakeMouth.zoom, 11);
-assert.ok(!(lakeMouth.zoom === 10 && lakeMouth.startX === 239 && lakeMouth.startY === 422));
+assert.notEqual(`${lakeMouth.startX}/${lakeMouth.startY}`, "239/422");
 assert.ok(lakeMouth.left > 40 && lakeMouth.left < 75, `lake mouth left ${lakeMouth.left}`);
 assert.ok(lakeMouth.top > 40 && lakeMouth.top < 80, `lake mouth top ${lakeMouth.top}`);
 
