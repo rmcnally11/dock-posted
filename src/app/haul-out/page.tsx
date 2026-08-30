@@ -24,7 +24,7 @@ export default async function HaulOutPage({
   const emptyBoard = yardsAreAllCall(yards);
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
+    <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6">
       <p
         data-testid="haul-out-kicker"
         className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]"
@@ -37,7 +37,7 @@ export default async function HaulOutPage({
       >
         Named storm parking
       </h1>
-      <p data-testid="haul-out-deck" className="mt-3 max-w-2xl text-base leading-7 text-[color:var(--cream)]/70">
+      <p data-testid="haul-out-deck" className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
         If the yard did not say what was left, it stays Call.
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/60">
@@ -46,7 +46,7 @@ export default async function HaulOutPage({
       </p>
       <Waterline className="mt-3" />
 
-      <section className="mt-10 space-y-4">
+      <section className="mt-10 max-w-3xl space-y-4">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">How it works</h2>
         <ol className="list-decimal space-y-3 pl-5 text-sm leading-6 text-[color:var(--cream)]/75">
           <li>You file the boat.</li>
@@ -58,7 +58,7 @@ export default async function HaulOutPage({
         </ol>
       </section>
 
-      <section className="mt-10">
+      <section className="mt-10 max-w-3xl">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">File a Named Storm Plan</h2>
         <div className="mt-4 rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
           {params.error ? (
@@ -70,7 +70,7 @@ export default async function HaulOutPage({
         </div>
       </section>
 
-      <section id="yard-board" className="mt-12">
+      <section id="yard-board" className="mt-12 max-w-3xl">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">Yard board</h2>
         <p className="mt-2 text-sm leading-6 text-[color:var(--cream)]/65">
           Remaining seats are Call until a yard says a number out loud. Names here are
@@ -91,7 +91,7 @@ export default async function HaulOutPage({
         </div>
       </section>
 
-      <section id="yard-post" className="mt-8">
+      <section id="yard-post" className="mt-8 max-w-3xl">
         <h2 className="font-heading text-lg text-[color:var(--cream)]">Yard: post leftover seats</h2>
         <div className="mt-3 rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
           {params.yardError ? (
@@ -103,7 +103,7 @@ export default async function HaulOutPage({
         </div>
       </section>
 
-      <section className="mt-12 border-t border-[color:var(--line)] pt-8 text-xs leading-6 text-[color:var(--cream)]/50">
+      <section className="mt-12 max-w-3xl border-t border-[color:var(--line)] pt-8 text-xs leading-6 text-[color:var(--cream)]/50">
         <p>
           Owner: {NAMED_STORM_PLAN_PRICE} for a Named Storm Plan. One-page primary and
           backup, plus an NHC-name text with remaining seats and the yard phone. Form

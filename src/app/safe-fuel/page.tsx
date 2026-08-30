@@ -3,17 +3,19 @@ import { Waterline } from "@/components/waterline";
 
 export default function SafeFuelPage() {
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10">
+    <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6">
       <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]">
         The hose
       </p>
-      <h1 className="mt-1 font-heading text-4xl text-[color:var(--cream)]">E15 is not for boats</h1>
-      <p className="mt-3 text-base leading-7 text-[color:var(--cream)]/75">
+      <h1 className="mt-1 font-heading text-4xl text-[color:var(--cream)] md:text-5xl">
+        E15 is not for boats
+      </h1>
+      <p className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
         If the sticker says 15% ethanol, walk away. That hose stays Call.
       </p>
       <Waterline className="mt-3" />
 
-      <section className="mt-8 space-y-3">
+      <section className="mt-8 max-w-2xl space-y-3">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">
           The hose that damages an outboard
         </h2>
@@ -29,7 +31,7 @@ export default function SafeFuelPage() {
         </p>
       </section>
 
-      <section className="mt-8 space-y-3">
+      <section className="mt-8 max-w-2xl space-y-3">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">E10 runs. E0 sits better.</h2>
         <p className="text-sm leading-7 text-[color:var(--cream)]/80">
           E10 is what most late-model outboards are built to take. It still pulls water. A tank

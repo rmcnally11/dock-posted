@@ -31,7 +31,7 @@ export default async function Home({
 
   return (
     <main className="flex min-h-0 flex-1 flex-col overflow-hidden lg:h-[calc(100dvh-3.6rem)]">
-      <section className="border-b border-[color:var(--line)] px-4 py-4 md:px-6">
+      <section className="border-b border-[color:var(--line)] px-4 py-6 md:px-6">
         <div className="mx-auto flex max-w-7xl flex-col">
           <p
             data-testid="hero-kicker"
@@ -47,7 +47,7 @@ export default async function Home({
           </h1>
           <p
             data-testid="hero-deck"
-            className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/65 md:text-base"
+            className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65"
           >
             The last number they wrote on the board. If they did not post, it stays Call.
           </p>

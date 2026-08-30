@@ -39,14 +39,14 @@ export default async function NamedStormPlanPage({
   const leftoverNote = planLeftoverNote(primary);
 
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10 print:px-0 print:py-0">
+    <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 print:px-0 print:py-0 md:px-6">
       <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)] print:text-black">
         Named Storm Plan
       </p>
-      <h1 className="mt-2 font-heading text-4xl text-[color:var(--cream)] print:text-black">
+      <h1 className="mt-1 font-heading text-4xl text-[color:var(--cream)] print:text-black md:text-5xl">
         Primary and backup
       </h1>
-      <p className="mt-3 text-sm leading-6 text-[color:var(--cream)]/70 print:text-black">
+      <p className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65 print:text-black">
         When NHC names a storm in the cone we text remaining seats and the yard number.
         You call the yard. We do not lift the boat.
       </p>
