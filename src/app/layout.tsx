@@ -27,12 +27,29 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://dock-posted.vercel.app"),
   title: {
     default: "Dock Posted — Marina fuel",
     template: "%s — Dock Posted",
   },
   description:
     "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+  applicationName: "Dock Posted",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "Dock Posted",
+    title: "Dock Posted — Marina fuel",
+    description:
+      "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@DockPosted",
+    title: "Dock Posted — Marina fuel",
+    description:
+      "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+  },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     apple: "/dp-mark.svg",

@@ -54,6 +54,8 @@ export default function AboutPage() {
         </p>
       </section>
 
+      <BrandPhoto name="close" className="mt-8 aspect-[16/9] w-full max-w-2xl" />
+
       <section
         data-testid="waterdog-fuel"
         className="mt-10 max-w-2xl space-y-3 text-sm leading-7 text-[color:var(--ink)]/80"
