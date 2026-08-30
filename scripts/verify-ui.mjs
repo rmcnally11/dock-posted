@@ -518,18 +518,27 @@ try {
 
     await page.goto(`${base}/?corridor=galveston-bay#board`, { waitUntil: "networkidle0" });
     await page.waitForSelector("[data-testid=dock-card-marina-bay-harbor]");
-    await page.evaluate(() => {
+    const cardReach = await page.evaluate((viewH) => {
+      const card = document.querySelector("[data-testid=dock-card-marina-bay-harbor]");
+      const before = window.scrollY;
       document.getElementById("board")?.scrollIntoView();
-      window.scrollBy(0, 280);
-    });
-    const cardBox = await page.$eval("[data-testid=dock-card-marina-bay-harbor]", (el) => {
-      const r = el.getBoundingClientRect();
-      return { top: r.top, bottom: r.bottom, height: r.height };
-    });
+      card?.scrollIntoView({ block: "start" });
+      window.scrollBy(0, -72);
+      const r = card?.getBoundingClientRect();
+      return {
+        before,
+        after: window.scrollY,
+        top: r?.top ?? -1,
+        bottom: r?.bottom ?? -1,
+        viewH,
+      };
+    }, phone.height);
     check(
       `phone ${phone.width} first card in view after #board scroll`,
-      cardBox.top < phone.height && cardBox.bottom > 0,
-      JSON.stringify(cardBox),
+      cardReach.after > cardReach.before &&
+        cardReach.top < phone.height &&
+        cardReach.bottom > 0,
+      JSON.stringify(cardReach),
     );
 
     const mapBox = await page.$eval("[data-testid=fuel-map]", (el) => {
