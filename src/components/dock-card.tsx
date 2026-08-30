@@ -101,7 +101,7 @@ export function DockCard({
           <div className="rounded-lg bg-[color:var(--ink)] px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Hours</dt>
             <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
-              {dock.hours ?? "Call"}
+              {dock.hours ?? "Hours Call"}
             </dd>
           </div>
         </dl>

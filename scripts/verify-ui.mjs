@@ -38,6 +38,7 @@ try {
   );
   const tally = await page.$eval("[data-testid=board-tally]", (el) => el.textContent?.trim());
   check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
+  check("week line still call", /\d+ posted this week\.\s+\d+ still Call\./.test(tally ?? ""), tally);
   check("no invent compliance", !/never invent a price/i.test(homeCopy));
 
   const wordmark = await page.$eval("[data-testid=wordmark]", (el) => el.textContent?.trim());
@@ -64,6 +65,11 @@ try {
   check("card hours", cardFields.includes("Hours"), cardFields.join(","));
   check("card date", dateLine.includes("Date"), dateLine);
   check("marina bay stays call", /Call/.test(firstCard));
+  check(
+    "marina bay hours as-is",
+    /7:30am–5:30pm/.test(firstCard) && /store only, not the hose/.test(firstCard),
+    firstCard.slice(0, 280),
+  );
 
   const texasHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
   check("texas heading", texasHeading?.includes("Galveston Bay"));
@@ -123,6 +129,7 @@ try {
   check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
   check("call the dock action", /call the dock/i.test(homeCopy));
   check("no call ahead", !/call ahead/i.test(homeCopy));
+  check("no tbd or unknown", !/\bTBD\b|\bunknown\b/i.test(homeCopy));
   check("verified vs last seen", /verified|last seen/i.test(homeCopy));
   check("claim path", /claim this pin/i.test(homeCopy));
   check("no bargain", !/cheapest|savings|bargain/i.test(homeCopy));
@@ -200,13 +207,32 @@ try {
   check("safe fuel no waterdog", !/waterdog|opis|argus|platts|invoice/i.test(safe));
 
   await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
-  const haulHow = await page.$eval("[data-testid=how-it-works]", (el) => el.textContent ?? "");
+  const haulKicker = await page.$eval("[data-testid=haul-out-kicker]", (el) => el.textContent?.trim());
+  const haulHeadline = await page.$eval("[data-testid=haul-out-headline]", (el) => el.textContent?.trim());
+  const haulDeck = await page.$eval("[data-testid=haul-out-deck]", (el) => el.textContent?.trim());
   const haulCopy = await page.$eval("main", (el) => el.textContent ?? "");
+  const haulHow = await page.$eval("[data-testid=how-it-works]", (el) => el.textContent ?? "");
+  check("haul kicker", haulKicker === "Leftover seats", haulKicker);
+  check("haul headline", haulHeadline === "Named storm parking", haulHeadline);
+  check(
+    "haul deck",
+    haulDeck ===
+      "Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say what was left, it stays Call.",
+    haulDeck,
+  );
   check("how it works kicker", /how it works/i.test(haulHow));
   check("four doors headline", /Four doors\. One cone\./.test(haulHow));
+  check("door 01", /File the boat/.test(haulHow) && /One page/.test(haulHow));
+  check("door 02", /Two yards that fit/.test(haulHow) && /Not a wet slip/.test(haulHow));
+  check("door 03", /The cone gets a name/.test(haulHow));
+  check("door 04", /You call the yard/.test(haulHow) && /We do not/.test(haulHow));
+  check("file the boat button", /File the boat/.test(haulCopy));
+  check("no checkout", /No checkout on this page/.test(haulCopy));
+  check("all leftover call", /All leftover seats are Call/.test(haulCopy));
   check("no kill word", !/\bKill\b/.test(haulCopy));
   check("five yards line", /Five yards still have not said what.s left/.test(haulCopy));
-  check("all leftover call", /All leftover seats are Call/.test(haulCopy));
+  check("yard post heading", /Yard: post what.s left/.test(haulCopy));
+  check("we are not the yard", /We are not the yard/.test(haulCopy));
   check("no stripe", !/stripe/i.test(haulCopy));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));

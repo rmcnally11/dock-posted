@@ -8,8 +8,8 @@ export function OwnerPlanForm() {
   return (
     <form action={submitNamedStormPlan} autoComplete="off" className="space-y-4" data-testid="owner-plan-form">
       <p className="text-sm text-[color:var(--cream)]/70">
-        Named Storm Plan is {NAMED_STORM_PLAN_PRICE}. One page: primary, backup, and a
-        text when NHC names a storm in the cone. No checkout on this page. File the boat.
+        {NAMED_STORM_PLAN_PRICE}. One page. Two yards that fit, and a text when the cone
+        gets a name. No checkout on this page. File the boat.
       </p>
 
       <div className="space-y-1.5">
@@ -68,7 +68,7 @@ export function OwnerPlanForm() {
 
       <Button type="submit">File the boat</Button>
       <p className="text-xs text-[color:var(--cream)]/50">
-        We do not haul, store, or insure. You call the yard. Blank leftover seats stay Call.
+        We don’t lift her. You call the yard. A blank seat stays Call.
       </p>
     </form>
   );

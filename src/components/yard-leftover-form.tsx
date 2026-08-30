@@ -7,8 +7,7 @@ export function YardLeftoverForm() {
   return (
     <form action={submitYardLeftover} autoComplete="off" className="space-y-3" data-testid="yard-leftover-form">
       <p className="text-xs leading-5 text-[color:var(--cream)]/60">
-        Yard: post leftover seats. Blank stays Call. If you will not say what is left, you
-        get no boats.
+        Blank stays Call. If you won’t say the number, the boats don’t come.
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5 sm:col-span-2">

@@ -47,8 +47,8 @@ export default async function NamedStormPlanPage({
         Primary and backup
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65 print:text-black">
-        When NHC names a storm in the cone we text remaining seats and the yard number.
-        You call the yard. We do not lift the boat.
+        When NHC names a storm in the cone we text what’s left and the yard number. You
+        call the yard. We do not lift.
       </p>
       <Waterline className="mt-3 print:hidden" />
 
@@ -101,7 +101,7 @@ export default async function NamedStormPlanPage({
           className="text-sm text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2 print:hidden"
           href="/haul-out"
         >
-          Back to haul-out
+          Back to named storm
         </a>
       </div>
     </main>
