@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { boardHref, filterDocks, parseBoardQuery, matchesSearch } from "../src/lib/board-query";
-import { formatQuote } from "../src/lib/format";
+import { formatQuote, telHref } from "../src/lib/format";
 import { boardQuote, boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
 import { DEFAULT_X_HANDLE, publicXHandle, xProfileUrl } from "../src/lib/x-handle";
@@ -334,6 +334,11 @@ assert.match(haulSource, /Five yards still have not said/);
 assert.doesNotMatch(haulSource, /Named storm parking/);
 assert.doesNotMatch(haulSource, /A leftover seat, said out loud/);
 
+const layoutSource = readFileSync(path.join(process.cwd(), "src/app/layout.tsx"), "utf8");
+assert.match(layoutSource, /lg:h-full/);
+assert.match(layoutSource, /scroll-smooth/);
+assert.doesNotMatch(layoutSource, /body className="flex h-full min-h-full/);
+
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /data-testid="landing"/);
 assert.match(homeSource, /What the dock posted/);
@@ -364,6 +369,10 @@ assert.doesNotMatch(homeSource, /waitlist|stripe|email capture|newsletter/i);
 assert.doesNotMatch(homeSource, /four-door|campaign card|grid-cols-4/i);
 assert.doesNotMatch(homeSource, /href="\/board"/);
 assert.equal(existsSync(path.join(process.cwd(), "src/app/board/page.tsx")), false);
+assert.match(homeSource, /lg:overflow-hidden/);
+assert.match(homeSource, /lg:h-\[calc\(100dvh-3\.6rem\)\]/);
+assert.doesNotMatch(homeSource, /flex-col overflow-hidden/);
+assert.doesNotMatch(homeSource, /flex min-h-0 flex-1 flex-col overflow-hidden/);
 
 assert.equal(
   boardHref({
@@ -391,10 +400,6 @@ assert.equal(
   }),
   "/#board",
 );
-
-const boardSource = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
-assert.match(boardSource, /action="\/#board"/);
-assert.doesNotMatch(boardSource, /waterdog|Waterdog|nymex|platts|\bTCN\b/i);
 
 const reportSource = readFileSync(path.join(process.cwd(), "src/app/report/page.tsx"), "utf8");
 const safeSource = readFileSync(path.join(process.cwd(), "src/app/safe-fuel/page.tsx"), "utf8");
@@ -481,6 +486,36 @@ assert.match(cardSource, />Diesel</);
 assert.match(cardSource, />Blend</);
 assert.match(cardSource, />Hours</);
 assert.match(cardSource, />Date</);
+assert.match(cardSource, /telHref/);
+assert.match(cardSource, /Call the dock · \$\{dock\.phone\}/);
+assert.equal(telHref("(281) 549-4772"), "tel:+12815494772");
+assert.equal(telHref("(832) 256-6923"), "tel:+18322566923");
+assert.equal(telHref("not a phone"), null);
+
+assert.match(headerSource, /overflow-x-auto/);
+assert.doesNotMatch(headerSource, /flex-wrap items-center justify-between/);
+
+const fuelMapSource = readFileSync(path.join(process.cwd(), "src/components/fuel-map.tsx"), "utf8");
+assert.match(fuelMapSource, /fuel-map-board/);
+assert.match(fuelMapSource, /dock-pin-dot/);
+assert.doesNotMatch(fuelMapSource, /leaflet|mapbox|webgl/i);
+
+const boardSource = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
+assert.match(boardSource, /action="\/#board"/);
+assert.doesNotMatch(boardSource, /waterdog|Waterdog|nymex|platts|\bTCN\b/i);
+assert.match(boardSource, /text-base/);
+assert.match(boardSource, /coast-jumps/);
+assert.match(boardSource, /h-\[32vh\]/);
+assert.doesNotMatch(boardSource, /h-\[46vh\]/);
+
+const yardBoardSource = readFileSync(path.join(process.cwd(), "src/components/yard-board.tsx"), "utf8");
+assert.match(yardBoardSource, /md:hidden/);
+assert.match(yardBoardSource, /telHref/);
+assert.match(yardBoardSource, /hidden overflow-x-auto md:block/);
+
+const ownerFormSource = readFileSync(path.join(process.cwd(), "src/components/owner-plan-form.tsx"), "utf8");
+assert.match(ownerFormSource, /min-h-11/);
+assert.match(ownerFormSource, /h-5 w-5/);
 
 const tally = boardTally(docks);
 assert.ok(tally.postedThisWeek > 0);

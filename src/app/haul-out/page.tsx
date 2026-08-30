@@ -25,7 +25,7 @@ export default async function HaulOutPage({
   const emptyBoard = yardsAreAllCall(yards);
 
   return (
-    <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6">
+    <main className="mx-auto w-full max-w-7xl min-w-0 flex-1 overflow-x-hidden px-4 py-4 md:px-6 lg:py-6">
       <p
         data-testid="haul-out-kicker"
         className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]"
@@ -34,7 +34,7 @@ export default async function HaulOutPage({
       </p>
       <h1
         data-testid="haul-out-headline"
-        className="mt-2 font-heading text-4xl text-[color:var(--cream)] md:text-5xl"
+        className="mt-2 font-heading text-2xl text-[color:var(--cream)] lg:text-5xl"
       >
         Named storm
       </h1>
@@ -44,9 +44,9 @@ export default async function HaulOutPage({
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/60">
         We are not the yard. We do not haul, store, or insure. We do not sell wet slips.
       </p>
-      <Waterline className="mt-3" />
+      <Waterline className="mt-3 hidden lg:block" />
 
-      <section className="mt-10 max-w-3xl space-y-4" data-testid="how-it-works">
+      <section className="mt-6 max-w-3xl space-y-4 lg:mt-10" data-testid="how-it-works">
         <ol className="list-decimal space-y-3 pl-5 text-sm leading-6 text-[color:var(--cream)]/75">
           <li>File the boat</li>
           <li>Two yards that fit</li>
@@ -55,7 +55,7 @@ export default async function HaulOutPage({
         </ol>
       </section>
 
-      <section className="mt-10 max-w-3xl">
+      <section className="mt-8 max-w-3xl lg:mt-10">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">File a Named Storm Plan</h2>
         <div className="mt-4 rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
           {params.error ? (
@@ -67,7 +67,7 @@ export default async function HaulOutPage({
         </div>
       </section>
 
-      <section id="yard-board" className="mt-12 max-w-3xl">
+      <section id="yard-board" className="mt-8 max-w-3xl lg:mt-12">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">Yard board</h2>
         <p className="mt-2 text-sm leading-6 text-[color:var(--cream)]/65">
           A leftover seat is Call until a yard says a number out loud. Names here are
@@ -83,7 +83,7 @@ export default async function HaulOutPage({
             Leftover seats posted. The board uses what you said.
           </p>
         ) : null}
-        <div className="mt-4 overflow-hidden rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-4">
+        <div className="mt-4 min-w-0 overflow-hidden rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-4">
           <YardBoard yards={yards} />
         </div>
       </section>

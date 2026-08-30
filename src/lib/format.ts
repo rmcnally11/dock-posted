@@ -43,3 +43,11 @@ export function ethanolCopy(ethanol: Ethanol): string {
       return "Call";
   }
 }
+
+/** US dock phones only. Does not invent a number — wraps what the dock already posted. */
+export function telHref(phone: string): string | null {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) return `tel:+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `tel:+${digits}`;
+  return null;
+}

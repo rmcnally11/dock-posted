@@ -1,5 +1,5 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
-import { ethanolCopy, formatDate, formatQuote, sourceLabel } from "@/lib/format";
+import { ethanolCopy, formatDate, formatQuote, sourceLabel, telHref } from "@/lib/format";
 import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
 import type { BoardHref } from "@/lib/board-query";
 import type { Dock } from "@/lib/types";
@@ -49,6 +49,7 @@ export function DockCard({
   const diesel = boardQuote(dock, displayDiesel(dock));
   const trust = pinTrust(dock);
   const flags = flagLabels(dock);
+  const callHref = dock.phone ? telHref(dock.phone) : null;
 
   return (
     <article
@@ -99,9 +100,11 @@ export function DockCard({
               {ethanolCopy(dock.ethanol)}
             </dd>
           </div>
+        </dl>
+        <dl className="mt-2 text-sm">
           <div className="rounded-lg bg-[color:var(--ink)] px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wide text-[color:var(--cream)]/50">Hours</dt>
-            <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--cream)]">
+            <dd className="font-mono text-[15px] font-medium text-[color:var(--cream)]">
               {dock.hours ?? "Hours Call"}
             </dd>
           </div>
@@ -118,12 +121,21 @@ export function DockCard({
                 ? " · Unverified"
                 : ""}
         </p>
-        {dock.phone ? (
-          <p className="mt-1 text-xs text-[color:var(--cream)]/70">
-            {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
-          </p>
-        ) : null}
       </a>
+      {callHref && dock.phone ? (
+        <p className="px-5 pb-3">
+          <a
+            href={callHref}
+            className="inline-flex min-h-11 items-center text-sm font-medium text-[color:var(--sea)] underline-offset-2 hover:underline"
+          >
+            {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
+          </a>
+        </p>
+      ) : dock.phone ? (
+        <p className="px-5 pb-3 text-xs text-[color:var(--cream)]/70">
+          {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
+        </p>
+      ) : null}
       <p className="border-t border-[color:var(--line)] px-3.5 py-2 text-[11px] text-[color:var(--cream)]/50">
         <a href={`/report?dock=${dock.id}`} className="underline-offset-2 hover:underline">
           {trust === "verified" ? "Update this pin" : "Claim this pin"}
