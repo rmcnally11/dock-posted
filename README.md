@@ -70,9 +70,14 @@ No API keys. The map uses OpenFreeMap + OpenStreetMap. No Google key.
 
 Next.js App Router, TypeScript, Tailwind, MapLibre. JSON file store. Optional Airtable later — not required to demo.
 
-## Deploy on Vercel
+## Production build
 
-Import the repo. Build command `npm run build`, no env secrets required. Seed data ships in-repo. User reports on Vercel will not survive cold starts until a database is added.
+```bash
+npm run build
+npm start             # same port as dev: 43123
+```
+
+No env secrets required. Seed data ships in-repo. User reports persist in `data/runtime/` for local demo.
 
 ## What this is not
 
