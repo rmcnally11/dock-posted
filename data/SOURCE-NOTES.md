@@ -22,8 +22,14 @@ Waterway Guide marina pages (Call / Never):
 
 Key Largo home pins added as Call, no invented dollars:
 
-- Marina Del Mar (Key Largo) — public marina site; no pump board
-- Ocean Reef Club (North Key Largo) — members only, not a public pump
+- Marina Del Mar (Key Largo) — CRYC sends boats here. First-party page listed slips, not a pump board. Directories disagree on a hose. Call.
+- Ocean Reef Club (North Key Largo) — members only. Club marina page (30 Aug 2026) lists Daily 7am–6pm for members and their guests. A non-member weekend guest cannot buy. No pump dollars.
+
+Islamorada docks stay in the Keys region. They are not on the Key Largo board.
+
+Blue Marlin Fuel Dock (Seabrook, west of 146): marina fuel-dock page lists regular, supreme, diesel and no hours. Directories disagree on the close. Card hours stay Call. Last-pump flag stays. Still-open is not claimed.
+
+Marina Bay Harbor hose is Daily 7:30am–5:30pm. Fri–Sun 6am is the ship store, not the hose. Last light in August is after 6, so this pin is last-pump, not still-open.
 
 Dropped from the coast set (no weekend routing / no fuel):
 

@@ -44,11 +44,12 @@ assert.equal(texas.visible[2].name, "South Shore Harbour Fuel Pier");
 assert.equal(texas.visible.at(-1)?.id, "galveston-yacht-marina");
 
 const keys = filterDocks(docks, parseBoardQuery({ corridor: "upper-keys" }));
-assert.equal(keys.inCorridor.length, 13);
+assert.equal(keys.inCorridor.length, 7);
 assert.ok(keys.visible.some((dock) => dock.id === "key-largo-harbor"));
 assert.ok(keys.visible.some((dock) => dock.id === "marina-del-mar"));
 assert.ok(keys.visible.some((dock) => dock.id === "ocean-reef-club"));
 assert.ok(!keys.visible.some((dock) => dock.corridor === "galveston-bay"));
+assert.ok(!keys.visible.some((dock) => dock.city === "Islamorada"));
 assert.deepEqual(
   keys.visible.slice(0, 5).map((dock) => dock.id),
   [
@@ -60,11 +61,17 @@ assert.deepEqual(
   ],
 );
 
+const keysRegion = filterDocks(docks, parseBoardQuery({ region: "keys" }));
+assert.ok(keysRegion.visible.some((dock) => dock.id === "islamarina"));
+assert.ok(keysRegion.visible.some((dock) => dock.id === "marina-del-mar"));
+assert.ok(docks.every((dock) => !/cavalier/i.test(`${dock.id} ${dock.name}`)));
+
 const oceanReef = docks.find((dock) => dock.id === "ocean-reef-club");
 assert.ok(oceanReef);
 assert.equal(oceanReef.access, "members");
 assert.ok(oceanReef.quotes.every((quote) => quote.pricePerGallon == null));
 assert.ok(/members only/i.test(oceanReef.notes ?? ""));
+assert.match(oceanReef.hours ?? "", /7am–6pm/);
 
 const marinaDelMar = docks.find((dock) => dock.id === "marina-del-mar");
 assert.ok(marinaDelMar);
@@ -103,6 +110,8 @@ const marinaBay = docks.find((dock) => dock.id === "marina-bay-harbor");
 assert.ok(marinaBay);
 assert.equal(formatQuote(marinaBay.quotes.find((quote) => quote.product === "87") ?? null), "Call");
 assert.equal(marinaBay.flags?.includes("last-pump"), true);
+assert.equal(marinaBay.flags?.includes("still-open"), false);
+assert.match(marinaBay.hours ?? "", /store only, not the hose/);
 assert.equal(pinTrust(marinaBay), "unverified");
 
 const gym = docks.find((dock) => dock.id === "galveston-yacht-marina");
@@ -112,6 +121,9 @@ assert.equal(pinTrust(gym), "verified");
 const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
 assert.ok(blueMarlin);
 assert.equal(pinTrust(blueMarlin), "last-seen");
+assert.equal(blueMarlin.hours, null);
+assert.equal(blueMarlin.flags?.includes("last-pump"), true);
+assert.equal(blueMarlin.flags?.includes("still-open"), false);
 assert.equal(freshnessLabel(blueMarlin), "Last seen");
 assert.match(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)), /^\$/);
 

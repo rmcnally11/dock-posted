@@ -119,6 +119,8 @@ try {
   check("keys ocean reef", keysNames.some((name) => name.includes("Ocean Reef")));
   check("keys hides texas", !keysNames.some((name) => name.includes("Marina Bay Harbor")));
   check("keys islamorada caption", /islamorada is a different run/i.test(keysCopy));
+  check("keys first light e0", /e0 still pumping at first light/i.test(keysCopy));
+  check("keys does not lump islamorada", !keysNames.some((name) => /islamarina|plantation yacht|bud.n.mary/i.test(name ?? "")));
   check("keys members honesty", /members only/i.test(keysCopy));
 
   await page.goto(`${base}/?state=TX`, { waitUntil: "networkidle0" });

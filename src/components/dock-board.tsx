@@ -46,8 +46,8 @@ export function DockBoard({
               ) : null}
               {query.corridor === "upper-keys" && !query.state && !query.region && query.q.length < 2 ? (
                 <p className="mt-1 text-xs text-harbor/50">
-                  Key Largo first. Islamorada is a different run. Dock E0 is not the landside E10
-                  hose.
+                  E0 still pumping at first light, this side of the island. Islamorada is a
+                  different run.
                 </p>
               ) : null}
             </div>

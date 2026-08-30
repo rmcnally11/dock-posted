@@ -70,28 +70,38 @@ function toDock(row: Addition): Dock {
 
 const DROP_IDS = new Set(["kemah-boardwalk-marina", "watergate-yachting-center"]);
 
+const ISLAMORADA_IDS = new Set([
+  "plantation-yacht-harbor",
+  "islamarina",
+  "snake-creek-marina",
+  "three-waters-marina",
+  "worldwide-sportsman",
+  "bud-n-marys",
+]);
+
 const HOME_PATCHES: Record<
   string,
-  Partial<Pick<Dock, "name" | "lead" | "flags" | "notes" | "hours">>
+  Partial<Pick<Dock, "name" | "lead" | "flags" | "notes" | "hours" | "corridor">>
 > = {
   "marina-bay-harbor": {
     lead: 1,
-    flags: ["last-pump", "still-open"],
+    flags: ["last-pump"],
     hours: "Daily 7:30am–5:30pm. Fri–Sun ship store 6am — store only, not the hose.",
     notes:
-      "Last public pump at the Clear Lake mouth, Clear Lake Shores. Ship store page (30 Aug 2026) lists Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. 93 is the E0 hose. Does not sell diesel. Blank stays Call.",
+      "Last public pump at the Clear Lake mouth, south side of the channel, Clear Lake Shores. Ethanol-free 93. Live shrimp by boat. Ship store page (30 Aug 2026): Daily 7:30am–5:30pm; Fri–Sun 6am is the store, not the hose. Last light in August is after 6 — this hose is not still open then. Waterway Guide 08/28/26 listed 87 and 93 as No Report This Week. Does not sell diesel. Blank stays Call.",
   },
   "blue-marlin-seabrook": {
     name: "Blue Marlin Fuel Dock",
     lead: 2,
-    flags: ["last-pump", "still-open"],
+    flags: ["last-pump"],
+    hours: null,
     notes:
-      "Seabrook, west of SH 146. Waterway Guide 08/28/26: diesel $5.280, 87 $4.980, 93 $5.990 E0, tax included. Hours Daily 7am–6pm. Still open when they post hours.",
+      "Seabrook, west of SH 146. Fuel-dock page (30 Aug 2026) lists regular, supreme, diesel; no hours posted. Directories disagree on the close. Hours stay Call. Waterway Guide 08/28/26: diesel $5.280, 87 $4.980, 93 $5.990 E0, tax included.",
   },
   "south-shore-harbour": {
     name: "South Shore Harbour Fuel Pier",
     lead: 3,
-    flags: ["still-open"],
+    flags: [],
     notes:
       "League City fuel pier. Waterway Guide 08/28/26: diesel $5.000, 89 $5.500, tax included. Non-ethanol: No. Hours Daily 8am–6pm (summer hours on marina site). Hours beat a posted price.",
   },
@@ -122,6 +132,8 @@ const HOME_PATCHES: Record<
   },
   "marina-del-mar": {
     lead: 2,
+    notes:
+      "Key Largo, next to the harbor. CRYC sends boats here. First-party marina page (30 Aug 2026) listed slips, not a pump board. Directories disagree on whether a hose is on site. Call.",
   },
   "pilot-house-marina": {
     lead: 3,
@@ -133,6 +145,9 @@ const HOME_PATCHES: Record<
   },
   "ocean-reef-club": {
     lead: 5,
+    hours: "Daily 7am–6pm (club marina page)",
+    notes:
+      "Members only. Private marina. Club page lists the marina open daily 7am–6pm for members and their guests. A weekend guest who is not with a member cannot buy. No pump dollars posted. Call.",
   },
   "mangrove-marina": {
     lead: 6,
@@ -143,31 +158,37 @@ const HOME_PATCHES: Record<
       "Tavernier. Waterway Guide marina listing: gas Call, non-ethanol No (landside E10). Last fuel update Never. Call.",
   },
   "plantation-yacht-harbor": {
+    corridor: null,
     lead: 20,
     notes:
       "Islamorada — a different run from Key Largo. Waterway Guide 08/24/26: diesel $6.000, 90 $5.659, tax included, non-ethanol Yes.",
   },
   islamarina: {
+    corridor: null,
     lead: 21,
     notes:
       "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $5.450, 90 $5.590, tax included, non-ethanol Yes.",
   },
   "snake-creek-marina": {
+    corridor: null,
     lead: 22,
     notes:
       "Islamorada — a different run from Key Largo. Listed on Waterway Guide as The Marina at Islamorada Yacht Club, now Snake Creek Marina. 08/28/26: does not sell diesel; 90 No Report This Week; non-ethanol Yes.",
   },
   "three-waters-marina": {
+    corridor: null,
     lead: 23,
     notes:
       "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $6.250, 90 $5.500, tax included, non-ethanol Yes.",
   },
   "worldwide-sportsman": {
+    corridor: null,
     lead: 24,
     notes:
       "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $4.840 tax not included (7.50%), 90 $5.170 tax included, non-ethanol Yes.",
   },
   "bud-n-marys": {
+    corridor: null,
     lead: 25,
     notes:
       "Islamorada — a different run from Key Largo. Waterway Guide 08/28/26: diesel $6.290 (dyed diesel noted), 90 $6.190, tax included, non-ethanol Yes.",
@@ -221,7 +242,7 @@ const HOME_ADDITIONS: Dock[] = [
     phone: "(305) 451-4107",
     website: "https://www.marinadelmar.com/",
     notes:
-      "Key Largo, next to the harbor. Public marina. Marketing page lists docks; no pump dollars. Call. We do not invent a price.",
+      "Key Largo, next to the harbor. CRYC sends boats here. First-party marina page (30 Aug 2026) listed slips, not a pump board. Directories disagree on whether a hose is on site. Call.",
     access: "public",
     lead: 2,
   }),
@@ -234,7 +255,7 @@ const HOME_ADDITIONS: Dock[] = [
     phone: "(305) 367-2611",
     website: "https://www.oceanreef.com/",
     notes:
-      "Members only. Not a public pump. Gated North Key Largo club. Call the club if you belong. We do not invent a price.",
+      "Members only. Private marina. Club page lists the marina open daily 7am–6pm for members and their guests. A weekend guest who is not with a member cannot buy. No pump dollars posted. Call.",
     access: "members",
     lead: 5,
   }),
@@ -1726,11 +1747,16 @@ async function main() {
   const home: Dock[] = [];
   for (const dock of current.docks) {
     if (DROP_IDS.has(dock.id)) continue;
-    if (dock.corridor !== "galveston-bay" && dock.corridor !== "upper-keys") continue;
+    const keepHome =
+      dock.corridor === "galveston-bay" ||
+      dock.corridor === "upper-keys" ||
+      ISLAMORADA_IDS.has(dock.id);
+    if (!keepHome) continue;
     const patched = {
       ...dock,
-      region: HOME_REGION[dock.corridor] ?? dock.region ?? "texas",
+      region: dock.region ?? (dock.corridor ? HOME_REGION[dock.corridor] : "keys"),
       ...HOME_PATCHES[dock.id],
+      ...(ISLAMORADA_IDS.has(dock.id) ? { corridor: null as const } : {}),
     };
     home.push(patched);
     homeIds.add(dock.id);
