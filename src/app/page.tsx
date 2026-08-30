@@ -54,6 +54,14 @@ export default async function Home({
           <p data-testid="board-tally" className="mt-2 text-sm text-[color:var(--cream)]/55">
             {tally.postedThisWeek} posted this week. {tally.call} still Call.
           </p>
+          <p data-testid="who-writes-this" className="mt-2 text-sm text-[color:var(--cream)]/50">
+            <a
+              className="underline decoration-[color:var(--cream)]/25 underline-offset-2 hover:text-[color:var(--cream)]/75"
+              href="/about"
+            >
+              Who writes this.
+            </a>
+          </p>
           <Waterline className="mt-3" />
         </div>
         {query.reported ? (

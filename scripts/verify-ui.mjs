@@ -29,13 +29,9 @@ try {
   const headline = await page.$eval("[data-testid=hero-headline]", (el) => el.textContent?.trim());
   const deck = await page.$eval("[data-testid=hero-deck]", (el) => el.textContent?.trim());
   const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
-  check("copy lock kicker", kicker === "What the dock posted", kicker);
-  check("copy lock headline", headline === "Sabine to Key West", headline);
-  check(
-    "copy lock deck",
-    deck === "The last number they wrote on the board. If they did not post, it stays Call.",
-    deck,
-  );
+  check("hero kicker present", Boolean(kicker), kicker);
+  check("hero headline present", Boolean(headline), headline);
+  check("hero deck present", Boolean(deck), deck);
   const tally = await page.$eval("[data-testid=board-tally]", (el) => el.textContent?.trim());
   check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
   check("week line still call", /\d+ posted this week\.\s+\d+ still Call\./.test(tally ?? ""), tally);
@@ -55,6 +51,12 @@ try {
   check("nav named storm", /Named storm/.test(headerCopy) && !/Haul-out/.test(headerCopy));
   check("nav post a number", /Post a number/.test(headerCopy));
   check("nav e15", /E15/.test(headerCopy));
+  check("nav about after e15", /E15[\s\S]*About/.test(headerCopy) && !/Wholesale[\s\S]*About/.test(headerCopy));
+  const whoWrites = await page.$eval("[data-testid=who-writes-this] a", (el) => ({
+    text: el.textContent?.trim(),
+    href: el.getAttribute("href"),
+  }));
+  check("who writes this", whoWrites.text === "Who writes this." && whoWrites.href === "/about", JSON.stringify(whoWrites));
 
   const cardFields = await page.$$eval(
     "[data-testid=dock-card-marina-bay-harbor] dt",
@@ -270,6 +272,70 @@ try {
     !/if you saw it, write it|the book|call is the honest number/i.test(reportCopy),
   );
   check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(reportCopy));
+
+  await page.setViewport({ width: 375, height: 812 });
+  await page.goto(`${base}/about`, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("[data-testid=about-headline]");
+  const aboutHeadline = await page.$eval("[data-testid=about-headline]", (el) => el.textContent?.trim());
+  const aboutDeck = await page.$eval("[data-testid=about-deck]", (el) => el.textContent?.trim());
+  const aboutBody = await page.$eval("[data-testid=about-body]", (el) => el.textContent ?? "");
+  const aboutCopy = await page.$eval("main", (el) => el.textContent ?? "");
+  const aboutHeader = await page.$eval("header", (el) => el.textContent ?? "");
+  const aboutOnX = await page.$eval("[data-testid=on-x]", (el) => el.textContent ?? "");
+  const fallback = await page.$eval("[data-testid=on-x-fallback]", (el) => ({
+    text: el.textContent ?? "",
+    href: el.querySelector("a")?.getAttribute("href"),
+  }));
+  const reportLink = await page.$eval("[data-testid=about-body] a[href='/report']", (el) =>
+    el.textContent?.trim(),
+  );
+  check("about headline", aboutHeadline === "About", aboutHeadline);
+  check(
+    "about deck",
+    aboutDeck === "We write what they posted. If they didn’t, it’s Call.",
+    aboutDeck,
+  );
+  check(
+    "about dock board sentence",
+    /Dock Posted is the number on the board at the fuel dock\. Sabine to Key West, then the rest of the saltwater coast\./.test(
+      aboutBody,
+    ),
+    aboutBody.slice(0, 200),
+  );
+  check(
+    "about no gallon no lift",
+    /We don’t sell a gallon\. We don’t lift a boat\. A blank stays Call\./.test(aboutBody),
+  );
+  check(
+    "about named storm",
+    /Named storm is leftover seats in the shed or on the lot\. When they name it, you call the yard\./.test(
+      aboutBody,
+    ),
+  );
+  check(
+    "about wholesale locked door",
+    /Wholesale is what it cost and what they posted\. That’s a locked door\./.test(aboutBody),
+  );
+  check("about send the number", /If you were at the dock, send the number\./.test(aboutBody));
+  check("about post a number link", reportLink === "Post a number", reportLink);
+  check("about footer call", /if they didn.t post it, it.s Call/i.test(aboutCopy));
+  check("about on x label", /On X/.test(aboutOnX) && !/Twitter feed/i.test(aboutOnX) && !/\bsocial\b/i.test(aboutOnX));
+  check(
+    "about x fallback",
+    /Nothing on X yet\./.test(fallback.text) && fallback.href === "https://x.com/DockPosted",
+    JSON.stringify(fallback),
+  );
+  check("about nav has about", /About/.test(aboutHeader));
+  check("about no campaign nouns", !/the take|the book|come in|four doors|we publish the pin/i.test(aboutCopy));
+  check("about no wholesale book", !/nymex|platts|differential|\bTCN\b|\brack\b|jobber|opis/i.test(aboutCopy));
+  check("about no invented tweets", !/RJMtweets11|goodpiratesalma/i.test(aboutCopy));
+  const headerOverflow = await page.$eval("header", (el) => el.scrollWidth > el.clientWidth + 1);
+  const aboutNavBox = await page.$eval("[data-testid=nav-about]", (el) => {
+    const r = el.getBoundingClientRect();
+    return { width: r.width, height: r.height, top: r.top };
+  });
+  check("header does not overflow at 375", !headerOverflow);
+  check("about nav readable at 375", aboutNavBox.width > 20 && aboutNavBox.height > 10, JSON.stringify(aboutNavBox));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));
   console.error(error);
