@@ -72,7 +72,7 @@ export function DockBoard({
             </button>
           </form>
 
-          <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="mt-3 flex flex-wrap gap-1.5">
             {COAST_JUMPS.map((jump) => {
               const active =
                 jump.kind === "corridor"

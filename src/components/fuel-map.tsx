@@ -84,7 +84,7 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
         })}
       </div>
       <p className="pointer-events-none absolute bottom-2 left-2 z-[2] bg-paper/90 px-1.5 py-0.5 font-mono text-[10px] text-harbor/55">
-        {view.center[1].toFixed(2)}N {Math.abs(view.center[0]).toFixed(2)}W · z{zoom} · © OSM © CARTO
+        {view.center[1].toFixed(2)}N {Math.abs(view.center[0]).toFixed(2)}W · z{zoom} · © OpenStreetMap
       </p>
     </div>
   );
