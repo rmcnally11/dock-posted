@@ -55,7 +55,9 @@ export type StateCode =
 
 export type Ethanol = "E0" | "E10" | "E15" | "unknown";
 
-export type SourceLabel = "Waterway Guide" | "marina site" | "user report";
+export type SourceLabel = "Waterway Guide" | "marina site" | "user report" | "marina";
+
+export type PayKind = "cash" | "card" | "both";
 
 export type Product = "87" | "89" | "90" | "91" | "93" | "diesel";
 
@@ -94,6 +96,8 @@ export interface Dock {
   sourceUrl: string | null;
   lead?: number;
   flags?: DockFlag[];
+  pay?: PayKind | null;
+  closed?: boolean;
 }
 
 export interface PriceReport {
@@ -124,6 +128,9 @@ export interface DockOverlay {
   lastVerifiedSource?: SourceLabel | null;
   sourceUrl?: string | null;
   notes?: string | null;
+  hours?: string | null;
+  pay?: PayKind | null;
+  closed?: boolean;
 }
 
 export interface OverlayStoreFile {

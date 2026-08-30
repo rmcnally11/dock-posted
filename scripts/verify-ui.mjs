@@ -79,6 +79,10 @@ try {
   check("no waterdog mark", !/waterdog/i.test(homeCopy));
   check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
   check("call ahead empty", /call ahead/i.test(homeCopy));
+  check("verified vs last seen", /verified|last seen/i.test(homeCopy));
+  check("claim path", /claim this pin/i.test(homeCopy));
+  check("no bargain", !/cheapest|savings|bargain/i.test(homeCopy));
+  check("no slips pitch", !/wet-slip|coastal cavaliers|waterdog/i.test(homeCopy));
 
   await page.goto(`${base}/?corridor=upper-keys`, { waitUntil: "networkidle0" });
   const keysHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);

@@ -20,7 +20,7 @@ export default async function ReportPage({
       <p className="kicker text-wake-deep">What the dock posted</p>
       <h1 className="mt-2 font-serif text-4xl text-harbor">Post the number</h1>
       <p className="mt-3 text-sm leading-6 text-harbor/70">
-        The last number they wrote on the board. If they did not post, it stays Call.
+        When the truck comes, or when they change the board. If they did not post, it stays Call.
       </p>
 
       <form action="/report" method="get" className="mt-6 flex gap-2">

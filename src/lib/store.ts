@@ -11,6 +11,7 @@ import type {
   Dock,
   DockOverlay,
   DockStoreFile,
+  PayKind,
   PriceReport,
   Product,
 } from "./types";
@@ -72,6 +73,9 @@ function applyOverlay(dock: Dock, overlay: DockOverlay | undefined): Dock {
         : dock.lastVerifiedSource,
     sourceUrl: overlay.sourceUrl !== undefined ? overlay.sourceUrl : dock.sourceUrl,
     notes: overlay.notes !== undefined ? overlay.notes : dock.notes,
+    hours: overlay.hours !== undefined ? overlay.hours : dock.hours,
+    pay: overlay.pay !== undefined ? overlay.pay : dock.pay,
+    closed: overlay.closed !== undefined ? overlay.closed : dock.closed,
   };
 }
 
@@ -83,6 +87,9 @@ function overlayFromDock(dock: Dock): DockOverlay {
     lastVerifiedSource: dock.lastVerifiedSource,
     sourceUrl: dock.sourceUrl,
     notes: dock.notes,
+    hours: dock.hours,
+    pay: dock.pay ?? null,
+    closed: dock.closed ?? false,
   };
 }
 
@@ -135,21 +142,37 @@ export async function resetFromSeed(): Promise<DockStoreFile> {
   return readDockStore();
 }
 
-function applyReportToDock(dock: Dock, report: PriceReport): Dock {
+function applyReportToDock(
+  dock: Dock,
+  report: PriceReport,
+  claim: {
+    marinaOwned: boolean;
+    hours: string | null;
+    pay: PayKind | null;
+    closed: boolean;
+    dieselOnly: boolean;
+  },
+): Dock {
   const nextQuotes = dock.quotes.map((quote) => ({ ...quote }));
-  const existing = nextQuotes.find((quote) => quote.product === report.product);
-  const updated = {
-    product: report.product,
-    pricePerGallon: report.pricePerGallon,
-    ethanol: report.ethanol,
-    status: "posted" as const,
-    taxIncluded: null,
-  };
-
-  if (existing) {
-    Object.assign(existing, updated);
-  } else {
-    nextQuotes.push(updated);
+  if (report.pricePerGallon > 0) {
+    const existing = nextQuotes.find((quote) => quote.product === report.product);
+    const updated = {
+      product: report.product,
+      pricePerGallon: report.pricePerGallon,
+      ethanol: report.ethanol,
+      status: "posted" as const,
+      taxIncluded: null,
+    };
+    if (existing) Object.assign(existing, updated);
+    else nextQuotes.push(updated);
+  }
+  if (claim.dieselOnly) {
+    for (const quote of nextQuotes) {
+      if (quote.product !== "diesel") {
+        quote.status = "not-sold";
+        quote.pricePerGallon = null;
+      }
+    }
   }
 
   const ethanol =
@@ -164,11 +187,14 @@ function applyReportToDock(dock: Dock, report: PriceReport): Dock {
     quotes: nextQuotes,
     ethanol,
     lastVerifiedAt: report.seenAt,
-    lastVerifiedSource: "user report",
+    lastVerifiedSource: claim.marinaOwned ? "marina" : "user report",
     sourceUrl: null,
     notes: report.note
       ? `${dock.notes ? `${dock.notes} ` : ""}User report ${report.seenAt}: ${report.note}`.trim()
       : dock.notes,
+    hours: claim.hours ?? dock.hours,
+    pay: claim.marinaOwned ? (claim.pay ?? dock.pay ?? null) : dock.pay,
+    closed: claim.marinaOwned ? claim.closed : dock.closed,
   };
 }
 
@@ -179,6 +205,11 @@ export async function addPriceReport(input: {
   pricePerGallon: number;
   seenAt: string;
   note: string | null;
+  marinaOwned?: boolean;
+  hours?: string | null;
+  pay?: PayKind | null;
+  closed?: boolean;
+  dieselOnly?: boolean;
 }): Promise<{ report: PriceReport; dock: Dock }> {
   const store = await readDockStore();
   const dockIndex = store.docks.findIndex((dock) => dock.id === input.dockId);
@@ -197,7 +228,13 @@ export async function addPriceReport(input: {
     createdAt: new Date().toISOString(),
   };
 
-  const updatedDock = applyReportToDock(store.docks[dockIndex], report);
+  const updatedDock = applyReportToDock(store.docks[dockIndex], report, {
+    marinaOwned: Boolean(input.marinaOwned),
+    hours: input.hours?.trim() || null,
+    pay: input.pay ?? null,
+    closed: Boolean(input.closed),
+    dieselOnly: Boolean(input.dieselOnly),
+  });
   store.docks[dockIndex] = updatedDock;
   store.generatedAt = new Date().toISOString();
 

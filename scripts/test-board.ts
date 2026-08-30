@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { filterDocks, parseBoardQuery, matchesSearch } from "../src/lib/board-query";
 import { formatQuote } from "../src/lib/format";
-import { boardTally, freshness, freshnessLabel } from "../src/lib/freshness";
+import { boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
 import seed from "../data/docks.seed.json";
 import type { Dock, StateCode } from "../src/lib/types";
 import { STATE_CODES } from "../src/lib/types";
@@ -103,12 +103,23 @@ const marinaBay = docks.find((dock) => dock.id === "marina-bay-harbor");
 assert.ok(marinaBay);
 assert.equal(formatQuote(marinaBay.quotes.find((quote) => quote.product === "87") ?? null), "Call");
 assert.equal(marinaBay.flags?.includes("last-pump"), true);
+assert.equal(pinTrust(marinaBay), "unverified");
+
+const gym = docks.find((dock) => dock.id === "galveston-yacht-marina");
+assert.ok(gym);
+assert.equal(pinTrust(gym), "verified");
+
+const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
+assert.ok(blueMarlin);
+assert.equal(pinTrust(blueMarlin), "last-seen");
+assert.equal(freshnessLabel(blueMarlin), "Last seen");
 
 const houstonYacht = docks.find((dock) => dock.id === "houston-yacht-club");
 assert.ok(houstonYacht);
 assert.equal(formatQuote(houstonYacht.quotes.find((quote) => quote.product === "89") ?? null), "Call");
 assert.equal(freshness(houstonYacht), "never");
 assert.equal(freshnessLabel(houstonYacht), "Call ahead");
+assert.equal(pinTrust(houstonYacht), "unverified");
 assert.equal(houstonYacht.access, "members");
 
 const lakewood = docks.find((dock) => dock.id === "lakewood-yacht-club");
@@ -129,7 +140,8 @@ assert.match(tiles, /tile\.openstreetmap\.org/);
 assert.doesNotMatch(tiles, /carto/i);
 assert.match(tiles, /DockPosted\/1\.0/);
 
-const fence = /waterdog|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack/i;
+const fence =
+  /waterdog|coastal cavaliers|cheapest fuel|bargain map|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning/i;
 for (const file of [
   "src/app/page.tsx",
   "src/app/layout.tsx",
@@ -141,6 +153,7 @@ for (const file of [
   "src/components/site-footer.tsx",
   "src/components/report-form.tsx",
   "src/components/freshness-badge.tsx",
+  "src/app/report/page.tsx",
 ]) {
   const text = readFileSync(path.join(process.cwd(), file), "utf8");
   assert.doesNotMatch(text, fence, `${file} leaked a fuel-desk term`);

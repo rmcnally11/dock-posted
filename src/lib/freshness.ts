@@ -43,11 +43,24 @@ export function freshness(dock: Dock, now = Date.now()): Freshness {
   return "call";
 }
 
+export function isMarinaOwned(dock: Dock): boolean {
+  return dock.lastVerifiedSource === "marina site" || dock.lastVerifiedSource === "marina";
+}
+
+export type PinTrust = "verified" | "last-seen" | "unverified";
+
+export function pinTrust(dock: Dock): PinTrust {
+  if (hasPostedPrice(dock) && isMarinaOwned(dock)) return "verified";
+  if (hasPostedPrice(dock)) return "last-seen";
+  return "unverified";
+}
+
 export function freshnessLabel(dock: Dock, now = Date.now()): string {
-  const state = freshness(dock, now);
-  if (state === "stale") return "Stale";
-  if (state === "fresh") return "This week";
-  return "Call ahead";
+  const trust = pinTrust(dock);
+  if (trust === "unverified") return "Call ahead";
+  if (isOlderThanWeek(dock, now)) return "Stale";
+  if (trust === "verified") return "Verified";
+  return "Last seen";
 }
 
 export function boardTally(docks: Dock[], now = Date.now()) {

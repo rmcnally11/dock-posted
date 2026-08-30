@@ -88,11 +88,57 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="price">Price per gallon</Label>
-          <Input id="price" name="price" inputMode="decimal" placeholder="5.790" required />
+          <Input id="price" name="price" inputMode="decimal" placeholder="5.790" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="seenAt">When you saw it</Label>
           <Input id="seenAt" name="seenAt" type="date" defaultValue={today} required />
+        </div>
+      </div>
+
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium text-harbor/80">Who posts</legend>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="radio" name="who" value="boater" defaultChecked />
+          I fueled here
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="radio" name="who" value="marina" />
+          I run this dock
+        </label>
+        <p className="text-xs text-harbor/50">
+          Truck day, or when you change the board. Not every morning.
+        </p>
+      </fieldset>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="hours">Hours</Label>
+        <Input id="hours" name="hours" placeholder="Daily 7am–6pm" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="pay">Pay</Label>
+          <select
+            id="pay"
+            name="pay"
+            defaultValue=""
+            className="h-11 w-full border border-harbor/15 bg-white px-3 text-base md:text-sm"
+          >
+            <option value="">Call</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="both">Cash or card</option>
+          </select>
+        </div>
+        <div className="space-y-2 pt-6 text-sm">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="closed" value="1" />
+            Closed
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="dieselOnly" value="1" />
+            Diesel only
+          </label>
         </div>
       </div>
 
@@ -116,7 +162,7 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
         Post what you saw
       </Button>
       <p className="text-xs text-harbor/50">
-        The number on the pump. If they did not post, it stays Call.
+        The number on the pump. A marina owns a verified pin. If they did not post, it stays Call.
       </p>
     </form>
   );
