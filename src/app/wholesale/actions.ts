@@ -11,11 +11,13 @@ import {
   wholesalePasswordMatches,
   wholesaleSessionToken,
 } from "@/lib/wholesale-auth";
-import { addWholesaleDiff, removeWholesaleDiff, saveTerminalWorksheet } from "@/lib/store";
+import { addWholesaleDiff, readDocks, removeWholesaleDiff, saveTerminalWorksheet } from "@/lib/store";
 import {
+  findTerminal,
   parseAreaId,
   parseOptionalCents,
   parseUnit,
+  stripUnchangedDefaults,
   worksheetFromFields,
   type WholesaleProduct,
 } from "@/lib/wholesale";
@@ -60,7 +62,12 @@ export async function saveWholesaleWorksheet(formData: FormData): Promise<void> 
   }
   try {
     const sheet = worksheetFromFields(fields, unit);
-    await saveTerminalWorksheet(terminal, sheet);
+    const row = findTerminal(terminal);
+    const docks = await readDocks();
+    const persisted = row
+      ? stripUnchangedDefaults(sheet, row.state, { areaId: area, docks })
+      : sheet;
+    await saveTerminalWorksheet(terminal, persisted);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not save.";
     fail(`/wholesale?area=${area}&terminal=${encodeURIComponent(terminal)}`, message);

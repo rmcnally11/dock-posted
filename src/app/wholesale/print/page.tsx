@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { PrintButton } from "@/components/print-button";
-import { readWholesaleStore } from "@/lib/store";
+import { readDocks, readWholesaleStore } from "@/lib/store";
 import {
   computeWorksheet,
   emptyWorksheet,
@@ -26,8 +26,10 @@ export default async function WholesalePrintPage({
   const areaId = parseAreaId(params.area);
   const area = findArea(areaId);
   const store = await readWholesaleStore();
+  const docks = await readDocks();
   const rows = terminalsForArea(areaId).map(({ terminal, ref }) => {
-    const books = computeWorksheet(store.worksheets[terminal.id] ?? emptyWorksheet());
+    const stored = store.worksheets[terminal.id] ?? emptyWorksheet();
+    const books = computeWorksheet(stored, { state: terminal.state, areaId, docks, saved: stored });
     return { terminal, ref, rb: books.RB, ho: books.HO };
   });
 
@@ -62,6 +64,8 @@ export default async function WholesalePrintPage({
               <th className="px-2 py-2 font-medium">Jobber</th>
               <th className="px-2 py-2 font-medium">Jobber margin</th>
               <th className="px-2 py-2 font-medium">Dock posted</th>
+              <th className="px-2 py-2 font-medium">Federal</th>
+              <th className="px-2 py-2 font-medium">State</th>
               <th className="px-2 py-2 font-medium">Tax</th>
               <th className="px-2 py-2 font-medium">Ex-tax</th>
               <th className="px-2 py-2 font-medium">Remaining</th>
@@ -82,16 +86,18 @@ export default async function WholesalePrintPage({
                   </td>
                   <td className="px-2 py-2 font-mono">{tcnLabel(terminal)}</td>
                   <td className="px-2 py-2">{book.product}</td>
-                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps[0]?.cents ?? null)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps.find((s) => s.key === "nymex")?.cents ?? null)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.typedDiff)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.terminalSpot)}</td>
-                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps[3]?.cents ?? null)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps.find((s) => s.key === "freight")?.cents ?? null)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.inboundRack)}</td>
-                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps[5]?.cents ?? null)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps.find((s) => s.key === "posted")?.cents ?? null)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.rackMargin)}</td>
-                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps[7]?.cents ?? null)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps.find((s) => s.key === "jobber")?.cents ?? null)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.jobberMargin)}</td>
-                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps[9]?.cents ?? null)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.steps.find((s) => s.key === "dock")?.cents ?? null)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.taxMode === "oneline" ? null : book.taxFederal)}</td>
+                  <td className="px-2 py-2 font-mono">{formatBoth(book.taxMode === "oneline" ? null : book.taxState)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.tax)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.dockExTax)}</td>
                   <td className="px-2 py-2 font-mono">{formatBoth(book.dockRemaining)}</td>

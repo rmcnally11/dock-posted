@@ -129,3 +129,14 @@ Rules used:
 
 Miles on area attachments are great-circle city-to-region-center distances, for “nearest / direction” labels only. They are not freight.
 
+## Wholesale tax defaults (internal desk only)
+
+Slow published numbers only. File: `data/wholesale-tax.json`. Never a live market fetch.
+
+1. Federal highway excise, including LUST 0.1 ¢/gal: **18.4 ¢/gal gasoline (RB)**, **24.4 ¢/gal diesel (HO)**. IRS / EIA. Unchanged since 1 Oct 1993. Label: `default · IRS as of 2026`. EIA FAQ https://www.eia.gov/tools/faqs/faq.php?id=10&t=5 and EIA `fueltaxes.xlsx` federal row (18.4 / 24.4 including LUST).
+2. State motor fuel tax: EIA *Federal and state motor fuel taxes*, sheet **July 2026 (revised August 2026)**, Total State column (excise + other state fees of general application; excludes federal and local option). File last-modified 4 Aug 2026 on eia.gov. https://www.eia.gov/petroleum/marketing/monthly/xls/fueltaxes.xlsx
+3. If a terminal state is not in that table, state tax stays —. No neighbor-state copy. No average.
+4. Highway undyed rates only. Dyed / off-road diesel and local option taxes are not assumed. Marina diesel is not treated as tax-free.
+5. Freight / pipeline tariff is not defaulted. No FERC tariff was copied for a specific Buckeye/KM movement into these hubs.
+6. Dock posted default is offered only when exactly one public pin in that wholesale area has a real posted $ (not Call). Not an average. Galveston Bay / Texas: Galveston Yacht Marina (marina site, 30 Aug 2026). Keys areas have several posted pins, so dock stays —.
+

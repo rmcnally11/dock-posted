@@ -1,17 +1,21 @@
 import {
+  MARINE_TAX_NOTE,
   PRODUCT_LABEL,
   WHOLESALE_AREA_ORDER,
   WHOLESALE_PRODUCTS,
   areaLabel,
   displayInputValue,
+  fattestTakeAcross,
   formatBoth,
-  sourceLabel,
+  formatCents,
   tcnLabel,
   type AreaTerminalRef,
   type DiffRow,
   type InputUnit,
+  type PreparedWorksheet,
   type ProductNetback,
   type TerminalWorksheet,
+  type WaterfallRung,
   type WholesaleArea,
   type WholesaleAreaId,
   type WholesaleProduct,
@@ -140,6 +144,7 @@ export function Worksheet({
   areaId,
   terminal,
   sheet,
+  prepared,
   unit,
   diffs,
   error,
@@ -148,19 +153,33 @@ export function Worksheet({
   areaId: WholesaleAreaId;
   terminal: WholesaleTerminal;
   sheet: TerminalWorksheet;
+  prepared?: PreparedWorksheet;
   unit: InputUnit;
   diffs: DiffRow[];
   error?: string;
   saved?: boolean;
 }) {
   const unitLabel = unit === "dollar" ? "$/gal" : "¢/gal";
+  const display: TerminalWorksheet = {
+    rb: prepared?.rb.input ?? sheet.rb,
+    ho: prepared?.ho.input ?? sheet.ho,
+    tax: sheet.tax,
+    taxRb: {
+      federal: prepared?.rb.tax.federal.cents ?? sheet.taxRb?.federal ?? sheet.tax.federal,
+      state: prepared?.rb.tax.state.cents ?? sheet.taxRb?.state ?? sheet.tax.state,
+    },
+    taxHo: {
+      federal: prepared?.ho.tax.federal.cents ?? sheet.taxHo?.federal ?? sheet.tax.federal,
+      state: prepared?.ho.tax.state.cents ?? sheet.taxHo?.state ?? sheet.tax.state,
+    },
+  };
   return (
-    <section className="mt-10" data-testid="worksheet">
+    <section className="mt-8" data-testid="worksheet">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-sm font-medium">Worksheet</h2>
+          <h2 className="text-sm font-medium">Override strip</h2>
           <p className="mt-1 text-sm text-black/55">
-            {terminal.city} · {tcnLabel(terminal)} · {terminal.operator}. Figures are typed, not market.
+            {terminal.city} · {tcnLabel(terminal)} · {terminal.operator}. Market cells stay blank until typed.
           </p>
         </div>
         <div className="flex gap-2 text-xs print:hidden">
@@ -192,7 +211,7 @@ export function Worksheet({
         <input type="hidden" name="area" value={areaId} />
         <input type="hidden" name="terminal" value={terminal.id} />
         <input type="hidden" name="unit" value={unit} />
-        <WorksheetFields sheet={sheet} unit={unit} unitLabel={unitLabel} />
+        <WorksheetFields sheet={display} prepared={prepared} unit={unit} unitLabel={unitLabel} />
         <button type="submit" className="mt-4 h-9 border border-black/20 bg-white px-3 text-sm">
           Compute
         </button>
@@ -202,7 +221,7 @@ export function Worksheet({
         <input type="hidden" name="area" value={areaId} />
         <input type="hidden" name="terminal" value={terminal.id} />
         <input type="hidden" name="unit" value="cent" />
-        <HiddenSheet sheet={sheet} />
+        <HiddenSheet sheet={display} />
         <button type="submit" className="h-9 border border-black bg-black px-3 text-sm text-white">
           Save terminal
         </button>
@@ -229,6 +248,10 @@ function HiddenSheet({ sheet }: { sheet: TerminalWorksheet }) {
     ["dock_ho", sheet.ho.dockPosted],
     ["tax_federal", sheet.tax.federal],
     ["tax_state", sheet.tax.state],
+    ["tax_federal_rb", sheet.taxRb?.federal ?? null],
+    ["tax_state_rb", sheet.taxRb?.state ?? null],
+    ["tax_federal_ho", sheet.taxHo?.federal ?? null],
+    ["tax_state_ho", sheet.taxHo?.state ?? null],
     ["tax_other", sheet.tax.other],
     ["tax_one", sheet.tax.oneLine],
   ];
@@ -243,10 +266,12 @@ function HiddenSheet({ sheet }: { sheet: TerminalWorksheet }) {
 
 function WorksheetFields({
   sheet,
+  prepared,
   unit,
   unitLabel,
 }: {
   sheet: TerminalWorksheet;
+  prepared?: PreparedWorksheet;
   unit: InputUnit;
   unitLabel: string;
 }) {
@@ -255,7 +280,7 @@ function WorksheetFields({
       <table className="min-w-full text-sm">
         <thead>
           <tr className="border-b border-black/10 text-left text-[11px] uppercase tracking-[0.08em] text-black/45">
-            <th className="px-3 py-2 font-medium">Input · {unitLabel}</th>
+            <th className="px-3 py-2 font-medium">Override · {unitLabel}</th>
             <th className="px-3 py-2 font-medium">{PRODUCT_LABEL.RB}</th>
             <th className="px-3 py-2 font-medium">{PRODUCT_LABEL.HO}</th>
           </tr>
@@ -266,18 +291,40 @@ function WorksheetFields({
           <FieldRow label="Inbound freight / pipeline / truck" name="freight" rb={sheet.rb.inboundFreight} ho={sheet.ho.inboundFreight} unit={unit} />
           <FieldRow label="Posted rack" name="rack" rb={sheet.rb.postedRack} ho={sheet.ho.postedRack} unit={unit} />
           <FieldRow label="Jobber sell" name="jobber" rb={sheet.rb.jobberSell} ho={sheet.ho.jobberSell} unit={unit} />
-          <FieldRow label="Dock / retail posted" name="dock" rb={sheet.rb.dockPosted} ho={sheet.ho.dockPosted} unit={unit} />
+          <FieldRow
+            label="Dock / retail posted"
+            name="dock"
+            rb={sheet.rb.dockPosted}
+            ho={sheet.ho.dockPosted}
+            unit={unit}
+            rbHint={prepared?.rb.labels.dockPosted ?? null}
+            hoHint={prepared?.ho.labels.dockPosted ?? null}
+          />
+          <FieldRow
+            label="Tax · federal"
+            name="tax_federal"
+            rb={sheet.taxRb?.federal ?? null}
+            ho={sheet.taxHo?.federal ?? null}
+            unit={unit}
+            rbHint={prepared?.rb.tax.federal.sourceLabel ?? null}
+            hoHint={prepared?.ho.tax.federal.sourceLabel ?? null}
+          />
+          <FieldRow
+            label="Tax · state"
+            name="tax_state"
+            rb={sheet.taxRb?.state ?? null}
+            ho={sheet.taxHo?.state ?? null}
+            unit={unit}
+            rbHint={prepared?.rb.tax.state.sourceLabel ?? null}
+            hoHint={prepared?.ho.tax.state.sourceLabel ?? null}
+          />
         </tbody>
       </table>
-      <div className="grid gap-3 border-t border-black/10 p-3 sm:grid-cols-4">
-        <TaxField label="Tax · federal" name="tax_federal" value={sheet.tax.federal} unit={unit} />
-        <TaxField label="Tax · state" name="tax_state" value={sheet.tax.state} unit={unit} />
-        <TaxField label="Tax · other" name="tax_other" value={sheet.tax.other} unit={unit} />
-        <TaxField label="Tax · one line" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
+      <div className="grid gap-3 border-t border-black/10 p-3 sm:grid-cols-2">
+        <TaxField label="Tax · other / local" name="tax_other" value={sheet.tax.other} unit={unit} />
+        <TaxField label="Tax · one line (replaces the split)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
       </div>
-      <p className="px-3 pb-3 text-xs text-black/45">
-        One tax line overrides the split. Empty stays blank — never filled as zero.
-      </p>
+      <p className="px-3 pb-3 text-xs text-black/45">{MARINE_TAX_NOTE}</p>
     </div>
   );
 }
@@ -288,12 +335,16 @@ function FieldRow({
   rb,
   ho,
   unit,
+  rbHint,
+  hoHint,
 }: {
   label: string;
   name: string;
   rb: number | null;
   ho: number | null;
   unit: InputUnit;
+  rbHint?: string | null;
+  hoHint?: string | null;
 }) {
   return (
     <tr className="border-t border-black/10">
@@ -305,6 +356,7 @@ function FieldRow({
           defaultValue={displayInputValue(rb, unit)}
           className="h-9 w-full border border-black/15 px-2 font-mono text-sm"
         />
+        {rbHint ? <p className="mt-1 text-[11px] text-black/40">{rbHint}</p> : null}
       </td>
       <td className="px-3 py-2">
         <input
@@ -313,6 +365,7 @@ function FieldRow({
           defaultValue={displayInputValue(ho, unit)}
           className="h-9 w-full border border-black/15 px-2 font-mono text-sm"
         />
+        {hoHint ? <p className="mt-1 text-[11px] text-black/40">{hoHint}</p> : null}
       </td>
     </tr>
   );
@@ -414,122 +467,135 @@ export function Waterfall({
   rb: ProductNetback;
   ho: ProductNetback;
 }) {
+  const scale = fattestTakeAcross([rb, ho]);
   return (
     <section className="mt-8" data-testid="waterfall">
-      <h2 className="text-sm font-medium">Margin available by step</h2>
-      <p className="mt-1 text-xs text-black/45">Source = typed or derived. Blank is — , not $0.00.</p>
-      <div className="mt-3 overflow-x-auto border border-black/15 bg-white">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="border-b border-black/10 text-left text-[11px] uppercase tracking-[0.08em] text-black/45">
-              <th className="px-3 py-2 font-medium">Step</th>
-              <th className="px-3 py-2 font-medium">RB</th>
-              <th className="px-3 py-2 font-medium">HO</th>
-              <th className="px-3 py-2 font-medium">Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rb.steps.map((step, index) => {
-              const other = ho.steps[index];
-              return (
-                <tr key={step.key} className="border-t border-black/10">
-                  <th className="px-3 py-2 text-left text-xs font-medium text-black/65">{step.label}</th>
-                  <td className="px-3 py-2 font-mono text-xs">{formatBoth(step.cents)}</td>
-                  <td className="px-3 py-2 font-mono text-xs">{formatBoth(other.cents)}</td>
-                  <td className="px-3 py-2 text-xs text-black/45">{sourceLabel(step)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.16em] text-black/45">Terminal → retail</p>
+        <h2 className="mt-1 text-sm font-medium">Which take is hacking the gallon</h2>
+        <p className="mt-1 max-w-3xl text-xs text-black/45">
+          Each cut is a take. The longest bar is the fattest bite. Empty rungs stay Call / — , never $0.
+          Tax is a first-class take — federal, state, and other when present — not folded into leftover.
+        </p>
       </div>
-      <ReverseTable rb={rb} ho={ho} />
-      <StackBars rb={rb} ho={ho} />
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        {WHOLESALE_PRODUCTS.map((product) => {
+          const book = product === "RB" ? rb : ho;
+          return (
+            <WaterfallColumn
+              key={product}
+              product={product}
+              book={book}
+              scale={scale}
+            />
+          );
+        })}
+      </div>
+      <p className="mt-3 text-xs text-black/45">{MARINE_TAX_NOTE}</p>
     </section>
   );
 }
 
-function ReverseTable({ rb, ho }: { rb: ProductNetback; ho: ProductNetback }) {
-  const rows = [
-    ["Dock posted − tax = rack-equivalent netback", rb.rackEquivalent, ho.rackEquivalent],
-    ["Rack-equivalent − inbound freight = terminal-equivalent", rb.terminalEquivalent, ho.terminalEquivalent],
-    ["Terminal-equivalent − NYMEX = implied differential", rb.impliedDiff, ho.impliedDiff],
-    ["Implied Δ vs typed Δ (edge)", rb.edgeVsTyped, ho.edgeVsTyped],
-  ] as const;
+function WaterfallColumn({
+  product,
+  book,
+  scale,
+}: {
+  product: WholesaleProduct;
+  book: ProductNetback;
+  scale: number;
+}) {
+  const winner = book.fattestTake;
   return (
-    <div className="mt-4 overflow-x-auto border border-black/15 bg-white">
-      <table className="min-w-full text-sm" data-testid="reverse-netback">
-        <thead>
-          <tr className="border-b border-black/10 text-left text-[11px] uppercase tracking-[0.08em] text-black/45">
-            <th className="px-3 py-2 font-medium">Reverse netback</th>
-            <th className="px-3 py-2 font-medium">RB</th>
-            <th className="px-3 py-2 font-medium">HO</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(([label, r, h]) => (
-            <tr key={label} className="border-t border-black/10">
-              <th className="px-3 py-2 text-left text-xs font-medium text-black/65">{label}</th>
-              <td className="px-3 py-2 font-mono text-xs">{formatBoth(r)}</td>
-              <td className="px-3 py-2 font-mono text-xs">{formatBoth(h)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div
+      className="border border-black/15 bg-white p-4"
+      data-testid={`waterfall-${product.toLowerCase()}`}
+    >
+      <div className="flex items-baseline justify-between gap-2">
+        <h3 className="text-sm font-medium">{PRODUCT_LABEL[product]}</h3>
+        {winner ? (
+          <p className="text-[11px] uppercase tracking-[0.08em] text-[#8a2c12]" data-testid={`fattest-${product.toLowerCase()}`}>
+            Fattest · {book.takes[0]?.label} {formatCents(book.takes[0]?.cents ?? null)}
+          </p>
+        ) : (
+          <p className="text-[11px] text-black/40">No takes yet</p>
+        )}
+      </div>
+      <ol className="mt-4 space-y-2.5">
+        {book.rungs.map((rung) => (
+          <WaterfallRungRow key={rung.key} rung={rung} scale={scale} winner={winner === rung.takeKey} product={product} />
+        ))}
+      </ol>
+      <p className="mt-4 text-[11px] text-black/45" data-testid={`implied-${product.toLowerCase()}`}>
+        Implied Δ {formatBoth(book.impliedDiff)}
+        {book.typedDiff != null ? ` · typed Δ ${formatBoth(book.typedDiff)}` : ""}
+        {book.edgeVsTyped != null ? ` · edge ${formatBoth(book.edgeVsTyped)}` : ""}
+      </p>
     </div>
   );
 }
 
-function StackBars({ rb, ho }: { rb: ProductNetback; ho: ProductNetback }) {
+function WaterfallRungRow({
+  rung,
+  scale,
+  winner,
+  product,
+}: {
+  rung: WaterfallRung;
+  scale: number;
+  winner: boolean;
+  product: WholesaleProduct;
+}) {
+  const cents = rung.cents;
+  const empty = cents == null;
+  const width = cents == null || scale === 0 ? 0 : Math.max(6, (Math.abs(cents) / scale) * 100);
+  const isTake = rung.role === "take" || rung.role === "leftover";
+  const isTax = rung.takeKey === "tax" || rung.takeKey === "taxFederal" || rung.takeKey === "taxState" || rung.takeKey === "taxOther";
   return (
-    <div className="mt-4 grid gap-4 md:grid-cols-2 print:grid-cols-2">
-      {WHOLESALE_PRODUCTS.map((product) => {
-        const book = product === "RB" ? rb : ho;
-        const parts = [
-          { label: "Rack", value: book.rackMargin },
-          { label: "Jobber", value: book.jobberMargin },
-          { label: "Dock remaining", value: book.dockRemaining },
-        ];
-        const known = parts.filter((part) => part.value != null);
-        const total = known.reduce((sum, part) => sum + Math.abs(part.value as number), 0);
-        return (
-          <div key={product} className="border border-black/15 bg-white p-3">
-            <p className="text-xs font-medium">{PRODUCT_LABEL[product as WholesaleProduct]} · stack</p>
-            {known.length === 0 ? (
-              <p className="mt-3 text-sm text-black/45">—</p>
-            ) : (
-              <div className="mt-3 flex h-8 w-full overflow-hidden border border-black/15">
-                {parts.map((part) => {
-                  if (part.value == null || total === 0) return null;
-                  const width = `${(Math.abs(part.value) / total) * 100}%`;
-                  return (
-                    <div
-                      key={part.label}
-                      title={`${part.label} ${formatBoth(part.value)}`}
-                      style={{ width }}
-                      className={
-                        part.label === "Rack"
-                          ? "bg-black/70"
-                          : part.label === "Jobber"
-                            ? "bg-black/40"
-                            : "bg-black/20"
-                      }
-                    />
-                  );
-                })}
-              </div>
-            )}
-            <ul className="mt-2 space-y-0.5 text-[11px] text-black/55">
-              {parts.map((part) => (
-                <li key={part.label}>
-                  {part.label}: {formatBoth(part.value)}
-                </li>
-              ))}
-            </ul>
+    <li
+      data-testid={`rung-${product.toLowerCase()}-${rung.key}`}
+      data-empty={empty ? "1" : "0"}
+      data-winner={winner ? "1" : "0"}
+      className={rung.role === "start" || rung.role === "level" ? "pt-1" : ""}
+    >
+      <div className="flex items-baseline justify-between gap-3">
+        <span className={`text-xs ${isTax ? "font-medium text-black" : "font-medium text-black/70"}`}>
+          {rung.role === "level" || rung.role === "start" ? `= ${rung.label}` : rung.label}
+        </span>
+        <span className="font-mono text-xs tabular-nums">
+          {empty ? "Call / —" : formatBoth(rung.cents)}
+        </span>
+      </div>
+      {isTake ? (
+        empty ? (
+          <div className="mt-1 h-3 border border-dashed border-black/20 bg-[repeating-linear-gradient(90deg,transparent,transparent_6px,rgba(11,31,51,0.06)_6px,rgba(11,31,51,0.06)_7px)]" />
+        ) : (
+          <div className="mt-1 h-3 w-full bg-black/[0.04]">
+            <div
+              style={{ width: `${width}%` }}
+              className={
+                winner
+                  ? isTax
+                    ? "h-full bg-[#8a2c12]"
+                    : "h-full bg-black"
+                  : isTax
+                    ? "h-full bg-[#8a2c12]/55"
+                    : rung.role === "leftover"
+                      ? "h-full bg-black/25"
+                      : "h-full bg-black/45"
+              }
+            />
           </div>
-        );
-      })}
-    </div>
+        )
+      ) : (
+        <div className="mt-1 border-b border-black/10" />
+      )}
+      {rung.sourceLabel ? (
+        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/40">{rung.sourceLabel}</p>
+      ) : empty && isTake ? (
+        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/35">Call / —</p>
+      ) : null}
+    </li>
   );
 }
 
