@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ReportForm } from "@/components/report-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
@@ -5,6 +6,11 @@ import { matchesSearch } from "@/lib/board-query";
 import { readDocks } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Post a number",
+  description: "You were there. What did they have up.",
+};
 
 export default async function ReportPage({
   searchParams,
@@ -22,10 +28,10 @@ export default async function ReportPage({
         The board
       </p>
       <h1 className="mt-1 font-heading text-4xl text-[color:var(--cream)] md:text-5xl">
-        Post the number
+        Post a number
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
-        When the truck comes, or when they change the board. If they did not post, it stays Call.
+        You were there. What did they have up.
       </p>
       <Waterline className="mt-3" />
 

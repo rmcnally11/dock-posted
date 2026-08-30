@@ -27,7 +27,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Dock Posted — Sabine to Key West",
+  title: {
+    default: "Dock Posted — Sabine to Key West",
+    template: "%s — Dock Posted",
+  },
   description:
     "The last number they wrote on the board. If they did not post, it stays Call.",
   icons: { icon: "/favicon.svg" },

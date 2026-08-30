@@ -40,6 +40,12 @@ try {
   check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
   check("week line still call", /\d+ posted this week\.\s+\d+ still Call\./.test(tally ?? ""), tally);
   check("no invent compliance", !/never invent a price/i.test(homeCopy));
+  check(
+    "no campaign nouns",
+    !/the take|the book|open the book|come in|where the cents went|four doors|we publish the pin|we own the pin|fat cut lights up|call is the honest number/i.test(
+      homeCopy,
+    ),
+  );
 
   const wordmark = await page.$eval("[data-testid=wordmark]", (el) => el.textContent?.trim());
   const headerCopy = await page.$eval("header", (el) => el.textContent ?? "");
@@ -130,6 +136,8 @@ try {
   check("board has no wholesale book", !/nymex|differential|\bTCN\b|\brack\b/i.test(homeCopy));
   check("board omits wholesale nav without password", !(await page.$("[data-testid=nav-wholesale]")));
   check("call the dock action", /call the dock/i.test(homeCopy));
+  check("company footer", /if they didn.t post it, it.s Call/i.test(homeCopy));
+  check("osm attribution in footer", /openstreetmap/i.test(homeCopy));
   check("no call ahead", !/call ahead/i.test(homeCopy));
   check("no tbd or unknown", !/\bTBD\b|\bunknown\b/i.test(homeCopy));
   check("verified vs last seen", /verified|last seen/i.test(homeCopy));
@@ -190,7 +198,7 @@ try {
   await page.goto(`${base}/report?dock=galveston-yacht-marina`, { waitUntil: "networkidle0" });
   const reportHero = await page.$eval("main h1", (el) => el.textContent?.trim());
   const reportHeader = await page.$eval("header", (el) => el.textContent ?? "");
-  check("report is its own page", reportHero === "Post the number", reportHero);
+  check("report is its own page", reportHero === "Post a number", reportHero);
   check("report header is not a family lockup", !/what the dock posted/i.test(reportHeader));
   const reporting = await page.$eval("[data-testid=reporting-for]", (el) => el.textContent);
   check("report marina label", reporting?.includes("Galveston Yacht Marina"));
@@ -206,6 +214,11 @@ try {
   const safe = await page.$eval("main", (el) => el.textContent ?? "");
   check("safe fuel", /E15 is not for boats/i.test(safe));
   check("safe fuel is a warning", /walk away/i.test(safe) && !/save|deal|cheap/i.test(safe));
+  check("safe fuel ethanol honesty", /ethanol is what the sticker says/i.test(safe));
+  check(
+    "safe fuel no campaign nouns",
+    !/the take|the book|call is the honest number|we publish the pin/i.test(safe),
+  );
   check("safe fuel no waterdog", !/waterdog|opis|argus|platts|invoice/i.test(safe));
   check("safe fuel no wholesale book", !/nymex|differential|\bTCN\b|\brack\b|jobber/i.test(safe));
 
@@ -217,19 +230,19 @@ try {
   const haulHow = await page.$eval("[data-testid=how-it-works]", (el) => el.textContent ?? "");
   const haulHeader = await page.$eval("header", (el) => el.textContent ?? "");
   check("haul kicker", haulKicker === "Leftover seats", haulKicker);
-  check("haul headline", haulHeadline === "Named storm parking", haulHeadline);
+  check("haul headline", haulHeadline === "Named storm", haulHeadline);
   check(
     "haul deck",
-    haulDeck ===
-      "Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say what was left, it stays Call.",
+    /When they name it, you need a hole\. If the yard didn.t say what was left, it stays Call\./.test(
+      haulDeck ?? "",
+    ),
     haulDeck,
   );
-  check("how it works kicker", /how it works/i.test(haulHow));
-  check("four doors headline", /Four doors\. One cone\./.test(haulHow));
-  check("door 01", /File the boat/.test(haulHow) && /One page/.test(haulHow));
-  check("door 02", /Two yards that fit/.test(haulHow) && /Not a wet slip/.test(haulHow));
-  check("door 03", /The cone gets a name/.test(haulHow));
-  check("door 04", /You call the yard/.test(haulHow) && /We do not/.test(haulHow));
+  check("no four doors slogan", !/Four doors\. One cone\./.test(haulHow) && !/how it works/i.test(haulHow));
+  check("door 01", /File the boat/.test(haulHow));
+  check("door 02", /Two yards that fit/.test(haulHow));
+  check("door 03", /When they name it, we text what.s left/.test(haulHow));
+  check("door 04", /You call the yard\. We don.t lift her\./.test(haulHow));
   check("file the boat button", /File the boat/.test(haulCopy));
   check("no checkout", /No checkout on this page/.test(haulCopy));
   check("all leftover call", /All leftover seats are Call/.test(haulCopy));
@@ -237,12 +250,24 @@ try {
   check("five yards line", /Five yards still have not said what.s left/.test(haulCopy));
   check("yard post heading", /Yard: post what.s left/.test(haulCopy));
   check("we are not the yard", /We are not the yard/.test(haulCopy));
+  check(
+    "haul-out no campaign nouns",
+    !/the take|the book|come in|where the cents went|four doors|a leftover seat, said out loud|call is the honest number/i.test(
+      haulCopy,
+    ),
+  );
   check("no stripe", !/stripe/i.test(haulCopy));
   check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(haulCopy));
   check("haul-out header omits wholesale nav without password", !/wholesale/i.test(haulHeader));
 
   const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
     page.$eval("main", (el) => el.textContent ?? ""),
+  );
+  check("report headline", /Post a number/.test(reportCopy) && /You were there\. What did they have up\./.test(reportCopy));
+  check("report send it button", /Send it/.test(reportCopy) && !/submit a price/i.test(reportCopy));
+  check(
+    "report no campaign nouns",
+    !/if you saw it, write it|the book|call is the honest number/i.test(reportCopy),
   );
   check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber/i.test(reportCopy));
 } catch (error) {

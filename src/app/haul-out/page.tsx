@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { OwnerPlanForm } from "@/components/owner-plan-form";
+import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { YardBoard } from "@/components/yard-board";
 import { YardLeftoverForm } from "@/components/yard-leftover-form";
@@ -9,9 +10,9 @@ import { readYards } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Named storm — Named Storm Plan — Dock Posted",
+  title: "Named storm",
   description:
-    "Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say what was left, it stays Call.",
+    "When they name it, you need a hole. If the yard didn’t say what was left, it stays Call.",
 };
 
 export default async function HaulOutPage({
@@ -35,11 +36,10 @@ export default async function HaulOutPage({
         data-testid="haul-out-headline"
         className="mt-2 font-heading text-4xl text-[color:var(--cream)] md:text-5xl"
       >
-        Named storm parking
+        Named storm
       </h1>
       <p data-testid="haul-out-deck" className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
-        Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say
-        what was left, it stays Call.
+        When they name it, you need a hole. If the yard didn’t say what was left, it stays Call.
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/60">
         We are not the yard. We do not haul, store, or insure. We do not sell wet slips.
@@ -47,22 +47,11 @@ export default async function HaulOutPage({
       <Waterline className="mt-3" />
 
       <section className="mt-10 max-w-3xl space-y-4" data-testid="how-it-works">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--copper)]">
-          How it works
-        </p>
-        <h2 className="font-heading text-2xl text-[color:var(--cream)]">Four doors. One cone.</h2>
-        <p className="text-sm leading-6 text-[color:var(--cream)]/75">
-          You file the boat. We hold two yards that fit. When NHC names it, you call. We
-          do not lift.
-        </p>
         <ol className="list-decimal space-y-3 pl-5 text-sm leading-6 text-[color:var(--cream)]/75">
-          <li>File the boat — Name, length, where she sits. One page.</li>
-          <li>Two yards that fit — A primary and a backup. Indoor or lot. Not a wet slip.</li>
-          <li>
-            The cone gets a name — We text what’s left and the yard number. If the yard
-            did not say, it stays Call.
-          </li>
-          <li>You call the yard — They haul. They store. They insure. We do not.</li>
+          <li>File the boat</li>
+          <li>Two yards that fit</li>
+          <li>When they name it, we text what’s left</li>
+          <li>You call the yard. We don’t lift her.</li>
         </ol>
       </section>
 
@@ -124,6 +113,7 @@ export default async function HaulOutPage({
         </p>
         <p className="mt-3">Five yards still have not said what’s left.</p>
       </section>
+      <SiteFooter />
     </main>
   );
 }

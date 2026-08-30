@@ -229,13 +229,18 @@ assert.doesNotMatch(headerSource, />Board</);
 assert.doesNotMatch(headerSource, />Report</);
 
 const haulSource = readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8");
-assert.match(haulSource, /Four doors\. One cone\./);
+assert.match(haulSource, /Leftover seats/);
+assert.match(haulSource, /data-testid="haul-out-headline"[\s\S]*Named storm/);
+assert.match(haulSource, /When they name it, you need a hole/);
 assert.match(haulSource, /File the boat/);
 assert.match(haulSource, /Two yards that fit/);
-assert.match(haulSource, /The cone gets a name/);
-assert.match(haulSource, /You call the yard/);
+assert.match(haulSource, /When they name it, we text what.s left/);
+assert.match(haulSource, /You call the yard\. We don.t lift her\./);
+assert.doesNotMatch(haulSource, /Four doors\. One cone\./);
 assert.doesNotMatch(haulSource, /\bKill\b/);
 assert.match(haulSource, /Five yards still have not said/);
+assert.doesNotMatch(haulSource, /Named storm parking/);
+assert.doesNotMatch(haulSource, /A leftover seat, said out loud/);
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /What the dock posted/);
@@ -247,8 +252,24 @@ assert.match(
 
 const reportSource = readFileSync(path.join(process.cwd(), "src/app/report/page.tsx"), "utf8");
 const safeSource = readFileSync(path.join(process.cwd(), "src/app/safe-fuel/page.tsx"), "utf8");
+const footerSource = readFileSync(path.join(process.cwd(), "src/components/site-footer.tsx"), "utf8");
 assert.doesNotMatch(reportSource, /What the dock posted/);
 assert.doesNotMatch(safeSource, /What the dock posted/);
+assert.match(reportSource, /Post a number/);
+assert.match(reportSource, /You were there\. What did they have up\./);
+assert.doesNotMatch(reportSource, /submit a price/i);
+assert.doesNotMatch(reportSource, /If you saw it, write it/);
+assert.match(footerSource, /If they didn.t post it, it.s Call\./);
+assert.match(footerSource, /OpenStreetMap/);
+assert.doesNotMatch(footerSource, /We publish the pin/);
+assert.doesNotMatch(footerSource, /What the boater saw/);
+const campaign =
+  /The take|The book|Open the book|Come in|Where the cents went|Four doors\. One cone|We publish the pin|Call is the honest number|fat cut lights up/;
+assert.doesNotMatch(homeSource, campaign);
+assert.doesNotMatch(reportSource, campaign);
+assert.doesNotMatch(safeSource, campaign);
+assert.doesNotMatch(haulSource, campaign);
+assert.doesNotMatch(footerSource, campaign);
 
 const cardSource = readFileSync(path.join(process.cwd(), "src/components/dock-card.tsx"), "utf8");
 assert.match(cardSource, />Regular</);

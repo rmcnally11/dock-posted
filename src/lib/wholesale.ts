@@ -490,7 +490,7 @@ export function computeProductNetback(
     steps.push(
       {
         key: "taxFederal",
-        label: "Federal excise",
+        label: "Federal tax",
         cents: resolved.federal.cents,
         kind: "take",
         source: resolved.federal.origin,
@@ -498,7 +498,7 @@ export function computeProductNetback(
       },
       {
         key: "taxState",
-        label: "State motor fuel",
+        label: "State tax",
         cents: resolved.state.cents,
         kind: "take",
         source: resolved.state.origin,
@@ -508,7 +508,7 @@ export function computeProductNetback(
     if (resolved.other.cents != null) {
       steps.push({
         key: "taxOther",
-        label: "Other / local",
+        label: "Other tax",
         cents: resolved.other.cents,
         kind: "take",
         source: resolved.other.origin,
@@ -1059,7 +1059,7 @@ export function buildWaterfallRungs(
     rungs.push(
       rung(
         "taxFederal",
-        "Federal excise",
+        "Federal tax",
         resolved.federal.cents,
         "take",
         resolved.federal.origin,
@@ -1068,7 +1068,7 @@ export function buildWaterfallRungs(
       ),
       rung(
         "taxState",
-        "State motor fuel",
+        "State tax",
         resolved.state.cents,
         "take",
         resolved.state.origin,
@@ -1078,7 +1078,7 @@ export function buildWaterfallRungs(
     );
     if (resolved.other.cents != null) {
       rungs.push(
-        rung("taxOther", "Other / local", resolved.other.cents, "take", resolved.other.origin, resolved.other.sourceLabel, "taxOther"),
+        rung("taxOther", "Other tax", resolved.other.cents, "take", resolved.other.origin, resolved.other.sourceLabel, "taxOther"),
       );
     }
   }

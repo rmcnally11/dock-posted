@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -527,6 +528,31 @@ assert.equal(partial.ho.nymexScreen, null);
 const partialBook = computeWorksheet(partial);
 assert.equal(partialBook.RB.terminalSpot, null);
 assert.equal(formatCents(partialBook.RB.rackMargin), "—");
+
+const deskSource = readFileSync(path.join(process.cwd(), "src/app/wholesale/desk.tsx"), "utf8");
+const wholesalePage = readFileSync(path.join(process.cwd(), "src/app/wholesale/page.tsx"), "utf8");
+const printPage = readFileSync(path.join(process.cwd(), "src/app/wholesale/print/page.tsx"), "utf8");
+assert.match(deskSource, />Wholesale</);
+assert.match(deskSource, /What it cost\. What they posted\./);
+assert.match(deskSource, /Continue/);
+assert.doesNotMatch(deskSource, /Come in/);
+assert.doesNotMatch(deskSource, /Where the cents went/);
+assert.doesNotMatch(deskSource, /The take/);
+assert.doesNotMatch(deskSource, /The book/);
+assert.doesNotMatch(deskSource, /Open the book/);
+assert.doesNotMatch(deskSource, /hacking the gallon/);
+assert.doesNotMatch(deskSource, /Investor print/);
+assert.doesNotMatch(deskSource, /Sign in to dashboard/);
+assert.match(wholesalePage, /How the gallon got that way\./);
+assert.doesNotMatch(wholesalePage, /The take/);
+assert.doesNotMatch(wholesalePage, /Come in/);
+assert.doesNotMatch(wholesalePage, /Where the cents went/);
+assert.match(printPage, /Wholesale · /);
+assert.doesNotMatch(printPage, /This week.s sheet/);
+assert.doesNotMatch(printPage, /The book/);
+assert.doesNotMatch(printPage, /Investor/);
+assert.equal(filled.rungs.find((rung) => rung.key === "taxFederal")?.label, "Federal tax");
+assert.equal(filled.rungs.find((rung) => rung.key === "taxState")?.label, "State tax");
 
 async function storeRoundtrip() {
   const dir = await mkdtemp(path.join(tmpdir(), "dock-posted-wholesale-"));

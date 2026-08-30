@@ -159,10 +159,10 @@ export function ReportForm({ docks, initialDockId }: { docks: Dock[]; initialDoc
       </div>
 
       <Button type="submit" data-testid="post-price" className="w-full sm:w-auto">
-        Post what you saw
+        Send it
       </Button>
       <p className="text-xs text-[color:var(--cream)]/50">
-        The number on the pump. A marina owns a verified pin. If they did not post, it stays Call.
+        The number on the pump. If they did not post, it stays Call.
       </p>
     </form>
   );

@@ -8,7 +8,13 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
       }
     >
       <p className={compact ? "" : "text-xs leading-5 text-[color:var(--cream)]/50"}>
-        What the boater saw. Call the dock.
+        If they didn’t post it, it’s Call.{" "}
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          className="underline-offset-2 hover:underline"
+        >
+          © OpenStreetMap
+        </a>
       </p>
     </footer>
   );

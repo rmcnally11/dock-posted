@@ -58,11 +58,7 @@ export default async function WholesalePrintPage({
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 print:px-0 print:py-0">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.16em] text-black/45">Investor view · typed inputs</p>
-          <h1 className="mt-1 text-3xl font-medium tracking-tight">Wholesale · {area.label}</h1>
-          <p className="mt-2 max-w-3xl text-sm text-black/55">
-            One region. Terminals as rows. Margin stack as columns. Not a blended Gulf number.
-          </p>
+          <h1 className="text-3xl font-medium tracking-tight">Wholesale · {area.label}</h1>
           <p className="mt-2 text-xs text-black/45">{area.note}</p>
           {anyBook ? (
             <p className="mt-2 text-xs text-black/50">
@@ -103,8 +99,8 @@ export default async function WholesalePrintPage({
               <th className="px-2 py-2 font-medium">Jobber</th>
               <th className="px-2 py-2 font-medium">Jobber margin</th>
               <th className="px-2 py-2 font-medium">Dock posted</th>
-              <th className="px-2 py-2 font-medium">Federal</th>
-              <th className="px-2 py-2 font-medium">State</th>
+              <th className="px-2 py-2 font-medium">Federal tax</th>
+              <th className="px-2 py-2 font-medium">State tax</th>
               <th className="px-2 py-2 font-medium">Tax</th>
               <th className="px-2 py-2 font-medium">Ex-tax</th>
               <th className="px-2 py-2 font-medium">Remaining</th>
