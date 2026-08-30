@@ -358,7 +358,7 @@ assert.ok(
 );
 
 const fence =
-  /cheapest fuel|bargain map|on this water|instrument family|field letter|almanac|onthiswater|wind is the tide|sister page|field board|us saltwater docks|the board at the dock|seven letter|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning|Holds Fast|waterdogfuel\.com/i;
+  /cheapest fuel|bargain map|on this water|instrument family|field letter|almanac|onthiswater|wind is the tide|sister page|field board|us saltwater docks|the board at the dock|seven letter|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning|Holds Fast|waterdogfuel\.com|should-be|Fair hose/i;
 for (const file of [
   "src/app/page.tsx",
   "src/app/layout.tsx",
@@ -380,7 +380,7 @@ for (const file of [
 }
 
 const pinWall =
-  /waterdog|coastal cavaliers|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|nymex|\bTCN\b|pasadena rack/i;
+  /waterdog|coastal cavaliers|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|nymex|\bTCN\b|pasadena rack|should-be|Fair hose|\binvoice\b/i;
 for (const file of [
   "src/components/dock-card.tsx",
   "src/components/dock-board.tsx",
@@ -539,7 +539,7 @@ assert.doesNotMatch(footerSource, /waterdogfuel\.com|RJMtweets11|Holds Fast/i);
 assert.doesNotMatch(footerSource, /We publish the pin/);
 assert.doesNotMatch(footerSource, /What the boater saw/);
 const campaign =
-  /The take|The book|Open the book|Come in|Where the cents went|Four doors\. One cone|We publish the pin|Call is the honest number|fat cut lights up/;
+  /The take|The book|Open the book|Come in|Where the cents went|Four doors\. One cone|We publish the pin|Call is the honest number|fat cut lights up|should-be|Fair hose/;
 const aboutSource = readFileSync(path.join(process.cwd(), "src/app/about/page.tsx"), "utf8");
 const xTimelineSource = readFileSync(path.join(process.cwd(), "src/components/x-timeline.tsx"), "utf8");
 const xHandleSource = readFileSync(path.join(process.cwd(), "src/lib/x-handle.ts"), "utf8");

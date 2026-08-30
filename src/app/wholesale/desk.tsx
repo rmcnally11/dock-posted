@@ -376,13 +376,13 @@ function WorksheetFields({
           <FieldRow label="Posted rack" name="rack" rb={sheet.rb.postedRack} ho={sheet.ho.postedRack} unit={unit} />
           <FieldRow label="Jobber sell" name="jobber" rb={sheet.rb.jobberSell} ho={sheet.ho.jobberSell} unit={unit} />
           <FieldRow
-            label="Dock / retail posted"
+            label="Posted pump"
             name="dock"
             rb={sheet.rb.dockPosted}
             ho={sheet.ho.dockPosted}
             unit={unit}
-            rbHint={prepared?.rb.labels.dockPosted ?? null}
-            hoHint={prepared?.ho.labels.dockPosted ?? null}
+            rbHint={prepared?.rb.labels.dockPosted ?? "Boater's number. Not the cost sheet."}
+            hoHint={prepared?.ho.labels.dockPosted ?? "Boater's number. Not the cost sheet."}
           />
           <FieldRow
             label="Federal tax"
@@ -402,6 +402,33 @@ function WorksheetFields({
             rbHint={prepared?.rb.tax.state.sourceLabel ?? null}
             hoHint={prepared?.ho.tax.state.sourceLabel ?? null}
           />
+          <tr className="border-t border-black/10 bg-black/[0.03]">
+            <th colSpan={3} className="px-3 py-2 text-left text-xs font-medium text-black/70">
+              What it should have been.
+            </th>
+          </tr>
+          <FieldRow
+            label="Fair hose."
+            name="hose"
+            rb={sheet.rb.fairHose}
+            ho={sheet.ho.fairHose}
+            unit={unit}
+            rbHint="Typed cost-to-cost. Blank until you type it."
+            hoHint="Typed cost-to-cost. Blank until you type it."
+            rbTyped={sheet.rb.fairHose != null}
+            hoTyped={sheet.ho.fairHose != null}
+          />
+          <FieldRow
+            label="Invoice / delivered"
+            name="invoice"
+            rb={sheet.rb.invoiceDelivered}
+            ho={sheet.ho.invoiceDelivered}
+            unit={unit}
+            rbHint="Typed only. Never from the board or posted pump."
+            hoHint="Typed only. Never from the board or posted pump."
+            rbTyped={sheet.rb.invoiceDelivered != null}
+            hoTyped={sheet.ho.invoiceDelivered != null}
+          />
         </tbody>
       </table>
       <div className="grid gap-3 border-t border-black/10 p-3 sm:grid-cols-2">
@@ -410,8 +437,9 @@ function WorksheetFields({
       </div>
       <p className="px-3 pb-3 text-xs text-black/45">
         {MARINE_TAX_NOTE} Published federal and state defaults come from the IRS / EIA table on this
-        desk. A missing federal or state leaves dock ex-tax and remaining as —, never $0.00. One tax
-        line overrides the split.
+        desk. A missing federal or state leaves DAP, should-be, dock ex-tax, and remaining as —, never
+        $0.00. One tax line overrides the split. Fair hose and invoice stay blank until typed. Fat
+        take is invoice versus posted rack, not posted pump.
       </p>
     </div>
   );
@@ -665,7 +693,7 @@ function WaterfallColumn({
       </ol>
       {book.taxIncomplete ? (
         <p className="mt-3 text-xs text-[#8a2c12]" data-testid={`tax-incomplete-${product.toLowerCase()}`}>
-          Tax strip incomplete. Federal and state stay visible. Dock remaining stays —.
+          Tax strip incomplete. Federal and state stay visible. DAP, should-be, and dock remaining stay —.
         </p>
       ) : null}
       <p className="mt-4 text-[11px] text-black/45" data-testid={`implied-${product.toLowerCase()}`}>
