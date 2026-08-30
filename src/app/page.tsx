@@ -52,8 +52,7 @@ export default async function Home({
             The last number they wrote on the board. If they did not post, it stays Call.
           </p>
           <p data-testid="board-tally" className="mt-2 text-sm text-[color:var(--cream)]/55">
-            {tally.postedThisWeek} posted this week · {tally.call} Call
-            {tally.stale ? ` · ${tally.stale} stale` : ""}
+            {tally.postedThisWeek} posted this week. {tally.call} still Call.
           </p>
           <Waterline className="mt-3" />
         </div>

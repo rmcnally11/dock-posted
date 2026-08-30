@@ -9,9 +9,9 @@ import { readYards } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Haul-out — Named Storm Plan — Dock Posted",
+  title: "Named storm — Named Storm Plan — Dock Posted",
   description:
-    "Leftover hurricane haul-out seats for Clear Lake, Kemah, and the Upper Keys. If the yard did not say what was left, it stays Call.",
+    "Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say what was left, it stays Call.",
 };
 
 export default async function HaulOutPage({
@@ -38,11 +38,11 @@ export default async function HaulOutPage({
         Named storm parking
       </h1>
       <p data-testid="haul-out-deck" className="mt-2 max-w-2xl text-sm text-[color:var(--cream)]/65">
-        If the yard did not say what was left, it stays Call.
+        Indoor and lot on Clear Lake, Kemah, and the Upper Keys. If the yard did not say
+        what was left, it stays Call.
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--cream)]/60">
-        Clear Lake, Kemah, Upper Keys. Indoor and lot only. We are not the yard. We do
-        not haul, store, or insure. We do not sell wet slips.
+        We are not the yard. We do not haul, store, or insure. We do not sell wet slips.
       </p>
       <Waterline className="mt-3" />
 
@@ -81,7 +81,7 @@ export default async function HaulOutPage({
       <section id="yard-board" className="mt-12 max-w-3xl">
         <h2 className="font-heading text-2xl text-[color:var(--cream)]">Yard board</h2>
         <p className="mt-2 text-sm leading-6 text-[color:var(--cream)]/65">
-          Remaining seats are Call until a yard says a number out loud. Names here are
+          A leftover seat is Call until a yard says a number out loud. Names here are
           unverified. We do not invent a hole.
         </p>
         {emptyBoard ? (
@@ -100,7 +100,7 @@ export default async function HaulOutPage({
       </section>
 
       <section id="yard-post" className="mt-8 max-w-3xl">
-        <h2 className="font-heading text-lg text-[color:var(--cream)]">Yard: post leftover seats</h2>
+        <h2 className="font-heading text-lg text-[color:var(--cream)]">Yard: post what’s left</h2>
         <div className="mt-3 rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
           {params.yardError ? (
             <p className="mb-4 rounded-md bg-[color:var(--copper)]/10 px-3 py-2 text-sm text-[color:var(--copper)]">
@@ -113,14 +113,14 @@ export default async function HaulOutPage({
 
       <section className="mt-12 max-w-3xl border-t border-[color:var(--line)] pt-8 text-xs leading-6 text-[color:var(--cream)]/50">
         <p>
-          Owner: {NAMED_STORM_PLAN_PRICE} for a Named Storm Plan. One-page primary and
-          backup, plus an NHC-name text with remaining seats and the yard phone. Form
-          only. No checkout yet.
+          Owner: {NAMED_STORM_PLAN_PRICE} for a Named Storm Plan. One page, a primary and
+          a backup, plus a text when NHC names a storm in the cone — what’s left, and the
+          yard phone. Form only. No checkout yet.
         </p>
         <p className="mt-3">
-          Yard: a bounty when a referred boat actually shows. They keep the haul fee.
-          Clear Lake first-come color has been about $40 a foot. That is not a quote. If
-          a yard will not disclose leftover seats, they stay Call and they get no boats.
+          Yard: A referred boat that actually shows: the yard keeps the haul fee. Clear
+          Lake first-come color has been about $40 a foot. That is not a quote. If a yard
+          won’t say what’s left, it stays Call, and they get no boats.
         </p>
         <p className="mt-3">Five yards still have not said what’s left.</p>
       </section>
