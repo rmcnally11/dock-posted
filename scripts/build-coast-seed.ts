@@ -1802,7 +1802,7 @@ async function main() {
       ...dock,
       region: dock.region ?? (dock.corridor ? HOME_REGION[dock.corridor] : "keys"),
       ...HOME_PATCHES[dock.id],
-      ...(ISLAMORADA_IDS.has(dock.id) ? { corridor: null as const } : {}),
+      ...(ISLAMORADA_IDS.has(dock.id) ? { corridor: null as Dock["corridor"] } : {}),
     };
     home.push(patched);
     homeIds.add(dock.id);
