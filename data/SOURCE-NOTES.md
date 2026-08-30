@@ -129,9 +129,11 @@ Rules used:
 
 Miles on area attachments are great-circle city-to-region-center distances, for “nearest / direction” labels only. They are not freight.
 
+Public NYMEX screen (internal desk only, 30 Aug 2026): Yahoo Finance chart API for `RB=F` (RBOB Gasoline, NY Mercantile, USD/gal) and `HO=F` (Heating Oil / NY Harbor ULSD, NY Mercantile, USD/gal). Confirmed on the public quote pages https://finance.yahoo.com/quote/RB=F/ and https://finance.yahoo.com/quote/HO=F/. The desk converts dollars/gal to ¢/gal. Failed, stale, or unparseable quotes stay blank. Typed screen wins. This is not Platts, OPIS, DTN, or a paid vendor.
+
 ## Wholesale tax defaults (internal desk only)
 
-Slow published numbers only. File: `data/wholesale-tax.json`. Never a live market fetch.
+Slow published numbers only. File: `data/wholesale-tax.json`. Tax table is not a live market fetch. NYMEX screen may pull public Yahoo `RB=F` / `HO=F`.
 
 1. Federal highway excise, including LUST 0.1 ¢/gal: **18.4 ¢/gal gasoline (RB)**, **24.4 ¢/gal diesel (HO)**. IRS / EIA. Unchanged since 1 Oct 1993. Label: `default · IRS as of 2026`. EIA FAQ https://www.eia.gov/tools/faqs/faq.php?id=10&t=5 and EIA `fueltaxes.xlsx` federal row (18.4 / 24.4 including LUST).
 2. State motor fuel tax: EIA *Federal and state motor fuel taxes*, sheet **July 2026 (revised August 2026)**, Total State column (excise + other state fees of general application; excludes federal and local option). File last-modified 4 Aug 2026 on eia.gov. https://www.eia.gov/petroleum/marketing/monthly/xls/fueltaxes.xlsx

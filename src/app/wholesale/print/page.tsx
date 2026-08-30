@@ -1,8 +1,10 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { PrintButton } from "@/components/print-button";
 import { readDocks, readWholesaleStore } from "@/lib/store";
 import {
   computeWorksheet,
+  deskFootnotes,
   emptyWorksheet,
   findArea,
   formatBoth,
@@ -10,6 +12,8 @@ import {
   tcnLabel,
   terminalsForArea,
 } from "@/lib/wholesale";
+import { WHOLESALE_DRAFT_COOKIE, parseWholesaleDraft } from "@/lib/wholesale-draft";
+import { fetchYahooNymexScreens, nymexFallbackMap } from "@/lib/wholesale-nymex";
 import { DeskLogout } from "../desk";
 import { isWholesaleAuthed } from "../gate";
 
@@ -27,11 +31,22 @@ export default async function WholesalePrintPage({
   const area = findArea(areaId);
   const store = await readWholesaleStore();
   const docks = await readDocks();
+  const screens = await fetchYahooNymexScreens();
+  const fallback = nymexFallbackMap(screens);
+  const draft = parseWholesaleDraft((await cookies()).get(WHOLESALE_DRAFT_COOKIE)?.value);
   const rows = terminalsForArea(areaId).map(({ terminal, ref }) => {
     const stored = store.worksheets[terminal.id] ?? emptyWorksheet();
-    const books = computeWorksheet(stored, { state: terminal.state, areaId, docks, saved: stored });
+    const computed = draft && draft.terminalId === terminal.id ? draft.sheet : stored;
+    const books = computeWorksheet(computed, {
+      state: terminal.state,
+      areaId,
+      docks,
+      saved: computed,
+      nymexFallback: fallback,
+    });
     return { terminal, ref, rb: books.RB, ho: books.HO };
   });
+  const footnotes = deskFootnotes(area);
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 print:px-0 print:py-0">
@@ -43,6 +58,13 @@ export default async function WholesalePrintPage({
             One region. Terminals as rows. Margin stack as columns. Not a blended Gulf number.
           </p>
           <p className="mt-2 text-xs text-black/45">{area.note}</p>
+          {footnotes.length > 0 ? (
+            <ul className="mt-2 max-w-3xl space-y-1 text-xs text-black/45">
+              {footnotes.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
+            </ul>
+          ) : null}
         </div>
         <DeskLogout />
       </div>
@@ -110,7 +132,13 @@ export default async function WholesalePrintPage({
         </table>
       </div>
 
-      <p className="mt-4 text-xs text-black/45">Every figure is typed or derived from typed. No live NYMEX or Platts feed.</p>
+      <p className="mt-4 text-xs text-black/45">
+        Saved or computed book for this region, plus the public Yahoo Finance NYMEX screen (RB=F / HO=F)
+        when the screen cell is blank. No Platts, OPIS, DTN, or paid vendor. RB {formatBoth(screens.RB.cents)}
+        {screens.RB.asOfLabel ? ` as of ${screens.RB.asOfLabel}` : screens.RB.note ? ` · ${screens.RB.note}` : ""}. HO{" "}
+        {formatBoth(screens.HO.cents)}
+        {screens.HO.asOfLabel ? ` as of ${screens.HO.asOfLabel}` : screens.HO.note ? ` · ${screens.HO.note}` : ""}.
+      </p>
 
       <div className="mt-6 flex gap-4 print:hidden">
         <PrintButton />

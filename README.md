@@ -109,6 +109,8 @@ The desk default is a terminal→retail waterfall (RB and HO side by side). Tax 
 
 Differentials and per-terminal inputs persist next to haul-out: `DATA_DIR` / `data/runtime/wholesale.json`, or Blob `dock-posted/wholesale.json`. Terminal TCNs are in `data/wholesale-terminals.json` (IRS directory + Buckeye / KM pages). Blank TCN stays blank.
 
+The desk may pull the public Yahoo Finance NYMEX front-month screens — `RB=F` (RBOB / gasoline) and `HO=F` (NY Harbor ULSD / heating oil). Fetch is server-side. If Yahoo fails, is stale, or will not parse, the screen stays — and the desk says so. A typed screen wins. Not Platts, OPIS, DTN, RINs, or Rio Energy.
+
 ```bash
 npm run test:wholesale
 ```

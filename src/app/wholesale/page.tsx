@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { readDocks, readWholesaleStore } from "@/lib/store";
 import {
   applyWorksheetDefaults,
@@ -8,10 +9,11 @@ import {
   parseAreaId,
   parseUnit,
   terminalsForArea,
-  worksheetFromFields,
 } from "@/lib/wholesale";
+import { WHOLESALE_DRAFT_COOKIE, parseWholesaleDraft } from "@/lib/wholesale-draft";
+import { fetchYahooNymexScreens, nymexFallbackMap } from "@/lib/wholesale-nymex";
 import { isWholesaleAuthed } from "./gate";
-import { AreaChips, DeskLogout, LoginPanel, TerminalTable, Waterfall, Worksheet } from "./desk";
+import { AreaChips, DeskLogout, LoginPanel, NymexBanner, TerminalTable, Waterfall, Worksheet } from "./desk";
 
 export const dynamic = "force-dynamic";
 
@@ -37,21 +39,34 @@ export default async function WholesalePage({
       ? params.terminal
       : (attached[0]?.terminal.id ?? null);
   const selected = selectedId ? findTerminal(selectedId) : null;
+  const screens = await fetchYahooNymexScreens();
+  const fallback = nymexFallbackMap(screens);
 
+  const jar = await cookies();
+  const draft = parseWholesaleDraft(jar.get(WHOLESALE_DRAFT_COOKIE)?.value);
   const saved = selectedId ? (store.worksheets[selectedId] ?? emptyWorksheet()) : emptyWorksheet();
-  const sheet = hasTypedFields(params) ? worksheetFromFields(params, unit) : saved;
+  const usingDraft = Boolean(draft && selectedId && draft.terminalId === selectedId);
+  const sheet = usingDraft && draft ? draft.sheet : saved;
   const context = {
     state: selected?.state,
     areaId,
     docks,
-    saved,
+    saved: usingDraft ? sheet : saved,
+    nymexFallback: fallback,
   };
   const live = computeWorksheet(sheet, context);
   const prepared = applyWorksheetDefaults(sheet, context);
 
   const tableRows = attached.map(({ terminal, ref }) => {
     const stored = store.worksheets[terminal.id] ?? emptyWorksheet();
-    const books = computeWorksheet(stored, { state: terminal.state, areaId, docks, saved: stored });
+    const computed = draft && draft.terminalId === terminal.id ? draft.sheet : stored;
+    const books = computeWorksheet(computed, {
+      state: terminal.state,
+      areaId,
+      docks,
+      saved: computed,
+      nymexFallback: fallback,
+    });
     return { terminal, ref, rb: books.RB, ho: books.HO };
   });
 
@@ -76,6 +91,8 @@ export default async function WholesalePage({
         {selected ? ` · ${selected.city} · ${selected.state}` : ""}
       </p>
 
+      <NymexBanner screens={screens} />
+
       {selected && selectedId ? (
         <>
           <Waterfall rb={live.RB} ho={live.HO} />
@@ -86,6 +103,8 @@ export default async function WholesalePage({
             prepared={prepared}
             unit={unit}
             diffs={store.differentials.filter((row) => row.terminalId === selectedId)}
+            screens={screens}
+            draft={usingDraft}
             error={params.error}
             saved={params.saved === "1"}
           />
@@ -95,29 +114,4 @@ export default async function WholesalePage({
       <TerminalTable area={area} rows={tableRows} selectedId={selectedId} unit={unit} />
     </main>
   );
-}
-
-function hasTypedFields(params: Record<string, string | undefined>): boolean {
-  return [
-    "nymex_rb",
-    "nymex_ho",
-    "diff_rb",
-    "diff_ho",
-    "freight_rb",
-    "freight_ho",
-    "rack_rb",
-    "rack_ho",
-    "jobber_rb",
-    "jobber_ho",
-    "dock_rb",
-    "dock_ho",
-    "tax_federal",
-    "tax_state",
-    "tax_federal_rb",
-    "tax_federal_ho",
-    "tax_state_rb",
-    "tax_state_ho",
-    "tax_other",
-    "tax_one",
-  ].some((key) => (params[key] ?? "").trim() !== "");
 }

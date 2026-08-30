@@ -5,6 +5,7 @@ import {
   WHOLESALE_PRODUCTS,
   areaLabel,
   displayInputValue,
+  deskFootnotes,
   fattestTakeAcross,
   formatBoth,
   formatCents,
@@ -21,7 +22,16 @@ import {
   type WholesaleProduct,
   type WholesaleTerminal,
 } from "@/lib/wholesale";
-import { addTerminalDiff, loginWholesale, logoutWholesale, removeTerminalDiff, saveWholesaleWorksheet } from "./actions";
+import type { NymexScreenPull } from "@/lib/wholesale-nymex";
+import {
+  addTerminalDiff,
+  applyTerminalDiff,
+  computeWholesaleWorksheet,
+  loginWholesale,
+  logoutWholesale,
+  removeTerminalDiff,
+  saveWholesaleWorksheet,
+} from "./actions";
 
 export function DeskLogout() {
   return (
@@ -84,8 +94,8 @@ export function TerminalTable({
               <th className="px-3 py-2 font-medium">Terminal</th>
               <th className="px-3 py-2 font-medium">TCN_IRS</th>
               <th className="px-3 py-2 font-medium">Operator</th>
-              <th className="px-3 py-2 font-medium">RB rack</th>
-              <th className="px-3 py-2 font-medium">HO rack</th>
+              <th className="px-3 py-2 font-medium">RB rack margin</th>
+              <th className="px-3 py-2 font-medium">HO rack margin</th>
               <th className="px-3 py-2 font-medium">RB remaining</th>
               <th className="px-3 py-2 font-medium">HO remaining</th>
               <th className="px-3 py-2 font-medium">RB implied Δ</th>
@@ -129,13 +139,43 @@ export function TerminalTable({
           </tbody>
         </table>
       </div>
-      {area.footnotes.length > 0 ? (
+      {deskFootnotes(area).length > 0 ? (
         <ul className="mt-3 max-w-3xl space-y-1 text-xs leading-5 text-black/45">
-          {area.footnotes.map((note) => (
+          {deskFootnotes(area).map((note) => (
             <li key={note}>{note}</li>
           ))}
         </ul>
       ) : null}
+    </section>
+  );
+}
+
+export function NymexBanner({ screens }: { screens: NymexScreenPull }) {
+  return (
+    <section className="mt-6 border border-black/15 bg-white p-4" data-testid="nymex-yahoo">
+      <h2 className="text-sm font-medium">NYMEX screen · Yahoo Finance (public)</h2>
+      <p className="mt-1 text-xs text-black/45">
+        RB=F (RBOB / gasoline) and HO=F (NY Harbor ULSD / heating oil). Server pull only. Not Platts,
+        OPIS, DTN, or a paid vendor. Typed screen wins. Failed or stale quotes stay —.
+      </p>
+      <ul className="mt-3 space-y-1 text-sm">
+        {WHOLESALE_PRODUCTS.map((product) => {
+          const quote = screens[product];
+          const asOf = quote.asOfLabel ?? "no as-of";
+          const price = formatBoth(quote.cents);
+          const status =
+            quote.status === "ok"
+              ? `as of ${asOf}`
+              : quote.note ?? `${quote.status} — screen left blank`;
+          return (
+            <li key={product} data-testid={`nymex-${product.toLowerCase()}`}>
+              <span className="font-medium">{product}</span> · {quote.ticker}
+              {quote.shortName ? ` · ${quote.shortName}` : ""} · {price}
+              <span className="text-black/45"> · {status}</span>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
@@ -147,6 +187,8 @@ export function Worksheet({
   prepared,
   unit,
   diffs,
+  screens,
+  draft,
   error,
   saved,
 }: {
@@ -156,6 +198,8 @@ export function Worksheet({
   prepared?: PreparedWorksheet;
   unit: InputUnit;
   diffs: DiffRow[];
+  screens: NymexScreenPull;
+  draft?: boolean;
   error?: string;
   saved?: boolean;
 }) {
@@ -179,7 +223,8 @@ export function Worksheet({
         <div>
           <h2 className="text-sm font-medium">Override strip</h2>
           <p className="mt-1 text-sm text-black/55">
-            {terminal.city} · {tcnLabel(terminal)} · {terminal.operator}. Market cells stay blank until typed.
+            {terminal.city} · {tcnLabel(terminal)} · {terminal.operator}. Empty stays blank. Freight
+            is typed tariff only — miles are labels, not cents.
           </p>
         </div>
         <div className="flex gap-2 text-xs print:hidden">
@@ -206,62 +251,51 @@ export function Worksheet({
 
       {error ? <p className="mt-3 text-sm text-[#8a2c12]">{error}</p> : null}
       {saved ? <p className="mt-3 text-sm text-black/55">Saved for this terminal.</p> : null}
+      {draft ? (
+        <p className="mt-3 text-sm text-black/55" data-testid="compute-draft">
+          Showing computed figures. Inputs below are the same book. Not written until you save.
+        </p>
+      ) : null}
 
-      <form action="" method="get" className="mt-4 print:hidden">
+      <form className="mt-4 print:hidden">
         <input type="hidden" name="area" value={areaId} />
         <input type="hidden" name="terminal" value={terminal.id} />
         <input type="hidden" name="unit" value={unit} />
-        <WorksheetFields sheet={display} prepared={prepared} unit={unit} unitLabel={unitLabel} />
-        <button type="submit" className="mt-4 h-9 border border-black/20 bg-white px-3 text-sm">
-          Compute
-        </button>
+        <WorksheetFields
+          sheet={display}
+          prepared={prepared}
+          unit={unit}
+          unitLabel={unitLabel}
+          screens={screens}
+        />
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="submit"
+            formAction={computeWholesaleWorksheet}
+            className="h-9 border border-black/20 bg-white px-3 text-sm"
+            data-testid="compute-worksheet"
+          >
+            Compute
+          </button>
+          <button
+            type="submit"
+            formAction={saveWholesaleWorksheet}
+            className="h-9 border border-black bg-black px-3 text-sm text-white"
+            data-testid="save-worksheet"
+          >
+            Save terminal
+          </button>
+        </div>
       </form>
 
-      <form action={saveWholesaleWorksheet} className="mt-3 print:hidden">
-        <input type="hidden" name="area" value={areaId} />
-        <input type="hidden" name="terminal" value={terminal.id} />
-        <input type="hidden" name="unit" value="cent" />
-        <HiddenSheet sheet={display} />
-        <button type="submit" className="h-9 border border-black bg-black px-3 text-sm text-white">
-          Save terminal
-        </button>
-      </form>
-
-      <DiffEditor areaId={areaId} terminalId={terminal.id} unit={unit} diffs={diffs} />
+      <DiffEditor areaId={areaId} terminalId={terminal.id} unit={unit} diffs={diffs} sheet={sheet} />
     </section>
   );
 }
 
-function HiddenSheet({ sheet }: { sheet: TerminalWorksheet }) {
-  const pairs: Array<[string, number | null]> = [
-    ["nymex_rb", sheet.rb.nymexScreen],
-    ["diff_rb", sheet.rb.terminalDiff],
-    ["freight_rb", sheet.rb.inboundFreight],
-    ["rack_rb", sheet.rb.postedRack],
-    ["jobber_rb", sheet.rb.jobberSell],
-    ["dock_rb", sheet.rb.dockPosted],
-    ["nymex_ho", sheet.ho.nymexScreen],
-    ["diff_ho", sheet.ho.terminalDiff],
-    ["freight_ho", sheet.ho.inboundFreight],
-    ["rack_ho", sheet.ho.postedRack],
-    ["jobber_ho", sheet.ho.jobberSell],
-    ["dock_ho", sheet.ho.dockPosted],
-    ["tax_federal", sheet.tax.federal],
-    ["tax_state", sheet.tax.state],
-    ["tax_federal_rb", sheet.taxRb?.federal ?? null],
-    ["tax_state_rb", sheet.taxRb?.state ?? null],
-    ["tax_federal_ho", sheet.taxHo?.federal ?? null],
-    ["tax_state_ho", sheet.taxHo?.state ?? null],
-    ["tax_other", sheet.tax.other],
-    ["tax_one", sheet.tax.oneLine],
-  ];
-  return (
-    <>
-      {pairs.map(([name, value]) => (
-        <input key={name} type="hidden" name={name} value={value == null ? "" : String(value)} />
-      ))}
-    </>
-  );
+function yahooHint(cents: number | null, unit: InputUnit): string {
+  if (cents == null) return "";
+  return `${displayInputValue(cents, unit)} yahoo`;
 }
 
 function WorksheetFields({
@@ -269,11 +303,13 @@ function WorksheetFields({
   prepared,
   unit,
   unitLabel,
+  screens,
 }: {
   sheet: TerminalWorksheet;
   prepared?: PreparedWorksheet;
   unit: InputUnit;
   unitLabel: string;
+  screens: NymexScreenPull;
 }) {
   return (
     <div className="overflow-x-auto border border-black/15 bg-white">
@@ -286,7 +322,15 @@ function WorksheetFields({
           </tr>
         </thead>
         <tbody>
-          <FieldRow label="NYMEX screen" name="nymex" rb={sheet.rb.nymexScreen} ho={sheet.ho.nymexScreen} unit={unit} />
+          <FieldRow
+            label="NYMEX screen"
+            name="nymex"
+            rb={sheet.rb.nymexScreen}
+            ho={sheet.ho.nymexScreen}
+            unit={unit}
+            rbPlaceholder={yahooHint(screens.RB.cents, unit)}
+            hoPlaceholder={yahooHint(screens.HO.cents, unit)}
+          />
           <FieldRow label="Terminal differential vs screen" name="diff" rb={sheet.rb.terminalDiff} ho={sheet.ho.terminalDiff} unit={unit} />
           <FieldRow label="Inbound freight / pipeline / truck" name="freight" rb={sheet.rb.inboundFreight} ho={sheet.ho.inboundFreight} unit={unit} />
           <FieldRow label="Posted rack" name="rack" rb={sheet.rb.postedRack} ho={sheet.ho.postedRack} unit={unit} />
@@ -324,7 +368,10 @@ function WorksheetFields({
         <TaxField label="Tax · other / local" name="tax_other" value={sheet.tax.other} unit={unit} />
         <TaxField label="Tax · one line (replaces the split)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
       </div>
-      <p className="px-3 pb-3 text-xs text-black/45">{MARINE_TAX_NOTE}</p>
+      <p className="px-3 pb-3 text-xs text-black/45">
+        {MARINE_TAX_NOTE} Federal and state are the strip. A missing federal or state leaves dock
+        ex-tax and remaining blank. One tax line overrides the split. Empty stays — , never $0.00.
+      </p>
     </div>
   );
 }
@@ -337,6 +384,8 @@ function FieldRow({
   unit,
   rbHint,
   hoHint,
+  rbPlaceholder,
+  hoPlaceholder,
 }: {
   label: string;
   name: string;
@@ -345,6 +394,8 @@ function FieldRow({
   unit: InputUnit;
   rbHint?: string | null;
   hoHint?: string | null;
+  rbPlaceholder?: string;
+  hoPlaceholder?: string;
 }) {
   return (
     <tr className="border-t border-black/10">
@@ -354,6 +405,7 @@ function FieldRow({
           name={`${name}_rb`}
           inputMode="decimal"
           defaultValue={displayInputValue(rb, unit)}
+          placeholder={rbPlaceholder}
           className="h-9 w-full border border-black/15 px-2 font-mono text-sm"
         />
         {rbHint ? <p className="mt-1 text-[11px] text-black/40">{rbHint}</p> : null}
@@ -363,6 +415,7 @@ function FieldRow({
           name={`${name}_ho`}
           inputMode="decimal"
           defaultValue={displayInputValue(ho, unit)}
+          placeholder={hoPlaceholder}
           className="h-9 w-full border border-black/15 px-2 font-mono text-sm"
         />
         {hoHint ? <p className="mt-1 text-[11px] text-black/40">{hoHint}</p> : null}
@@ -400,37 +453,62 @@ function DiffEditor({
   terminalId,
   unit,
   diffs,
+  sheet,
 }: {
   areaId: WholesaleAreaId;
   terminalId: string;
   unit: InputUnit;
   diffs: DiffRow[];
+  sheet: TerminalWorksheet;
 }) {
   return (
     <div className="mt-6 border border-black/15 bg-white p-4 print:hidden">
       <h3 className="text-sm font-medium">Differentials for this terminal</h3>
       <p className="mt-1 text-xs text-black/45">
-        Named ¢/gal vs the screen. Empty cents stay blank. Not copied from a neighbor hub.
+        Named rows are a separate book from the worksheet Δ. Apply writes that ¢ into this
+        terminal&apos;s Δ and saves it. Until you apply, they are not the same number. Empty cents
+        stay blank. Not copied from a neighbor hub.
       </p>
       {diffs.length === 0 ? (
         <p className="mt-3 text-sm text-black/50">No saved rows. Add one.</p>
       ) : (
         <ul className="mt-3 space-y-2">
-          {diffs.map((row) => (
-            <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
-              <span>
-                {row.name} · {row.product} · {formatBoth(row.centsVsScreen)}
-              </span>
-              <form action={removeTerminalDiff}>
-                <input type="hidden" name="area" value={areaId} />
-                <input type="hidden" name="terminal" value={terminalId} />
-                <input type="hidden" name="diffId" value={row.id} />
-                <button type="submit" className="text-xs text-black/45 underline-offset-2 hover:underline">
-                  Remove
-                </button>
-              </form>
-            </li>
-          ))}
+          {diffs.map((row) => {
+            const live = row.product === "RB" ? sheet.rb.terminalDiff : sheet.ho.terminalDiff;
+            const matches = row.centsVsScreen != null && live === row.centsVsScreen;
+            return (
+              <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                <span>
+                  {row.name} · {row.product} · {formatBoth(row.centsVsScreen)}
+                  <span className="text-black/45">
+                    {matches ? " · in worksheet Δ" : " · not in worksheet Δ"}
+                  </span>
+                </span>
+                <span className="flex gap-3">
+                  <form action={applyTerminalDiff}>
+                    <input type="hidden" name="area" value={areaId} />
+                    <input type="hidden" name="terminal" value={terminalId} />
+                    <input type="hidden" name="diffId" value={row.id} />
+                    <button
+                      type="submit"
+                      className="text-xs text-black/55 underline-offset-2 hover:underline"
+                      data-testid={`apply-diff-${row.id}`}
+                    >
+                      Apply to worksheet Δ
+                    </button>
+                  </form>
+                  <form action={removeTerminalDiff}>
+                    <input type="hidden" name="area" value={areaId} />
+                    <input type="hidden" name="terminal" value={terminalId} />
+                    <input type="hidden" name="diffId" value={row.id} />
+                    <button type="submit" className="text-xs text-black/45 underline-offset-2 hover:underline">
+                      Remove
+                    </button>
+                  </form>
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
       <form action={addTerminalDiff} className="mt-4 grid gap-2 sm:grid-cols-4">
@@ -452,7 +530,11 @@ function DiffEditor({
           placeholder={unit === "dollar" ? "$/gal vs screen" : "¢/gal vs screen"}
           className="h-9 border border-black/15 px-2 font-mono text-sm"
         />
-        <button type="submit" className="h-9 border border-black/20 bg-white px-3 text-sm sm:col-span-4 sm:w-auto">
+        <button
+          type="submit"
+          className="h-9 border border-black/20 bg-white px-3 text-sm sm:col-span-4 sm:w-auto"
+          data-testid="add-diff"
+        >
           Add row
         </button>
       </form>
@@ -474,8 +556,10 @@ export function Waterfall({
         <p className="text-[11px] uppercase tracking-[0.16em] text-black/45">Terminal → retail</p>
         <h2 className="mt-1 text-sm font-medium">Which take is hacking the gallon</h2>
         <p className="mt-1 max-w-3xl text-xs text-black/45">
-          Each cut is a take. The longest bar is the fattest bite. Empty rungs stay Call / — , never $0.
-          Tax is a first-class take — federal, state, and other when present — not folded into leftover.
+          Each cut is a take. The longest bar is the fattest bite. Negative takes go left — they are
+          not painted as a fake-positive slice. Empty rungs stay Call / — , never $0. Tax is a
+          first-class take — federal, state, and other when present — not folded into leftover. Source
+          is per product.
         </p>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -510,6 +594,8 @@ function WaterfallColumn({
     <div
       className="border border-black/15 bg-white p-4"
       data-testid={`waterfall-${product.toLowerCase()}`}
+      data-nymex-source={book.nymexSource ?? ""}
+      data-tax-incomplete={book.taxIncomplete ? "1" : "0"}
     >
       <div className="flex items-baseline justify-between gap-2">
         <h3 className="text-sm font-medium">{PRODUCT_LABEL[product]}</h3>
@@ -526,10 +612,16 @@ function WaterfallColumn({
           <WaterfallRungRow key={rung.key} rung={rung} scale={scale} winner={winner === rung.takeKey} product={product} />
         ))}
       </ol>
+      {book.taxIncomplete ? (
+        <p className="mt-3 text-xs text-[#8a2c12]" data-testid={`tax-incomplete-${product.toLowerCase()}`}>
+          Tax strip incomplete. Federal and state stay visible. Dock remaining stays —.
+        </p>
+      ) : null}
       <p className="mt-4 text-[11px] text-black/45" data-testid={`implied-${product.toLowerCase()}`}>
         Implied Δ {formatBoth(book.impliedDiff)}
         {book.typedDiff != null ? ` · typed Δ ${formatBoth(book.typedDiff)}` : ""}
         {book.edgeVsTyped != null ? ` · edge ${formatBoth(book.edgeVsTyped)}` : ""}
+        {book.nymexSource ? ` · NYMEX source ${book.nymexSource}` : ""}
       </p>
     </div>
   );
@@ -548,14 +640,18 @@ function WaterfallRungRow({
 }) {
   const cents = rung.cents;
   const empty = cents == null;
-  const width = cents == null || scale === 0 ? 0 : Math.max(6, (Math.abs(cents) / scale) * 100);
+  const width = cents == null || scale === 0 ? 0 : Math.max(6, (Math.abs(cents) / scale) * 50);
+  const negative = cents != null && cents < 0;
   const isTake = rung.role === "take" || rung.role === "leftover";
   const isTax = rung.takeKey === "tax" || rung.takeKey === "taxFederal" || rung.takeKey === "taxState" || rung.takeKey === "taxOther";
+  const origin = rung.origin === "incomplete" ? "incomplete" : rung.sourceLabel || rung.origin;
   return (
     <li
       data-testid={`rung-${product.toLowerCase()}-${rung.key}`}
       data-empty={empty ? "1" : "0"}
       data-winner={winner ? "1" : "0"}
+      data-signed={empty ? "" : negative ? "negative" : "positive"}
+      data-source={rung.origin ?? ""}
       className={rung.role === "start" || rung.role === "level" ? "pt-1" : ""}
     >
       <div className="flex items-baseline justify-between gap-3">
@@ -567,22 +663,30 @@ function WaterfallRungRow({
         </span>
       </div>
       {isTake ? (
-        empty ? (
+          empty ? (
           <div className="mt-1 h-3 border border-dashed border-black/20 bg-[repeating-linear-gradient(90deg,transparent,transparent_6px,rgba(11,31,51,0.06)_6px,rgba(11,31,51,0.06)_7px)]" />
         ) : (
-          <div className="mt-1 h-3 w-full bg-black/[0.04]">
+          <div className="relative mt-1 h-3 w-full bg-black/[0.04]">
+            <div className="absolute top-0 left-1/2 h-full w-px bg-black/25" />
             <div
-              style={{ width: `${width}%` }}
+              style={{
+                width: `${width}%`,
+                left: negative ? `${50 - width}%` : "50%",
+              }}
               className={
-                winner
-                  ? isTax
-                    ? "h-full bg-[#8a2c12]"
-                    : "h-full bg-black"
-                  : isTax
-                    ? "h-full bg-[#8a2c12]/55"
-                    : rung.role === "leftover"
-                      ? "h-full bg-black/25"
-                      : "h-full bg-black/45"
+                negative
+                  ? winner
+                    ? "absolute top-0 h-full border border-dashed border-[#8a2c12] bg-[repeating-linear-gradient(135deg,transparent,transparent_3px,rgba(138,44,18,0.35)_3px,rgba(138,44,18,0.35)_6px)]"
+                    : "absolute top-0 h-full border border-dashed border-black/55 bg-[repeating-linear-gradient(135deg,transparent,transparent_3px,rgba(0,0,0,0.12)_3px,rgba(0,0,0,0.12)_6px)]"
+                  : winner
+                    ? isTax
+                      ? "absolute top-0 h-full bg-[#8a2c12]"
+                      : "absolute top-0 h-full bg-black"
+                    : isTax
+                      ? "absolute top-0 h-full bg-[#8a2c12]/55"
+                      : rung.role === "leftover"
+                        ? "absolute top-0 h-full bg-black/25"
+                        : "absolute top-0 h-full bg-black/45"
               }
             />
           </div>
@@ -590,8 +694,8 @@ function WaterfallRungRow({
       ) : (
         <div className="mt-1 border-b border-black/10" />
       )}
-      {rung.sourceLabel ? (
-        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/40">{rung.sourceLabel}</p>
+      {origin ? (
+        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/40">{origin}</p>
       ) : empty && isTake ? (
         <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/35">Call / —</p>
       ) : null}

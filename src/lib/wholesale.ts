@@ -121,7 +121,7 @@ export interface WholesaleStoreFile {
   worksheets: Record<string, TerminalWorksheet>;
 }
 
-export type ValueOrigin = "typed" | "default" | "board" | "derived" | null;
+export type ValueOrigin = "typed" | "default" | "board" | "derived" | "yahoo" | "incomplete" | null;
 export type TakeKey =
   | "freight"
   | "rackMargin"
@@ -186,6 +186,7 @@ export interface ResolvedTax {
   oneLine: LabeledCents;
   strip: LabeledCents;
   mode: TaxMode;
+  incomplete: boolean;
 }
 
 export interface BoardDockDefault {
@@ -202,6 +203,7 @@ export interface NetbackContext {
   taxResolved?: ResolvedTax;
   inputOrigins?: Partial<Record<keyof ProductInputs, ValueOrigin>>;
   inputLabels?: Partial<Record<keyof ProductInputs, string | null>>;
+  nymexFallback?: Cents;
 }
 
 export interface ProductNetback {
@@ -227,6 +229,8 @@ export interface ProductNetback {
   impliedDiff: Cents;
   typedDiff: Cents;
   edgeVsTyped: Cents;
+  taxIncomplete: boolean;
+  nymexSource: ValueOrigin;
 }
 
 const emptyProduct = (): ProductInputs => ({
@@ -346,9 +350,8 @@ export function readOptionalCents(raw: string | undefined, unit: InputUnit = "ce
 
 export function taxCents(tax: TaxInputs): Cents {
   if (tax.oneLine != null) return tax.oneLine;
-  const parts = [tax.federal, tax.state, tax.other].filter((part): part is number => part != null);
-  if (parts.length === 0) return null;
-  return parts.reduce((sum, part) => sum + part, 0);
+  if (tax.federal == null || tax.state == null) return null;
+  return tax.federal + tax.state + (tax.other ?? 0);
 }
 
 export function addCents(...parts: Cents[]): Cents {
@@ -366,6 +369,22 @@ function originOf(cents: Cents, hint?: ValueOrigin): ValueOrigin {
   return hint ?? "typed";
 }
 
+function usableNymexFallback(value: Cents): Cents {
+  if (value == null || !Number.isFinite(value) || value <= 0) return null;
+  return value;
+}
+
+function resolveNymexScreen(
+  typed: Cents,
+  fallback: Cents,
+  typedOrigin?: ValueOrigin,
+): { cents: Cents; origin: ValueOrigin } {
+  if (typed != null) return { cents: typed, origin: typedOrigin ?? "typed" };
+  const yahoo = usableNymexFallback(fallback);
+  if (yahoo != null) return { cents: yahoo, origin: "yahoo" };
+  return { cents: null, origin: null };
+}
+
 export function computeProductNetback(
   product: WholesaleProduct,
   input: ProductInputs,
@@ -376,8 +395,9 @@ export function computeProductNetback(
     state: context.state,
     applyDefaults: Boolean(context.state),
   });
-  const taxStrip = resolved.strip.cents;
-  const terminalSpot = addCents(input.nymexScreen, input.terminalDiff);
+  const taxStrip = resolved.incomplete ? null : resolved.strip.cents;
+  const nymex = resolveNymexScreen(input.nymexScreen, context.nymexFallback ?? null, context.inputOrigins?.nymexScreen);
+  const terminalSpot = addCents(nymex.cents, input.terminalDiff);
   const inboundRack = addCents(terminalSpot, input.inboundFreight);
   const rackMargin = subCents(input.postedRack, inboundRack);
   const jobberMargin = subCents(input.jobberSell, input.postedRack);
@@ -385,13 +405,13 @@ export function computeProductNetback(
   const dockRemaining = subCents(dockExTax, input.jobberSell);
   const rackEquivalent = dockExTax;
   const terminalEquivalent = subCents(rackEquivalent, input.inboundFreight);
-  const impliedDiff = subCents(terminalEquivalent, input.nymexScreen);
+  const impliedDiff = subCents(terminalEquivalent, nymex.cents);
   const edgeVsTyped = subCents(impliedDiff, input.terminalDiff);
   const origins = context.inputOrigins ?? {};
   const labels = context.inputLabels ?? {};
 
   const steps: WaterfallStep[] = [
-    { key: "nymex", label: "NYMEX screen", cents: input.nymexScreen, kind: "input", source: originOf(input.nymexScreen, origins.nymexScreen) },
+    { key: "nymex", label: "NYMEX screen", cents: nymex.cents, kind: "input", source: nymex.origin, sourceLabel: nymex.origin === "yahoo" ? "yahoo" : origins.nymexScreen === "typed" ? "typed" : null },
     { key: "diff", label: "+ Terminal differential", cents: input.terminalDiff, kind: "input", source: originOf(input.terminalDiff, origins.terminalDiff) },
     { key: "spot", label: "= Terminal / spot", cents: terminalSpot, kind: "derived", source: terminalSpot == null ? null : "derived" },
     { key: "freight", label: "+ Inbound freight / pipeline / truck", cents: input.inboundFreight, kind: "input", source: originOf(input.inboundFreight, origins.inboundFreight) },
@@ -478,6 +498,8 @@ export function computeProductNetback(
     impliedDiff,
     typedDiff: input.terminalDiff,
     edgeVsTyped,
+    taxIncomplete: resolved.incomplete,
+    nymexSource: nymex.origin,
   };
   book.rungs = buildWaterfallRungs(book, resolved, input, origins, labels);
   book.takes = rankTakes(book.rungs);
@@ -492,6 +514,7 @@ export function computeWorksheet(
     areaId?: WholesaleAreaId;
     docks?: Dock[];
     saved?: TerminalWorksheet;
+    nymexFallback?: Partial<Record<WholesaleProduct, Cents>>;
   } = {},
 ): Record<WholesaleProduct, ProductNetback> {
   const prepared = applyWorksheetDefaults(sheet, context);
@@ -501,12 +524,14 @@ export function computeWorksheet(
       taxResolved: prepared.rb.tax,
       inputOrigins: prepared.rb.origins,
       inputLabels: prepared.rb.labels,
+      nymexFallback: context.nymexFallback?.RB ?? null,
     }),
     HO: computeProductNetback("HO", prepared.ho.input, prepared.taxInputs, {
       state: context.state,
       taxResolved: prepared.ho.tax,
       inputOrigins: prepared.ho.origins,
       inputLabels: prepared.ho.labels,
+      nymexFallback: context.nymexFallback?.HO ?? null,
     }),
   };
 }
@@ -529,12 +554,20 @@ export function formatBoth(value: Cents): string {
 }
 
 export function sourceLabel(step: WaterfallStep): string {
+  if (step.source === "incomplete") return "incomplete";
   if (step.cents == null) return "—";
   if (step.sourceLabel) return step.sourceLabel;
   if (step.source === "typed") return "typed";
+  if (step.source === "yahoo") return "yahoo";
   if (step.source === "default") return "default";
   if (step.source === "board") return "from the board";
   return "derived";
+}
+
+export function deskFootnotes(area: WholesaleArea): string[] {
+  return area.footnotes.filter(
+    (note) => !/can be added later/i.test(note) && !/addable inland/i.test(note),
+  );
 }
 
 export function parseUnit(raw: string | undefined): InputUnit {
@@ -746,15 +779,18 @@ export function resolveTaxForProduct(
       oneLine,
       strip: oneLine,
       mode: "oneline",
+      incomplete: false,
     };
   }
 
-  const parts = [federal.cents, state.cents, other.cents];
-  const present = parts.filter((part): part is number => part != null);
-  const stripCents = present.length === 0 ? null : present.reduce((sum, part) => sum + part, 0);
+  const anySplit = federal.cents != null || state.cents != null || other.cents != null;
+  const incomplete = anySplit && (federal.cents == null || state.cents == null);
+  const stripCents = incomplete || !anySplit ? null : (federal.cents as number) + (state.cents as number) + (other.cents ?? 0);
   const stripOrigin =
     stripCents == null
-      ? null
+      ? incomplete
+        ? "incomplete"
+        : null
       : [federal, state, other].some((part) => part.cents != null && part.origin === "typed")
         ? "typed"
         : "default";
@@ -763,8 +799,9 @@ export function resolveTaxForProduct(
     state,
     other,
     oneLine,
-    strip: labeled(stripCents, stripOrigin, stripOrigin === "default" ? "default" : stripOrigin === "typed" ? "typed" : null),
+    strip: labeled(stripCents, stripOrigin, stripOrigin === "default" ? "default" : stripOrigin === "typed" ? "typed" : stripOrigin === "incomplete" ? "incomplete" : null),
     mode: "split",
+    incomplete,
   };
 }
 
