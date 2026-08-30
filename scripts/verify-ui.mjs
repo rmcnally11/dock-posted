@@ -108,6 +108,8 @@ try {
   check("island is not the poster", texasNames[0] !== "Galveston Yacht Marina");
   check("no kemah boardwalk", !texasNames.some((name) => name?.includes("Kemah Boardwalk")));
 
+  check("no today nav", !/\bToday\b/.test(headerCopy), headerCopy);
+  check("no last-posted hero", !/what the dock last posted/i.test(homeCopy));
   check("no on this water", !/on this water/i.test(homeCopy));
   check("no instrument family", !/instrument family/i.test(homeCopy));
   check("no sister page", !/sister page/i.test(homeCopy));
