@@ -69,7 +69,9 @@ export function parseBoardQuery(params: {
   };
 }
 
-export function boardHref(query: BoardQuery): "/" | `/?${string}` {
+export type BoardHref = "/#board" | `/?${string}#board`;
+
+export function boardHref(query: BoardQuery): BoardHref {
   const params = new URLSearchParams();
   if (query.corridor) params.set("corridor", query.corridor);
   if (query.state) params.set("state", query.state);
@@ -80,7 +82,7 @@ export function boardHref(query: BoardQuery): "/" | `/?${string}` {
   if (query.dock) params.set("dock", query.dock);
   if (query.reported) params.set("reported", query.reported);
   const qs = params.toString();
-  return qs ? `/?${qs}` : "/";
+  return qs ? `/?${qs}#board` : "/#board";
 }
 
 export function matchesSearch(dock: Dock, q: string): boolean {

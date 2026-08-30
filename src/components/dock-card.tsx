@@ -1,6 +1,7 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { ethanolCopy, formatDate, formatQuote, sourceLabel } from "@/lib/format";
 import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
+import type { BoardHref } from "@/lib/board-query";
 import type { Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -42,7 +43,7 @@ export function DockCard({
 }: {
   dock: Dock;
   selected?: boolean;
-  href: "/" | `/?${string}`;
+  href: BoardHref;
 }) {
   const gas = boardQuote(dock, displayGas(dock));
   const diesel = boardQuote(dock, displayDiesel(dock));

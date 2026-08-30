@@ -1,7 +1,7 @@
 import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
 import { SiteFooter } from "@/components/site-footer";
-import { boardHref, viewLabel, type BoardQuery } from "@/lib/board-query";
+import { boardHref, viewLabel, type BoardHref, type BoardQuery } from "@/lib/board-query";
 import { COAST_JUMPS, type Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ export function DockBoard({
   const filtered = query.e0Only || query.freshOnly || query.q.length >= 2;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col lg:min-h-[calc(100dvh-13rem)] lg:flex-row">
+    <div className="flex min-h-0 flex-1 flex-col lg:h-full lg:flex-row">
       <section className="relative isolate h-[46vh] min-h-[280px] lg:h-auto lg:min-h-[28rem] lg:flex-1">
         <FuelMap docks={visible} query={query} />
         <div className="pointer-events-none absolute left-2 top-2 z-[600] hidden max-w-[calc(100%-1rem)] flex-wrap gap-1.5 sm:flex">
@@ -62,7 +62,7 @@ export function DockBoard({
             </a>
           </div>
 
-          <form action="/" method="get" className="mt-3 flex gap-2">
+          <form action="/#board" method="get" className="mt-3 flex gap-2">
             {query.corridor ? <input type="hidden" name="corridor" value={query.corridor} /> : null}
             {query.state ? <input type="hidden" name="state" value={query.state} /> : null}
             {query.region ? <input type="hidden" name="region" value={query.region} /> : null}
@@ -198,7 +198,7 @@ function FilterChip({
   children,
 }: {
   active: boolean;
-  href: "/" | `/?${string}`;
+  href: BoardHref;
   children: string;
 }) {
   return (

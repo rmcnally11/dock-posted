@@ -26,7 +26,7 @@ export async function SiteHeader() {
           className="flex min-w-0 flex-wrap items-center gap-x-0.5 gap-y-0.5 text-[13px] sm:text-sm"
           aria-label="Dock Posted"
         >
-          <a className={navLink} href="/" aria-label="The board">
+          <a className={navLink} href="/#board" aria-label="The board">
             The board
           </a>
           <a className={navLink} href="/haul-out" aria-label="Named storm">

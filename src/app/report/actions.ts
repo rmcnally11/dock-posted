@@ -76,5 +76,5 @@ export async function submitPriceReport(formData: FormData): Promise<void> {
     redirect(`/report?error=${encodeURIComponent(message)}&dock=${encodeURIComponent(dockId)}`);
   }
 
-  redirect(`/?reported=${dockId}`);
+  redirect(`/?reported=${dockId}#board`);
 }
