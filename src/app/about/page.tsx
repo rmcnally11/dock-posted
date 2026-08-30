@@ -47,9 +47,7 @@ export default function AboutPage() {
           <a
             className="text-[color:var(--sea)] underline decoration-[color:var(--sea)]/40 underline-offset-2"
             href="/report"
-          >
-            Post a number
-          </a>
+          >Post a number</a>
           .
         </p>
       </section>

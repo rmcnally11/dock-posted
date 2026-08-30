@@ -229,7 +229,7 @@ assert.match(headerSource, /The board/);
 assert.match(headerSource, /Named storm/);
 assert.match(headerSource, /Post a number/);
 assert.match(headerSource, /href="\/about"/);
-assert.match(headerSource, />About</);
+assert.match(headerSource, />\s*About\s*</);
 assert.match(headerSource, /data-testid="nav-about"/);
 assert.doesNotMatch(headerSource, />Haul-out</);
 assert.doesNotMatch(headerSource, />Board</);
@@ -292,7 +292,7 @@ assert.match(
 assert.match(aboutSource, /Wholesale is what it cost and what they posted\. That.s a locked door\./);
 assert.match(aboutSource, /If you were at the dock, send the number\./);
 assert.match(aboutSource, /href="\/report"/);
-assert.match(aboutSource, />Post a number</);
+assert.match(aboutSource, />\s*Post a number\s*</);
 assert.match(xTimelineSource, />On X</);
 assert.match(xTimelineSource, /Nothing on X yet\./);
 assert.match(xTimelineSource, /platform\.twitter\.com\/widgets\.js/);
