@@ -47,7 +47,7 @@ export default async function WholesalePrintPage({
       docks: hasBook ? docks : undefined,
       saved: computed,
       nymexFallback: hasBook ? fallback : undefined,
-      applyTaxDefaults: hasBook && !rowDraft,
+      applyTaxDefaults: hasBook,
     });
     return { terminal, ref, rb: books.RB, ho: books.HO };
   });
@@ -67,7 +67,7 @@ export default async function WholesalePrintPage({
           {anyBook ? (
             <p className="mt-2 text-xs text-black/50">
               Computed or saved books fill those terminals. Blank rows have not been computed or
-              saved. Remaining stays — until federal and state are both entered.
+              saved.
             </p>
           ) : (
             <p className="mt-2 text-sm text-[#8a2c12]" data-testid="print-empty">

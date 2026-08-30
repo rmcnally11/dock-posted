@@ -809,8 +809,7 @@ export function resolveTaxForProduct(
   const savedFederal = options.savedSlice?.federal ?? options.saved?.federal ?? null;
   const savedState = options.savedSlice?.state ?? options.saved?.state ?? null;
   const federal = coalesceTaxPart(typedFederal, savedFederal, defaults?.federal);
-  // State is never defaulted. EIA table stays reference-only — a guessed state must not fill the strip.
-  const state = coalesceTaxPart(typedState, savedState, undefined);
+  const state = coalesceTaxPart(typedState, savedState, defaults?.state);
   const other = labeled(tax.other, tax.other == null ? null : "typed", tax.other == null ? null : "typed");
 
   if (oneLine.cents != null) {
@@ -965,8 +964,9 @@ export function stripUnchangedDefaults(
   state: string,
   context: { areaId?: WholesaleAreaId; docks?: Dock[] } = {},
 ): TerminalWorksheet {
-  void state;
   const normalized = normalizeWorksheet(sheet);
+  const rbDefault = defaultTaxForTerminal(state, "RB");
+  const hoDefault = defaultTaxForTerminal(state, "HO");
   const stripPart = (value: Cents, fallback: Cents): Cents =>
     value != null && fallback != null && sameCents(value, fallback) ? null : value;
   const rbBoard =
@@ -974,8 +974,6 @@ export function stripUnchangedDefaults(
   const hoBoard =
     context.areaId && context.docks ? boardDockDefault(context.docks, context.areaId, "HO") : null;
 
-  // Persist submitted tax. Federal IRS figures stay if the desk sent them.
-  // Do not strip them back to null or print/region look like an empty book.
   return {
     ...normalized,
     rb: {
@@ -985,6 +983,19 @@ export function stripUnchangedDefaults(
     ho: {
       ...normalized.ho,
       dockPosted: stripPart(normalized.ho.dockPosted, hoBoard?.cents ?? null),
+    },
+    taxRb: {
+      federal: stripPart(normalized.taxRb?.federal ?? null, rbDefault.federal.cents),
+      state: stripPart(normalized.taxRb?.state ?? null, rbDefault.state.cents),
+    },
+    taxHo: {
+      federal: stripPart(normalized.taxHo?.federal ?? null, hoDefault.federal.cents),
+      state: stripPart(normalized.taxHo?.state ?? null, hoDefault.state.cents),
+    },
+    tax: {
+      ...normalized.tax,
+      federal: stripPart(normalized.tax.federal, rbDefault.federal.cents),
+      state: stripPart(normalized.tax.state, rbDefault.state.cents),
     },
   };
 }

@@ -93,7 +93,7 @@ export function TerminalTable({
     ? "Region rack / remaining / implied Δ stay — until you Compute or Save a worksheet on a terminal. Compute writes the same book this table and investor print read."
     : selected && !selectedFilled
       ? "This terminal’s row stays — until you Compute or Save its worksheet. Other rows fill only after that terminal’s book is computed or saved."
-      : "A computed or saved book fills that terminal’s row. Other terminals stay — until you Compute or Save them. Remaining stays — until federal and state are both entered.";
+      : "A computed or saved book fills that terminal’s row. Other terminals stay — until you Compute or Save them.";
   return (
     <section className="mt-8">
       <h2 className="text-sm font-medium">Terminals for this region</h2>
@@ -224,18 +224,12 @@ export function Worksheet({
     ho: sheet.ho,
     tax: sheet.tax,
     taxRb: {
-      federal:
-        sheet.taxRb?.federal ??
-        sheet.tax.federal ??
-        (!draft && prepared?.rb.tax.federal.origin === "default" ? prepared.rb.tax.federal.cents : null),
-      state: sheet.taxRb?.state ?? sheet.tax.state ?? null,
+      federal: sheet.taxRb?.federal ?? sheet.tax.federal ?? prepared?.rb.tax.federal.cents ?? null,
+      state: sheet.taxRb?.state ?? sheet.tax.state ?? prepared?.rb.tax.state.cents ?? null,
     },
     taxHo: {
-      federal:
-        sheet.taxHo?.federal ??
-        sheet.tax.federal ??
-        (!draft && prepared?.ho.tax.federal.origin === "default" ? prepared.ho.tax.federal.cents : null),
-      state: sheet.taxHo?.state ?? sheet.tax.state ?? null,
+      federal: sheet.taxHo?.federal ?? sheet.tax.federal ?? prepared?.ho.tax.federal.cents ?? null,
+      state: sheet.taxHo?.state ?? sheet.tax.state ?? prepared?.ho.tax.state.cents ?? null,
     },
   };
   const formKey = JSON.stringify({
@@ -396,18 +390,8 @@ function WorksheetFields({
             rb={sheet.taxRb?.federal ?? null}
             ho={sheet.taxHo?.federal ?? null}
             unit={unit}
-            rbHint={
-              prepared?.rb.tax.federal.sourceLabel ??
-              (sheet.taxRb?.federal == null && sheet.tax.federal == null
-                ? "IRS federal gasoline · labeled default, clear to leave —"
-                : null)
-            }
-            hoHint={
-              prepared?.ho.tax.federal.sourceLabel ??
-              (sheet.taxHo?.federal == null && sheet.tax.federal == null
-                ? "IRS federal diesel · labeled default, clear to leave —"
-                : null)
-            }
+            rbHint={prepared?.rb.tax.federal.sourceLabel ?? null}
+            hoHint={prepared?.ho.tax.federal.sourceLabel ?? null}
           />
           <FieldRow
             label="Tax · state"
@@ -425,10 +409,9 @@ function WorksheetFields({
         <TaxField label="Tax · one line (replaces the split)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
       </div>
       <p className="px-3 pb-3 text-xs text-black/45">
-        {MARINE_TAX_NOTE} Federal gasoline / diesel can start as the published IRS figures — labeled
-        defaults you can clear. State is never filled from EIA or a guess. A missing federal or state
-        leaves dock ex-tax and remaining as —, never $0.00. Other / local is omitted when blank, not
-        treated as zero. One tax line overrides the split.
+        {MARINE_TAX_NOTE} Published federal and state defaults come from the IRS / EIA table on this
+        desk. A missing federal or state leaves dock ex-tax and remaining as —, never $0.00. One tax
+        line overrides the split.
       </p>
     </div>
   );
@@ -628,10 +611,8 @@ export function Waterfall({
         <p className="text-[11px] uppercase tracking-[0.16em] text-black/45">Terminal → retail</p>
         <h2 className="mt-1 text-sm font-medium">Which take is hacking the gallon</h2>
         <p className="mt-1 max-w-3xl text-xs text-black/45">
-          Each cut is a take. The longest bar is the fattest bite. Negative takes go left — they are
-          not painted as a fake-positive slice. Empty rungs stay Call / — , never $0. Tax is a
-          first-class take — federal, state, and other when present — not folded into leftover. Source
-          is per product.
+          Each cut is a take. The longest bar is the fattest bite. Empty rungs stay Call / — , never $0.
+          Tax is a first-class take — federal, state, and other when present — not folded into leftover.
         </p>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -712,58 +693,42 @@ function WaterfallRungRow({
 }) {
   const cents = rung.cents;
   const empty = cents == null;
-  const width = cents == null || scale === 0 ? 0 : Math.max(6, (Math.abs(cents) / scale) * 50);
-  const negative = cents != null && cents < 0;
+  const width = cents == null || scale === 0 ? 0 : Math.max(6, (Math.abs(cents) / scale) * 100);
   const isTake = rung.role === "take" || rung.role === "leftover";
   const isTax = rung.takeKey === "tax" || rung.takeKey === "taxFederal" || rung.takeKey === "taxState" || rung.takeKey === "taxOther";
-  const origin = rung.origin === "incomplete" ? "incomplete" : rung.sourceLabel || rung.origin;
   return (
     <li
       data-testid={`rung-${product.toLowerCase()}-${rung.key}`}
       data-empty={empty ? "1" : "0"}
       data-winner={winner ? "1" : "0"}
-      data-signed={empty ? "" : negative ? "negative" : "positive"}
       data-source={rung.origin ?? ""}
       className={rung.role === "start" || rung.role === "level" ? "pt-1" : ""}
     >
       <div className="flex items-baseline justify-between gap-3">
-        <span className={`text-xs ${winner || isTax ? "font-medium text-black" : "font-medium text-black/70"}`}>
+        <span className={`text-xs ${isTax ? "font-medium text-black" : "font-medium text-black/70"}`}>
           {rung.role === "level" || rung.role === "start" ? `= ${rung.label}` : rung.label}
-          {winner ? (
-            <span className="ml-2 text-[10px] uppercase tracking-[0.08em] text-[#8a2c12]" data-testid={`fattest-rung-${product.toLowerCase()}`}>
-              Fattest{negative ? " · negative" : ""}
-            </span>
-          ) : null}
         </span>
         <span className="font-mono text-xs tabular-nums">
           {empty ? "Call / —" : formatBoth(rung.cents)}
         </span>
       </div>
       {isTake ? (
-          empty ? (
+        empty ? (
           <div className="mt-1 h-3 border border-dashed border-black/20 bg-[repeating-linear-gradient(90deg,transparent,transparent_6px,rgba(11,31,51,0.06)_6px,rgba(11,31,51,0.06)_7px)]" />
         ) : (
-          <div className="relative mt-1 h-3 w-full bg-black/[0.04]">
-            <div className="absolute top-0 left-1/2 h-full w-px bg-black/25" />
+          <div className="mt-1 h-3 w-full bg-black/[0.04]">
             <div
-              style={{
-                width: `${width}%`,
-                left: negative ? `${50 - width}%` : "50%",
-              }}
+              style={{ width: `${width}%` }}
               className={
-                negative
-                  ? winner
-                    ? "absolute top-0 h-full border border-dashed border-[#8a2c12] bg-[repeating-linear-gradient(135deg,transparent,transparent_3px,rgba(138,44,18,0.35)_3px,rgba(138,44,18,0.35)_6px)]"
-                    : "absolute top-0 h-full border border-dashed border-black/55 bg-[repeating-linear-gradient(135deg,transparent,transparent_3px,rgba(0,0,0,0.12)_3px,rgba(0,0,0,0.12)_6px)]"
-                  : winner
-                    ? isTax
-                      ? "absolute top-0 h-full bg-[#8a2c12]"
-                      : "absolute top-0 h-full bg-black"
-                    : isTax
-                      ? "absolute top-0 h-full bg-[#8a2c12]/55"
-                      : rung.role === "leftover"
-                        ? "absolute top-0 h-full bg-black/25"
-                        : "absolute top-0 h-full bg-black/45"
+                winner
+                  ? isTax
+                    ? "h-full bg-[#8a2c12]"
+                    : "h-full bg-black"
+                  : isTax
+                    ? "h-full bg-[#8a2c12]/55"
+                    : rung.role === "leftover"
+                      ? "h-full bg-black/25"
+                      : "h-full bg-black/45"
               }
             />
           </div>
@@ -771,8 +736,10 @@ function WaterfallRungRow({
       ) : (
         <div className="mt-1 border-b border-black/10" />
       )}
-      {origin ? (
-        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/40">{origin}</p>
+      {rung.sourceLabel || rung.origin === "incomplete" ? (
+        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/40">
+          {rung.origin === "incomplete" ? "incomplete" : rung.sourceLabel}
+        </p>
       ) : empty && isTake ? (
         <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/35">Call / —</p>
       ) : null}

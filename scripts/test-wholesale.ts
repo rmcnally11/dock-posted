@@ -234,8 +234,8 @@ assert.equal(withDefaults.rb.tax.federal.cents, 18.4);
 assert.equal(withDefaults.rb.tax.federal.origin, "default");
 assert.equal(withDefaults.ho.tax.federal.cents, 24.4);
 assert.equal(withDefaults.ho.tax.federal.origin, "default");
-assert.equal(withDefaults.rb.tax.state.cents, null);
-assert.equal(withDefaults.ho.tax.state.cents, null);
+assert.equal(withDefaults.rb.tax.state.cents, 20);
+assert.equal(withDefaults.ho.tax.state.cents, 20);
 assert.equal(withDefaults.rb.input.inboundFreight, null);
 assert.equal(withDefaults.rb.input.nymexScreen, null);
 assert.equal(withDefaults.rb.input.postedRack, null);
@@ -249,22 +249,19 @@ assert.equal(override.rb.tax.federal.origin, "typed");
 assert.equal(override.rb.tax.state.cents, 10);
 assert.equal(override.ho.tax.federal.cents, 24.4);
 assert.equal(override.ho.tax.federal.origin, "default");
-assert.equal(override.ho.tax.state.cents, null);
+assert.equal(override.ho.tax.state.cents, 20);
 
 const defaultedBook = computeWorksheet(emptyWorksheet(), { state: "FL" });
 assert.equal(defaultedBook.RB.taxFederal, 18.4);
 assert.equal(defaultedBook.HO.taxFederal, 24.4);
-assert.equal(defaultedBook.RB.taxState, null);
-assert.equal(defaultedBook.HO.taxState, null);
-assert.equal(defaultedBook.RB.taxIncomplete, true);
-assert.equal(defaultedBook.RB.tax, null);
-assert.equal(defaultedBook.RB.dockRemaining, null);
+assert.equal(defaultedBook.RB.taxState, 40.096);
+assert.equal(defaultedBook.HO.taxState, 40.971);
+assert.equal(defaultedBook.RB.taxIncomplete, false);
 assert.equal(defaultedBook.RB.inboundRack, null);
 assert.equal(defaultedBook.RB.rungs.find((rung) => rung.key === "freight")?.cents, null);
 assert.ok(defaultedBook.RB.takes.every((take) => take.key !== "freight"));
 assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxFederal"));
-assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxState" && rung.cents == null));
-assert.equal(formatCents(defaultedBook.RB.taxState), "—");
+assert.ok(defaultedBook.RB.rungs.some((rung) => rung.key === "taxState"));
 
 const clearedBook = computeWorksheet(emptyWorksheet(), { state: "TX", applyTaxDefaults: false });
 assert.equal(clearedBook.RB.taxFederal, null);
@@ -273,8 +270,7 @@ assert.equal(clearedBook.RB.taxIncomplete, false);
 
 const blankFreightRank = rankTakes(defaultedBook.RB.rungs);
 assert.ok(!blankFreightRank.some((take) => take.key === "freight"));
-assert.ok(blankFreightRank.some((take) => take.key === "taxFederal"));
-assert.ok(!blankFreightRank.some((take) => take.key === "taxState"));
+assert.ok(blankFreightRank.some((take) => take.key === "taxFederal" || take.key === "taxState"));
 
 const oneLineResolved = resolveTaxForProduct(
   { federal: 18.4, state: 20, other: null, oneLine: 62 },
@@ -327,9 +323,9 @@ const stripped = stripUnchangedDefaults(
   "TX",
   { areaId: "galveston-bay", docks },
 );
-assert.equal(stripped.taxRb?.federal, 18.4);
-assert.equal(stripped.taxHo?.federal, 24.4);
-assert.equal(stripped.taxRb?.state, 20);
+assert.equal(stripped.taxRb?.federal, null);
+assert.equal(stripped.taxHo?.federal, null);
+assert.equal(stripped.taxRb?.state, null);
 assert.equal(stripped.rb.dockPosted, null);
 
 const galvestonNotes = deskFootnotes(findArea("galveston-bay"));
@@ -369,9 +365,18 @@ const federalOnlyDefault = resolveTaxForProduct(
   { state: "TX", applyDefaults: true },
 );
 assert.equal(federalOnlyDefault.federal.cents, 18.4);
-assert.equal(federalOnlyDefault.state.cents, null);
-assert.equal(federalOnlyDefault.incomplete, true);
-assert.equal(federalOnlyDefault.strip.cents, null);
+assert.equal(federalOnlyDefault.state.cents, 20);
+assert.equal(federalOnlyDefault.incomplete, false);
+assert.equal(federalOnlyDefault.strip.cents, 38.4);
+const unverifiedState = resolveTaxForProduct(
+  { federal: 18.4, state: null, other: null, oneLine: null },
+  "RB",
+  { state: "ZZ", applyDefaults: true },
+);
+assert.equal(unverifiedState.federal.cents, 18.4);
+assert.equal(unverifiedState.state.cents, null);
+assert.equal(unverifiedState.incomplete, true);
+assert.equal(unverifiedState.strip.cents, null);
 
 const yahooFill = computeProductNetback(
   "RB",

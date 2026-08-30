@@ -54,7 +54,6 @@ export default async function WholesalePage({
     docks,
     saved: usingDraft ? sheet : saved,
     nymexFallback: fallback,
-    applyTaxDefaults: !usingDraft,
   };
   const live = computeWorksheet(sheet, context);
   const prepared = applyWorksheetDefaults(sheet, context);
@@ -70,7 +69,7 @@ export default async function WholesalePage({
       docks: hasBook ? docks : undefined,
       saved: computed,
       nymexFallback: hasBook ? fallback : undefined,
-      applyTaxDefaults: hasBook && !rowDraft,
+      applyTaxDefaults: hasBook,
     });
     return { terminal, ref, rb: books.RB, ho: books.HO };
   });
