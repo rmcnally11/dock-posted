@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { filterDocks, parseBoardQuery, matchesSearch } from "../src/lib/board-query";
 import { formatQuote } from "../src/lib/format";
-import { boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
+import { boardQuote, boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
 import seed from "../data/docks.seed.json";
 import type { Dock, StateCode } from "../src/lib/types";
 import { STATE_CODES } from "../src/lib/types";
@@ -113,6 +113,10 @@ const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
 assert.ok(blueMarlin);
 assert.equal(pinTrust(blueMarlin), "last-seen");
 assert.equal(freshnessLabel(blueMarlin), "Last seen");
+assert.match(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)), /^\$/);
+
+const lastMonth = Date.parse("2026-08-30T12:00:00Z") + 40 * 24 * 60 * 60 * 1000;
+assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null, lastMonth)), "Call");
 
 const houstonYacht = docks.find((dock) => dock.id === "houston-yacht-club");
 assert.ok(houstonYacht);

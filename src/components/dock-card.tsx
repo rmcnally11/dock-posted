@@ -1,6 +1,6 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { ethanolCopy, formatDate, formatQuote, sourceLabel } from "@/lib/format";
-import { displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
+import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
 import type { Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -44,8 +44,8 @@ export function DockCard({
   selected?: boolean;
   href: "/" | `/?${string}`;
 }) {
-  const gas = displayGas(dock);
-  const diesel = displayDiesel(dock);
+  const gas = boardQuote(dock, displayGas(dock));
+  const diesel = boardQuote(dock, displayDiesel(dock));
   const trust = pinTrust(dock);
   const flags = flagLabels(dock);
 
@@ -126,7 +126,6 @@ export function DockCard({
         <a href={`/report?dock=${dock.id}`} className="underline-offset-2 hover:underline">
           {trust === "verified" ? "Update this pin" : "Claim this pin"}
         </a>
-        {trust !== "verified" ? " · Last seen is not gospel." : ""}
       </p>
     </article>
   );

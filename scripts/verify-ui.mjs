@@ -72,6 +72,8 @@ try {
   check("no on this water", !/on this water/i.test(homeCopy));
   check("no instrument family", !/instrument family/i.test(homeCopy));
   check("no sister page", !/sister page/i.test(homeCopy));
+  check("no field letter", !/field letter|almanac|onthiswater/i.test(homeCopy));
+  check("no hunt theater", !/wind is the tide|score ring|hunt line/i.test(homeCopy));
   check("no corridors copy", !/\bcorridors\b/i.test(homeCopy));
   check("no platform insights", !/platform|insights|real-time/i.test(homeCopy));
   check("no compliance hero", !/does not sell gallons, broker fuel/i.test(homeCopy));

@@ -95,3 +95,11 @@ export function displayGas(dock: Dock): FuelQuote | null {
 export function displayDiesel(dock: Dock): FuelQuote | null {
   return dock.quotes.find((quote) => quote.product === "diesel") ?? null;
 }
+
+export function boardQuote(dock: Dock, quote: FuelQuote | null, now = Date.now()): FuelQuote | null {
+  if (!quote) return null;
+  if (quote.status === "posted" && isOlderThanWeek(dock, now)) {
+    return { ...quote, pricePerGallon: null, status: "call" };
+  }
+  return quote;
+}

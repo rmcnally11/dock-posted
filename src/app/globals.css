@@ -47,10 +47,7 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(900px 420px at 8% -12%, rgb(26 107 107 / 0.08), transparent 55%),
-    radial-gradient(720px 380px at 110% 0%, rgb(196 92 38 / 0.05), transparent 50%),
-    linear-gradient(180deg, #f7f1e4 0%, var(--paper) 40%, #efe6d3 100%);
+  background: var(--paper);
   color: var(--harbor);
 }
 
@@ -66,22 +63,18 @@ body {
 }
 
 .dock-pin {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #f7f1e4;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #f6f0e2;
   border-radius: 999px;
-  box-shadow: 0 2px 8px rgb(11 31 51 / 0.35);
   cursor: pointer;
 }
 
 .dock-pin[data-selected="true"] {
-  width: 21px;
-  height: 21px;
-  outline: 3px solid rgb(26 107 107 / 0.45);
+  width: 18px;
+  height: 18px;
 }
 
 .chart-frame {
-  box-shadow:
-    inset 0 0 0 1px rgb(11 31 42 / 0.18),
-    inset 0 0 0 6px rgb(239 227 204 / 0.55);
+  box-shadow: inset 0 0 0 1px rgb(11 31 42 / 0.16);
 }

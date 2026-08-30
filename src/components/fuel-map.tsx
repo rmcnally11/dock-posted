@@ -1,15 +1,15 @@
 import { boardHref, type BoardQuery } from "@/lib/board-query";
 import { latToTileY, lngToTileX } from "@/lib/geo";
-import { freshness } from "@/lib/freshness";
+import { pinTrust } from "@/lib/freshness";
 import { tileGridForZoom, viewForBoard } from "@/lib/map-view";
 import type { Dock } from "@/lib/types";
 
 const TILE = 256;
 
 function pinColor(dock: Dock): string {
-  const state = freshness(dock);
-  if (state === "fresh") return "#1f8a5b";
-  if (state === "stale") return "#c9891a";
+  const trust = pinTrust(dock);
+  if (trust === "verified") return "#1f8a5b";
+  if (trust === "last-seen") return "#c9891a";
   return "#c45c26";
 }
 
