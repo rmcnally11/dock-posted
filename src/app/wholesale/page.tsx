@@ -9,6 +9,7 @@ import {
   parseAreaId,
   parseUnit,
   terminalsForArea,
+  worksheetHasInputs,
 } from "@/lib/wholesale";
 import { WHOLESALE_DRAFT_COOKIE, parseWholesaleDraft } from "@/lib/wholesale-draft";
 import { fetchYahooNymexScreens, nymexFallbackMap } from "@/lib/wholesale-nymex";
@@ -62,13 +63,14 @@ export default async function WholesalePage({
     const stored = store.worksheets[terminal.id] ?? emptyWorksheet();
     const rowDraft = Boolean(draft && draft.terminalId === terminal.id);
     const computed = rowDraft && draft ? draft.sheet : stored;
+    const hasBook = rowDraft || worksheetHasInputs(computed);
     const books = computeWorksheet(computed, {
       state: terminal.state,
       areaId,
-      docks,
+      docks: hasBook ? docks : undefined,
       saved: computed,
-      nymexFallback: fallback,
-      applyTaxDefaults: !rowDraft,
+      nymexFallback: hasBook ? fallback : undefined,
+      applyTaxDefaults: hasBook && !rowDraft,
     });
     return { terminal, ref, rb: books.RB, ho: books.HO };
   });
