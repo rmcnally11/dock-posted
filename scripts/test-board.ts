@@ -614,14 +614,11 @@ assert.doesNotMatch(haulSource, campaign);
 assert.doesNotMatch(dockPageSource, campaign);
 assert.doesNotMatch(footerSource, campaign);
 
-for (const file of [
-  "src/app/page.tsx",
-  "src/app/about/page.tsx",
-  "src/app/report/page.tsx",
-  "src/app/safe-fuel/page.tsx",
-  "src/app/haul-out/page.tsx",
-  "src/app/docks/[id]/page.tsx",
-]) {
+assert.match(aboutSource, /<BrandPhoto name="cover"/);
+assert.match(reportSource, /<BrandPhoto name="board"/);
+assert.match(safeSource, /<BrandPhoto name="pump"/);
+assert.match(haulSource, /<BrandPhoto name="storm"/);
+for (const file of ["src/app/page.tsx", "src/app/docks/[id]/page.tsx"]) {
   const text = readFileSync(path.join(process.cwd(), file), "utf8");
   assert.doesNotMatch(text, /BrandPhoto|\/brand\/(?:cover|board|pump|storm|close)\.jpg/, `${file} wired a missing brand JPEG`);
 }

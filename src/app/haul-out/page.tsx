@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BrandPhoto } from "@/components/brand-photo";
 import { OwnerPlanForm } from "@/components/owner-plan-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
@@ -47,6 +48,7 @@ export default async function HaulOutPage({
         this product.
       </p>
       <Waterline className="mt-3 hidden lg:block" />
+      <BrandPhoto name="storm" className="mt-6 aspect-[16/9] w-full max-w-3xl" />
 
       <section className="mt-6 max-w-3xl space-y-4 lg:mt-10" data-testid="how-it-works">
         <ol className="list-decimal space-y-3 pl-5 text-sm leading-6 text-[color:var(--ink)]/75">
