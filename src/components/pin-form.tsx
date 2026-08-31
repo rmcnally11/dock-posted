@@ -40,7 +40,7 @@ export function PinForm({ docks, initialDockId }: { docks: Dock[]; initialDockId
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="contactName">Who runs the hose</Label>
+        <Label htmlFor="contactName">Your name</Label>
         <Input id="contactName" name="contactName" required />
       </div>
 

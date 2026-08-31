@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BrandPhoto } from "@/components/brand-photo";
+import { HowItWorks, STORM_WALK } from "@/components/how-it-works";
 import { OwnerPlanForm } from "@/components/owner-plan-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
@@ -43,24 +44,22 @@ export default async function HaulOutPage({
         When they name it, you need a hole. If the yard didn’t say what was left, it stays Call.
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/60">
-        We are not the yard. We do not haul, store, or insure. We don’t invent a hole.
-        You call the yard. We don’t lift her. Wet slips stay Coastal Cavaliers — not
-        this product.
+        File the boat once, on a quiet Tuesday. When they put a name on the cone, we
+        text what’s left at the two yards you already picked. We are not the yard. We
+        do not haul, store, or insure. We don’t invent a hole. You call the yard. We
+        don’t lift her. Wet slips stay Coastal Cavaliers — not this product.
       </p>
       <Waterline className="mt-3 hidden lg:block" />
       <BrandPhoto name="storm" className="mt-6 aspect-[16/9] w-full max-w-3xl" />
 
-      <section className="mt-6 max-w-3xl space-y-4 lg:mt-10" data-testid="how-it-works">
-        <ol className="list-decimal space-y-3 pl-5 text-sm leading-6 text-[color:var(--ink)]/75">
-          <li>File the boat</li>
-          <li>Two yards that fit</li>
-          <li>When they name it, we text what’s left</li>
-          <li>You call the yard. We don’t lift her.</li>
-        </ol>
-      </section>
+      <HowItWorks
+        heading="The four steps"
+        intro="One page on file. A text when they name it. You make the call."
+        steps={STORM_WALK}
+      />
 
       <section className="mt-8 max-w-3xl lg:mt-10">
-        <h2 className="font-heading text-2xl text-[color:var(--navy)]">File a Named Storm Plan</h2>
+        <h2 className="font-heading text-2xl text-[color:var(--navy)]">File the boat now</h2>
         <div className="mt-4 rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] p-5">
           {params.error ? (
             <p className="mb-4 rounded-md bg-[color:var(--signal)]/10 px-3 py-2 text-sm text-[color:var(--signal)]">
@@ -117,6 +116,15 @@ export default async function HaulOutPage({
           won’t say what’s left, it stays Call, and they get no boats.
         </p>
         <p className="mt-3">Five yards still have not said what’s left.</p>
+        <p className="mt-3">
+          <a
+            className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
+            href="/how"
+          >
+            See all three walks
+          </a>
+          .
+        </p>
       </section>
       <SiteFooter />
     </main>

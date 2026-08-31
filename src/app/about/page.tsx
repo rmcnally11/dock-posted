@@ -52,6 +52,17 @@ export default function AboutPage() {
           >Post a number</a>
           .
         </p>
+        <p>
+          Three short walks if you want the simple version: the pin for the marina, the run
+          before you leave, and a Named storm plan for the boat.{" "}
+          <a
+            className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
+            href="/how"
+          >
+            How it works
+          </a>
+          .
+        </p>
       </section>
 
       <BrandPhoto name="close" className="mt-8 aspect-[16/9] w-full max-w-2xl" />

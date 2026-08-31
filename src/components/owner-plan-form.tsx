@@ -8,8 +8,8 @@ export function OwnerPlanForm() {
   return (
     <form action={submitNamedStormPlan} autoComplete="off" className="space-y-4" data-testid="owner-plan-form">
       <p className="text-sm text-[color:var(--ink)]/70">
-        {NAMED_STORM_PLAN_PRICE}. One page. Two yards that fit, and a text when the cone
-        gets a name. No checkout on this page. File the boat.
+        {NAMED_STORM_PLAN_PRICE}. Tell us the boat and two yards that fit. When they
+        name it, we text what’s left. No checkout on this page. File the boat.
       </p>
 
       <div className="space-y-1.5">

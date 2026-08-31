@@ -412,7 +412,9 @@ const wholesaleAt = headerSource.indexOf("Wholesale");
 assert.ok(e15At >= 0 && aboutAt > e15At, "About sits after E15");
 assert.ok(wholesaleAt > aboutAt, "About sits before Wholesale");
 
-const haulSource = readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8");
+const haulSource =
+  readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8") +
+  readFileSync(path.join(process.cwd(), "src/components/how-it-works.tsx"), "utf8");
 assert.match(haulSource, /Leftover seats/);
 assert.match(haulSource, /data-testid="haul-out-headline"[\s\S]*Named storm/);
 assert.match(haulSource, /When they name it, you need a hole/);

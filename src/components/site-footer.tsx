@@ -34,6 +34,14 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         <a href="/run" className="underline-offset-2 hover:underline">
           The run
         </a>
+        {" · "}
+        <a href="/how" className="underline-offset-2 hover:underline">
+          How it works
+        </a>
+        {" · "}
+        <a href="/haul-out" className="underline-offset-2 hover:underline">
+          Named storm
+        </a>
       </p>
     </footer>
   );
