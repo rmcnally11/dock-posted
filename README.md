@@ -86,6 +86,15 @@ npm run test:parser
 | `VERCEL` | set by Vercel | — | Local fallback uses `/tmp/dock-posted` if Blob is not configured |
 | `WHOLESALE_PASSWORD` | for `/wholesale` | unset = 404 | Shared password for the internal netback desk |
 | `WHOLESALE_SESSION_SECRET` | no | derived from the password | Signs the HttpOnly wholesale cookie |
+| `DESK_PASSWORD` | for `/desk` | falls back to wholesale | Monday call sheet |
+| `DESK_NOTIFY_EMAIL` | no | `rmcnally11@gmail.com` | Where the desk and new pins land |
+| `RESEND_API_KEY` | for mail | unset = store only | Pin, watch, and Monday desk mail |
+| `RESEND_FROM` | with Resend | `Dock Posted <rmcnally11@gmail.com>` | Must be a verified sender |
+| `AIRTABLE_API_KEY` | for the desk base | unset = Blob only | Pins, watches, calls |
+| `STRIPE_SECRET_KEY` | for pin / watch cards | unset = desk bills | Not for gallons |
+| `STRIPE_WEBHOOK_SECRET` | with Stripe | — | `/api/pay/webhook` |
+| `CRON_SECRET` | for Vercel cron | unset = open | Bearer or `?secret=` |
+| `NEXT_PUBLIC_SITE_URL` | with Stripe | `https://dock-posted.vercel.app` | Checkout return |
 
 No map API keys. Tiles are OpenStreetMap (`tile.openstreetmap.de`, fallback `a.tile.openstreetmap.fr/osmfr`) through `/api/tiles/{z}/{x}/{y}.png?v=2`. User-Agent: `DockPosted/1.0`. Attribution: © OpenStreetMap. Not Carto.
 
@@ -116,6 +125,22 @@ The desk may pull the public Yahoo Finance NYMEX front-month screens — `RB=F` 
 npm run test:wholesale
 ```
 
+## The pin and the run
+
+Secondary income sits **beside** the board. The board still does not sell a gallon, pick a hose, or show a bargain map.
+
+- `/pin` — marina owns the pin. **$299 a season.** They write the number on truck day. Verified when they post. Not Waterdog gallons. Not a card for fuel.
+- `/run` — fishing run card. Gallons you will burn, or GPH × hours. Posted dollars only. Call stays Call. Charter or trailer. **$29 a year** to watch that water by email. Not SMS.
+- `/desk` — Monday call sheet. Password is `DESK_PASSWORD` or the wholesale password. 404 if unset. Home waters first.
+
+Monday 14:00 UTC cron (`/api/cron/desk`) mails eight Call docks with phones and writes the [Airtable desk](https://airtable.com/apppoBWAzJi7lVVKv). Saturday 15:00 UTC (`/api/cron/watch`) mails watches what posted.
+
+If `STRIPE_SECRET_KEY` is set, `/pin` and `/run` can take a card for the pin or the watch — not for gallons. Without it, the desk bills. `RESEND_API_KEY` + `RESEND_FROM` send the mail. `AIRTABLE_API_KEY` writes Pins / Watches / Calls. `CRON_SECRET` locks the crons.
+
+```bash
+npm run test:income
+```
+
 ## What this is not
 
-A public fuel desk, a bargain map, an SMS product, or a payment flow. The consumer board does not show rack, NYMEX, or a wholesale book. No leftover wet-slip or pump-out products.
+A public fuel desk, a bargain map, an SMS product, or a payment flow **on the board**. The consumer board does not show rack, NYMEX, or a wholesale book. No leftover wet-slip or pump-out products.

@@ -57,13 +57,20 @@ export default async function Home({
               Diesel and gas from the dock. If they didn’t write a number, it stays Call.
             </p>
             <p
+              data-testid="hero-geo"
+              className="mt-3 max-w-xl text-sm leading-6 text-[color:var(--cream)]/55"
+            >
+              Sabine to Key West. Then the rest of the saltwater coast.
+            </p>
+            <p
               data-testid="hero-extra"
               className="mt-3 max-w-xl text-sm leading-6 text-[color:var(--cream)]/55"
             >
               We don’t sell a gallon. We don’t lift a boat.
             </p>
             <p data-testid="board-tally" className="mt-6 text-sm text-[color:var(--cream)]/55">
-              {tally.postedThisWeek} posted this week. {tally.call} still Call.
+              {tally.postedThisWeek} posted this week. {tally.call} still Call. That is the
+              product working, not failing.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a

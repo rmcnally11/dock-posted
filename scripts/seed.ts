@@ -3,7 +3,7 @@ import { resetFromSeed } from "../src/lib/store";
 async function main() {
   const store = await resetFromSeed();
   console.log(`Seeded ${store.docks.length} docks from data/docks.seed.json`);
-  console.log(`Captured ${store.seedCapturedOn}. Runtime reports, haul-out filings, and wholesale worksheets cleared.`);
+  console.log(`Captured ${store.seedCapturedOn}. Runtime reports, haul-out filings, wholesale, and desk filings cleared.`);
 }
 
 main().catch((error) => {

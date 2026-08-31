@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { HaulOutStoreFile } from "./haul-out";
+import { emptyIncomeStore, type IncomeStoreFile } from "./income";
 import type { OverlayStoreFile, ReportStoreFile } from "./types";
 import { emptyWholesaleStore, type WholesaleStoreFile } from "./wholesale";
 
@@ -8,6 +9,7 @@ const REPORTS_BLOB = "dock-posted/reports.json";
 const OVERLAYS_BLOB = "dock-posted/overlays.json";
 const HAUL_OUT_BLOB = "dock-posted/haul-out.json";
 const WHOLESALE_BLOB = "dock-posted/wholesale.json";
+const INCOME_BLOB = "dock-posted/income.json";
 
 function runtimeDir() {
   if (process.env.DATA_DIR) return process.env.DATA_DIR;
@@ -29,6 +31,10 @@ function haulOutPath() {
 
 function wholesalePath() {
   return path.join(runtimeDir(), "wholesale.json");
+}
+
+function incomePath() {
+  return path.join(runtimeDir(), "income.json");
 }
 
 export function blobConfigured(): boolean {
@@ -159,4 +165,25 @@ export async function writeWholesaleFile(file: WholesaleStoreFile): Promise<void
     return;
   }
   await writeJsonFile(wholesalePath(), file);
+}
+
+export async function readIncomeFile(): Promise<IncomeStoreFile> {
+  const empty = emptyIncomeStore();
+  if (blobConfigured()) {
+    try {
+      return (await readBlobJson<IncomeStoreFile>(INCOME_BLOB)) ?? empty;
+    } catch (error) {
+      console.warn("Blob income read failed; using empty store.", error);
+      return empty;
+    }
+  }
+  return readJsonFile(incomePath(), empty);
+}
+
+export async function writeIncomeFile(file: IncomeStoreFile): Promise<void> {
+  if (blobConfigured()) {
+    await writeBlobJson(INCOME_BLOB, file);
+    return;
+  }
+  await writeJsonFile(incomePath(), file);
 }
