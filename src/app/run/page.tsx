@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HowItWorks, RUN_WALK } from "@/components/how-it-works";
 import { RunWatchForm } from "@/components/run-watch-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "The run",
-  description: "Gallons you will burn. What they posted on that water. A blank stays Call.",
+  description: "See what a tank will cost on the water you fish. Posted dollars only. A blank stays Call.",
 };
 
 export default async function RunPage({
@@ -48,19 +49,28 @@ export default async function RunPage({
         data-testid="run-kicker"
         className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]"
       >
-        Fishing run
+        Before you leave
       </p>
       <h1 data-testid="run-headline" className="mt-1 font-heading text-4xl text-[color:var(--navy)] md:text-5xl">
         The run
       </h1>
-      <p data-testid="run-deck" className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
-        Gallons you will burn. What they posted on that water. A blank stays Call.
+      <p data-testid="run-deck" className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/70">
+        See what a tank will cost on the water you fish. You enter gallons — or GPH and
+        hours — and we multiply by what the dock posted. If they have not written a
+        number, it stays Call.
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/60">
         Charter or trailer. Same math. We don’t pick a hose. We don’t sell a gallon.
         E15 is not for boats.
       </p>
       <Waterline className="mt-3" />
+
+      <HowItWorks
+        heading="How the run works"
+        intro="Use it Friday night. It takes less time than a phone call down the channel."
+        steps={RUN_WALK}
+        testId="run-how"
+      />
 
       <form action="/run" method="get" className="mt-8 max-w-2xl space-y-4" data-testid="run-form">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -131,10 +141,11 @@ export default async function RunPage({
           type="submit"
           className="inline-flex h-11 items-center rounded-md bg-[color:var(--navy)] px-4 text-sm font-medium text-[color:var(--cream)]"
         >
-          Run the numbers
+          See the tank
         </button>
         <p className="text-xs text-[color:var(--ink)]/50">
-          Gallons, or GPH times hours. Posted dollars only. Call if they didn’t write it.
+          Gallons, or GPH times hours. We only multiply a posted price. Call means they
+          have not written one.
         </p>
       </form>
 
@@ -151,8 +162,8 @@ export default async function RunPage({
                 <th className="px-3 py-2 font-medium">Dock</th>
                 <th className="px-3 py-2 font-medium">Gas</th>
                 <th className="px-3 py-2 font-medium">Diesel</th>
-                <th className="px-3 py-2 font-medium">Tank gas</th>
-                <th className="px-3 py-2 font-medium">Tank diesel</th>
+                <th className="px-3 py-2 font-medium">Your tank, gas</th>
+                <th className="px-3 py-2 font-medium">Your tank, diesel</th>
                 <th className="px-3 py-2 font-medium">Blend</th>
               </tr>
             </thead>
@@ -184,8 +195,11 @@ export default async function RunPage({
       </section>
 
       <section className="mt-10 max-w-xl">
-        <h2 className="font-heading text-2xl text-[color:var(--navy)]">Watch this water</h2>
-        <p className="mt-2 text-sm text-[color:var(--ink)]/70">{WATCH_PRICE_LABEL}.</p>
+        <h2 className="font-heading text-2xl text-[color:var(--navy)]">Email me when they post</h2>
+        <p className="mt-2 text-sm leading-6 text-[color:var(--ink)]/70">
+          {WATCH_PRICE_LABEL}. We write you when a dock on that coast posts. Not a text.
+          Watch this water if you run it every week.
+        </p>
         <div className="mt-4 rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] p-5">
           {params.error ? (
             <p className="mb-4 rounded-md bg-[color:var(--signal)]/10 px-3 py-2 text-sm text-[color:var(--signal)]">
@@ -195,8 +209,8 @@ export default async function RunPage({
           {params.watched ? (
             <p className="mb-4 rounded-md bg-fresh/10 px-3 py-2 text-sm text-fresh" data-testid="watch-filed">
               {params.paid === "1"
-                ? "Watch is paid. We write when a dock on that water posts."
-                : "Watch filed. We write when a dock on that water posts."}
+                ? "You’re on the list. We’ll email you when a dock posts."
+                : "You’re on the list. We’ll email you when a dock posts."}
             </p>
           ) : null}
           <RunWatchForm
@@ -208,7 +222,7 @@ export default async function RunPage({
       </section>
 
       <p className="mt-8 text-sm text-[color:var(--ink)]/55">
-        Run the hose?{" "}
+        You run the fuel dock?{" "}
         <a
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/pin"
@@ -221,6 +235,13 @@ export default async function RunPage({
           href="/safe-fuel"
         >
           E15 is not for boats
+        </a>
+        {" · "}
+        <a
+          className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
+          href="/how"
+        >
+          See all three walks
         </a>
         .
       </p>

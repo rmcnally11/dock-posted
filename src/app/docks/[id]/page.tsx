@@ -262,7 +262,7 @@ export default async function DockPage({
         >
           Own this pin
         </a>
-        . You write the number.
+        . Boats see your price before they leave.
       </p>
       <p className="mt-2 max-w-xl text-sm text-[color:var(--ink)]/70">
         <a
@@ -272,7 +272,7 @@ export default async function DockPage({
         >
           This water
         </a>
-        . {dockWaterLabel(dock)}. Gallons you will burn.
+        . {dockWaterLabel(dock)}. See what a tank costs before you leave.
       </p>
       <script
         type="application/ld+json"

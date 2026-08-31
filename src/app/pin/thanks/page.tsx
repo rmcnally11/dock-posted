@@ -39,12 +39,12 @@ export default async function PinThanksPage({
 
       <section className="mt-8 max-w-xl space-y-3 text-sm leading-7 text-[color:var(--ink)]/80">
         {paid ? (
-          <p>Paid. Post the number when you change the board.</p>
+          <p>You’re on the board. Change the number whenever the dock board changes.</p>
         ) : stripeConfigured() ? (
-          <p>The bill is open. The pin stays Call until it clears.</p>
+          <p>The bill is open. Boats will see Call until it clears.</p>
         ) : (
           <p>
-            We sent a bill to the desk. Mail or wire {PIN_PRICE_LABEL}. The pin stays
+            We sent a bill to the desk. Mail or wire {PIN_PRICE_LABEL}. Boats will see
             Call until it clears.
           </p>
         )}

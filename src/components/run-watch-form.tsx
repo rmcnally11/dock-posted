@@ -17,7 +17,7 @@ export function RunWatchForm({
   return (
     <form action={submitWaterWatch} autoComplete="off" className="space-y-4" data-testid="watch-form">
       <p className="text-sm text-[color:var(--ink)]/70">
-        {WATCH_PRICE_LABEL}. When a dock on this water posts, we write you. Not a text.
+        {WATCH_PRICE_LABEL}. When a dock on that water posts, we write you. Not a text.
       </p>
       {corridor ? <input type="hidden" name="corridor" value={corridor} /> : null}
       {region ? <input type="hidden" name="region" value={region} /> : null}

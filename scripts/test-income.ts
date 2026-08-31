@@ -127,6 +127,8 @@ const fence = /cheapest|bargain|savings pitch|on this water|instrument family|fi
 for (const file of [
   "src/app/pin/page.tsx",
   "src/app/run/page.tsx",
+  "src/app/how/page.tsx",
+  "src/components/how-it-works.tsx",
   "src/lib/income.ts",
   "src/lib/run-card.ts",
   "src/lib/desk.ts",
@@ -138,16 +140,39 @@ for (const file of [
 const pinPage = readFileSync(path.join(process.cwd(), "src/app/pin/page.tsx"), "utf8");
 assert.match(pinPage, /Own the pin/);
 assert.match(pinPage, /PIN_PRICE_LABEL/);
+assert.match(pinPage, /How the pin works/);
 assert.doesNotMatch(pinPage, /stripe/i);
 
 const runPage = readFileSync(path.join(process.cwd(), "src/app/run/page.tsx"), "utf8");
 assert.match(runPage, /The run/);
 assert.match(runPage, /Charter or trailer/);
 assert.match(runPage, /E15 is not for boats/);
+assert.match(runPage, /How the run works/);
+
+const howPage = readFileSync(path.join(process.cwd(), "src/app/how/page.tsx"), "utf8");
+assert.match(howPage, /How it works/);
+assert.match(howPage, /The pin/);
+assert.match(howPage, /The run/);
+assert.match(howPage, /Named storm/);
+assert.match(howPage, /PIN_WALK/);
+assert.match(howPage, /RUN_WALK/);
+assert.match(howPage, /STORM_WALK/);
+
+const walks = readFileSync(path.join(process.cwd(), "src/components/how-it-works.tsx"), "utf8");
+assert.match(walks, /File the boat/);
+assert.match(walks, /Two yards that fit/);
+assert.match(walks, /When they name it, we text what.s left/);
+assert.match(walks, /You call the yard\. We don.t lift her\./);
+
+const haulPage = readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8");
+assert.match(haulPage, /STORM_WALK/);
+assert.match(haulPage, /The four steps/);
+assert.doesNotMatch(haulPage, /heading="How it works"/);
 
 const footer = readFileSync(path.join(process.cwd(), "src/components/site-footer.tsx"), "utf8");
 assert.match(footer, /href="\/pin"/);
 assert.match(footer, /href="\/run"/);
+assert.match(footer, /href="\/how"/);
 assert.match(footer, /Waterdog Fuel[\s\S]*The pin[\s\S]*The run/);
 
 const dockPage = readFileSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx"), "utf8");
