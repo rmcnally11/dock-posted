@@ -116,6 +116,20 @@ export default async function Home({
                 When they name it
               </a>
               <a
+                data-testid="landing-link-pin"
+                href="/pin"
+                className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
+              >
+                The pin
+              </a>
+              <a
+                data-testid="landing-link-run"
+                href="/run"
+                className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
+              >
+                The run
+              </a>
+              <a
                 data-testid="landing-link-about"
                 href="/about"
                 className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"

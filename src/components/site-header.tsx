@@ -25,6 +25,12 @@ export async function SiteHeader() {
           <a className={navLink} href="/haul-out" aria-label="Named storm">
             Named storm
           </a>
+          <a className={navLink} href="/pin" data-testid="nav-pin" aria-label="The pin">
+            The pin
+          </a>
+          <a className={navLink} href="/run" data-testid="nav-run" aria-label="The run">
+            The run
+          </a>
           <a className={navLink} href="/report" aria-label="Post a number">
             Post a number
           </a>
