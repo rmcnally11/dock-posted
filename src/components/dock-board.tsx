@@ -2,6 +2,7 @@ import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
 import { SiteFooter } from "@/components/site-footer";
 import { boardHref, dockPath, viewLabel, type BoardHref, type BoardQuery } from "@/lib/board-query";
+import { runWatchHref } from "@/lib/income";
 import { COAST_JUMPS, type Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -43,6 +44,16 @@ export function DockBoard({
               </p>
               <p data-testid="board-fact" className="mt-1 text-xs text-[color:var(--ink)]/55">
                 Call is a fact. Silence is not a price.
+              </p>
+              <p className="mt-1 text-xs text-[color:var(--ink)]/55">
+                <a
+                  href={runWatchHref({ corridor: query.corridor, region: query.region })}
+                  data-testid="board-run"
+                  className="underline-offset-2 hover:underline"
+                >
+                  The run
+                </a>
+                . Gallons you will burn.
               </p>
               <p
                 data-testid="pin-legend"

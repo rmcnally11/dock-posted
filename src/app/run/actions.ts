@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { writeWatchToAirtable, writeWatchToFieldBrief } from "@/lib/airtable-desk";
-import { parseWatchInput, WATCH_PRICE_LABEL, waterLabel } from "@/lib/income";
+import { parseWatchInput, runWatchHref, WATCH_PRICE_LABEL, waterLabel } from "@/lib/income";
 import { notifyEmail, sendMail } from "@/lib/notify";
 import { createCheckoutSession } from "@/lib/pay";
 import { clientKey, takeReportSlot } from "@/lib/rate-limit";
@@ -59,10 +59,30 @@ export async function submitWaterWatch(formData: FormData): Promise<void> {
     recordId: watch.id,
     email: watch.email,
     name: water,
+    successPath: runWatchHref({
+      corridor: watch.corridor,
+      region: watch.region,
+      gallons: watch.gallons,
+      watched: true,
+      paid: true,
+    }),
+    cancelPath: runWatchHref({
+      corridor: watch.corridor,
+      region: watch.region,
+      gallons: watch.gallons,
+      watched: true,
+    }),
   });
   if (checkout) {
     redirect(checkout as never);
   }
 
-  redirect("/run?watched=1");
+  redirect(
+    runWatchHref({
+      corridor: watch.corridor,
+      region: watch.region,
+      gallons: watch.gallons,
+      watched: true,
+    }) as never,
+  );
 }

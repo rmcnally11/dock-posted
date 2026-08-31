@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { boardHref } from "@/lib/board-query";
 import { ethanolCopy, formatDate, formatQuote, sourceLabel, telHref } from "@/lib/format";
+import { dockWaterLabel, runWatchHref } from "@/lib/income";
 import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
 import { readDocks } from "@/lib/store";
 import type { Dock } from "@/lib/types";
@@ -262,6 +263,16 @@ export default async function DockPage({
           Own this pin
         </a>
         . You write the number.
+      </p>
+      <p className="mt-2 max-w-xl text-sm text-[color:var(--ink)]/70">
+        <a
+          href={runWatchHref({ corridor: dock.corridor, region: dock.region })}
+          data-testid="this-water"
+          className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
+        >
+          This water
+        </a>
+        . {dockWaterLabel(dock)}. Gallons you will burn.
       </p>
       <script
         type="application/ld+json"

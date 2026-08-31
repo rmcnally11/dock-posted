@@ -26,18 +26,15 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         <a href="https://coastalcavaliers.com" className="underline-offset-2 hover:underline">
           Waterdog Fuel. Rack to dock.
         </a>
+        {" · "}
+        <a href="/pin" className="underline-offset-2 hover:underline">
+          The pin
+        </a>
+        {" · "}
+        <a href="/run" className="underline-offset-2 hover:underline">
+          The run
+        </a>
       </p>
-      {compact ? null : (
-        <p className="mt-2 text-xs leading-5 text-[color:var(--ink)]/50">
-          <a href="/pin" className="underline-offset-2 hover:underline">
-            The pin
-          </a>
-          {" · "}
-          <a href="/run" className="underline-offset-2 hover:underline">
-            The run
-          </a>
-        </p>
-      )}
     </footer>
   );
 }

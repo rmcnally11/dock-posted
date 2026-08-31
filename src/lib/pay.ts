@@ -15,6 +15,8 @@ export async function createCheckoutSession(input: {
   recordId: string;
   email: string;
   name: string;
+  successPath?: string;
+  cancelPath?: string;
 }): Promise<string | null> {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
   if (!key) return null;
@@ -22,18 +24,22 @@ export async function createCheckoutSession(input: {
   const dollars = input.kind === "pin" ? PIN_SEASON_DOLLARS : WATCH_YEAR_DOLLARS;
   const label = input.kind === "pin" ? "Dock Posted pin · one season" : "Dock Posted run watch · one year";
   const success =
-    input.kind === "pin"
-      ? `${siteUrl()}/pin/thanks?id=${encodeURIComponent(input.recordId)}&paid=1`
-      : `${siteUrl()}/run?watched=1&paid=1`;
+    input.successPath ??
+    (input.kind === "pin"
+      ? `/pin/thanks?id=${encodeURIComponent(input.recordId)}&paid=1`
+      : `/run?watched=1&paid=1`);
   const cancel =
-    input.kind === "pin"
-      ? `${siteUrl()}/pin/thanks?id=${encodeURIComponent(input.recordId)}`
-      : `${siteUrl()}/run?watched=1`;
+    input.cancelPath ??
+    (input.kind === "pin"
+      ? `/pin/thanks?id=${encodeURIComponent(input.recordId)}`
+      : `/run?watched=1`);
+  const successUrl = `${siteUrl()}${success.startsWith("/") ? success : `/${success}`}`;
+  const cancelUrl = `${siteUrl()}${cancel.startsWith("/") ? cancel : `/${cancel}`}`;
 
   const body = new URLSearchParams();
   body.set("mode", "payment");
-  body.set("success_url", success);
-  body.set("cancel_url", cancel);
+  body.set("success_url", successUrl);
+  body.set("cancel_url", cancelUrl);
   body.set("customer_email", input.email);
   body.set("client_reference_id", `${input.kind}:${input.recordId}`);
   body.set("metadata[kind]", input.kind);

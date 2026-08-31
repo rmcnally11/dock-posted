@@ -93,6 +93,25 @@ export function waterLabel(corridor: CorridorId | null, region: RegionId | null)
   return "Sabine to Maine";
 }
 
+export function runWatchHref(input: {
+  corridor?: string | null;
+  region?: string | null;
+  gallons?: number | string | null;
+  watched?: boolean;
+  paid?: boolean;
+}): string {
+  const params = new URLSearchParams();
+  if (input.corridor) params.set("corridor", input.corridor);
+  else if (input.region) params.set("region", input.region);
+  if (input.gallons != null && String(input.gallons) !== "") {
+    params.set("gallons", String(input.gallons));
+  }
+  if (input.watched) params.set("watched", "1");
+  if (input.paid) params.set("paid", "1");
+  const qs = params.toString();
+  return qs ? `/run?${qs}` : "/run";
+}
+
 export function parsePositive(raw: string, max: number): number | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;

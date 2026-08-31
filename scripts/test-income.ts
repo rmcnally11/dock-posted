@@ -7,6 +7,7 @@ import {
   parseWatchInput,
   PIN_PRICE_LABEL,
   pinPitch,
+  runWatchHref,
   WATCH_PRICE_LABEL,
   waterLabel,
   weekOfIso,
@@ -114,6 +115,13 @@ assert.doesNotMatch(pitch, /cheapest|savings|bargain/i);
 
 assert.deepEqual(parseCheckoutRef("pin:abc"), { kind: "pin", recordId: "abc" });
 assert.equal(parseCheckoutRef("nope"), null);
+assert.equal(runWatchHref({ corridor: "galveston-bay", gallons: 40 }), "/run?corridor=galveston-bay&gallons=40");
+assert.equal(
+  runWatchHref({ corridor: "galveston-bay", gallons: 40, watched: true }),
+  "/run?corridor=galveston-bay&gallons=40&watched=1",
+);
+assert.equal(runWatchHref({ region: "keys" }), "/run?region=keys");
+assert.equal(runWatchHref({}), "/run");
 
 const fence = /cheapest|bargain|savings pitch|on this water|instrument family|field letter|wind is the tide/i;
 for (const file of [
@@ -140,6 +148,15 @@ assert.match(runPage, /E15 is not for boats/);
 const footer = readFileSync(path.join(process.cwd(), "src/components/site-footer.tsx"), "utf8");
 assert.match(footer, /href="\/pin"/);
 assert.match(footer, /href="\/run"/);
+assert.match(footer, /Waterdog Fuel[\s\S]*The pin[\s\S]*The run/);
+
+const dockPage = readFileSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx"), "utf8");
+assert.match(dockPage, /data-testid="own-this-pin"/);
+assert.match(dockPage, /data-testid="this-water"/);
+assert.match(dockPage, /runWatchHref/);
+
+const board = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
+assert.match(board, /data-testid="board-run"/);
 
 const home = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.doesNotMatch(home, /stripe|waitlist|email capture|newsletter/i);
