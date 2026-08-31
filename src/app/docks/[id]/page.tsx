@@ -253,6 +253,16 @@ export default async function DockPage({
         </a>
         . Truck day, or when you change the board.
       </p>
+      <p className="mt-2 max-w-xl text-sm text-[color:var(--ink)]/70">
+        <a
+          href={`/pin?dock=${dock.id}`}
+          data-testid="own-this-pin"
+          className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
+        >
+          Own this pin
+        </a>
+        . You write the number.
+      </p>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(dockJsonLd(dock)) }}

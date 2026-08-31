@@ -14,6 +14,7 @@
     "test:board": "tsx scripts/test-board.ts",
     "test:haul-out": "tsx scripts/test-haul-out.ts",
     "test:wholesale": "tsx scripts/test-wholesale.ts",
+    "test:income": "tsx scripts/test-income.ts",
     "test:ui": "node scripts/verify-ui.mjs"
   },
   "dependencies": {

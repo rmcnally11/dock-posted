@@ -13,11 +13,22 @@ import {
   type YardSeedRow,
 } from "./haul-out";
 import {
+  emptyIncomeStore,
+  type DeskCall,
+  type IncomeStoreFile,
+  type PinClaim,
+  type PinInput,
+  type WatchInput,
+  type WaterWatch,
+} from "./income";
+import {
   readHaulOutFile,
+  readIncomeFile,
   readOverlayFile,
   readReportFile,
   readWholesaleFile,
   writeHaulOutFile,
+  writeIncomeFile,
   writeOverlayFile,
   writeReportFile,
   writeWholesaleFile,
@@ -141,6 +152,7 @@ export async function resetFromSeed(): Promise<DockStoreFile> {
   await writeOverlayFile({ overlays: {} });
   await writeHaulOutFile(await emptyHaulOutStore());
   await writeWholesaleFile(emptyWholesaleStore());
+  await writeIncomeFile(emptyIncomeStore());
   return readDockStore();
 }
 
@@ -366,4 +378,124 @@ export async function addPriceReport(input: {
   await writeReports(reports);
 
   return { report, dock: updatedDock };
+}
+
+export async function readIncomeStore(): Promise<IncomeStoreFile> {
+  return readIncomeFile();
+}
+
+export async function writeIncomeStore(store: IncomeStoreFile): Promise<void> {
+  store.generatedAt = new Date().toISOString();
+  await writeIncomeFile(store);
+}
+
+export async function addPinClaim(input: PinInput, dockName: string): Promise<PinClaim> {
+  const store = await readIncomeStore();
+  const pin: PinClaim = {
+    id: randomUUID(),
+    dockId: input.dockId,
+    dockName,
+    contactName: input.contactName,
+    email: input.email,
+    phone: input.phone,
+    role: input.role,
+    status: "filed",
+    createdAt: new Date().toISOString(),
+    paidAt: null,
+    lastContactedAt: null,
+    note: input.note,
+  };
+  store.pins.unshift(pin);
+  await writeIncomeStore(store);
+  return pin;
+}
+
+export async function addWaterWatch(input: WatchInput): Promise<WaterWatch> {
+  const store = await readIncomeStore();
+  const existing = store.watches.find(
+    (row) =>
+      row.email.toLowerCase() === input.email.toLowerCase() &&
+      row.corridor === input.corridor &&
+      row.region === input.region &&
+      row.status !== "stopped",
+  );
+  if (existing) {
+    existing.name = input.name;
+    existing.gallons = input.gallons;
+    await writeIncomeStore(store);
+    return existing;
+  }
+  const watch: WaterWatch = {
+    id: randomUUID(),
+    email: input.email,
+    name: input.name,
+    corridor: input.corridor,
+    region: input.region,
+    gallons: input.gallons,
+    status: "filed",
+    createdAt: new Date().toISOString(),
+    paidAt: null,
+    note: null,
+  };
+  store.watches.unshift(watch);
+  await writeIncomeStore(store);
+  return watch;
+}
+
+export async function markPinPaid(id: string): Promise<PinClaim | null> {
+  const store = await readIncomeStore();
+  const pin = store.pins.find((row) => row.id === id);
+  if (!pin) return null;
+  pin.status = "paid";
+  pin.paidAt = new Date().toISOString();
+  await writeIncomeStore(store);
+  return pin;
+}
+
+export async function markWatchPaid(id: string): Promise<WaterWatch | null> {
+  const store = await readIncomeStore();
+  const watch = store.watches.find((row) => row.id === id);
+  if (!watch) return null;
+  watch.status = "paid";
+  watch.paidAt = new Date().toISOString();
+  await writeIncomeStore(store);
+  return watch;
+}
+
+export async function readPin(id: string): Promise<PinClaim | null> {
+  const store = await readIncomeStore();
+  return store.pins.find((row) => row.id === id) ?? null;
+}
+
+export async function addDeskCalls(
+  rows: Array<Omit<DeskCall, "id" | "createdAt">>,
+): Promise<DeskCall[]> {
+  const store = await readIncomeStore();
+  const created = rows.map((row) => ({
+    ...row,
+    id: randomUUID(),
+    createdAt: new Date().toISOString(),
+  }));
+  store.calls.unshift(...created);
+  await writeIncomeStore(store);
+  return created;
+}
+
+export async function attachIncomeAirtable(
+  kind: "pin" | "watch" | "call",
+  id: string,
+  airtableId: string,
+): Promise<void> {
+  const store = await readIncomeStore();
+  if (kind === "pin") {
+    const row = store.pins.find((item) => item.id === id);
+    if (row) row.airtableId = airtableId;
+  } else if (kind === "watch") {
+    const row = store.watches.find((item) => item.id === id);
+    if (row) row.airtableId = airtableId;
+  } else {
+    const row = store.calls.find((item) => item.id === id);
+    if (row) row.airtableId = airtableId;
+  }
+  await writeIncomeStore(store);
 }
