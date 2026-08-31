@@ -125,16 +125,32 @@ export function sortDocks(docks: Dock[]): Dock[] {
   });
 }
 
+export function promoteSelected(docks: Dock[], dockId: string | null): Dock[] {
+  if (!dockId) return docks;
+  const index = docks.findIndex((dock) => dock.id === dockId);
+  if (index <= 0) return docks;
+  const picked = docks[index];
+  return [picked, ...docks.filter((dock) => dock.id !== dockId)];
+}
+
 export function filterDocks(
   docks: Dock[],
   query: BoardQuery,
 ): { inCorridor: Dock[]; visible: Dock[] } {
   const inCorridor = sortDocks(geographicSet(docks, query));
-  const visible = sortDocks(
+  let visible = sortDocks(
     inCorridor
       .filter((dock) => (query.e0Only ? dock.ethanol === "E0" : true))
       .filter((dock) => (query.freshOnly ? freshness(dock) === "fresh" : true)),
   );
+  if (query.dock) {
+    const picked = docks.find((dock) => dock.id === query.dock);
+    if (picked && !visible.some((dock) => dock.id === query.dock)) {
+      visible = [picked, ...visible];
+    } else {
+      visible = promoteSelected(visible, query.dock);
+    }
+  }
   return { inCorridor, visible };
 }
 
