@@ -1,4 +1,5 @@
 import { BrandSpine } from "@/components/wordmark";
+import { ON_THIS_WATER } from "@/lib/sister";
 
 export function SiteFooter({ compact = false }: { compact?: boolean }) {
   return (
@@ -42,6 +43,12 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         <a href="/haul-out" className="underline-offset-2 hover:underline">
           Named storm
         </a>
+      </p>
+      <p className={compact ? "mt-1" : "mt-2 text-xs leading-5 text-[color:var(--ink)]/50"}>
+        <a href={ON_THIS_WATER} className="underline-offset-2 hover:underline">
+          On This Water
+        </a>
+        . Tide and wind on the same coast.
       </p>
     </footer>
   );
