@@ -98,7 +98,7 @@ try {
   const landingMarkup = await page.$eval("[data-testid=landing]", (el) => el.innerHTML);
   check("no campaign cards", !/grid-cols-4|four doors/i.test(landingMarkup));
   const tally = await page.$eval("[data-testid=board-tally]", (el) => el.textContent?.trim());
-  check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
+  check("count under deck", /wrote a\s+number this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
   check("week line is human", /docks wrote a\s+number this week\. Most still haven.t\./.test(tally ?? ""), tally);
   check("proof is live counts", /That.s normal\. That.s why the phone is on the\s+card\./.test(tally ?? ""), tally);
   check("no invent compliance", !/never invent a price/i.test(homeCopy));

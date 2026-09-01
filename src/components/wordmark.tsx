@@ -18,14 +18,14 @@ export function Wordmark({
         )}
       >
         Dock Posted
-      </span>
+      </span>{" "}
       <span
         className={cn(
           "geo-lockup hidden sm:inline",
           invert ? "text-[color:var(--cream)]/55" : "text-[color:var(--diesel)]",
         )}
       >
-        Sabine to Key West
+        Sabine to Key West{" "}
       </span>
     </span>
   );

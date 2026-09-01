@@ -16,27 +16,33 @@ export async function SiteHeader() {
           <Wordmark />
         </a>
         <nav
-          className="chip-scroll flex min-w-0 flex-1 items-center justify-end gap-x-0.5 overflow-x-auto"
+          className="chip-scroll flex min-w-0 flex-1 items-center justify-start gap-x-0.5 overflow-x-auto md:justify-end"
           aria-label="Dock Posted"
         >
           <a className={navLink} href="/#board" aria-label="Today">
             Today
           </a>
+          {" "}
           <a className={navLink} href="/haul-out" aria-label="Yard seats">
             Yard seats
           </a>
+          {" "}
           <a className={navLink} href="/pin" data-testid="nav-pin" aria-label="Your dock">
             Your dock
           </a>
+          {" "}
           <a className={navLink} href="/run" data-testid="nav-run" aria-label="This trip">
             This trip
           </a>
+          {" "}
           <a className={navLink} href="/report" aria-label="I was there">
             I was there
           </a>
+          {" "}
           <a className={navLink} href="/safe-fuel" aria-label="What’s in the hose">
             What’s in the hose
           </a>
+          {" "}
           <a className={navLink} href="/about" data-testid="nav-about" aria-label="Who writes this">
             Who writes this
           </a>
