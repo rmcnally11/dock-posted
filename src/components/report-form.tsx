@@ -86,7 +86,7 @@ export function ReportForm({
                   : item === "E15"
                     ? "E15 — not for boats"
                     : item === "unknown"
-                      ? "Call"
+                      ? "—"
                       : item}
               </option>
             ))}
@@ -140,7 +140,7 @@ export function ReportForm({
             defaultValue=""
             className="h-11 w-full rounded-md border border-[color:var(--line)] bg-white px-3 text-base md:text-sm"
           >
-            <option value="">Call</option>
+            <option value="">Ask the dock</option>
             <option value="cash">Cash</option>
             <option value="card">Card</option>
             <option value="both">Cash or card</option>
@@ -178,7 +178,7 @@ export function ReportForm({
         Send it
       </Button>
       <p className="text-xs text-[color:var(--ink)]/50">
-        The number on the pump. If they did not post, it stays Call.
+        The number on the pump. If they did not put a number up, leave it blank.
       </p>
     </form>
   );

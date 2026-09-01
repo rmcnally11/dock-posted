@@ -39,8 +39,8 @@ assert.equal(rows[0]?.tankDieselLabel.startsWith("$"), true);
 const callDock = docks.find((dock) => dock.id === "marina-bay-harbor");
 assert.ok(callDock);
 const callRows = runRows([callDock], 40);
-assert.equal(callRows[0]?.gasLabel, "Call");
-assert.equal(callRows[0]?.tankGasLabel, "Call");
+assert.equal(callRows[0]?.gasLabel, "—");
+assert.equal(callRows[0]?.tankGasLabel, "—");
 
 const badPin = parsePinInput({
   dockId: "",
@@ -140,22 +140,22 @@ for (const file of [
 }
 
 const pinPage = readFileSync(path.join(process.cwd(), "src/app/pin/page.tsx"), "utf8");
-assert.match(pinPage, /Own the pin/);
+assert.match(pinPage, /This is your dock/);
 assert.match(pinPage, /PIN_PRICE_LABEL/);
-assert.match(pinPage, /How the pin works/);
+assert.match(pinPage, /How your dock works/);
 assert.doesNotMatch(pinPage, /stripe/i);
 
 const runPage = readFileSync(path.join(process.cwd(), "src/app/run/page.tsx"), "utf8");
-assert.match(runPage, /The run/);
+assert.match(runPage, /Before you leave/);
 assert.match(runPage, /Charter or trailer/);
-assert.match(runPage, /E15 is not for boats/);
-assert.match(runPage, /How the run works/);
+assert.match(runPage, /If the sticker says 15% ethanol/);
+assert.match(runPage, /How this trip works/);
 
 const howPage = readFileSync(path.join(process.cwd(), "src/app/how/page.tsx"), "utf8");
 assert.match(howPage, /How it works/);
-assert.match(howPage, /The pin/);
-assert.match(howPage, /The run/);
-assert.match(howPage, /Named storm/);
+assert.match(howPage, /Your dock/);
+assert.match(howPage, /This trip/);
+assert.match(howPage, /Yard seats/);
 assert.match(howPage, /PIN_WALK/);
 assert.match(howPage, /RUN_WALK/);
 assert.match(howPage, /STORM_WALK/);
@@ -163,8 +163,8 @@ assert.match(howPage, /STORM_WALK/);
 const walks = readFileSync(path.join(process.cwd(), "src/components/how-it-works.tsx"), "utf8");
 assert.match(walks, /File the boat/);
 assert.match(walks, /Two yards that fit/);
-assert.match(walks, /When they name it, we text what.s left/);
-assert.match(walks, /You call the yard\. We don.t lift her\./);
+assert.match(walks, /When they name it, we tell you what.s left/);
+assert.match(walks, /You call the yard\. We don.t pull her\./);
 
 const haulPage = readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8");
 assert.match(haulPage, /STORM_WALK/);
@@ -175,7 +175,7 @@ const footer = readFileSync(path.join(process.cwd(), "src/components/site-footer
 assert.match(footer, /href="\/pin"/);
 assert.match(footer, /href="\/run"/);
 assert.match(footer, /href="\/how"/);
-assert.match(footer, /Waterdog Fuel[\s\S]*The pin[\s\S]*The run/);
+assert.match(footer, /Waterdog Fuel[\s\S]*Your dock[\s\S]*This trip/);
 assert.match(footer, /On This Water/);
 assert.match(footer, /sisterHomeHref/);
 

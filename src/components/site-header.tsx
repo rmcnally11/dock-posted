@@ -16,38 +16,37 @@ export async function SiteHeader() {
           <Wordmark />
         </a>
         <nav
-          className="flex min-w-0 flex-wrap items-center justify-end gap-x-0.5 gap-y-0 text-[13px] sm:text-sm"
+          className="flex min-w-0 flex-wrap items-center justify-end gap-x-0.5 gap-y-0 overflow-x-auto text-[13px] sm:text-sm"
           aria-label="Dock Posted"
         >
-          <a className={navLink} href="/#board" aria-label="The board">
-            The board
+          <a className={navLink} href="/#board" aria-label="Today">
+            Today
           </a>
-          <a className={navLink} href="/haul-out" aria-label="Named storm">
-            Named storm
+          <a className={navLink} href="/haul-out" aria-label="Yard seats">
+            Yard seats
           </a>
-          <a className={navLink} href="/pin" data-testid="nav-pin" aria-label="The pin">
-            The pin
+          <a className={navLink} href="/pin" data-testid="nav-pin" aria-label="Your dock">
+            Your dock
           </a>
-          <a className={navLink} href="/run" data-testid="nav-run" aria-label="The run">
-            The run
+          <a className={navLink} href="/run" data-testid="nav-run" aria-label="This trip">
+            This trip
           </a>
-          <a className={navLink} href="/report" aria-label="Post a number">
-            Post a number
+          <a className={navLink} href="/report" aria-label="I was there">
+            I was there
           </a>
-          <a className={navLink} href="/safe-fuel" aria-label="E15">
-            E15
+          <a className={navLink} href="/safe-fuel" aria-label="What’s in the hose">
+            What’s in the hose
           </a>
-          <a className={navLink} href="/about" data-testid="nav-about" aria-label="About">
-            About
+          <a className={navLink} href="/about" data-testid="nav-about" aria-label="Who writes this">
+            Who writes this
           </a>
           {wholesaleOpen ? (
             <a
-              className={navLink}
+              className="sr-only"
               href="/wholesale"
               data-testid="nav-wholesale"
-              aria-label="Wholesale"
             >
-              Wholesale
+              Locked door
             </a>
           ) : null}
         </nav>

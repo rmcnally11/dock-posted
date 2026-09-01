@@ -12,7 +12,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
     >
       {compact ? null : <BrandSpine className="mx-auto mb-4 max-w-xs" />}
       <p className={compact ? "" : "text-xs leading-5 text-[color:var(--ink)]/60"}>
-        If they didn’t post it, it’s Call.{" "}
+        If they didn’t put a number up, we leave it blank. Call the dock.{" "}
         <a
           href="https://www.openstreetmap.org/copyright"
           className="underline-offset-2 hover:underline"
@@ -25,15 +25,15 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         className={compact ? "mt-1" : "mt-2 text-xs leading-5 text-[color:var(--ink)]/50"}
       >
         <a href="https://coastalcavaliers.com" className="underline-offset-2 hover:underline">
-          Waterdog Fuel. Rack to dock.
+          Waterdog Fuel. Opens 2027.
         </a>
         {" · "}
         <a href="/pin" className="underline-offset-2 hover:underline">
-          The pin
+          Your dock
         </a>
         {" · "}
         <a href="/run" className="underline-offset-2 hover:underline">
-          The run
+          This trip
         </a>
         {" · "}
         <a href="/how" className="underline-offset-2 hover:underline">
@@ -41,7 +41,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         </a>
         {" · "}
         <a href="/haul-out" className="underline-offset-2 hover:underline">
-          Named storm
+          Yard seats
         </a>
       </p>
       <p
@@ -51,7 +51,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         <a href={sisterHomeHref()} className="underline-offset-2 hover:underline">
           On This Water
         </a>
-        . Tide and wind on the same coast.
+        . This morning on the same coast.
       </p>
     </footer>
   );

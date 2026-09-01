@@ -22,11 +22,11 @@ const seedYards: HaulYard[] = (seed.yards as YardSeedRow[]).map(seedYardFromRow)
 assert.ok(seedYards.length >= 5 && seedYards.length <= 8, "board should be 5–8 rows");
 assert.ok(yardsAreAllCall(seedYards), "seed leftover seats must all be Call");
 assert.ok(
-  seedYards.every((yard) => leftoverLabel(yard.indoorLeftover) === "Call"),
+  seedYards.every((yard) => leftoverLabel(yard.indoorLeftover) === "—"),
   "indoor starts Call",
 );
 assert.ok(
-  seedYards.every((yard) => remainingLabel(yard) === "Call"),
+  seedYards.every((yard) => remainingLabel(yard) === "—"),
   "remaining starts Call",
 );
 assert.equal(planLeftoverNote(null), EMPTY_LEFTOVER_NOTE);
@@ -87,7 +87,7 @@ async function storeRoundtrip() {
 
   const yards = await readYards();
   assert.ok(yardsAreAllCall(yards));
-  assert.ok(yards.every((yard) => remainingLabel(yard) === "Call"));
+  assert.ok(yards.every((yard) => remainingLabel(yard) === "—"));
 
   const plan = await addNamedStormPlan(okOwner.ok ? okOwner.value : ({} as never));
   const saved = await readPlan(plan.id);

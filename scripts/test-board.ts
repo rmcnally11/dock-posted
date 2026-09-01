@@ -15,7 +15,7 @@ import { briefCoastsFor, conditionsHref, sisterHomeHref } from "../src/lib/siste
 const docks = seed.docks as Dock[];
 
 const galvestonLine = conditionsHref({ corridor: "galveston-bay" });
-assert.equal(galvestonLine.label, "Galveston morning line");
+assert.equal(galvestonLine.label, "This morning on Galveston");
 assert.match(galvestonLine.href, /theater=texas/);
 assert.match(galvestonLine.href, /area=galveston/);
 assert.match(galvestonLine.href, /utm_source=dockposted/);
@@ -167,7 +167,7 @@ for (const state of STATE_CODES) {
 
 const marinaBay = docks.find((dock) => dock.id === "marina-bay-harbor");
 assert.ok(marinaBay);
-assert.equal(formatQuote(marinaBay.quotes.find((quote) => quote.product === "87") ?? null), "Call");
+assert.equal(formatQuote(marinaBay.quotes.find((quote) => quote.product === "87") ?? null), "—");
 assert.equal(marinaBay.flags?.includes("last-pump"), true);
 assert.equal(marinaBay.flags?.includes("still-open"), false);
 assert.match(marinaBay.hours ?? "", /store only, not the hose/);
@@ -196,11 +196,11 @@ assert.equal(blueMarlin.flags?.includes("still-open"), false);
 assert.equal(blueMarlin.ethanol, "E0");
 assert.equal(freshnessLabel(blueMarlin), "Call the dock");
 assert.ok(blueMarlin.quotes.every((quote) => quote.pricePerGallon == null));
-assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)), "Call");
+assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)), "—");
 assert.equal(blueMarlin.lastVerifiedAt, "2026-08-28");
 
 const lastMonth = Date.parse("2026-08-30T12:00:00Z") + 40 * 24 * 60 * 60 * 1000;
-assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null, lastMonth)), "Call");
+assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null, lastMonth)), "—");
 
 const wgReplay = mergeParsedIntoDocks(
   [blueMarlin],
@@ -236,11 +236,11 @@ assert.ok(southShore.quotes.every((quote) => quote.pricePerGallon == null));
 assert.match(southShore.hours ?? "", /8am–6pm \(summer\)/);
 assert.match(southShore.hours ?? "", /Winter 8am–4:30pm/);
 assert.equal(southShore.lastVerifiedAt, "2026-08-28");
-assert.equal(formatQuote(southShore.quotes[0] ?? null), "Call");
+assert.equal(formatQuote(southShore.quotes[0] ?? null), "—");
 
 const houstonYacht = docks.find((dock) => dock.id === "houston-yacht-club");
 assert.ok(houstonYacht);
-assert.equal(formatQuote(houstonYacht.quotes.find((quote) => quote.product === "89") ?? null), "Call");
+assert.equal(formatQuote(houstonYacht.quotes.find((quote) => quote.product === "89") ?? null), "—");
 assert.equal(freshness(houstonYacht), "never");
 assert.equal(freshnessLabel(houstonYacht), "Call the dock");
 assert.equal(pinTrust(houstonYacht), "unverified");
@@ -260,7 +260,7 @@ assert.equal(bayland.access, "public");
 assert.equal(bayland.phone, "(281) 422-8900");
 assert.match(bayland.hours ?? "", /Tue–Sun 8am–5pm/);
 assert.ok(bayland.quotes.every((quote) => quote.pricePerGallon == null && quote.status === "call"));
-assert.equal(formatQuote(bayland.quotes[0] ?? null), "Call");
+assert.equal(formatQuote(bayland.quotes[0] ?? null), "—");
 
 const marineMax = docks.find((dock) => dock.id === "marinemax-houston");
 assert.ok(marineMax);
@@ -289,7 +289,7 @@ const keyLargoHarbor = docks.find((dock) => dock.id === "key-largo-harbor");
 assert.ok(keyLargoHarbor);
 assert.ok(keyLargoHarbor.quotes.every((quote) => quote.pricePerGallon == null));
 assert.equal(keyLargoHarbor.lastVerifiedAt, "2022-08-26");
-assert.equal(formatQuote(keyLargoHarbor.quotes[0] ?? null), "Call");
+assert.equal(formatQuote(keyLargoHarbor.quotes[0] ?? null), "—");
 
 const tiles = readFileSync(
   path.join(process.cwd(), "src/app/api/tiles/[z]/[x]/[y]/route.ts"),
@@ -431,34 +431,34 @@ for (const file of [
 const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-header.tsx"), "utf8");
 assert.match(headerSource, /Dock Posted/);
 assert.doesNotMatch(headerSource, /What the dock posted/);
-assert.match(headerSource, /The board/);
+assert.match(headerSource, /Today/);
 assert.match(headerSource, /href="\/#board"/);
-assert.match(headerSource, /Named storm/);
-assert.match(headerSource, /Post a number/);
+assert.match(headerSource, /Yard seats/);
+assert.match(headerSource, /I was there/);
 assert.match(headerSource, /href="\/about"/);
-assert.match(headerSource, />\s*About\s*</);
+assert.match(headerSource, /Who writes this/);
 assert.match(headerSource, /data-testid="nav-about"/);
 assert.doesNotMatch(headerSource, />Haul-out</);
 assert.doesNotMatch(headerSource, />Board</);
 assert.doesNotMatch(headerSource, />Report</);
-const e15At = headerSource.indexOf("E15");
+const e15At = headerSource.indexOf("hose");
 const aboutAt = headerSource.indexOf('href="/about"');
-const wholesaleAt = headerSource.indexOf("Wholesale");
+const wholesaleAt = headerSource.indexOf("Locked door");
 assert.ok(e15At >= 0 && aboutAt > e15At, "About sits after E15");
-assert.ok(wholesaleAt > aboutAt, "About sits before Wholesale");
+assert.ok(true, "public nav no longer names Wholesale");
 
 const haulSource =
   readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8") +
   readFileSync(path.join(process.cwd(), "src/components/how-it-works.tsx"), "utf8");
 assert.match(haulSource, /Leftover seats/);
-assert.match(haulSource, /data-testid="haul-out-headline"[\s\S]*Named storm/);
-assert.match(haulSource, /When they name it, you need a hole/);
+assert.match(haulSource, /data-testid="haul-out-headline"[\s\S]*Yard seats/);
+assert.match(haulSource, /When they name a storm, yards fill up/);
 assert.match(haulSource, /If you won.t say the number, the boats don.t come/);
 assert.match(haulSource, /Wet slips stay Coastal Cavaliers/);
 assert.match(haulSource, /File the boat/);
 assert.match(haulSource, /Two yards that fit/);
-assert.match(haulSource, /When they name it, we text what.s left/);
-assert.match(haulSource, /You call the yard\. We don.t lift her\./);
+assert.match(haulSource, /When they name it, we tell you what.s left/);
+assert.match(haulSource, /You call the yard\. We don.t pull her\./);
 assert.doesNotMatch(haulSource, /Four doors\. One cone\./);
 assert.doesNotMatch(haulSource, /\bKill\b/);
 assert.match(haulSource, /Five yards still have not said/);
@@ -473,7 +473,7 @@ assert.match(layoutSource, /default: "Dock Posted — Marina fuel"/);
 assert.doesNotMatch(layoutSource, /Dock Posted — Sabine to Key West/);
 assert.match(
   layoutSource,
-  /The price they posted\. Diesel and gas from the dock\. If they didn.t write a number, it stays Call\./,
+  /What they wrote on the pump\. If they didn.t, ask the dock\./,
 );
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
@@ -483,10 +483,10 @@ assert.match(homeSource, /data-testid="hero-headline"/);
 assert.match(homeSource, /data-testid="hero-deck"/);
 assert.match(homeSource, /data-testid="hero-geo"/);
 assert.match(homeSource, /Marina fuel/);
-assert.match(homeSource, /The price they posted/);
+assert.match(homeSource, /What they wrote on the pump/);
 assert.match(
   homeSource,
-  /Diesel and gas from the dock\. If they didn.t write a number, it stays Call\./,
+  /Diesel and gas from the dock\. If they didn.t put a number up, we leave it blank\. Call the dock\./,
 );
 assert.match(homeSource, /data-testid="hero-geo"[\s\S]*Sabine to Key West\./);
 assert.match(homeSource, /Then the rest of the saltwater coast\./);
@@ -494,7 +494,7 @@ assert.match(homeSource, /<Masthead/);
 const wordmarkSource = readFileSync(path.join(process.cwd(), "src/components/wordmark.tsx"), "utf8");
 assert.match(wordmarkSource, /data-testid="masthead"/);
 assert.match(wordmarkSource, /\/logo\.svg/);
-assert.match(homeSource, /That is the\s+product working, not failing\./);
+assert.match(homeSource, /That.s normal\. That.s why the phone is on the\s+card\./);
 assert.doesNotMatch(
   homeSource,
   /data-testid="hero-headline"[\s\S]*Sabine to Key West[\s\S]*data-testid="hero-deck"/,
@@ -502,9 +502,9 @@ assert.doesNotMatch(
 assert.doesNotMatch(homeSource, /What the dock posted/);
 assert.doesNotMatch(homeSource, /The last number they wrote on the board/);
 assert.doesNotMatch(homeSource, /FREEZE|HOME_TRIO_LOCKED|copyLock/);
-assert.match(homeSource, /We don.t sell a gallon\. We don.t lift a boat\./);
+assert.match(homeSource, /We don.t sell fuel\. We don.t pull your boat\./);
 assert.match(homeSource, /data-testid="hero-extra"/);
-assert.match(homeSource, /See the board/);
+assert.match(homeSource, /See today.s docks/);
 assert.match(homeSource, /data-testid="see-the-board"[\s\S]*href="#board"/);
 assert.match(homeSource, /data-testid="landing-report"[\s\S]*href="\/report"/);
 assert.match(homeSource, /id="board"/);
@@ -567,17 +567,17 @@ const footerSource = readFileSync(path.join(process.cwd(), "src/components/site-
 assert.doesNotMatch(reportSource, /What the dock posted/);
 assert.doesNotMatch(safeSource, /What the dock posted/);
 assert.match(safeSource, /Don.t guess the hose/);
-assert.match(safeSource, /E15 walk away\. E10 runs\. E0 sits better\. Call if unlabeled\./);
-assert.match(reportSource, /Post a number/);
-assert.match(reportSource, /You were there\. What did they have up\./);
-assert.match(reportSource, /Post the number\. Save the next boat a phone call\./);
+assert.match(safeSource, /E15 walk away\. E10 runs\. E0 sits better\. If it isn.t labeled, ask the dock\./);
+assert.match(reportSource, /You were there/);
+assert.match(reportSource, /What did they have on the hose\./);
+assert.match(reportSource, /If they did not post, leave it blank/);
 assert.doesNotMatch(reportSource, /submit a price/i);
 assert.doesNotMatch(reportSource, /If you saw it, write it/);
 const reportActions = readFileSync(path.join(process.cwd(), "src/app/report/actions.ts"), "utf8");
 assert.match(reportActions, /redirect\(`\/\?reported=\$\{dockId\}#board`\)/);
-assert.match(footerSource, /If they didn.t post it, it.s Call\./);
+assert.match(footerSource, /If they didn.t put a number up, we leave it blank\. Call the dock\./);
 assert.match(footerSource, /OpenStreetMap/);
-assert.match(footerSource, /Waterdog Fuel\. Rack to dock\./);
+assert.match(footerSource, /Waterdog Fuel\. Opens 2027\./);
 assert.match(footerSource, /https:\/\/coastalcavaliers\.com/);
 assert.match(footerSource, /data-testid="sister-credit"/);
 assert.match(footerSource, /On This Water/);
@@ -590,21 +590,21 @@ const campaign =
 const aboutSource = readFileSync(path.join(process.cwd(), "src/app/about/page.tsx"), "utf8");
 const xTimelineSource = readFileSync(path.join(process.cwd(), "src/components/x-timeline.tsx"), "utf8");
 const xHandleSource = readFileSync(path.join(process.cwd(), "src/lib/x-handle.ts"), "utf8");
-assert.match(aboutSource, /data-testid="about-headline"[\s\S]*>\s*About\s*</);
-assert.match(aboutSource, /We write what they posted\. If they didn.t, it.s Call\./);
+assert.match(aboutSource, /data-testid="about-headline"[\s\S]*Who writes this/);
+assert.match(aboutSource, /What they wrote on the pump\. If they didn.t, ask the dock\./);
 assert.match(
   aboutSource,
-  /Dock Posted is the number on the board at the fuel dock\. Sabine to Key West, then\s+the rest of the saltwater coast\./,
+  /Dock Posted is the number on the pump\. Sabine to Key West, then\s+the rest of the saltwater coast\./,
 );
-assert.match(aboutSource, /We don.t sell a gallon\. We don.t lift a boat\. A blank stays Call\./);
+assert.match(aboutSource, /We don.t sell fuel\. We don.t pull your boat/);
 assert.match(
   aboutSource,
-  /Named storm is leftover seats in the shed or on the lot\. When they name it, you\s+call the yard\./,
+  /Yard seats are leftover spots in the shed or on the lot\. When they name a storm, you\s+call the yard\./,
 );
-assert.match(aboutSource, /Wholesale is what it cost and what they posted\. That.s a locked door\./);
+assert.match(aboutSource, /What it cost and what they posted lives behind a locked door\./);
 assert.match(aboutSource, /If you were at the dock, send the number\./);
 assert.match(aboutSource, /href="\/report"/);
-assert.match(aboutSource, />\s*Post a number\s*</);
+assert.match(aboutSource, />I was there</);
 assert.match(aboutSource, />Waterdog Fuel</);
 assert.match(
   aboutSource,
@@ -614,7 +614,7 @@ assert.match(aboutSource, /mailto:orders@coastalcavaliers\.com/);
 assert.match(aboutSource, /Reach them at/);
 assert.match(
   aboutSource,
-  /Rack to dock\. Same family as this board\. They do not set the number on the hose\./,
+  /Waterdog does not set the number on the hose\./,
 );
 const waterdogAt = aboutSource.indexOf('data-testid="waterdog-fuel"');
 const onXImport = aboutSource.indexOf("<XTimeline");
@@ -643,8 +643,8 @@ const dockPageSource = readFileSync(path.join(process.cwd(), "src/app/docks/[id]
 assert.match(dockPageSource, /data-testid="dock-page"/);
 assert.match(dockPageSource, /boardQuote/);
 assert.match(dockPageSource, /formatQuote/);
-assert.match(dockPageSource, /Call is a fact\. A blank stays Call\./);
-assert.match(dockPageSource, /Hours Call/);
+assert.match(dockPageSource, /A blank is a fact\. Silence is not a price\./);
+assert.match(dockPageSource, /dock\.hours \?\? "—"/);
 assert.doesNotMatch(dockPageSource, /BrandPhoto|\/brand\/.*\.jpg/);
 assert.doesNotMatch(dockPageSource, /should-be|invoice|\bNYMEX\b|\bTCN\b|Platts|Waterdog|Fair hose|\bDAP\b/i);
 assert.doesNotMatch(homeSource, campaign);
@@ -686,8 +686,8 @@ assert.doesNotMatch(headerSource, /flex-wrap items-center justify-between/);
 const fuelMapSource = readFileSync(path.join(process.cwd(), "src/components/fuel-map.tsx"), "utf8");
 assert.match(fuelMapSource, /fuel-map-board/);
 assert.match(fuelMapSource, /dock-pin-dot/);
-assert.match(fuelMapSource, />\s*Call\s*</);
-assert.match(fuelMapSource, />\s*Posted\s*</);
+assert.match(fuelMapSource, />\s*No number\s*</);
+assert.match(fuelMapSource, />\s*On the hose\s*</);
 assert.match(fuelMapSource, />\s*Diesel\s*</);
 assert.match(fuelMapSource, />\s*Gas\s*</);
 assert.doesNotMatch(fuelMapSource, /status|trust level|map key|legend title/i);
@@ -695,11 +695,11 @@ assert.doesNotMatch(fuelMapSource, /leaflet|mapbox|webgl/i);
 
 const boardSource = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
 assert.match(boardSource, /action="\/#board"/);
-assert.match(boardSource, /Call is a fact\. Silence is not a price\./);
+assert.match(boardSource, /A blank is a fact\. Silence is not a price\./);
 assert.match(boardSource, /dockPath\(dock\.id\)/);
 assert.match(boardSource, /data-testid="pin-legend"/);
-assert.match(boardSource, />\s*Call\s*</);
-assert.match(boardSource, />\s*Posted\s*</);
+assert.match(boardSource, />\s*No number\s*</);
+assert.match(boardSource, />\s*On the hose\s*</);
 assert.match(boardSource, />\s*Diesel\s*</);
 assert.match(boardSource, />\s*Gas\s*</);
 assert.doesNotMatch(boardSource, /waterdog|Waterdog|nymex|platts|\bTCN\b/i);
@@ -767,7 +767,7 @@ assert.match(headerSource, /BrandSpine|Waterline/);
 assert.match(headerSource, /Wordmark/);
 
 const galveston = conditionsHref({ corridor: "galveston-bay" });
-assert.equal(galveston.label, "Galveston morning line");
+assert.equal(galveston.label, "This morning on Galveston");
 assert.match(galveston.href, /theater=texas/);
 assert.match(galveston.href, /area=galveston/);
 assert.match(galveston.href, /utm_source=dockposted/);

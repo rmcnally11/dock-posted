@@ -9,8 +9,8 @@ import { readDocks } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "The pin",
-  description: "Put your dock’s price on the board. You write the number. If you didn’t, it stays Call.",
+  title: "Your dock",
+  description: "This is your dock. You write the number when the truck comes. We never invent a price.",
 };
 
 export default async function PinPage({
@@ -30,12 +30,12 @@ export default async function PinPage({
         For the marina
       </p>
       <h1 data-testid="pin-headline" className="mt-1 font-heading text-4xl text-[color:var(--navy)] md:text-5xl">
-        Own the pin
+        This is your dock.
       </h1>
       <p data-testid="pin-deck" className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/70">
         Boats look here before they leave the ramp. You put up the price you are charging.
         {" "}
-        {PIN_PRICE_LABEL}. If you have not written it yet, they see Call — and they often
+        {PIN_PRICE_LABEL}. If you haven’t written it yet, they see a blank — and they often
         keep going.
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/60">
@@ -45,16 +45,16 @@ export default async function PinPage({
       <Waterline className="mt-3" />
 
       <HowItWorks
-        heading="How the pin works"
+        heading="How your dock works"
         intro="Three steps. You stay in charge of the number."
         steps={PIN_WALK}
         testId="pin-how"
       />
 
       <section className="mt-10 max-w-xl">
-        <h2 className="font-heading text-2xl text-[color:var(--navy)]">Claim your dock</h2>
+        <h2 className="font-heading text-2xl text-[color:var(--navy)]">This is my dock</h2>
         <p className="mt-2 text-sm leading-6 text-[color:var(--ink)]/70">
-          Takes a minute. We confirm it is you, then the pin is yours. Verified when you post.
+          Takes a minute. We confirm it is you. Verified when you write the number.
         </p>
         <div className="mt-4 rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] p-5">
           {params.error ? (
@@ -72,7 +72,7 @@ export default async function PinPage({
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/run"
         >
-          The run
+          This trip
         </a>
         {" · "}
         <a

@@ -92,11 +92,11 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
         <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span className="inline-flex items-center gap-1">
             <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
-            Call
+            No number
           </span>
           <span className="inline-flex items-center gap-1">
             <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
-            Posted
+            On the hose
           </span>
           <span className="inline-flex items-center gap-1">
             <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--gold)]" />

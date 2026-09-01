@@ -41,17 +41,17 @@ export async function submitWaterWatch(formData: FormData): Promise<void> {
   const water = waterLabel(watch.corridor, watch.region);
   await sendMail({
     to: notifyEmail(),
-    subject: `Run watch · ${water}`,
+    subject: `Watch this water · ${water}`,
     text: `${watch.name} · ${watch.email}\n${water}\n${WATCH_PRICE_LABEL}`,
   });
   await sendMail({
     to: watch.email,
-    subject: `Dock Posted · ${water}`,
+    subject: `They put a number up on ${water}`,
     text: [
       `Watch filed for ${water}.`,
       WATCH_PRICE_LABEL,
-      "When a dock on that water posts, we write you. Not a text.",
-      "A blank stays Call.",
+      "When a dock on that water puts a number up, we write you. Not a text.",
+      "A blank stays blank.",
       "",
       conditionsMailLine({ corridor: watch.corridor, region: watch.region }),
       `${publicSiteUrl()}/run`,

@@ -27,110 +27,110 @@ const DESKS: Desk[] = [
   {
     theater: "texas",
     area: "sabine",
-    label: "Sabine morning line",
+    label: "This morning on Sabine",
     match: /\bsabine\b|port arthur|\borange\b|groves/i,
   },
   {
     theater: "texas",
     area: "galveston",
-    label: "Galveston morning line",
+    label: "This morning on Galveston",
     match:
       /galveston|kemah|seabrook|league city|clear lake|baytown|dickinson|la porte|shoreacres|san leon|texas city|hitchcock/i,
   },
   {
     theater: "texas",
     area: "matagorda",
-    label: "Matagorda morning line",
+    label: "This morning on Matagorda",
     match: /matagorda|palacios|port lavaca|port o.?connor|seadrift/i,
   },
   {
     theater: "texas",
     area: "aransas",
-    label: "Aransas morning line",
+    label: "This morning on Aransas",
     match: /rockport|aransas|fulton|port aransas|ingle side/i,
   },
   {
     theater: "texas",
     area: "corpus",
-    label: "Corpus morning line",
+    label: "This morning on Corpus",
     match: /corpus/i,
   },
   {
     theater: "texas",
     area: "baffin",
-    label: "Baffin morning line",
+    label: "This morning on Baffin",
     match: /baffin|upper laguna|kingsville|riviera/i,
   },
   {
     theater: "texas",
     area: "lower-laguna",
-    label: "Lower Laguna morning line",
+    label: "This morning on Lower Laguna",
     match: /south padre|port isabel|laguna madre|brownsville|los fresnos/i,
   },
   {
     theater: "louisiana",
     area: "venice",
-    label: "Venice morning line",
+    label: "This morning on Venice",
     match: /venice|empire|buras|boothville|birdfoot/i,
   },
   {
     theater: "louisiana",
     area: "grand-isle",
-    label: "Grand Isle morning line",
+    label: "This morning on Grand Isle",
     match: /grand isle|barataria|leeville|golden meadow/i,
   },
   {
     theater: "louisiana",
     area: "calcasieu",
-    label: "Calcasieu morning line",
+    label: "This morning on Calcasieu",
     match: /calcasieu|cameron|lake charles|hackberry/i,
   },
   {
     theater: "florida",
     area: "key-west",
-    label: "Key West morning line",
+    label: "This morning on Key West",
     match: /key west|stock island/i,
   },
   {
     theater: "florida",
     area: "marathon",
-    label: "Marathon morning line",
+    label: "This morning on Marathon",
     match: /marathon/i,
   },
   {
     theater: "florida",
     area: "islamorada",
-    label: "Islamorada morning line",
+    label: "This morning on Islamorada",
     match: /islamorada/i,
   },
   {
     theater: "florida",
     area: "key-largo",
-    label: "Key Largo morning line",
+    label: "This morning on Key Largo",
     match: /key largo|tavernier|pennekamp|north key largo/i,
   },
   {
     theater: "florida",
     area: "florida-bay",
-    label: "Florida Bay morning line",
+    label: "This morning on Florida Bay",
     match: /flamingo|florida bay/i,
   },
   {
     theater: "florida",
     area: "biscayne",
-    label: "Biscayne morning line",
+    label: "This morning on Biscayne",
     match: /miami|biscayne|coconut grove|key biscayne/i,
   },
   {
     theater: "florida",
     area: "boca-grande",
-    label: "Boca Grande morning line",
+    label: "This morning on Boca Grande",
     match: /boca grande|charlotte|punta gorda|cape coral|fort myers|sanibel|pine island/i,
   },
   {
     theater: "florida",
     area: "jupiter",
-    label: "Jupiter morning line",
+    label: "This morning on Jupiter",
     match: /jupiter|loxahatchee|stuart|palm beach|tequesta/i,
   },
 ];
@@ -202,10 +202,10 @@ export function conditionsHref(place: SisterPlace = {}): SisterTarget {
   }
 
   if (place.corridor === "galveston-bay") {
-    return target("texas", "galveston", "Galveston morning line");
+    return target("texas", "galveston", "This morning on Galveston");
   }
   if (place.corridor === "upper-keys") {
-    return target("florida", "key-largo", "Key Largo morning line");
+    return target("florida", "key-largo", "This morning on Key Largo");
   }
 
   for (const desk of DESKS) {
@@ -215,27 +215,27 @@ export function conditionsHref(place: SisterPlace = {}): SisterTarget {
   }
 
   if (place.region === "texas" || place.state === "TX") {
-    return target("texas", "galveston", "Galveston morning line");
+    return target("texas", "galveston", "This morning on Galveston");
   }
   if (place.region === "louisiana" || place.state === "LA") {
-    return target("louisiana", "venice", "Venice morning line");
+    return target("louisiana", "venice", "This morning on Venice");
   }
   if (place.region === "keys") {
-    return target("florida", "islamorada", "Keys morning line");
+    return target("florida", "islamorada", "This morning on the Keys");
   }
   if (place.region === "west-florida") {
-    return target("florida", "boca-grande", "Boca Grande morning line");
+    return target("florida", "boca-grande", "This morning on Boca Grande");
   }
   if (place.region === "east-florida") {
-    return target("florida", "jupiter", "Jupiter morning line");
+    return target("florida", "jupiter", "This morning on Jupiter");
   }
   if (place.state === "FL") {
-    return target("florida", "islamorada", "Keys morning line");
+    return target("florida", "islamorada", "This morning on the Keys");
   }
 
   return {
     href: homeUrl(),
-    label: "Morning line",
+    label: "This morning",
     theater: null,
     area: null,
   };

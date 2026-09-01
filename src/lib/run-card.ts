@@ -1,4 +1,4 @@
-import { formatPrice } from "./format";
+import { BLANK, formatPrice } from "./format";
 import { boardQuote, displayDiesel, displayGas } from "./freshness";
 import type { Dock } from "./types";
 
@@ -50,10 +50,10 @@ export function runRows(docks: Dock[], gallons: number | null): RunRow[] {
       dieselPosted,
       tankGas,
       tankDiesel,
-      gasLabel: gasPosted == null ? "Call" : formatPrice(gasPosted),
-      dieselLabel: dieselPosted == null ? "Call" : formatPrice(dieselPosted),
-      tankGasLabel: tankGas == null ? "Call" : money(tankGas),
-      tankDieselLabel: tankDiesel == null ? "Call" : money(tankDiesel),
+      gasLabel: gasPosted == null ? BLANK : formatPrice(gasPosted),
+      dieselLabel: dieselPosted == null ? BLANK : formatPrice(dieselPosted),
+      tankGasLabel: tankGas == null ? BLANK : money(tankGas),
+      tankDieselLabel: tankDiesel == null ? BLANK : money(tankDiesel),
     };
   });
 }

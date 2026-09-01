@@ -44,7 +44,7 @@ export function RunWatchForm({
       </Button>
       <p className="text-xs text-[color:var(--ink)]/50">
         {corridor ? CORRIDORS[corridor].label : region ? REGIONS[region].label : "Sabine to Maine"}.
-        A blank stays Call.
+        A blank stays blank.
       </p>
     </form>
   );

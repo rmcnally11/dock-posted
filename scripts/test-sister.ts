@@ -10,7 +10,7 @@ import {
 } from "../src/lib/sister";
 
 const galveston = conditionsHref({ corridor: "galveston-bay" });
-assert.equal(galveston.label, "Galveston morning line");
+assert.equal(galveston.label, "This morning on Galveston");
 assert.match(galveston.href, /theater=texas/);
 assert.match(galveston.href, /area=galveston/);
 assert.match(galveston.href, /utm_source=dockposted/);

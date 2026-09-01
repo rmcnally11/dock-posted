@@ -9,8 +9,8 @@ import { readDocks } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Post a number",
-  description: "You were there. What did they have up.",
+  title: "I was there",
+  description: "You were there. What did they have on the hose.",
 };
 
 export default async function ReportPage({
@@ -26,16 +26,16 @@ export default async function ReportPage({
   return (
     <main className="mx-auto flex w-full max-w-7xl min-w-0 flex-1 flex-col overflow-x-hidden px-4 py-4 md:px-6 lg:py-6">
       <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]">
-        The board
+        Today
       </p>
       <h1 className="mt-1 font-heading text-2xl text-[color:var(--navy)] lg:text-5xl">
-        Post a number
+        You were there.
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
-        You were there. What did they have up.
+        What did they have on the hose.
       </p>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/55">
-        Post the number. Save the next boat a phone call.
+        Truck day, or when they change the board. Not every morning. If they did not post, leave it blank.
       </p>
       <Waterline className="mt-3 hidden lg:block" />
       <BrandPhoto name="board" className="mt-6 aspect-[16/9] w-full max-w-xl" />
@@ -81,7 +81,7 @@ export default async function ReportPage({
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/safe-fuel"
         >
-          E15 is not for boats
+          What’s in the hose
         </a>
         .
       </p>

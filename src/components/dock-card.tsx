@@ -1,5 +1,5 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
-import { ethanolCopy, formatDate, formatQuote, sourceLabel, telHref } from "@/lib/format";
+import { ethanolCopy, formatDate, formatQuote, isBlankPrice, sourceLabel, telHref } from "@/lib/format";
 import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
 import type { DockHref } from "@/lib/board-query";
 import type { Dock } from "@/lib/types";
@@ -19,7 +19,7 @@ function payLabel(dock: Dock): string | null {
 
 function quoteTone(quote: ReturnType<typeof boardQuote>, kind: "gas" | "diesel"): string {
   const text = formatQuote(quote);
-  if (text === "Call") return "text-[color:var(--signal)]";
+  if (isBlankPrice(text)) return "text-[color:var(--signal)]";
   if (text === "Not sold") return "text-[color:var(--ink)]/55";
   return kind === "diesel" ? "text-[color:var(--diesel)]" : "text-[color:var(--signal)]";
 }
@@ -118,7 +118,7 @@ export function DockCard({
           <div className="rounded-lg bg-white px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Hours</dt>
             <dd className="font-mono text-[15px] font-medium text-[color:var(--navy)]">
-              {dock.hours ?? "Hours Call"}
+              {dock.hours ?? "—"}
             </dd>
           </div>
         </dl>
@@ -151,7 +151,7 @@ export function DockCard({
       ) : null}
       <p className="border-t border-[color:var(--line)] px-3.5 py-2 text-[11px] text-[color:var(--ink)]/50">
         <a href={`/report?dock=${dock.id}`} className="underline-offset-2 hover:underline">
-          {trust === "verified" ? "Update this pin" : "Claim this pin"}
+          {trust === "verified" ? "Update the number" : "I was there"}
         </a>
       </p>
     </article>

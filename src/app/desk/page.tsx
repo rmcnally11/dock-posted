@@ -13,8 +13,8 @@ import { readDocks, readIncomeStore } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Desk",
-  description: "Monday call sheet. Not the public board.",
+  title: "Monday list",
+  description: "Eight docks to phone. Not the public page.",
   robots: { index: false, follow: false },
 };
 
@@ -31,7 +31,7 @@ export default async function DeskPage({
   if (!open) {
     return (
       <main className="mx-auto w-full max-w-md flex-1 px-4 py-16">
-        <h1 className="font-heading text-3xl text-[color:var(--navy)]">Desk</h1>
+        <h1 className="font-heading text-3xl text-[color:var(--navy)]">Monday list</h1>
         <p className="mt-2 text-sm text-[color:var(--ink)]/70">Locked door.</p>
         <form action={submitDeskPassword} className="mt-6 space-y-4">
           {params.error ? (
@@ -59,9 +59,9 @@ export default async function DeskPage({
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6" data-testid="desk">
       <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]">
-        Monday desk
+        Monday list
       </p>
-      <h1 className="mt-1 font-heading text-4xl text-[color:var(--navy)]">Call sheet</h1>
+      <h1 className="mt-1 font-heading text-4xl text-[color:var(--navy)]">Eight docks to phone</h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
         Week of {weekOf}. {PIN_PRICE_LABEL}. Home waters first. We don’t sell a gallon.
       </p>

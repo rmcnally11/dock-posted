@@ -19,8 +19,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   return {
-    title: `Named Storm Plan ${id.slice(0, 8)}`,
-    description: "Printable Named Storm Plan. Primary and backup stay Call until a yard posts leftover seats.",
+    title: `Yard seats ${id.slice(0, 8)}`,
+    description: "A place to pull her. Primary and backup stay blank until a yard says what’s left.",
   };
 }
 

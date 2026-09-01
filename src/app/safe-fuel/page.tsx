@@ -4,8 +4,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 
 export const metadata: Metadata = {
-  title: "E15 is not for boats",
-  description: "If the sticker says 15% ethanol, walk away. That hose stays Call.",
+  title: "What’s in the hose",
+  description: "If the sticker says 15% ethanol, walk away.",
 };
 
 export default function SafeFuelPage() {
@@ -15,15 +15,15 @@ export default function SafeFuelPage() {
         Don’t guess the hose
       </p>
       <h1 className="mt-1 font-heading text-4xl text-[color:var(--navy)] md:text-5xl">
-        E15 is not for boats
+        What’s in the hose
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
-        If the sticker says 15% ethanol, walk away. That hose stays Call. Ethanol is
+        If the sticker says 15% ethanol, walk away. Ethanol is
         what the sticker says, not what the octane implies. Octane is not a test for
         ethanol.
       </p>
       <p className="mt-3 max-w-2xl text-sm text-[color:var(--ink)]/55">
-        E15 walk away. E10 runs. E0 sits better. Call if unlabeled.
+        E15 walk away. E10 runs. E0 sits better. If it isn’t labeled, ask the dock.
       </p>
       <Waterline className="mt-3" />
       <BrandPhoto name="pump" className="mt-8 aspect-[16/9] w-full max-w-2xl" />
@@ -53,7 +53,7 @@ export default function SafeFuelPage() {
         </p>
         <p className="text-sm leading-7 text-[color:var(--ink)]/80">
           When a dock has E0, the card says E0. When the public page said non-ethanol: no, we mark
-          E10. If nobody labeled the pump, the blend stays Call. Octane is not a test for ethanol.
+          E10. If nobody labeled the pump, the blend stays blank. Octane is not a test for ethanol.
         </p>
       </section>
 
@@ -61,7 +61,7 @@ export default function SafeFuelPage() {
         <h2 className="font-heading text-2xl text-[color:var(--navy)]">What to do</h2>
         <ul className="list-disc space-y-2 pl-5 text-sm leading-7 text-[color:var(--ink)]/80">
           <li>Read the pump sticker. Walk away from E15.</li>
-          <li>If the card says Call — call the dock.</li>
+          <li>If the card is blank — call the dock.</li>
           <li>Ask whether the high-octane hose is E0 or just 93 with ethanol.</li>
           <li>Then post what you saw so the next boat is not guessing.</li>
         </ul>
@@ -97,7 +97,7 @@ export default function SafeFuelPage() {
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/"
         >
-          Back to the board
+          See today’s docks
         </a>
       </p>
       <SiteFooter />

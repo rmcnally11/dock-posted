@@ -44,7 +44,7 @@ export function DockBoard({
                   : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"}`}
               </p>
               <p data-testid="board-fact" className="mt-1 text-xs text-[color:var(--ink)]/55">
-                Call is a fact. Silence is not a price.
+                A blank is a fact. Silence is not a price.
               </p>
               <p className="mt-1 text-xs text-[color:var(--ink)]/55">
                 <a
@@ -52,7 +52,7 @@ export function DockBoard({
                   data-testid="board-run"
                   className="underline-offset-2 hover:underline"
                 >
-                  The run
+                  This trip
                 </a>
                 . Gallons you will burn.
               </p>
@@ -64,16 +64,16 @@ export function DockBoard({
               />
               <p
                 data-testid="pin-legend"
-                aria-label="Posted and Call"
+                aria-label="On the hose and no number"
                 className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[color:var(--ink)]/70"
               >
                 <span className="inline-flex items-center gap-1">
                   <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
-                  Call
+                  No number
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
-                  Posted
+                  On the hose
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--gold)]" />
@@ -105,7 +105,7 @@ export function DockBoard({
               href={selected ? `/report?dock=${selected.id}` : "/report"}
               className="inline-flex h-11 shrink-0 items-center rounded-md bg-[color:var(--navy)] px-3 text-xs font-medium text-[color:var(--cream)] hover:bg-[color:var(--navy)]/90 lg:h-8"
             >
-              Post a number
+              I was there
             </a>
           </div>
 

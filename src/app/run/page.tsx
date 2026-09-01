@@ -14,8 +14,8 @@ import { CORRIDORS, REGIONS, type CorridorId, type RegionId } from "@/lib/types"
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "The run",
-  description: "See what a tank will cost on the water you fish. Posted dollars only. A blank stays Call.",
+  title: "This trip",
+  description: "Before you leave, see what a tank will cost. If they haven’t put a number up, we leave it blank.",
 };
 
 export default async function RunPage({
@@ -53,22 +53,22 @@ export default async function RunPage({
         Before you leave
       </p>
       <h1 data-testid="run-headline" className="mt-1 font-heading text-4xl text-[color:var(--navy)] md:text-5xl">
-        The run
+        Before you leave.
       </h1>
       <p data-testid="run-deck" className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/70">
         See what a tank will cost on the water you fish. You enter gallons — or GPH and
-        hours — and we multiply by what the dock posted. If they have not written a
-        number, it stays Call.
+        hours — and we multiply by what they wrote on the hose. If they haven’t put a
+        number up, we leave it blank.
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/60">
         Charter or trailer. Same math. We don’t pick a hose. We don’t sell a gallon.
-        E15 is not for boats.
+        If the sticker says 15% ethanol, walk away.
       </p>
       <Waterline className="mt-3" />
       <SisterHandoff corridor={query.corridor} region={query.region} />
 
       <HowItWorks
-        heading="How the run works"
+        heading="How this trip works"
         intro="Use it Friday night. It takes less time than a phone call down the channel."
         steps={RUN_WALK}
         testId="run-how"
@@ -146,15 +146,15 @@ export default async function RunPage({
           See the tank
         </button>
         <p className="text-xs text-[color:var(--ink)]/50">
-          Gallons, or GPH times hours. We only multiply a posted price. Call means they
-          have not written one.
+          Gallons, or GPH times hours. We only multiply a number they wrote. No number
+          means no number.
         </p>
       </form>
 
       <section className="mt-8" data-testid="run-board">
         <h2 className="font-heading text-2xl text-[color:var(--navy)]">{water}</h2>
         <p className="mt-2 text-sm text-[color:var(--ink)]/70" data-testid="run-tally">
-          {tally.posted} posted. {tally.call} still Call.
+          {tally.posted} {tally.posted === 1 ? "dock wrote" : "docks wrote"} a number. {tally.call} still blank.
           {gallons != null ? ` Tank ${gallons} gal.` : ""}
         </p>
         <div className="mt-4 overflow-x-auto rounded-2xl border border-[color:var(--line)]">
@@ -197,10 +197,10 @@ export default async function RunPage({
       </section>
 
       <section className="mt-10 max-w-xl">
-        <h2 className="font-heading text-2xl text-[color:var(--navy)]">Email me when they post</h2>
+        <h2 className="font-heading text-2xl text-[color:var(--navy)]">Watch this water</h2>
         <p className="mt-2 text-sm leading-6 text-[color:var(--ink)]/70">
-          {WATCH_PRICE_LABEL}. We write you when a dock on that coast posts. Not a text.
-          Watch this water if you run it every week.
+          {WATCH_PRICE_LABEL}. We’ll write you when a dock on that water puts a number up.
+          Not a text.
         </p>
         <div className="mt-4 rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] p-5">
           {params.error ? (
@@ -211,8 +211,8 @@ export default async function RunPage({
           {params.watched ? (
             <p className="mb-4 rounded-md bg-fresh/10 px-3 py-2 text-sm text-fresh" data-testid="watch-filed">
               {params.paid === "1"
-                ? "You’re on the list. We’ll email you when a dock posts."
-                : "You’re on the list. We’ll email you when a dock posts."}
+                ? "You’re on the list. We’ll write you when a dock puts a number up."
+                : "You’re on the list. We’ll write you when a dock puts a number up."}
             </p>
           ) : null}
           <RunWatchForm
@@ -229,14 +229,14 @@ export default async function RunPage({
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/pin"
         >
-          Own the pin
+          This is my dock
         </a>
         . Wrong hose?{" "}
         <a
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/safe-fuel"
         >
-          E15 is not for boats
+          What’s in the hose
         </a>
         {" · "}
         <a

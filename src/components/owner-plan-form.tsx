@@ -68,7 +68,7 @@ export function OwnerPlanForm() {
 
       <Button type="submit">File the boat</Button>
       <p className="text-xs text-[color:var(--ink)]/50">
-        We don’t lift her. You call the yard. A blank seat stays Call.
+        We don’t pull her. You call the yard. A blank seat stays blank.
       </p>
     </form>
   );

@@ -209,7 +209,7 @@ export function deskScore(dock: Dock): number {
 }
 
 export function pinPitch(dockName: string): string {
-  return `${dockName} is Call. Boats that would stop are calling the next hose. ${PIN_PRICE_LABEL} and you write the number. Truck day, or when you change the board. We don’t invent a price. We don’t sell a gallon.`;
+  return `${dockName} has no number up. Boats that would stop are calling the next hose. ${PIN_PRICE_LABEL} and you write the number. Truck day, or when you change the board. We don’t invent a price. We don’t sell a gallon.`;
 }
 
 export const PIN_STATUSES: PinStatus[] = ["filed", "billed", "paid", "dead"];

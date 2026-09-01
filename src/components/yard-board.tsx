@@ -34,7 +34,7 @@ export function YardBoard({ yards }: { yards: HaulYard[] }) {
           >
             <p className="font-medium text-[color:var(--navy)]">{yard.name}</p>
             <p className="mt-0.5 text-sm text-[color:var(--ink)]/70">
-              {yard.city ? YARD_AREA_LABEL[yard.area] : "Call"}
+              {yard.city ? YARD_AREA_LABEL[yard.area] : "—"}
             </p>
             <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
               <div>
@@ -90,7 +90,7 @@ export function YardBoard({ yards }: { yards: HaulYard[] }) {
               >
                 <td className="py-2.5 pr-3 font-medium text-[color:var(--navy)]">{yard.name}</td>
                 <td className="py-2.5 pr-3 text-[color:var(--ink)]/70">
-                  {yard.city ? YARD_AREA_LABEL[yard.area] : "Call"}
+                  {yard.city ? YARD_AREA_LABEL[yard.area] : "—"}
                 </td>
                 <td className="py-2.5 pr-3">{leftoverLabel(yard.indoorLeftover)}</td>
                 <td className="py-2.5 pr-3">{leftoverLabel(yard.lotLeftover)}</td>

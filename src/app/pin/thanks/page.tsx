@@ -9,8 +9,8 @@ import { readPin } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Pin filed",
-  description: "The pin is filed. You write the number.",
+  title: "Your dock is filed",
+  description: "Your dock is filed. You write the number.",
 };
 
 export default async function PinThanksPage({
@@ -27,10 +27,10 @@ export default async function PinThanksPage({
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6" data-testid="pin-thanks">
       <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]">
-        Marina pin
+        Your dock
       </p>
       <h1 className="mt-1 font-heading text-4xl text-[color:var(--navy)] md:text-5xl">
-        {paid ? "The pin is yours" : "Pin filed"}
+        {paid ? "This dock is yours" : "Dock filed"}
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
         {pin.dockName}. {PIN_PRICE_LABEL}.
@@ -39,13 +39,13 @@ export default async function PinThanksPage({
 
       <section className="mt-8 max-w-xl space-y-3 text-sm leading-7 text-[color:var(--ink)]/80">
         {paid ? (
-          <p>You’re on the board. Change the number whenever the dock board changes.</p>
+          <p>You’re on the card. Change the number whenever the dock board changes.</p>
         ) : stripeConfigured() ? (
-          <p>The bill is open. Boats will see Call until it clears.</p>
+          <p>The bill is open. Boats will see a blank until it clears.</p>
         ) : (
           <p>
-            We sent a bill to the desk. Mail or wire {PIN_PRICE_LABEL}. Boats will see
-            Call until it clears.
+            We sent a bill. Mail or wire {PIN_PRICE_LABEL}. Boats will see
+            a blank until it clears.
           </p>
         )}
         <p>You write the number. We don’t invent a price. We don’t sell a gallon.</p>
@@ -54,7 +54,7 @@ export default async function PinThanksPage({
             className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
             href={`/report?dock=${pin.dockId}&who=marina`}
           >
-            Post a number
+            I was there
           </a>
           {" · "}
           <a

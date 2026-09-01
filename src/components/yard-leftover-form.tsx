@@ -7,7 +7,7 @@ export function YardLeftoverForm() {
   return (
     <form action={submitYardLeftover} autoComplete="off" className="space-y-3" data-testid="yard-leftover-form">
       <p className="text-xs leading-5 text-[color:var(--ink)]/60">
-        Blank stays Call. If you won’t say the number, the boats don’t come.
+        A blank stays blank. If you won’t say the number, the boats don’t come.
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5 sm:col-span-2">
@@ -16,19 +16,19 @@ export function YardLeftoverForm() {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="indoorLeftover">Indoor leftover</Label>
-          <Input id="indoorLeftover" name="indoorLeftover" inputMode="numeric" placeholder="Call" />
+          <Input id="indoorLeftover" name="indoorLeftover" inputMode="numeric" placeholder="—" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="lotLeftover">Lot leftover</Label>
-          <Input id="lotLeftover" name="lotLeftover" inputMode="numeric" placeholder="Call" />
+          <Input id="lotLeftover" name="lotLeftover" inputMode="numeric" placeholder="—" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="maxLength">Max length (ft)</Label>
-          <Input id="maxLength" name="maxLength" inputMode="decimal" placeholder="Call" />
+          <Input id="maxLength" name="maxLength" inputMode="decimal" placeholder="—" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="yardPhone">Phone</Label>
-          <Input id="yardPhone" name="yardPhone" type="tel" placeholder="Call" />
+          <Input id="yardPhone" name="yardPhone" type="tel" placeholder="—" />
         </div>
       </div>
       <div className="hidden" aria-hidden="true">

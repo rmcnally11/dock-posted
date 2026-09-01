@@ -31,11 +31,11 @@ try {
   const geo = await page.$eval("[data-testid=hero-geo]", (el) => el.textContent?.trim());
   const extra = await page.$eval("[data-testid=hero-extra]", (el) => el.textContent?.trim());
   const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
-  check("hero kicker present", kicker === "Marina fuel", kicker);
-  check("hero headline present", headline === "The price they posted", headline);
+  check("hero kicker present", kicker === "Marina fuel · Sabine to Key West", kicker);
+  check("hero headline present", headline === "What they wrote on the pump.", headline);
   check(
     "hero deck present",
-    deck === "Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+    deck === "Diesel and gas from the dock. If they didn’t put a number up, we leave it blank. Call the dock.",
     deck,
   );
   check(
@@ -49,7 +49,7 @@ try {
     (els) => els.map((el) => Number.parseFloat(getComputedStyle(el).fontSize)),
   );
   check("geo smaller than deck", heroSizes[2] < heroSizes[1] && heroSizes[1] < heroSizes[0], heroSizes.join(","));
-  check("hero extra line", extra === "We don’t sell a gallon. We don’t lift a boat.", extra);
+  check("hero extra line", extra === "We don’t sell fuel. We don’t pull your boat.", extra);
   const pageTitle = await page.title();
   const metaDescription = await page.$eval('meta[name="description"]', (el) => el.getAttribute("content"));
   check("title is marina fuel", pageTitle === "Dock Posted — Marina fuel", pageTitle);
@@ -57,7 +57,7 @@ try {
   check(
     "meta is posted prices",
     metaDescription ===
-      "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+      "What they wrote on the pump. If they didn’t, ask the dock.",
     metaDescription,
   );
   const landing = await page.$("[data-testid=landing]");
@@ -70,19 +70,19 @@ try {
     text: el.textContent?.trim(),
     href: el.getAttribute("href"),
   }));
-  check("see the board jump", seeBoard.text === "See the board" && seeBoard.href === "#board", JSON.stringify(seeBoard));
+  check("see today’s docks jump", seeBoard.text === "See today’s docks" && seeBoard.href === "#board", JSON.stringify(seeBoard));
   const landingReport = await page.$eval("[data-testid=landing-report]", (el) => ({
     text: el.textContent?.trim(),
     href: el.getAttribute("href"),
   }));
-  check("landing post a number", landingReport.text === "Post a number" && landingReport.href === "/report", JSON.stringify(landingReport));
+  check("landing I was there", landingReport.text === "I was there" && landingReport.href === "/report", JSON.stringify(landingReport));
   const landingLinks = await page.$$eval("[data-testid=landing-links] a", (els) =>
     els.map((el) => ({ text: el.textContent?.trim(), href: el.getAttribute("href") })),
   );
-  check("three quiet links", landingLinks.length === 3, JSON.stringify(landingLinks));
+  check("five quiet links", landingLinks.length === 5, JSON.stringify(landingLinks));
   check(
     "link the board",
-    landingLinks[0]?.text === "The board" && landingLinks[0]?.href === "#board",
+    landingLinks[0]?.text === "Today" && landingLinks[0]?.href === "#board",
     JSON.stringify(landingLinks[0]),
   );
   check(
@@ -92,15 +92,15 @@ try {
   );
   check(
     "link about",
-    landingLinks[2]?.text === "About" && landingLinks[2]?.href === "/about",
+    landingLinks[4]?.text === "About" && landingLinks[4]?.href === "/about",
     JSON.stringify(landingLinks[2]),
   );
   const landingMarkup = await page.$eval("[data-testid=landing]", (el) => el.innerHTML);
   check("no campaign cards", !/grid-cols-4|four doors/i.test(landingMarkup));
   const tally = await page.$eval("[data-testid=board-tally]", (el) => el.textContent?.trim());
   check("count under deck", /posted this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
-  check("week line still call", /\d+ posted this week\.\s+\d+ still Call\./.test(tally ?? ""), tally);
-  check("proof is live counts", /that is the product working, not failing/i.test(tally ?? ""), tally);
+  check("week line is human", /docks wrote a\s+number this week\. Most still haven.t\./.test(tally ?? ""), tally);
+  check("proof is live counts", /That.s normal\. That.s why the phone is on the\s+card\./.test(tally ?? ""), tally);
   check("no invent compliance", !/never invent a price/i.test(homeCopy));
   check(
     "no campaign nouns",
@@ -142,12 +142,12 @@ try {
   const paperBg = await page.$eval("body", (el) => getComputedStyle(el).backgroundColor);
   check("paper pages are cream", paperBg === "rgb(251, 248, 243)", paperBg);
   const boardFact = await page.$eval("[data-testid=board-fact]", (el) => el.textContent?.trim());
-  check("board fact line", boardFact === "Call is a fact. Silence is not a price.", boardFact);
-  check("nav the board", /The board/.test(headerCopy));
-  check("nav named storm", /Named storm/.test(headerCopy) && !/Haul-out/.test(headerCopy));
-  check("nav post a number", /Post a number/.test(headerCopy));
-  check("nav e15", /E15/.test(headerCopy));
-  check("nav about after e15", /E15[\s\S]*About/.test(headerCopy) && !/Wholesale[\s\S]*About/.test(headerCopy));
+  check("board fact line", boardFact === "A blank is a fact. Silence is not a price.", boardFact);
+  check("nav today", /Today/.test(headerCopy));
+  check("nav yard seats", /Yard seats/.test(headerCopy) && !/Haul-out/.test(headerCopy));
+  check("nav I was there", /I was there/.test(headerCopy));
+  check("nav hose", /hose/.test(headerCopy));
+  check("nav who writes this", /Who writes this/.test(headerCopy) && !/Wholesale/.test(headerCopy));
   const whoWrites = await page.$eval("[data-testid=who-writes-this] a", (el) => ({
     text: el.textContent?.trim(),
     href: el.getAttribute("href"),
@@ -183,14 +183,14 @@ try {
   check("card blend", cardFields.includes("Blend"), cardFields.join(","));
   check("card hours", cardFields.includes("Hours"), cardFields.join(","));
   check("card date", dateLine.includes("Date"), dateLine);
-  check("marina bay stays call", /Call/.test(marinaBayCard));
+  check("marina bay stays blank", /Call the dock/.test(marinaBayCard) && marinaBayCard.includes("—"));
   const regularTone = await page.$eval(
     "[data-testid=quote-regular-marina-bay-harbor]",
     (el) => ({ text: el.textContent?.trim(), color: getComputedStyle(el).color }),
   );
   check(
     "call badge is signal red",
-    regularTone.text === "Call" && regularTone.color === "rgb(226, 59, 59)",
+    regularTone.text === "—" && regularTone.color === "rgb(226, 59, 59)",
     JSON.stringify(regularTone),
   );
   const dieselTone = await page.$eval(
@@ -213,7 +213,7 @@ try {
   );
   check("card opens dock page", marinaBayHref === "/docks/marina-bay-harbor", marinaBayHref);
   const pinLegend = await page.$eval("[data-testid=pin-legend]", (el) => el.textContent ?? "");
-  check("pin legend posted vs call", /Call/.test(pinLegend) && /Posted/.test(pinLegend), pinLegend);
+  check("pin legend posted vs call", /No number/.test(pinLegend) && /On the hose/.test(pinLegend), pinLegend);
   check("pin legend diesel vs gas", /Diesel/.test(pinLegend) && /Gas/.test(pinLegend), pinLegend);
   check(
     "pin legend is dock talk",
@@ -275,7 +275,7 @@ try {
     "[data-testid=dock-card-blue-marlin-seabrook]",
     (el) => el.textContent ?? "",
   );
-  check("blue marlin hours call", /Hours\s*Call/.test(blueMarlinCard) || blueMarlinCard.includes("Call"), blueMarlinCard.slice(0, 200));
+  check("blue marlin hours blank", /Hours/.test(blueMarlinCard) && /Call the dock/.test(blueMarlinCard), blueMarlinCard.slice(0, 200));
   check("blue marlin no live wg dollar", !/\$5\.990|\$4\.980|\$5\.280/.test(blueMarlinCard));
   check("blue marlin west of 146", /west of 146/i.test(blueMarlinCard));
   const sshCard = await page.$eval(
@@ -297,7 +297,7 @@ try {
   check("island is not the poster", texasNames[0] !== "Galveston Yacht Marina");
   check("no kemah boardwalk", !texasNames.some((name) => name?.includes("Kemah Boardwalk")));
 
-  check("no today nav", !/\bToday\b/.test(headerCopy), headerCopy);
+  check("today is the board", /\bToday\b/.test(headerCopy), headerCopy);
   check("no last-posted hero", !/what the dock last posted/i.test(homeCopy));
   check("no instrument family", !/instrument family/i.test(homeCopy));
   check("no sister page", !/sister page/i.test(homeCopy));
@@ -318,13 +318,13 @@ try {
   check("landing has no waitlist", !/waitlist|stripe|email capture/i.test(landingCopy));
   check("no on this water on landing", !/on this water/i.test(landingCopy));
   check("no field letter on landing", !/field letter|almanac/i.test(landingCopy));
-  check("waterdog footer credit", /Waterdog Fuel\. Rack to dock\./.test(footerCopy), footerCopy);
+  check("waterdog footer credit", /Waterdog Fuel\. Opens 2027\./.test(footerCopy), footerCopy);
   check("sister footer credit", /On This Water/.test(footerCopy), footerCopy);
   const sisterLink = await page.$eval("[data-testid=sister-handoff-link]", (el) => ({
     text: el.textContent ?? "",
     href: el.getAttribute("href") ?? "",
   }));
-  check("bay morning line", sisterLink.text === "Galveston morning line", sisterLink.text);
+  check("bay morning line", sisterLink.text === "This morning on Galveston", sisterLink.text);
   check("bay morning href", /theater=texas/.test(sisterLink.href) && /area=galveston/.test(sisterLink.href), sisterLink.href);
   check("waterdog footer link", waterdogHref === "https://coastalcavaliers.com", waterdogHref);
   check("no invented waterdog domain", !/waterdogfuel\.com/i.test(homeCopy));
@@ -333,12 +333,12 @@ try {
   check("board has no wholesale book", !/nymex|differential|\bTCN\b|should-be|Fair hose|\binvoice\b/i.test(`${kicker} ${headline} ${deck} ${tally} ${dockListCopy} ${mapCopy}`));
   check("board omits wholesale nav without password", !(await page.$("[data-testid=nav-wholesale]")));
   check("call the dock action", /call the dock/i.test(homeCopy));
-  check("company footer", /if they didn.t post it, it.s Call/i.test(homeCopy));
+  check("company footer", /if they didn.t put a number up, we leave it blank/i.test(homeCopy));
   check("osm attribution in footer", /openstreetmap/i.test(homeCopy));
   check("no call ahead", !/call ahead/i.test(homeCopy));
   check("no tbd or unknown", !/\bTBD\b|\bunknown\b/i.test(homeCopy));
   check("verified vs last seen", /verified|last seen/i.test(homeCopy));
-  check("claim path", /claim this pin/i.test(homeCopy));
+  check("claim path", /Your dock/.test(homeCopy));
   check("no bargain", !/cheapest|savings|bargain/i.test(homeCopy));
   check("no slips pitch", !/wet-slip|Holds Fast/i.test(homeCopy));
 
@@ -395,7 +395,7 @@ try {
   await page.goto(`${base}/report?dock=galveston-yacht-marina`, { waitUntil: "networkidle0" });
   const reportHero = await page.$eval("main h1", (el) => el.textContent?.trim());
   const reportHeader = await page.$eval("header", (el) => el.textContent ?? "");
-  check("report is its own page", reportHero === "Post a number", reportHero);
+  check("report is its own page", reportHero === "You were there.", reportHero);
   check("report header is not a family lockup", !/what the dock posted/i.test(reportHeader));
   const reporting = await page.$eval("[data-testid=reporting-for]", (el) => el.textContent);
   check("report marina label", reporting?.includes("Galveston Yacht Marina"));
@@ -409,9 +409,9 @@ try {
 
   await page.goto(`${base}/safe-fuel`, { waitUntil: "networkidle0" });
   const safe = await page.$eval("main", (el) => el.textContent ?? "");
-  check("safe fuel", /E15 is not for boats/i.test(safe));
+  check("safe fuel", /What.s in the hose/i.test(safe));
   check("safe fuel don't guess", /don.t guess the hose/i.test(safe));
-  check("safe fuel four states", /e15 walk away/i.test(safe) && /call if unlabeled/i.test(safe));
+  check("safe fuel four states", /e15 walk away/i.test(safe) && /if the card is blank/i.test(safe));
   check("safe fuel is a warning", /walk away/i.test(safe) && !/save|deal|cheap/i.test(safe));
   check("safe fuel ethanol honesty", /ethanol is what the sticker says/i.test(safe));
   check(
@@ -425,7 +425,7 @@ try {
   });
   check("safe fuel no waterdog on the warning", !/waterdog|opis|argus|platts|invoice/i.test(safeSansFooter));
   check("safe fuel no wholesale book", !/nymex|differential|\bTCN\b|jobber|should-be|Fair hose|\binvoice\b/i.test(safeSansFooter));
-  check("safe fuel footer credit", /Waterdog Fuel\. Rack to dock\./.test(safe));
+  check("safe fuel footer credit", /Waterdog Fuel\. Opens 2027\./.test(safe));
 
   await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
   const haulKicker = await page.$eval("[data-testid=haul-out-kicker]", (el) => el.textContent?.trim());
@@ -435,10 +435,10 @@ try {
   const haulHow = await page.$eval("[data-testid=how-it-works]", (el) => el.textContent ?? "");
   const haulHeader = await page.$eval("header", (el) => el.textContent ?? "");
   check("haul kicker", haulKicker === "Leftover seats", haulKicker);
-  check("haul headline", haulHeadline === "Named storm", haulHeadline);
+  check("haul headline", haulHeadline === "Yard seats", haulHeadline);
   check(
     "haul deck",
-    /When they name it, you need a hole\. If the yard didn.t say what was left, it stays Call\./.test(
+    /When they name a storm, yards fill up\. Who still has a seat/.test(
       haulDeck ?? "",
     ),
     haulDeck,
@@ -446,11 +446,11 @@ try {
   check("no four doors slogan", !/Four doors\. One cone\./.test(haulHow) && !/how it works/i.test(haulHow));
   check("door 01", /File the boat/.test(haulHow));
   check("door 02", /Two yards that fit/.test(haulHow));
-  check("door 03", /When they name it, we text what.s left/.test(haulHow));
-  check("door 04", /You call the yard\. We don.t lift her\./.test(haulHow));
+  check("door 03", /When they name it, we tell you what.s left/.test(haulHow));
+  check("door 04", /You call the yard\. We don.t pull her\./.test(haulHow));
   check("file the boat button", /File the boat/.test(haulCopy));
   check("no checkout", /No checkout on this page/.test(haulCopy));
-  check("all leftover call", /All leftover seats are Call/.test(haulCopy));
+  check("all leftover call", /No yard has said what.s left/.test(haulCopy));
   check("no kill word", !/\bKill\b/.test(haulCopy));
   check("five yards line", /Five yards still have not said what.s left/.test(haulCopy));
   check("yard post heading", /Yard: post what.s left/.test(haulCopy));
@@ -469,14 +469,14 @@ try {
     return clone.textContent ?? "";
   });
   check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber|should-be|Fair hose|\binvoice\b/i.test(haulSansFooter));
-  check("haul-out footer credit", /Waterdog Fuel\. Rack to dock\./.test(haulCopy));
+  check("haul-out footer credit", /Waterdog Fuel\. Opens 2027\./.test(haulCopy));
   check("haul-out header omits wholesale nav without password", !/wholesale/i.test(haulHeader));
 
   const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
     page.$eval("main", (el) => el.textContent ?? ""),
   );
-  check("report headline", /Post a number/.test(reportCopy) && /You were there\. What did they have up\./.test(reportCopy));
-  check("report community line", /Post the number\. Save the next boat a phone call\./.test(reportCopy));
+  check("report headline", /You were there/.test(reportCopy) && /What did they have on the hose\./.test(reportCopy));
+  check("report community line", /If they did not post, leave it blank/.test(reportCopy));
   check("report send it button", /Send it/.test(reportCopy) && !/submit a price/i.test(reportCopy));
   check(
     "report no campaign nouns",
@@ -488,7 +488,7 @@ try {
     return clone.textContent ?? "";
   });
   check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber|should-be|Fair hose|\binvoice\b/i.test(reportSansFooter));
-  check("report footer credit", /Waterdog Fuel\. Rack to dock\./.test(reportCopy));
+  check("report footer credit", /Waterdog Fuel\. Opens 2027\./.test(reportCopy));
 
   await page.setViewport({ width: 375, height: 812 });
   await page.goto(`${base}/about`, { waitUntil: "domcontentloaded" });
@@ -506,43 +506,43 @@ try {
   const reportLink = await page.$eval("[data-testid=about-body] a[href='/report']", (el) =>
     el.textContent?.trim(),
   );
-  check("about headline", aboutHeadline === "About", aboutHeadline);
+  check("about headline", aboutHeadline === "Who writes this", aboutHeadline);
   check(
     "about deck",
-    aboutDeck === "We write what they posted. If they didn’t, it’s Call.",
+    aboutDeck === "What they wrote on the pump. If they didn’t, ask the dock.",
     aboutDeck,
   );
   check(
     "about dock board sentence",
-    /Dock Posted is the number on the board at the fuel dock\. Sabine to Key West, then the rest of the saltwater coast\./.test(
+    /Dock Posted is the number on the pump\. Sabine to Key West, then the rest of the saltwater coast\./.test(
       aboutBody,
     ),
     aboutBody.slice(0, 200),
   );
   check(
     "about no gallon no lift",
-    /We don’t sell a gallon\. We don’t lift a boat\. A blank stays Call\./.test(aboutBody),
+    /We don’t sell fuel\. We don’t pull your boat/.test(aboutBody),
   );
   check(
     "about named storm",
-    /Named storm is leftover seats in the shed or on the lot\. When they name it, you call the yard\./.test(
+    /Yard seats are leftover spots in the shed or on the lot\. When they name a storm, you call the yard\./.test(
       aboutBody,
     ),
   );
   check(
     "about wholesale locked door",
-    /Wholesale is what it cost and what they posted\. That’s a locked door\./.test(aboutBody),
+    /What it cost and what they posted lives behind a locked door\./.test(aboutBody),
   );
   check("about send the number", /If you were at the dock, send the number\./.test(aboutBody));
-  check("about post a number link", reportLink === "Post a number", reportLink);
-  check("about footer call", /if they didn.t post it, it.s Call/i.test(aboutCopy));
+  check("about I was there link", reportLink === "I was there", reportLink);
+  check("about footer call", /if they didn.t put a number up, we leave it blank/i.test(aboutCopy));
   check("about on x label", /On X/.test(aboutOnX) && !/Twitter feed/i.test(aboutOnX) && !/\bsocial\b/i.test(aboutOnX));
   check(
     "about x fallback",
     /Nothing on X yet\./.test(fallback.text) && fallback.href === "https://x.com/DockPosted",
     JSON.stringify(fallback),
   );
-  check("about nav has about", /About/.test(aboutHeader));
+  check("about nav has who writes this", /Who writes this/.test(aboutHeader));
   const waterdogBlock = await page.$eval("[data-testid=waterdog-fuel]", (el) => el.textContent ?? "");
   const waterdogMail = await page.$eval(
     "[data-testid=waterdog-fuel] a[href='mailto:orders@coastalcavaliers.com']",
@@ -559,7 +559,7 @@ try {
   check("about waterdog mail", waterdogMail === "orders@coastalcavaliers.com", waterdogMail);
   check(
     "about waterdog hose",
-    /Rack to dock\. Same family as this board\. They do not set the number on the hose\./.test(
+    /Waterdog does not set the number on the hose\./.test(
       waterdogBlock,
     ),
   );
@@ -567,7 +567,7 @@ try {
   check("about no wholesale book", !/nymex|platts|differential|\bTCN\b|jobber|opis|should-be|Fair hose|\binvoice\b/i.test(aboutCopy));
   check("about no invented tweets", !/RJMtweets11|goodpiratesalma/i.test(aboutCopy));
   check("about no invented domain", !/waterdogfuel\.com/i.test(aboutCopy));
-  check("about footer credit", /Waterdog Fuel\. Rack to dock\./.test(aboutCopy));
+  check("about footer credit", /Waterdog Fuel\. Opens 2027\./.test(aboutCopy));
   const headerOverflow = await page.$eval("header", (el) => el.scrollWidth > el.clientWidth + 1);
   const aboutNavBox = await page.$eval("[data-testid=nav-about]", (el) => {
     const r = el.getBoundingClientRect();
@@ -763,7 +763,7 @@ try {
   );
   check(
     "dock page blank stays call",
-    dockRegular.text === "Call" && dockRegular.color === "rgb(226, 59, 59)",
+    dockRegular.text === "—" && dockRegular.color === "rgb(226, 59, 59)",
     JSON.stringify(dockRegular),
   );
   const dockDiesel = await page.$eval(
@@ -773,7 +773,7 @@ try {
   check("dock page diesel not sold", dockDiesel === "Not sold", dockDiesel);
   const dockCopy = await page.$eval("[data-testid=dock-page]", (el) => el.textContent ?? "");
   check("dock page hose", /\(281\)\s*535-2222/.test(dockCopy) && !/549-4772/.test(dockCopy), dockCopy.slice(0, 240));
-  check("dock page call is a fact", /Call is a fact/.test(dockCopy), dockCopy.slice(0, 200));
+  check("dock page blank is a fact", /A blank is a fact/.test(dockCopy), dockCopy.slice(0, 200));
   const dockSansFooter = await page.$eval("[data-testid=dock-page]", (el) => {
     const clone = el.cloneNode(true);
     clone.querySelectorAll("footer").forEach((node) => node.remove());

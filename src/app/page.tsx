@@ -42,19 +42,19 @@ export default async function Home({
               data-testid="hero-kicker"
               className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]"
             >
-              Marina fuel
+              Marina fuel · Sabine to Key West
             </p>
             <h1
               data-testid="hero-headline"
               className="mt-4 max-w-4xl font-heading text-5xl leading-[1.05] text-[color:var(--cream)] md:text-7xl"
             >
-              The price they posted
+              What they wrote on the pump.
             </h1>
             <p
               data-testid="hero-deck"
               className="mt-6 max-w-xl text-base leading-7 text-[color:var(--cream)]/70 md:text-lg"
             >
-              Diesel and gas from the dock. If they didn’t write a number, it stays Call.
+              Diesel and gas from the dock. If they didn’t put a number up, we leave it blank. Call the dock.
             </p>
             <p
               data-testid="hero-geo"
@@ -66,11 +66,12 @@ export default async function Home({
               data-testid="hero-extra"
               className="mt-3 max-w-xl text-sm leading-6 text-[color:var(--cream)]/55"
             >
-              We don’t sell a gallon. We don’t lift a boat.
+              We don’t sell fuel. We don’t pull your boat.
             </p>
             <p data-testid="board-tally" className="mt-6 text-sm text-[color:var(--cream)]/55">
-              {tally.postedThisWeek} posted this week. {tally.call} still Call. That is the
-              product working, not failing.
+              {tally.postedThisWeek} {tally.postedThisWeek === 1 ? "dock wrote" : "docks wrote"} a
+              number this week. Most still haven’t. That’s normal. That’s why the phone is on the
+              card.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
@@ -78,14 +79,14 @@ export default async function Home({
                 href="#board"
                 className="inline-flex h-12 items-center rounded-md bg-[color:var(--cream)] px-5 text-sm font-medium text-[color:var(--navy)] hover:bg-[color:var(--cream)]/90"
               >
-                See the board
+                See today’s docks
               </a>
               <a
                 data-testid="landing-report"
                 href="/report"
                 className="inline-flex h-12 items-center rounded-md border border-[color:var(--cream)]/25 bg-transparent px-5 text-sm font-medium text-[color:var(--cream)] hover:bg-[color:var(--cream)]/8"
               >
-                Post a number
+                I was there
               </a>
             </div>
             <p data-testid="who-writes-this" className="mt-5 text-sm text-[color:var(--cream)]/50">
@@ -106,7 +107,7 @@ export default async function Home({
                 href="#board"
                 className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
               >
-                The board
+                Today
               </a>
               <a
                 data-testid="landing-link-named-storm"
@@ -120,14 +121,14 @@ export default async function Home({
                 href="/pin"
                 className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
               >
-                The pin
+                Your dock
               </a>
               <a
                 data-testid="landing-link-run"
                 href="/run"
                 className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
               >
-                The run
+                This trip
               </a>
               <a
                 data-testid="landing-link-about"
@@ -165,8 +166,8 @@ export default async function Home({
           >
             <span className="mx-auto block max-w-7xl rounded-md bg-fresh/10 px-3 py-2 text-sm text-fresh">
               {reportedDock
-                ? `On the board. ${reportedDock.name} now carries the time you saw.`
-                : "On the board. That dock now carries the time you saw."}
+                ? `On the hose. ${reportedDock.name} now carries the time you saw.`
+                : "On the hose. That dock now carries the time you saw."}
             </span>
           </p>
         ) : null}

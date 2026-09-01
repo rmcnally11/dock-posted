@@ -78,13 +78,13 @@ export interface YardLeftoverInput {
 }
 
 export function leftoverLabel(value: number | null | undefined): string {
-  if (value == null || Number.isNaN(value)) return "Call";
+  if (value == null || Number.isNaN(value)) return "—";
   return String(value);
 }
 
 export function callOrText(value: string | null | undefined): string {
   const trimmed = value?.trim();
-  return trimmed ? trimmed : "Call";
+  return trimmed ? trimmed : "—";
 }
 
 export function remainingKnown(yard: HaulYard): number | null {
@@ -97,7 +97,7 @@ export function remainingLabel(yard: HaulYard): string {
 }
 
 export function maxLengthLabel(yard: HaulYard): string {
-  if (yard.maxLengthFt == null) return "Call";
+  if (yard.maxLengthFt == null) return "—";
   return `${yard.maxLengthFt} ft`;
 }
 
@@ -145,7 +145,7 @@ export function parseOptionalCount(raw: string): number | null {
   if (!trimmed) return null;
   const value = Number(trimmed);
   if (!Number.isFinite(value) || value < 0 || value > 999) {
-    throw new Error("Leftover seats must be a number, or blank for Call.");
+    throw new Error("Leftover seats must be a number, or blank.");
   }
   return value;
 }
@@ -155,7 +155,7 @@ export function parseOptionalLength(raw: string): number | null {
   if (!trimmed) return null;
   const value = Number(trimmed);
   if (!Number.isFinite(value) || value <= 0 || value > 200) {
-    throw new Error("Max length must be feet, or blank for Call.");
+    throw new Error("Max length must be feet, or blank.");
   }
   return value;
 }
@@ -242,5 +242,5 @@ export function slugYardName(name: string): string {
 }
 
 export function yardDisplayName(yard: HaulYard | null): string {
-  return yard?.name ?? "Call";
+  return yard?.name ?? "—";
 }

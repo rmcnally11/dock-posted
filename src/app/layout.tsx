@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s — Dock Posted",
   },
   description:
-    "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+    "What they wrote on the pump. If they didn’t, ask the dock.",
   applicationName: "Dock Posted",
   openGraph: {
     type: "website",
@@ -41,14 +41,14 @@ export const metadata: Metadata = {
     siteName: "Dock Posted",
     title: "Dock Posted — Marina fuel",
     description:
-      "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+      "What they wrote on the pump. If they didn’t, ask the dock.",
   },
   twitter: {
     card: "summary_large_image",
     site: "@DockPosted",
     title: "Dock Posted — Marina fuel",
     description:
-      "The price they posted. Diesel and gas from the dock. If they didn’t write a number, it stays Call.",
+      "What they wrote on the pump. If they didn’t, ask the dock.",
   },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],

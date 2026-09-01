@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     const water = waterLabel(watch.corridor, watch.region);
     const lines =
       posted.length === 0
-        ? ["Nothing posted this week. Call stays Call."]
+        ? ["Nothing on the hose this week. A blank stays blank."]
         : posted.map((dock) => {
             const gas = formatQuote(boardQuote(dock, displayGas(dock)));
             const diesel = formatQuote(boardQuote(dock, displayDiesel(dock)));
@@ -45,13 +45,13 @@ export async function GET(request: Request) {
 
     const sent = await sendMail({
       to: watch.email,
-      subject: `Dock Posted · ${water}`,
+      subject: `They put a number up on ${water}`,
       text: [
-        `${water}. What they posted.`,
+        `${water}. What they wrote on the pump.`,
         "",
         ...lines,
         "",
-        "A blank stays Call. We don’t sell a gallon.",
+        "A blank stays blank. We don’t sell a gallon.",
         conditionsMailLine({
           corridor: watch.corridor,
           region: watch.region,

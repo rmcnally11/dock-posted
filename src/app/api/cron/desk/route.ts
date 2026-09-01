@@ -45,10 +45,10 @@ export async function GET(request: Request) {
 
   const sent = await sendMail({
     to: notifyEmail(),
-    subject: `Desk · week of ${weekOf} · ${created.length} docks`,
+    subject: `Monday list — eight docks to phone`,
     text: [
-      `Monday desk. ${PIN_PRICE_LABEL}. Home waters first.`,
-      "We don’t sell a gallon. A blank stays Call.",
+      `Monday list. Week of ${weekOf}. ${created.length} docks. ${PIN_PRICE_LABEL}. Home waters first.`,
+      "We don’t sell a gallon. A blank stays blank.",
       "",
       ...lines,
       "",

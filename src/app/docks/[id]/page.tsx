@@ -4,7 +4,7 @@ import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { boardHref } from "@/lib/board-query";
-import { ethanolCopy, formatDate, formatQuote, sourceLabel, telHref } from "@/lib/format";
+import { ethanolCopy, formatDate, formatQuote, isBlankPrice, sourceLabel, telHref } from "@/lib/format";
 import { dockWaterLabel, runWatchHref } from "@/lib/income";
 import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
 import { readDocks } from "@/lib/store";
@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 function quoteTone(quote: ReturnType<typeof boardQuote>, kind: "gas" | "diesel"): string {
   const text = formatQuote(quote);
-  if (text === "Call") return "text-[color:var(--signal)]";
+  if (isBlankPrice(text)) return "text-[color:var(--signal)]";
   if (text === "Not sold") return "text-[color:var(--ink)]/55";
   return kind === "diesel" ? "text-[color:var(--diesel)]" : "text-[color:var(--signal)]";
 }
@@ -56,7 +56,7 @@ function dockJsonLd(dock: Dock) {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: dock.name,
-    description: "The price they posted. If they didn’t write a number, it stays Call.",
+    description: "What they wrote on the pump. If they didn’t, we leave it blank. Call the dock.",
     url: `https://dock-posted.vercel.app/docks/${dock.id}`,
     address: {
       "@type": "PostalAddress",
@@ -73,7 +73,7 @@ function dockJsonLd(dock: Dock) {
 }
 
 function dockDescription(dock: Dock): string {
-  return `${dock.name}, ${dock.city}, ${dock.state}. The price they posted. If they didn’t write a number, it stays Call.`;
+  return `${dock.name}, ${dock.city}, ${dock.state}. What they wrote on the pump. If they didn’t, we leave it blank. Call the dock.`;
 }
 
 async function loadDock(id: string): Promise<Dock | null> {
@@ -146,7 +146,7 @@ export default async function DockPage({
         </p>
       ) : null}
       <p className="mt-3 max-w-2xl text-sm text-[color:var(--ink)]/55">
-        Call is a fact. A blank stays Call.
+        A blank is a fact. Silence is not a price.
       </p>
       <Waterline className="mt-3" />
 
@@ -178,7 +178,7 @@ export default async function DockPage({
         <div className="col-span-2 rounded-lg bg-[color:var(--fog)] px-3 py-2">
           <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Hours</dt>
           <dd className="font-mono text-[15px] font-medium text-[color:var(--navy)]">
-            {dock.hours ?? "Hours Call"}
+            {dock.hours ?? "—"}
           </dd>
         </div>
       </dl>
@@ -235,14 +235,14 @@ export default async function DockPage({
           })}
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
         >
-          On the board
+          Today
         </a>
         {" · "}
         <a
           href={`/report?dock=${dock.id}`}
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
         >
-          {trust === "verified" ? "Update this pin" : "Claim this pin"}
+          {trust === "verified" ? "Update the number" : "I was there"}
         </a>
       </p>
       <p className="mt-3 max-w-xl text-sm text-[color:var(--ink)]/70">
@@ -261,7 +261,7 @@ export default async function DockPage({
           data-testid="own-this-pin"
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
         >
-          Own this pin
+          This is my dock
         </a>
         . Boats see your price before they leave.
       </p>

@@ -143,17 +143,17 @@ export function HowItWorks({
 export const PIN_WALK: WalkStep[] = [
   {
     title: "Pick your dock",
-    body: "Tell us which marina you run. That pin on the board becomes yours.",
+    body: "Tell us which marina you run. That card becomes yours.",
     sketch: "board",
   },
   {
     title: "You write the price",
-    body: "When the truck comes, or when you change the board. Not every morning.",
+    body: "Truck day, or when you change the board. Not every morning.",
     sketch: "pin",
   },
   {
     title: "Boats see it first",
-    body: "Someone leaving the ramp sees what you posted. If you have not written it, they see Call.",
+    body: "Someone leaving the ramp sees what you wrote. If you haven’t, they see a blank and a phone.",
     sketch: "boat",
   },
 ];
@@ -166,17 +166,17 @@ export const RUN_WALK: WalkStep[] = [
   },
   {
     title: "Enter the tank",
-    body: "Gallons you will burn, or GPH and hours. Same math either way.",
+    body: "Gallons, or GPH and hours. Same math either way.",
     sketch: "tank",
   },
   {
-    title: "See what they posted",
-    body: "Posted dollars for that tank. If a dock has not written a number, it stays Call.",
+    title: "See what they wrote",
+    body: "We only multiply a number they wrote. No number means no number.",
     sketch: "pin",
   },
   {
-    title: "Get the next post",
-    body: "Leave an email if you want a note when a dock on that water posts. Not a text.",
+    title: "Watch this water",
+    body: "Leave an email if you want a note when those docks put a price up. Not a text.",
     sketch: "mail",
   },
 ];
@@ -193,12 +193,12 @@ export const STORM_WALK: WalkStep[] = [
     sketch: "yards",
   },
   {
-    title: "When they name it, we text what’s left",
-    body: "You get leftover indoor and lot seats, plus the yard phone.",
+    title: "When they name it, we tell you what’s left",
+    body: "Leftover indoor and lot seats, plus the yard phone.",
     sketch: "mail",
   },
   {
-    title: "You call the yard. We don’t lift her.",
+    title: "You call the yard. We don’t pull her.",
     body: "We are not the yard. We do not haul, store, or insure.",
     sketch: "phone",
   },
