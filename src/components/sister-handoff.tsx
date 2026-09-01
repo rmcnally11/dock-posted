@@ -3,13 +3,21 @@ import { conditionsHref } from "@/lib/sister";
 export function SisterHandoff({
   corridor,
   region,
+  compact = false,
 }: {
   corridor?: string | null;
   region?: string | null;
+  compact?: boolean;
 }) {
   const next = conditionsHref({ corridor, region });
   return (
-    <p className="mt-4 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/60">
+    <p
+      className={
+        compact
+          ? "mt-1 text-xs text-[color:var(--ink)]/55"
+          : "mt-4 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/60"
+      }
+    >
       Tide and wind before you leave —{" "}
       <a
         href={next.href}
