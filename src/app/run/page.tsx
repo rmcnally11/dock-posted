@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { HowItWorks, RUN_WALK } from "@/components/how-it-works";
 import { RunWatchForm } from "@/components/run-watch-form";
+import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { filterDocks, parseBoardQuery, viewLabel } from "@/lib/board-query";
@@ -64,6 +65,7 @@ export default async function RunPage({
         E15 is not for boats.
       </p>
       <Waterline className="mt-3" />
+      <SisterHandoff corridor={query.corridor} region={query.region} />
 
       <HowItWorks
         heading="How the run works"
