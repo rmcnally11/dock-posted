@@ -10,8 +10,44 @@ import seed from "../data/docks.seed.json";
 import { latToTileY, lngToTileX } from "../src/lib/geo";
 import { tileGridForZoom, viewForBoard } from "../src/lib/map-view";
 import { CORRIDORS, STATE_CODES, type Dock, type StateCode } from "../src/lib/types";
+import { briefCoastsFor, conditionsHref, sisterHomeHref } from "../src/lib/sister";
 
 const docks = seed.docks as Dock[];
+
+const galvestonLine = conditionsHref({ corridor: "galveston-bay" });
+assert.equal(galvestonLine.label, "Galveston morning line");
+assert.match(galvestonLine.href, /theater=texas/);
+assert.match(galvestonLine.href, /area=galveston/);
+assert.match(galvestonLine.href, /utm_source=dockposted/);
+assert.equal(conditionsHref({ city: "Port Arthur", state: "TX" }).area, "sabine");
+assert.equal(conditionsHref({ city: "Key Largo", corridor: "upper-keys" }).area, "key-largo");
+assert.equal(conditionsHref({ city: "Key West", region: "keys" }).area, "key-west");
+assert.equal(conditionsHref({ city: "Rockport", region: "texas" }).area, "aransas");
+assert.equal(conditionsHref({ region: "louisiana" }).area, "venice");
+assert.equal(conditionsHref({ region: "west-florida" }).area, "boca-grande");
+assert.deepEqual(briefCoastsFor({ region: "texas" }), [
+  "sabine",
+  "galveston",
+  "matagorda",
+  "aransas",
+  "corpus",
+  "baffin",
+  "lower-laguna",
+]);
+assert.deepEqual(briefCoastsFor({ corridor: "galveston-bay" }), ["galveston"]);
+assert.match(sisterHomeHref(), /^https:\/\/onthiswater\.com\/\?utm_source=dockposted/);
+assert.match(
+  readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8"),
+  /SisterHandoff/,
+);
+assert.match(
+  readFileSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx"), "utf8"),
+  /SisterHandoff/,
+);
+assert.match(
+  readFileSync(path.join(process.cwd(), "src/components/site-footer.tsx"), "utf8"),
+  /sisterHomeHref/,
+);
 
 assert.ok(docks.length >= 90, `expected a coastal set, got ${docks.length}`);
 assert.ok(docks.every((dock) => dock.region && dock.state && dock.city));
@@ -369,7 +405,6 @@ for (const file of [
   "src/components/dock-board.tsx",
   "src/app/docks/[id]/page.tsx",
   "src/components/site-header.tsx",
-  "src/components/site-footer.tsx",
   "src/components/report-form.tsx",
   "src/components/freshness-badge.tsx",
   "src/components/x-timeline.tsx",
@@ -490,7 +525,8 @@ assert.doesNotMatch(homeSource, /four-door|campaign card|grid-cols-4/i);
 assert.doesNotMatch(homeSource, /href="\/board"/);
 assert.equal(existsSync(path.join(process.cwd(), "src/app/board/page.tsx")), false);
 assert.equal(existsSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx")), true);
-assert.equal(existsSync(path.join(process.cwd(), "public/brand/cover.jpg")), false);
+assert.equal(existsSync(path.join(process.cwd(), "public/brand/cover.jpg")), true);
+assert.doesNotMatch(homeSource, /cover\.jpg|BrandPhoto/);
 assert.match(homeSource, /lg:overflow-hidden/);
 assert.match(homeSource, /lg:h-\[calc\(100dvh-3\.6rem\)\]/);
 assert.doesNotMatch(homeSource, /flex-col overflow-hidden/);
@@ -543,6 +579,9 @@ assert.match(footerSource, /If they didn.t post it, it.s Call\./);
 assert.match(footerSource, /OpenStreetMap/);
 assert.match(footerSource, /Waterdog Fuel\. Rack to dock\./);
 assert.match(footerSource, /https:\/\/coastalcavaliers\.com/);
+assert.match(footerSource, /data-testid="sister-credit"/);
+assert.match(footerSource, /On This Water/);
+assert.match(footerSource, /sisterHomeHref/);
 assert.doesNotMatch(footerSource, /waterdogfuel\.com|RJMtweets11|Holds Fast/i);
 assert.doesNotMatch(footerSource, /We publish the pin/);
 assert.doesNotMatch(footerSource, /What the boater saw/);
@@ -727,6 +766,26 @@ assert.doesNotMatch(waterlineSource, /waterline-a|waterline-b/);
 assert.match(headerSource, /BrandSpine|Waterline/);
 assert.match(headerSource, /Wordmark/);
 
+const galveston = conditionsHref({ corridor: "galveston-bay" });
+assert.equal(galveston.label, "Galveston morning line");
+assert.match(galveston.href, /theater=texas/);
+assert.match(galveston.href, /area=galveston/);
+assert.match(galveston.href, /utm_source=dockposted/);
+assert.equal(conditionsHref({ city: "Port Arthur", state: "TX" }).area, "sabine");
+assert.equal(conditionsHref({ city: "Key Largo", corridor: "upper-keys" }).area, "key-largo");
+assert.equal(conditionsHref({ city: "Key West", region: "keys" }).area, "key-west");
+assert.equal(conditionsHref({ city: "Rockport", region: "texas" }).area, "aransas");
+assert.equal(conditionsHref({ region: "louisiana" }).area, "venice");
+assert.equal(conditionsHref({ region: "west-florida" }).area, "boca-grande");
+assert.deepEqual(briefCoastsFor({ region: "texas" }), [
+  "sabine",
+  "galveston",
+  "matagorda",
+  "aransas",
+  "corpus",
+  "baffin",
+  "lower-laguna",
+]);
 console.log(
   `board filters ok — seed ${docks.length}, coast ${coast.visible.length}, bay ${texas.visible.length}, keys ${keys.visible.length}, tx-state ${texasState.visible.length}, ne ${newEngland.visible.length}, e0 ${e0.visible.length}, fresh ${fresh.visible.length}, search ${search.visible.length}, posted-this-week ${tally.postedThisWeek}, call ${tally.call}, stale ${tally.stale}`,
 );

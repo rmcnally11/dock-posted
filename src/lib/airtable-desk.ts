@@ -7,6 +7,7 @@ import {
   type PinClaim,
   type WaterWatch,
 } from "./income";
+import { briefCoastsFor } from "./sister";
 
 export const DESK_BASE_ID = "apppoBWAzJi7lVVKv";
 export const DESK_BASE_URL = "https://airtable.com/apppoBWAzJi7lVVKv";
@@ -190,24 +191,16 @@ export async function writeCallToAirtable(call: DeskCall): Promise<string | null
   });
 }
 
-const BRIEF_COAST: Record<string, string> = {
-  "galveston-bay": "galveston",
-  texas: "galveston",
-  "upper-keys": "key-largo",
-  keys: "key-largo",
-  louisiana: "venice",
-  "west-florida": "boca-grande",
-  "east-florida": "jupiter",
-};
-
 export function briefCoastFor(watch: WaterWatch): string | null {
-  if (watch.corridor && BRIEF_COAST[watch.corridor]) return BRIEF_COAST[watch.corridor];
-  if (watch.region && BRIEF_COAST[watch.region]) return BRIEF_COAST[watch.region];
-  return null;
+  return briefCoastsFor({ corridor: watch.corridor, region: watch.region })[0] ?? null;
+}
+
+export function briefCoastsForWatch(watch: WaterWatch): string[] {
+  return briefCoastsFor({ corridor: watch.corridor, region: watch.region });
 }
 
 export async function writeWatchToFieldBrief(watch: WaterWatch): Promise<void> {
-  const coast = briefCoastFor(watch);
+  const coasts = briefCoastsForWatch(watch);
   await airtableCreate(BRIEF.base, BRIEF.table, {
     [BRIEF.email]: watch.email,
     [BRIEF.name]: watch.name,
@@ -216,7 +209,7 @@ export async function writeWatchToFieldBrief(watch: WaterWatch): Promise<void> {
     [BRIEF.joinedOn]: isoDate(new Date(watch.createdAt)),
     [BRIEF.receive]: ["Weekly"],
     [BRIEF.notes]: `Dock Posted run watch. ${labelWater(watch.corridor, watch.region)}.`,
-    ...(coast ? { [BRIEF.coasts]: [coast] } : {}),
+    ...(coasts.length > 0 ? { [BRIEF.coasts]: coasts } : {}),
   });
 }
 

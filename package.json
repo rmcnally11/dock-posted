@@ -15,6 +15,7 @@
     "test:haul-out": "tsx scripts/test-haul-out.ts",
     "test:wholesale": "tsx scripts/test-wholesale.ts",
     "test:income": "tsx scripts/test-income.ts",
+    "test:sister": "tsx scripts/test-sister.ts",
     "test:ui": "node scripts/verify-ui.mjs"
   },
   "dependencies": {

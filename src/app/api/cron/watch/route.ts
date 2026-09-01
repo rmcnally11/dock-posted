@@ -4,6 +4,7 @@ import { formatQuote } from "@/lib/format";
 import { boardQuote, displayDiesel, displayGas, freshness } from "@/lib/freshness";
 import { waterLabel } from "@/lib/income";
 import { sendMail } from "@/lib/notify";
+import { conditionsMailLine, publicSiteUrl } from "@/lib/sister";
 import { readDocks, readIncomeStore } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -51,7 +52,11 @@ export async function GET(request: Request) {
         ...lines,
         "",
         "A blank stays Call. We don’t sell a gallon.",
-        "https://dock-posted.vercel.app/run",
+        conditionsMailLine({
+          corridor: watch.corridor,
+          region: watch.region,
+        }),
+        `${publicSiteUrl()}/run`,
       ].join("\n"),
     });
     if (sent) mailed += 1;

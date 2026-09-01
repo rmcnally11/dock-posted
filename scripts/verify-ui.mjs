@@ -299,10 +299,8 @@ try {
 
   check("no today nav", !/\bToday\b/.test(headerCopy), headerCopy);
   check("no last-posted hero", !/what the dock last posted/i.test(homeCopy));
-  check("no on this water", !/on this water/i.test(homeCopy));
   check("no instrument family", !/instrument family/i.test(homeCopy));
   check("no sister page", !/sister page/i.test(homeCopy));
-  check("no field letter", !/field letter|almanac|onthiswater/i.test(homeCopy));
   check("no hunt theater", !/wind is the tide|score ring|hunt line/i.test(homeCopy));
   check("no corridors copy", !/\bcorridors\b/i.test(homeCopy));
   check("no platform insights", !/platform|insights|real-time/i.test(homeCopy));
@@ -318,7 +316,16 @@ try {
   const landingCopy = await page.$eval("[data-testid=landing]", (el) => el.textContent ?? "");
   check("landing has no waterdog", !/waterdog|platts|nymex|\bTCN\b|\brack\b|should-be|Fair hose|\binvoice\b/i.test(landingCopy));
   check("landing has no waitlist", !/waitlist|stripe|email capture/i.test(landingCopy));
+  check("no on this water on landing", !/on this water/i.test(landingCopy));
+  check("no field letter on landing", !/field letter|almanac/i.test(landingCopy));
   check("waterdog footer credit", /Waterdog Fuel\. Rack to dock\./.test(footerCopy), footerCopy);
+  check("sister footer credit", /On This Water/.test(footerCopy), footerCopy);
+  const sisterLink = await page.$eval("[data-testid=sister-handoff-link]", (el) => ({
+    text: el.textContent ?? "",
+    href: el.getAttribute("href") ?? "",
+  }));
+  check("bay morning line", sisterLink.text === "Galveston morning line", sisterLink.text);
+  check("bay morning href", /theater=texas/.test(sisterLink.href) && /area=galveston/.test(sisterLink.href), sisterLink.href);
   check("waterdog footer link", waterdogHref === "https://coastalcavaliers.com", waterdogHref);
   check("no invented waterdog domain", !/waterdogfuel\.com/i.test(homeCopy));
   check("no waterdog twitter", !/RJMtweets11/i.test(homeCopy));

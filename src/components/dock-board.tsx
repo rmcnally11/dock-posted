@@ -1,5 +1,6 @@
 import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
+import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { boardHref, dockPath, viewLabel, type BoardHref, type BoardQuery } from "@/lib/board-query";
 import { runWatchHref } from "@/lib/income";
@@ -55,6 +56,12 @@ export function DockBoard({
                 </a>
                 . Gallons you will burn.
               </p>
+              <SisterHandoff
+                corridor={query.corridor}
+                region={query.region}
+                state={query.state}
+                compact
+              />
               <p
                 data-testid="pin-legend"
                 aria-label="Posted and Call"

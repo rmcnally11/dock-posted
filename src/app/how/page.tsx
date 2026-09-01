@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { HowItWorks, PIN_WALK, RUN_WALK, STORM_WALK } from "@/components/how-it-works";
+import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { NAMED_STORM_PLAN_PRICE } from "@/lib/haul-out";
@@ -63,6 +64,7 @@ export default function HowPage() {
             Price this weekend’s run
           </a>
         </p>
+        <SisterHandoff />
       </section>
 
       <section className="mt-12" data-testid="how-storm">

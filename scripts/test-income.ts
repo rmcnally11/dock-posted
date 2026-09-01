@@ -13,6 +13,8 @@ import {
   weekOfIso,
 } from "../src/lib/income";
 import { parseCheckoutRef } from "../src/lib/pay";
+import { briefCoastFor, briefCoastsForWatch } from "../src/lib/airtable-desk";
+import { conditionsMailLine } from "../src/lib/sister";
 import { runRows, tankDollars, tankGallons } from "../src/lib/run-card";
 import type { Dock } from "../src/lib/types";
 import seed from "../data/docks.seed.json";
@@ -174,11 +176,22 @@ assert.match(footer, /href="\/pin"/);
 assert.match(footer, /href="\/run"/);
 assert.match(footer, /href="\/how"/);
 assert.match(footer, /Waterdog Fuel[\s\S]*The pin[\s\S]*The run/);
+assert.match(footer, /On This Water/);
+assert.match(footer, /sisterHomeHref/);
+
+assert.equal(briefCoastFor({ corridor: "galveston-bay", region: null } as never), "galveston");
+assert.deepEqual(
+  briefCoastsForWatch({ corridor: null, region: "keys" } as never),
+  ["key-largo", "islamorada", "florida-bay", "marathon", "key-west"],
+);
+assert.match(conditionsMailLine({ corridor: "galveston-bay" }), /area=galveston/);
+assert.match(runPage, /SisterHandoff/);
 
 const dockPage = readFileSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx"), "utf8");
 assert.match(dockPage, /data-testid="own-this-pin"/);
 assert.match(dockPage, /data-testid="this-water"/);
 assert.match(dockPage, /runWatchHref/);
+assert.match(dockPage, /SisterHandoff/);
 
 const board = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
 assert.match(board, /data-testid="board-run"/);

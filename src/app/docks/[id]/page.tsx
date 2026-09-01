@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { boardHref } from "@/lib/board-query";
@@ -274,6 +275,12 @@ export default async function DockPage({
         </a>
         . {dockWaterLabel(dock)}. See what a tank costs before you leave.
       </p>
+      <SisterHandoff
+        corridor={dock.corridor}
+        region={dock.region}
+        state={dock.state}
+        city={dock.city}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(dockJsonLd(dock)) }}

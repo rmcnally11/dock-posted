@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BrandPhoto } from "@/components/brand-photo";
 import { HowItWorks, STORM_WALK } from "@/components/how-it-works";
+import { SisterHandoff } from "@/components/sister-handoff";
 import { OwnerPlanForm } from "@/components/owner-plan-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
@@ -49,6 +50,7 @@ export default async function HaulOutPage({
         do not haul, store, or insure. We don’t invent a hole. You call the yard. We
         don’t lift her. Wet slips stay Coastal Cavaliers — not this product.
       </p>
+      <SisterHandoff corridor="galveston-bay" />
       <Waterline className="mt-3 hidden lg:block" />
       <BrandPhoto name="storm" className="mt-6 aspect-[16/9] w-full max-w-3xl" />
 

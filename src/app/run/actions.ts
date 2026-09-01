@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { writeWatchToAirtable, writeWatchToFieldBrief } from "@/lib/airtable-desk";
 import { parseWatchInput, runWatchHref, WATCH_PRICE_LABEL, waterLabel } from "@/lib/income";
+import { conditionsMailLine, publicSiteUrl } from "@/lib/sister";
 import { notifyEmail, sendMail } from "@/lib/notify";
 import { createCheckoutSession } from "@/lib/pay";
 import { clientKey, takeReportSlot } from "@/lib/rate-limit";
@@ -51,6 +52,9 @@ export async function submitWaterWatch(formData: FormData): Promise<void> {
       WATCH_PRICE_LABEL,
       "When a dock on that water posts, we write you. Not a text.",
       "A blank stays Call.",
+      "",
+      conditionsMailLine({ corridor: watch.corridor, region: watch.region }),
+      `${publicSiteUrl()}/run`,
     ].join("\n"),
   });
 

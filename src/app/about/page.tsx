@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BrandPhoto } from "@/components/brand-photo";
+import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { XTimeline } from "@/components/x-timeline";
@@ -63,6 +64,7 @@ export default function AboutPage() {
           </a>
           .
         </p>
+        <SisterHandoff />
       </section>
 
       <BrandPhoto name="close" className="mt-8 aspect-[16/9] w-full max-w-2xl" />
