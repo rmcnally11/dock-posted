@@ -44,6 +44,7 @@ export async function createCheckoutSession(input: {
   body.set("client_reference_id", `${input.kind}:${input.recordId}`);
   body.set("metadata[kind]", input.kind);
   body.set("metadata[recordId]", input.recordId);
+  body.set("managed_payments[enabled]", "false");
   body.set("line_items[0][quantity]", "1");
   body.set("line_items[0][price_data][currency]", "usd");
   body.set("line_items[0][price_data][unit_amount]", String(dollars * 100));
