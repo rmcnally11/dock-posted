@@ -44,6 +44,90 @@ body {
   color: var(--navy);
 }
 
+/* Type scale — Sept 2026. Faces stay. Sizes lock. */
+.kicker {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.nav-link {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.wordmark {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-transform: none;
+}
+
+.geo-lockup {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.home-line {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+@media (min-width: 768px) {
+  .home-line {
+    font-size: 72px;
+  }
+}
+
+.page-title {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+@media (min-width: 768px) {
+  .page-title {
+    font-size: 40px;
+  }
+}
+
+.price-up {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+@media (min-width: 768px) {
+  .price-up {
+    font-size: 24px;
+  }
+}
+
+.price-blank {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+}
+
 .leaflet-container {
   background: #e8f2f8;
   font-family: var(--font-geist-sans), system-ui, sans-serif;

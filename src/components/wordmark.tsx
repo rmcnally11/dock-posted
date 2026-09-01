@@ -13,7 +13,7 @@ export function Wordmark({
       <span
         data-testid="wordmark"
         className={cn(
-          "font-heading text-lg tracking-tight",
+          "wordmark",
           invert ? "text-[color:var(--cream)]" : "text-[color:var(--navy)]",
         )}
       >
@@ -21,7 +21,7 @@ export function Wordmark({
       </span>
       <span
         className={cn(
-          "hidden text-[10px] uppercase tracking-[0.22em] sm:inline",
+          "geo-lockup hidden sm:inline",
           invert ? "text-[color:var(--cream)]/55" : "text-[color:var(--diesel)]",
         )}
       >

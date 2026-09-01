@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { QuoteFigure } from "@/components/dock-card";
 import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
@@ -128,12 +129,12 @@ export default async function DockPage({
       data-testid="dock-page"
       className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6"
     >
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]">
+      <p className="kicker text-[color:var(--signal)]">
         The dock
       </p>
       <h1
         data-testid="dock-page-name"
-        className="mt-1 font-heading text-4xl text-[color:var(--navy)] md:text-5xl"
+        className="page-title mt-3 text-[color:var(--navy)]"
       >
         {dock.name}
       </h1>
@@ -155,18 +156,18 @@ export default async function DockPage({
           <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Regular</dt>
           <dd
             data-testid={`quote-regular-${dock.id}`}
-            className={cn("font-mono text-[15px] font-medium tabular-nums", quoteTone(gas, "gas"))}
+            className={cn("mt-1", quoteTone(gas, "gas"))}
           >
-            {formatQuote(gas)}
+            <QuoteFigure quote={gas} />
           </dd>
         </div>
         <div className="rounded-lg bg-[color:var(--fog)] px-3 py-2">
           <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Diesel</dt>
           <dd
             data-testid={`quote-diesel-${dock.id}`}
-            className={cn("font-mono text-[15px] font-medium tabular-nums", quoteTone(diesel, "diesel"))}
+            className={cn("mt-1", quoteTone(diesel, "diesel"))}
           >
-            {formatQuote(diesel)}
+            <QuoteFigure quote={diesel} />
           </dd>
         </div>
         <div className="rounded-lg bg-[color:var(--fog)] px-3 py-2">

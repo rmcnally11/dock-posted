@@ -8,14 +8,28 @@ export function formatPrice(value: number | null | undefined): string {
   return `$${value.toFixed(3)}`;
 }
 
-export function formatQuote(quote: FuelQuote | null): string {
-  if (!quote) return BLANK;
-  if (quote.status === "not-sold") return "Not sold";
-  if (quote.status === "no-report" || quote.status === "call") return BLANK;
-  if (quote.pricePerGallon == null) return BLANK;
+export function quoteParts(quote: FuelQuote | null): {
+  figure: string;
+  rest: string;
+  blank: boolean;
+} {
+  if (!quote) return { figure: BLANK, rest: "", blank: true };
+  if (quote.status === "not-sold") return { figure: "Not sold", rest: "", blank: true };
+  if (quote.status === "no-report" || quote.status === "call" || quote.pricePerGallon == null) {
+    return { figure: BLANK, rest: "", blank: true };
+  }
   const grade = quote.product === "diesel" ? "diesel" : quote.product;
   const ethanol = quote.ethanol === "unknown" ? "" : ` ${quote.ethanol}`;
-  return `${formatPrice(quote.pricePerGallon)} ${grade}${ethanol}`;
+  return {
+    figure: formatPrice(quote.pricePerGallon),
+    rest: `${grade}${ethanol}`.trim(),
+    blank: false,
+  };
+}
+
+export function formatQuote(quote: FuelQuote | null): string {
+  const parts = quoteParts(quote);
+  return parts.rest ? `${parts.figure} ${parts.rest}` : parts.figure;
 }
 
 export function formatDate(iso: string | null): string {

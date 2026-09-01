@@ -40,13 +40,13 @@ export default async function Home({
             <Masthead className="mb-8 lg:hidden" />
             <p
               data-testid="hero-kicker"
-              className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]"
+              className="kicker text-[color:var(--signal)]"
             >
               Marina fuel · Sabine to Key West
             </p>
             <h1
               data-testid="hero-headline"
-              className="mt-4 max-w-4xl font-heading text-5xl leading-[1.05] text-[color:var(--cream)] md:text-7xl"
+              className="home-line mt-4 max-w-4xl text-[color:var(--cream)]"
             >
               What they wrote on the pump.
             </h1>

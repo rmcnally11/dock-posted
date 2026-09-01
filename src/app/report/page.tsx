@@ -25,12 +25,8 @@ export default async function ReportPage({
 
   return (
     <main className="mx-auto flex w-full max-w-7xl min-w-0 flex-1 flex-col overflow-x-hidden px-4 py-4 md:px-6 lg:py-6">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]">
-        Today
-      </p>
-      <h1 className="mt-1 font-heading text-2xl text-[color:var(--navy)] lg:text-5xl">
-        You were there.
-      </h1>
+      <p className="kicker text-[color:var(--signal)]">Today</p>
+      <h1 className="page-title mt-3 text-[color:var(--navy)]">You were there.</h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
         What did they have on the hose.
       </p>

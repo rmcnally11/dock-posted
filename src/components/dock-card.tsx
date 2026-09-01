@@ -1,5 +1,5 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
-import { ethanolCopy, formatDate, formatQuote, isBlankPrice, sourceLabel, telHref } from "@/lib/format";
+import { ethanolCopy, formatDate, formatQuote, isBlankPrice, quoteParts, sourceLabel, telHref } from "@/lib/format";
 import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
 import type { DockHref } from "@/lib/board-query";
 import type { Dock } from "@/lib/types";
@@ -27,6 +27,21 @@ function quoteTone(quote: ReturnType<typeof boardQuote>, kind: "gas" | "diesel")
 function dieselOnly(dock: Dock): boolean {
   const gas = dock.quotes.filter((quote) => quote.product !== "diesel");
   return gas.length > 0 && gas.every((quote) => quote.status === "not-sold");
+}
+
+export function QuoteFigure({ quote }: { quote: ReturnType<typeof boardQuote> }) {
+  const parts = quoteParts(quote);
+  if (parts.blank) {
+    return <span className="price-blank">{parts.figure}</span>;
+  }
+  return (
+    <span className="flex flex-col gap-0.5">
+      <span className="price-up">{parts.figure}</span>
+      {parts.rest ? (
+        <span className="font-mono text-[12px] font-medium tabular-nums text-current/70">{parts.rest}</span>
+      ) : null}
+    </span>
+  );
 }
 
 function flagLabels(dock: Dock): string[] {
@@ -93,18 +108,18 @@ export function DockCard({
             <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Regular</dt>
             <dd
               data-testid={`quote-regular-${dock.id}`}
-              className={cn("font-mono text-[15px] font-medium tabular-nums", quoteTone(gas, "gas"))}
+              className={cn("mt-1", quoteTone(gas, "gas"))}
             >
-              {formatQuote(gas)}
+              <QuoteFigure quote={gas} />
             </dd>
           </div>
           <div className="rounded-lg bg-white px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Diesel</dt>
             <dd
               data-testid={`quote-diesel-${dock.id}`}
-              className={cn("font-mono text-[15px] font-medium tabular-nums", quoteTone(diesel, "diesel"))}
+              className={cn("mt-1", quoteTone(diesel, "diesel"))}
             >
-              {formatQuote(diesel)}
+              <QuoteFigure quote={diesel} />
             </dd>
           </div>
           <div className="rounded-lg bg-white px-3 py-2">

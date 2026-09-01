@@ -40,10 +40,8 @@ export default async function NamedStormPlanPage({
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 print:px-0 print:py-0 md:px-6">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)] print:text-black">
-        Named Storm Plan
-      </p>
-      <h1 className="mt-1 font-heading text-4xl text-[color:var(--navy)] print:text-black md:text-5xl">
+      <p className="kicker text-[color:var(--signal)] print:text-black">Named Storm Plan</p>
+      <h1 className="page-title mt-3 text-[color:var(--navy)] print:text-black">
         Primary and backup
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70 print:text-black">

@@ -26,10 +26,8 @@ export default async function PinThanksPage({
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6" data-testid="pin-thanks">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]">
-        Your dock
-      </p>
-      <h1 className="mt-1 font-heading text-4xl text-[color:var(--navy)] md:text-5xl">
+      <p className="kicker text-[color:var(--signal)]">Your dock</p>
+      <h1 className="page-title mt-3 text-[color:var(--navy)]">
         {paid ? "This dock is yours" : "Dock filed"}
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">

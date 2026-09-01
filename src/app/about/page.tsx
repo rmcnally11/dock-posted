@@ -18,7 +18,7 @@ export default function AboutPage() {
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6">
       <h1
         data-testid="about-headline"
-        className="font-heading text-4xl text-[color:var(--navy)] md:text-5xl"
+        className="page-title text-[color:var(--navy)]"
       >
         Who writes this
       </h1>

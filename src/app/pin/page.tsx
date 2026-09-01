@@ -25,11 +25,11 @@ export default async function PinPage({
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6">
       <p
         data-testid="pin-kicker"
-        className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]"
+        className="kicker text-[color:var(--signal)]"
       >
         For the marina
       </p>
-      <h1 data-testid="pin-headline" className="mt-1 font-heading text-4xl text-[color:var(--navy)] md:text-5xl">
+      <h1 data-testid="pin-headline" className="page-title mt-3 text-[color:var(--navy)]">
         This is your dock.
       </h1>
       <p data-testid="pin-deck" className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/70">

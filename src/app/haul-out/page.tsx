@@ -31,13 +31,13 @@ export default async function HaulOutPage({
     <main className="mx-auto w-full max-w-7xl min-w-0 flex-1 overflow-x-hidden px-4 py-4 md:px-6 lg:py-6">
       <p
         data-testid="haul-out-kicker"
-        className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--signal)]"
+        className="kicker text-[color:var(--signal)]"
       >
         Leftover seats
       </p>
       <h1
         data-testid="haul-out-headline"
-        className="mt-2 font-heading text-2xl text-[color:var(--navy)] lg:text-5xl"
+        className="page-title mt-3 text-[color:var(--navy)]"
       >
         Yard seats
       </h1>
