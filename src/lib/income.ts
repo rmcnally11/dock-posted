@@ -215,3 +215,24 @@ export function pinPitch(dockName: string): string {
 export const PIN_STATUSES: PinStatus[] = ["filed", "billed", "paid", "dead"];
 export const WATCH_STATUSES: WatchStatus[] = ["filed", "paid", "stopped"];
 export const CALL_STATUSES: CallStatus[] = ["queued", "called", "left-message", "filed", "skip"];
+
+export function emailsMatch(left: string, right: string): boolean {
+  return left.trim().toLowerCase() === right.trim().toLowerCase();
+}
+
+export function isLivePin(pin: PinClaim): boolean {
+  return pin.status === "filed" || pin.status === "billed" || pin.status === "paid";
+}
+
+export function livePinForDock(pins: PinClaim[], dockId: string): PinClaim | undefined {
+  return pins.find((pin) => pin.dockId === dockId && isLivePin(pin));
+}
+
+export function paidPinForDock(pins: PinClaim[], dockId: string): PinClaim | undefined {
+  return pins.find((pin) => pin.dockId === dockId && pin.status === "paid");
+}
+
+export function marinaEmailOwnsPin(pins: PinClaim[], dockId: string, email: string): boolean {
+  const paid = paidPinForDock(pins, dockId);
+  return Boolean(paid && emailsMatch(paid.email, email));
+}
