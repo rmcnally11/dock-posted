@@ -452,6 +452,16 @@ export async function markPinPaid(id: string): Promise<PinClaim | null> {
   return pin;
 }
 
+export async function markPinDead(id: string): Promise<PinClaim | null> {
+  const store = await readIncomeStore();
+  const pin = store.pins.find((row) => row.id === id);
+  if (!pin) return null;
+  if (pin.status === "paid") return pin;
+  pin.status = "dead";
+  await writeIncomeStore(store);
+  return pin;
+}
+
 export async function markWatchPaid(id: string): Promise<WaterWatch | null> {
   const store = await readIncomeStore();
   const watch = store.watches.find((row) => row.id === id);

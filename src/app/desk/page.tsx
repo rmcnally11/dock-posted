@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
-import { submitDeskPassword } from "@/app/desk/actions";
+import { dropFiledPin, submitDeskPassword } from "@/app/desk/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -119,8 +119,21 @@ export default async function DeskPage({
           <p className="mt-1 text-sm text-[color:var(--ink)]/60">{filed.length} open. {paid.length} paid.</p>
           <ul className="mt-3 space-y-2 text-sm">
             {income.pins.slice(0, 12).map((pin) => (
-              <li key={pin.id}>
-                {pin.dockName} · {pin.status} · {pin.contactName}
+              <li key={pin.id} className="flex items-baseline justify-between gap-3">
+                <span>
+                  {pin.dockName} · {pin.status} · {pin.contactName}
+                </span>
+                {pin.status === "filed" || pin.status === "billed" ? (
+                  <form action={dropFiledPin}>
+                    <input type="hidden" name="pinId" value={pin.id} />
+                    <button
+                      type="submit"
+                      className="text-[11px] uppercase tracking-[0.14em] text-[color:var(--signal)] underline-offset-2 hover:underline"
+                    >
+                      Drop
+                    </button>
+                  </form>
+                ) : null}
               </li>
             ))}
           </ul>

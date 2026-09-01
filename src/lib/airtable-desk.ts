@@ -133,7 +133,7 @@ async function airtablePatch(
 
 export async function writePinToAirtable(pin: PinClaim): Promise<string | null> {
   return airtableCreate(DESK_BASE_ID, PINS.table, {
-    [PINS.pin]: `${pin.dockName} · ${pin.contactName}`,
+    [PINS.pin]: `${pin.dockName} \u00b7 ${pin.contactName}`,
     [PINS.dockId]: pin.dockId,
     [PINS.contact]: pin.contactName,
     [PINS.email]: pin.email,
@@ -150,6 +150,12 @@ export async function markPinPaidInAirtable(recordId: string, paidAt: string): P
   await airtablePatch(DESK_BASE_ID, PINS.table, recordId, {
     [PINS.status]: "Paid",
     [PINS.paidOn]: isoDate(new Date(paidAt)),
+  });
+}
+
+export async function markPinDeadInAirtable(recordId: string): Promise<void> {
+  await airtablePatch(DESK_BASE_ID, PINS.table, recordId, {
+    [PINS.status]: "Dead",
   });
 }
 
