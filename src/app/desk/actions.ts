@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { markPinDeadInAirtable } from "@/lib/airtable-desk";
 import {
   DESK_COOKIE,
   deskCookieOptions,
@@ -10,6 +11,7 @@ import {
   deskSessionToken,
   deskSessionValid,
 } from "@/lib/desk-auth";
+import { markPinDead } from "@/lib/store";
 
 export async function submitDeskPassword(formData: FormData): Promise<void> {
   if (!deskPasswordConfigured()) notFound();
@@ -26,4 +28,13 @@ export async function requireDesk(): Promise<boolean> {
   if (!deskPasswordConfigured()) return false;
   const jar = await cookies();
   return deskSessionValid(jar.get(DESK_COOKIE)?.value);
+}
+
+export async function dropFiledPin(formData: FormData): Promise<void> {
+  if (!(await requireDesk())) notFound();
+  const id = String(formData.get("pinId") ?? "").trim();
+  if (!id) redirect("/desk");
+  const pin = await markPinDead(id);
+  if (pin?.airtableId) await markPinDeadInAirtable(pin.airtableId);
+  redirect("/desk");
 }
