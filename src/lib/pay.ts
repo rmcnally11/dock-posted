@@ -73,3 +73,11 @@ export function parseCheckoutRef(ref: string | null | undefined): { kind: PayKin
   if ((kind !== "pin" && kind !== "watch") || !recordId) return null;
   return { kind, recordId };
 }
+
+export function checkoutCustomerEmail(session: {
+  customer_email?: string | null;
+  customer_details?: { email?: string | null } | null;
+} | null | undefined): string | null {
+  const email = session?.customer_email?.trim() || session?.customer_details?.email?.trim() || "";
+  return email || null;
+}

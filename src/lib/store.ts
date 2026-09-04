@@ -442,14 +442,19 @@ export async function addWaterWatch(input: WatchInput): Promise<WaterWatch> {
   return watch;
 }
 
-export async function markPinPaid(id: string): Promise<PinClaim | null> {
+export async function markPinPaid(
+  id: string,
+): Promise<{ pin: PinClaim; newlyPaid: boolean } | null> {
   const store = await readIncomeStore();
   const pin = store.pins.find((row) => row.id === id);
   if (!pin) return null;
-  pin.status = "paid";
-  pin.paidAt = new Date().toISOString();
-  await writeIncomeStore(store);
-  return pin;
+  const newlyPaid = pin.status !== "paid";
+  if (newlyPaid) {
+    pin.status = "paid";
+    pin.paidAt = new Date().toISOString();
+    await writeIncomeStore(store);
+  }
+  return { pin, newlyPaid };
 }
 
 export async function markPinDead(id: string): Promise<PinClaim | null> {
@@ -462,19 +467,29 @@ export async function markPinDead(id: string): Promise<PinClaim | null> {
   return pin;
 }
 
-export async function markWatchPaid(id: string): Promise<WaterWatch | null> {
+export async function markWatchPaid(
+  id: string,
+): Promise<{ watch: WaterWatch; newlyPaid: boolean } | null> {
   const store = await readIncomeStore();
   const watch = store.watches.find((row) => row.id === id);
   if (!watch) return null;
-  watch.status = "paid";
-  watch.paidAt = new Date().toISOString();
-  await writeIncomeStore(store);
-  return watch;
+  const newlyPaid = watch.status !== "paid";
+  if (newlyPaid) {
+    watch.status = "paid";
+    watch.paidAt = new Date().toISOString();
+    await writeIncomeStore(store);
+  }
+  return { watch, newlyPaid };
 }
 
 export async function readPin(id: string): Promise<PinClaim | null> {
   const store = await readIncomeStore();
   return store.pins.find((row) => row.id === id) ?? null;
+}
+
+export async function readWatch(id: string): Promise<WaterWatch | null> {
+  const store = await readIncomeStore();
+  return store.watches.find((row) => row.id === id) ?? null;
 }
 
 export async function addDeskCalls(
