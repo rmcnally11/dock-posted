@@ -92,6 +92,8 @@ npm run test:parser
 | `RESEND_FROM` | with Resend | `Dock Posted <rmcnally11@gmail.com>` | Must be a verified sender |
 | `AIRTABLE_API_KEY` | for the desk base | unset = Blob only | Pins, watches, calls |
 | `STRIPE_SECRET_KEY` | for pin / watch cards | unset = desk bills | Not for gallons |
+| `STRIPE_PRICE_PIN` | with Stripe catalog | unset = inline `$299` | Price ID `price_1UAg3MGW7cXXvgqvz72XMgTu` (lookup `dock_posted_pin_season`) |
+| `STRIPE_PRICE_WATCH` | with Stripe catalog | unset = inline `$29` | Price ID `price_1UAg63GW7cXXvgqvvlOgWIa4` (lookup `dock_posted_watch_year`) |
 | `STRIPE_WEBHOOK_SECRET` | with Stripe | — | `/api/pay/webhook` |
 | `CRON_SECRET` | for Vercel cron | unset = open | Bearer or `?secret=` |
 | `NEXT_PUBLIC_SITE_URL` | with Stripe | `https://dock-posted.vercel.app` | Checkout return |
@@ -135,7 +137,7 @@ Secondary income sits **beside** the board. The board still does not sell a gall
 
 Monday 14:00 UTC cron (`/api/cron/desk`) mails eight Call docks with phones and writes the [Airtable desk](https://airtable.com/apppoBWAzJi7lVVKv). Saturday 15:00 UTC (`/api/cron/watch`) mails watches what posted.
 
-If `STRIPE_SECRET_KEY` is set, `/pin` and `/run` can take a card for the pin or the watch — not for gallons. Without it, the desk bills. `RESEND_API_KEY` + `RESEND_FROM` send the mail. `AIRTABLE_API_KEY` writes Pins / Watches / Calls. `CRON_SECRET` locks the crons.
+If `STRIPE_SECRET_KEY` is set, `/pin` and `/run` can take a card for the pin or the watch — not for gallons. Without it, the desk bills. Set `STRIPE_PRICE_PIN` and `STRIPE_PRICE_WATCH` to the catalog Price IDs (`dock_posted_pin_season` / `dock_posted_watch_year`) when you want Checkout to use the Dashboard products; if those env vars are unset, Checkout still posts $299 / $29 inline. `RESEND_API_KEY` + `RESEND_FROM` send the mail. `AIRTABLE_API_KEY` writes Pins / Watches / Calls. `CRON_SECRET` locks the crons.
 
 ```bash
 npm run test:income

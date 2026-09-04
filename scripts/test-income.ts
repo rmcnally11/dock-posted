@@ -12,7 +12,16 @@ import {
   waterLabel,
   weekOfIso,
 } from "../src/lib/income";
-import { checkoutCustomerEmail, parseCheckoutRef } from "../src/lib/pay";
+import {
+  applyCheckoutLineItem,
+  catalogPriceId,
+  checkoutCustomerEmail,
+  parseCheckoutRef,
+  STRIPE_PIN_LOOKUP_KEY,
+  STRIPE_PIN_PRICE_ID,
+  STRIPE_WATCH_LOOKUP_KEY,
+  STRIPE_WATCH_PRICE_ID,
+} from "../src/lib/pay";
 import {
   escapeHtml,
   pinThankYouMail,
@@ -125,6 +134,49 @@ assert.doesNotMatch(pitch, /cheapest|savings|bargain/i);
 
 assert.deepEqual(parseCheckoutRef("pin:abc"), { kind: "pin", recordId: "abc" });
 assert.equal(parseCheckoutRef("nope"), null);
+assert.equal(STRIPE_PIN_LOOKUP_KEY, "dock_posted_pin_season");
+assert.equal(STRIPE_WATCH_LOOKUP_KEY, "dock_posted_watch_year");
+assert.equal(STRIPE_PIN_PRICE_ID, "price_1UAg3MGW7cXXvgqvz72XMgTu");
+assert.equal(STRIPE_WATCH_PRICE_ID, "price_1UAg63GW7cXXvgqvvlOgWIa4");
+
+const pinPriceWas = process.env.STRIPE_PRICE_PIN;
+const watchPriceWas = process.env.STRIPE_PRICE_WATCH;
+delete process.env.STRIPE_PRICE_PIN;
+delete process.env.STRIPE_PRICE_WATCH;
+assert.equal(catalogPriceId("pin"), null);
+assert.equal(catalogPriceId("watch"), null);
+const pinInline = new URLSearchParams();
+assert.equal(applyCheckoutLineItem(pinInline, "pin", "Marina Bay Harbor"), "price_data");
+assert.equal(pinInline.get("line_items[0][price]"), null);
+assert.equal(pinInline.get("line_items[0][price_data][unit_amount]"), "29900");
+assert.equal(pinInline.get("line_items[0][price_data][product_data][name]"), "Dock Posted pin · one season");
+const watchInline = new URLSearchParams();
+assert.equal(applyCheckoutLineItem(watchInline, "watch", "Galveston Bay / Clear Lake"), "price_data");
+assert.equal(watchInline.get("line_items[0][price]"), null);
+assert.equal(watchInline.get("line_items[0][price_data][unit_amount]"), "2900");
+process.env.STRIPE_PRICE_PIN = STRIPE_PIN_PRICE_ID;
+process.env.STRIPE_PRICE_WATCH = STRIPE_WATCH_PRICE_ID;
+assert.equal(catalogPriceId("pin"), STRIPE_PIN_PRICE_ID);
+const pinCatalog = new URLSearchParams();
+assert.equal(applyCheckoutLineItem(pinCatalog, "pin", "Marina Bay Harbor"), "price");
+assert.equal(pinCatalog.get("line_items[0][price]"), STRIPE_PIN_PRICE_ID);
+assert.equal(pinCatalog.get("line_items[0][price_data][unit_amount]"), null);
+const watchCatalog = new URLSearchParams();
+assert.equal(applyCheckoutLineItem(watchCatalog, "watch", "Galveston Bay / Clear Lake"), "price");
+assert.equal(watchCatalog.get("line_items[0][price]"), STRIPE_WATCH_PRICE_ID);
+assert.equal(watchCatalog.get("line_items[0][price_data][unit_amount]"), null);
+if (pinPriceWas === undefined) delete process.env.STRIPE_PRICE_PIN;
+else process.env.STRIPE_PRICE_PIN = pinPriceWas;
+if (watchPriceWas === undefined) delete process.env.STRIPE_PRICE_WATCH;
+else process.env.STRIPE_PRICE_WATCH = watchPriceWas;
+
+const readme = readFileSync(path.join(process.cwd(), "README.md"), "utf8");
+assert.match(readme, /STRIPE_PRICE_PIN/);
+assert.match(readme, /STRIPE_PRICE_WATCH/);
+assert.match(readme, /dock_posted_pin_season/);
+assert.match(readme, /dock_posted_watch_year/);
+assert.match(readme, /price_1UAg3MGW7cXXvgqvz72XMgTu/);
+assert.match(readme, /price_1UAg63GW7cXXvgqvvlOgWIa4/);
 assert.equal(checkoutCustomerEmail({ customer_email: "paid@example.com" }), "paid@example.com");
 assert.equal(
   checkoutCustomerEmail({ customer_email: null, customer_details: { email: "details@example.com" } }),
