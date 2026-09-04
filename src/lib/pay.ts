@@ -2,8 +2,41 @@ import { PIN_SEASON_DOLLARS, WATCH_YEAR_DOLLARS } from "./income";
 
 export type PayKind = "pin" | "watch";
 
+/** Catalog lookup / Price ID. Set `STRIPE_PRICE_PIN` to use it. */
+export const STRIPE_PIN_LOOKUP_KEY = "dock_posted_pin_season";
+export const STRIPE_PIN_PRICE_ID = "price_1UAg3MGW7cXXvgqvz72XMgTu";
+
+/** Catalog lookup / Price ID. Set `STRIPE_PRICE_WATCH` to use it. */
+export const STRIPE_WATCH_LOOKUP_KEY = "dock_posted_watch_year";
+export const STRIPE_WATCH_PRICE_ID = "price_1UAg63GW7cXXvgqvvlOgWIa4";
+
 export function stripeConfigured(): boolean {
   return Boolean(process.env.STRIPE_SECRET_KEY?.trim());
+}
+
+export function catalogPriceId(kind: PayKind): string | null {
+  const raw = kind === "pin" ? process.env.STRIPE_PRICE_PIN : process.env.STRIPE_PRICE_WATCH;
+  return raw?.trim() || null;
+}
+
+export function applyCheckoutLineItem(
+  body: URLSearchParams,
+  kind: PayKind,
+  name: string,
+): "price" | "price_data" {
+  body.set("line_items[0][quantity]", "1");
+  const priceId = catalogPriceId(kind);
+  if (priceId) {
+    body.set("line_items[0][price]", priceId);
+    return "price";
+  }
+  const dollars = kind === "pin" ? PIN_SEASON_DOLLARS : WATCH_YEAR_DOLLARS;
+  const label = kind === "pin" ? "Dock Posted pin · one season" : "Dock Posted run watch · one year";
+  body.set("line_items[0][price_data][currency]", "usd");
+  body.set("line_items[0][price_data][unit_amount]", String(dollars * 100));
+  body.set("line_items[0][price_data][product_data][name]", label);
+  body.set("line_items[0][price_data][product_data][description]", name);
+  return "price_data";
 }
 
 function siteUrl(): string {
@@ -21,8 +54,6 @@ export async function createCheckoutSession(input: {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
   if (!key) return null;
 
-  const dollars = input.kind === "pin" ? PIN_SEASON_DOLLARS : WATCH_YEAR_DOLLARS;
-  const label = input.kind === "pin" ? "Dock Posted pin · one season" : "Dock Posted run watch · one year";
   const success =
     input.successPath ??
     (input.kind === "pin"
@@ -45,11 +76,7 @@ export async function createCheckoutSession(input: {
   body.set("metadata[kind]", input.kind);
   body.set("metadata[recordId]", input.recordId);
   body.set("managed_payments[enabled]", "false");
-  body.set("line_items[0][quantity]", "1");
-  body.set("line_items[0][price_data][currency]", "usd");
-  body.set("line_items[0][price_data][unit_amount]", String(dollars * 100));
-  body.set("line_items[0][price_data][product_data][name]", label);
-  body.set("line_items[0][price_data][product_data][description]", input.name);
+  applyCheckoutLineItem(body, input.kind, input.name);
 
   const res = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",
