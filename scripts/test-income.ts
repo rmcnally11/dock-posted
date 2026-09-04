@@ -12,7 +12,15 @@ import {
   waterLabel,
   weekOfIso,
 } from "../src/lib/income";
-import { parseCheckoutRef } from "../src/lib/pay";
+import { checkoutCustomerEmail, parseCheckoutRef } from "../src/lib/pay";
+import {
+  escapeHtml,
+  pinThankYouMail,
+  PIN_THANK_YOU_SUBJECT,
+  thankYouRecipient,
+  watchThankYouMail,
+  WATCH_THANK_YOU_SUBJECT,
+} from "../src/lib/thank-you";
 import { briefCoastFor, briefCoastsForWatch } from "../src/lib/airtable-desk";
 import { conditionsMailLine } from "../src/lib/sister";
 import { runRows, tankDollars, tankGallons } from "../src/lib/run-card";
@@ -117,6 +125,81 @@ assert.doesNotMatch(pitch, /cheapest|savings|bargain/i);
 
 assert.deepEqual(parseCheckoutRef("pin:abc"), { kind: "pin", recordId: "abc" });
 assert.equal(parseCheckoutRef("nope"), null);
+assert.equal(checkoutCustomerEmail({ customer_email: "paid@example.com" }), "paid@example.com");
+assert.equal(
+  checkoutCustomerEmail({ customer_email: null, customer_details: { email: "details@example.com" } }),
+  "details@example.com",
+);
+assert.equal(thankYouRecipient("dock@example.com", "card@example.com"), "dock@example.com");
+assert.equal(thankYouRecipient("  ", "card@example.com"), "card@example.com");
+assert.equal(thankYouRecipient("", null), null);
+
+const pinMail = pinThankYouMail(
+  { dockId: "marina-bay-harbor", dockName: "Marina Bay Harbor" },
+  "https://dockposted.com",
+);
+assert.equal(pinMail.subject, PIN_THANK_YOU_SUBJECT);
+assert.equal(pinMail.subject, "This dock is yours");
+assert.match(pinMail.text, /Marina Bay Harbor/);
+assert.match(pinMail.text, /\$299 a season/);
+assert.match(pinMail.text, /You write the number/);
+assert.match(pinMail.text, /https:\/\/dockposted\.com\/report\?dock=marina-bay-harbor&who=marina/);
+assert.match(pinMail.text, /https:\/\/dockposted\.com\/docks\/marina-bay-harbor/);
+assert.doesNotMatch(pinMail.text, /dock-posted\.vercel\.app/);
+assert.doesNotMatch(pinMail.text, /users|the product working|sell a gallon of|SMS/i);
+assert.match(pinMail.html, /lang="en"/);
+assert.match(pinMail.html, /dir="ltr"/);
+assert.match(pinMail.html, /<title>This dock is yours<\/title>/);
+assert.match(pinMail.html, /role="presentation"/);
+assert.match(pinMail.html, /#0b1f33/);
+assert.match(pinMail.html, /#2f8fd6/);
+assert.match(pinMail.html, /#e23b3b/);
+assert.match(pinMail.html, /#fbf8f3/);
+assert.match(pinMail.html, /brand\/stripe-icon\.png/);
+assert.match(pinMail.html, /Put a number on the hose/);
+assert.match(pinMail.html, /See Marina Bay Harbor/);
+
+const nasty = pinThankYouMail(
+  { dockId: "x", dockName: `Dock <script>alert(1)</script>` },
+  "https://dockposted.com",
+);
+assert.match(nasty.html, /Dock &lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+assert.doesNotMatch(nasty.html, /<script>alert\(1\)<\/script>/);
+assert.equal(escapeHtml(`a&b<"c">`), "a&amp;b&lt;&quot;c&quot;&gt;");
+
+const watchMail = watchThankYouMail({ corridor: "galveston-bay", region: null }, "https://dockposted.com");
+assert.equal(watchMail.subject, WATCH_THANK_YOU_SUBJECT);
+assert.match(watchMail.subject, /watch that water/i);
+assert.match(watchMail.text, /Galveston Bay \/ Clear Lake/);
+assert.match(watchMail.text, /\$29 a year/);
+assert.match(watchMail.text, /we write you/i);
+assert.match(watchMail.text, /Not a text/);
+assert.match(watchMail.text, /https:\/\/dockposted\.com\/run/);
+assert.doesNotMatch(watchMail.text, /dock-posted\.vercel\.app/);
+assert.doesNotMatch(watchMail.text, /users|the product working|SMS/i);
+const defaultPinMail = pinThankYouMail({ dockId: "marina-bay-harbor", dockName: "Marina Bay Harbor" });
+assert.match(defaultPinMail.text, /dockposted\.com/);
+assert.doesNotMatch(defaultPinMail.text, /dock-posted\.vercel\.app/);
+assert.match(watchMail.html, /<title>We’ll watch that water<\/title>/);
+assert.match(watchMail.html, /See this trip/);
+assert.match(watchMail.html, /#0b1f33/);
+assert.match(watchMail.html, /brand\/stripe-icon\.png/);
+
+const webhookSrc = readFileSync(path.join(process.cwd(), "src/app/api/pay/webhook/route.ts"), "utf8");
+assert.match(webhookSrc, /sendPinPaidThankYou/);
+assert.match(webhookSrc, /sendWatchPaidThankYou/);
+assert.match(webhookSrc, /newlyPaid/);
+assert.match(webhookSrc, /checkoutCustomerEmail/);
+assert.doesNotMatch(webhookSrc, /notifyEmail/);
+
+const notifySrc = readFileSync(path.join(process.cwd(), "src/lib/notify.ts"), "utf8");
+assert.match(notifySrc, /html\?: string/);
+assert.match(notifySrc, /Idempotency-Key/);
+
+const pinAction = readFileSync(path.join(process.cwd(), "src/app/pin/actions.ts"), "utf8");
+assert.match(pinAction, /to: notifyEmail\(\)/);
+const runAction = readFileSync(path.join(process.cwd(), "src/app/run/actions.ts"), "utf8");
+assert.match(runAction, /to: notifyEmail\(\)/);
 assert.equal(runWatchHref({ corridor: "galveston-bay", gallons: 40 }), "/run?corridor=galveston-bay&gallons=40");
 assert.equal(
   runWatchHref({ corridor: "galveston-bay", gallons: 40, watched: true }),

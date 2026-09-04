@@ -1,8 +1,9 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { markPinPaidInAirtable, markWatchPaidInAirtable } from "@/lib/airtable-desk";
-import { parseCheckoutRef } from "@/lib/pay";
+import { checkoutCustomerEmail, parseCheckoutRef } from "@/lib/pay";
 import { markPinPaid, markWatchPaid } from "@/lib/store";
+import { sendPinPaidThankYou, sendWatchPaidThankYou } from "@/lib/thank-you";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,14 @@ export async function POST(request: Request) {
 
   let payload: {
     type?: string;
-    data?: { object?: { client_reference_id?: string; metadata?: { kind?: string; recordId?: string } } };
+    data?: {
+      object?: {
+        client_reference_id?: string;
+        customer_email?: string | null;
+        customer_details?: { email?: string | null } | null;
+        metadata?: { kind?: string; recordId?: string };
+      };
+    };
   };
   try {
     payload = JSON.parse(raw) as typeof payload;
@@ -56,12 +64,18 @@ export async function POST(request: Request) {
       : null);
   if (!parsed) return NextResponse.json({ ok: true, ignored: true });
 
+  const sessionEmail = checkoutCustomerEmail(object);
+
   if (parsed.kind === "pin") {
-    const pin = await markPinPaid(parsed.recordId);
-    if (pin?.airtableId) await markPinPaidInAirtable(pin.airtableId, pin.paidAt ?? new Date().toISOString());
+    const marked = await markPinPaid(parsed.recordId);
+    if (marked?.pin.airtableId) {
+      await markPinPaidInAirtable(marked.pin.airtableId, marked.pin.paidAt ?? new Date().toISOString());
+    }
+    if (marked?.newlyPaid) await sendPinPaidThankYou(marked.pin, sessionEmail);
   } else {
-    const watch = await markWatchPaid(parsed.recordId);
-    if (watch?.airtableId) await markWatchPaidInAirtable(watch.airtableId);
+    const marked = await markWatchPaid(parsed.recordId);
+    if (marked?.watch.airtableId) await markWatchPaidInAirtable(marked.watch.airtableId);
+    if (marked?.newlyPaid) await sendWatchPaidThankYou(marked.watch, sessionEmail);
   }
 
   return NextResponse.json({ ok: true });

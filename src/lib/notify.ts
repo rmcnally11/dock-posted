@@ -16,24 +16,38 @@ export async function sendMail(input: {
   to: string | string[];
   subject: string;
   text: string;
+  html?: string;
+  idempotencyKey?: string;
 }): Promise<boolean> {
   const key = process.env.RESEND_API_KEY?.trim();
   if (!key) {
     console.info("Resend unset; mail stays local.", input.subject);
     return false;
   }
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${key}`,
+    "Content-Type": "application/json",
+  };
+  if (input.idempotencyKey) {
+    headers["Idempotency-Key"] = input.idempotencyKey;
+  }
+  const payload: {
+    from: string;
+    to: string[];
+    subject: string;
+    text: string;
+    html?: string;
+  } = {
+    from: resendFrom(),
+    to: Array.isArray(input.to) ? input.to : [input.to],
+    subject: input.subject,
+    text: input.text,
+  };
+  if (input.html) payload.html = input.html;
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: resendFrom(),
-      to: Array.isArray(input.to) ? input.to : [input.to],
-      subject: input.subject,
-      text: input.text,
-    }),
+    headers,
+    body: JSON.stringify(payload),
   });
   if (!res.ok) {
     console.warn("Resend send failed", res.status, await res.text());
