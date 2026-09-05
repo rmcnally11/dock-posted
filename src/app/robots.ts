@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/wholesale", "/desk", "/api/"],
     },
-    sitemap: "https://dock-posted.vercel.app/sitemap.xml",
+    sitemap: "https://www.dockposted.com/sitemap.xml",
   };
 }

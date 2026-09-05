@@ -27,7 +27,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dock-posted.vercel.app"),
+  metadataBase: new URL("https://www.dockposted.com"),
   title: {
     default: "Dock Posted — Marina fuel",
     template: "%s — Dock Posted",
