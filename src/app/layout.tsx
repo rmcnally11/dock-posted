@@ -39,16 +39,10 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "Dock Posted",
-    title: "Dock Posted — Marina fuel",
-    description:
-      "What they wrote on the pump. If they didn’t, ask the dock.",
   },
   twitter: {
     card: "summary_large_image",
     site: "@DockPosted",
-    title: "Dock Posted — Marina fuel",
-    description:
-      "What they wrote on the pump. If they didn’t, ask the dock.",
   },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
