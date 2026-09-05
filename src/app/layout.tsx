@@ -50,6 +50,47 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: "Dock Posted",
+      url: "https://www.dockposted.com/",
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Web",
+      description: "What they wrote on the pump. If they didn’t, ask the dock.",
+      offers: {
+        "@type": "AggregateOffer",
+        lowPrice: "0",
+        highPrice: "299",
+        priceCurrency: "USD",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Does Dock Posted sell fuel?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "No. We post what the dock wrote. We don’t sell a gallon.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What if the dock has no number up?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "We leave it blank. Call the dock. We never invent a price.",
+          },
+        },
+      ],
+    },
+  ],
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -57,6 +98,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} min-h-full overflow-x-hidden scroll-smooth antialiased lg:h-full`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden font-sans text-[color:var(--navy)] lg:h-full lg:overflow-y-auto">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <SiteHeader />
         {children}
       </body>
