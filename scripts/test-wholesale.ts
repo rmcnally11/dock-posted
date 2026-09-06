@@ -670,20 +670,23 @@ assert.match(deskUi, /data-testid=\{`fat-take-\$\{p\}`\}/);
 assert.match(deskUi, /data-testid="product-ho"/);
 assert.match(deskUi, /Diesel stays dark until you open it/);
 assert.match(deskUi, /posted vs should-be/);
-assert.match(deskUi, /Leftover only/);
+assert.match(deskUi, /not the pitch/);
 assert.match(deskUi, /invoice − posted rack/);
-assert.match(shortPathSource, /rung="dap"[\s\S]*data-rung="freight"[\s\S]*data-rung="jobber"[\s\S]*data-rung="tax"[\s\S]*rung="invoice"[\s\S]*rung="fairHose"[\s\S]*rung="shouldBe"[\s\S]*data-rung="postedPump"[\s\S]*rung="fatTake"[\s\S]*rung="postedLeftover"/);
+assert.match(deskUi, /Netback to retail from pipe barrels/);
+assert.match(deskUi, /Terminal \/ pipe/);
+assert.match(deskUi, /Inbound rack cost/);
+assert.match(shortPathSource, /data-rung="pipe"[\s\S]*data-rung="freight"[\s\S]*rung="inbound"[\s\S]*data-rung="postedRack"[\s\S]*data-rung="jobber"[\s\S]*data-rung="tax"[\s\S]*rung="dap"[\s\S]*data-rung="fairHose"[\s\S]*data-rung="invoice"[\s\S]*data-rung="leftover"/);
 assert.deepEqual([...PRESSURE_LADDER_KEYS], [
-  "dap",
+  "pipe",
   "freight",
+  "inbound",
+  "postedRack",
   "jobber",
   "tax",
-  "invoice",
+  "dap",
   "fairHose",
-  "shouldBe",
-  "postedPump",
-  "fatTake",
-  "postedLeftover",
+  "invoice",
+  "leftover",
 ]);
 assert.match(shortPathSource, /RIN_STACK_NOTE/);
 assert.match(

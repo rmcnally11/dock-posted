@@ -124,8 +124,8 @@ export function ShortPathForm({
         <summary className="cursor-pointer px-3 py-2.5 text-sm font-medium">Full stack</summary>
         <div className="border-t border-black/10 px-3 pb-4 pt-3">
           <p className="text-xs text-black/50">
-            Pressure-test ladder for this spoke. Fat take stays invoice − posted rack on the short
-            path. Incomplete tax stays —, never $0.00.
+            Netback to retail from pipe barrels at this spoke. Fat take stays invoice − posted rack
+            on the short path. Incomplete tax stays —, never $0.00.
           </p>
           {WHOLESALE_PRODUCTS.map((item) => (
             <PressureLadder
@@ -330,6 +330,7 @@ function PressureLadder({
   const invoiceTyped = inputs.invoiceDelivered != null;
   const taxIncomplete = book.taxIncomplete;
   const taxValue = taxIncomplete ? null : book.tax;
+  const nymexStep = book.steps.find((step) => step.key === "nymex");
 
   return (
     <ol
@@ -338,16 +339,23 @@ function PressureLadder({
       data-ladder={PRESSURE_LADDER_KEYS.join(" ")}
       className="mt-4 max-w-xl space-y-3"
     >
-      <LadderRung
-        n={1}
-        rung="dap"
-        label="DAP"
-        value={book.dap}
-        note="Pipe bbls at this spoke. Molecule at the rack. Built from posted rack or NYMEX+Δ, plus typed freight and tax — no vendor feed."
-      />
+      <li data-rung="pipe" className="border border-black/10 bg-white p-3">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">1 · Terminal / pipe</p>
+        <p className="mt-1 font-mono text-sm tabular-nums">{formatBoth(book.terminalSpot)}</p>
+        <p className="mt-1 text-xs text-black/50">
+          Pipe bbls at this spoke. Spot, or NYMEX+Δ when the screen is filled.{" "}
+          {nymexStep?.source === "yahoo" ? "Yahoo screen · typed Δ wins if you type it." : null}
+          {nymexStep?.source === "typed" ? "Typed screen." : null}
+        </p>
+        <p className="mt-1 font-mono text-[11px] text-black/40">
+          Δ {formatBoth(inputs.terminalDiff)}
+        </p>
+      </li>
       <li data-rung="freight" className="border border-black/10 bg-white p-3">
         <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">2 · Inbound freight</p>
-        <p className="mt-0.5 text-xs text-black/50">Terminal → marina tank. Real tariff only. Empty stays —.</p>
+        <p className="mt-0.5 text-xs text-black/50">
+          Pipeline / truck, terminal → marina tank. Real tariff only. Empty stays —.
+        </p>
         <div className="mt-2">
           <ProductField
             label="Inbound freight / pipeline / truck"
@@ -357,24 +365,35 @@ function PressureLadder({
           />
         </div>
       </li>
+      <LadderRung
+        n={3}
+        rung="inbound"
+        label="Inbound rack cost"
+        value={book.inboundRack}
+        note="Terminal / pipe + typed freight. Empty freight stays —."
+      />
+      <li data-rung="postedRack" className="border border-black/10 bg-white p-3">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">4 · Posted rack</p>
+        <p className="mt-1 font-mono text-sm tabular-nums">{formatBoth(inputs.postedRack)}</p>
+        <p className="mt-1 text-xs text-black/50">
+          Rack margin {formatBoth(book.rackMargin)} · posted rack − inbound rack.
+        </p>
+      </li>
       <li
         data-rung="jobber"
-        data-omitted={invoiceTyped ? "1" : "0"}
+        data-omitted={invoiceTyped || jobber == null ? "1" : "0"}
         className="border border-black/10 bg-white p-3"
       >
-        <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">3 · Jobber</p>
-        {invoiceTyped ? (
-          <p className="mt-1 font-mono text-sm">—</p>
-        ) : (
-          <p className="mt-1 font-mono text-sm tabular-nums">{formatBoth(jobber)}</p>
-        )}
+        <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">5 · Jobber</p>
+        <p className="mt-1 font-mono text-sm tabular-nums">{formatBoth(jobber)}</p>
         <p className="mt-1 text-xs text-black/50">
-          Only if the marina buys delivered through a jobber and it is not already inside the
-          invoice. Else omit / —.
+          Only if used, and not already inside the invoice. Else —.
         </p>
         <details className="mt-2" open={!invoiceTyped && inputs.jobberSell != null}>
           <summary className="cursor-pointer text-[11px] text-black/45">
-            {invoiceTyped ? "Invoice already carries delivered. Jobber stays off the stack." : "Type jobber only when it is not inside the invoice."}
+            {invoiceTyped
+              ? "Invoice already carries delivered. Jobber stays off the stack."
+              : "Type jobber only when it is not inside the invoice."}
           </summary>
           <div className="mt-2">
             <ProductField label="Jobber sell" name={`jobber_${p}`} value={inputs.jobberSell} unit={unit} />
@@ -382,7 +401,7 @@ function PressureLadder({
         </details>
       </li>
       <li data-rung="tax" className="border border-black/10 bg-white p-3">
-        <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">4 · Tax</p>
+        <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">6 · Federal / state tax</p>
         <p className="mt-1 font-mono text-sm tabular-nums">{formatBoth(taxValue)}</p>
         <p className="mt-1 text-xs text-black/50">
           Federal {formatBoth(taxSlice?.federal ?? null)} · State {formatBoth(taxSlice?.state ?? null)}.
@@ -390,29 +409,37 @@ function PressureLadder({
         </p>
       </li>
       <LadderRung
-        n={5}
-        rung="invoice"
-        label="Invoice / delivered"
-        value={inputs.invoiceDelivered}
-        note="Typed cost-to-cost. Never invent from the board."
-      />
-      <LadderRung
-        n={6}
-        rung="fairHose"
-        label="Fair hose."
-        value={inputs.fairHose}
-        note="Typed only. Blank until typed. Never a default or retail margin."
-      />
-      <LadderRung
         n={7}
-        rung="shouldBe"
-        label="What it should have been."
-        value={book.shouldBe}
-        note="DAP + Fair hose only when both complete. Else —."
+        rung="dap"
+        label="DAP"
+        value={book.dap}
+        note="Delivered cost. Pipe + freight + tax, or posted rack + freight + tax. No vendor feed."
       />
-      <li data-rung="postedPump" className="border border-black/10 bg-black/[0.02] p-3">
-        <p className="text-[11px] uppercase tracking-[0.08em] text-black/40">8 · Posted / pump</p>
-        <p className="mt-0.5 text-xs text-black/45">Public board leftover. Quiet. Not the pitch.</p>
+      <li data-rung="fairHose" className="border border-black/10 bg-white p-3">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">8 · Fair hose. → should-be</p>
+        <p className="mt-1 font-mono text-sm tabular-nums">
+          {formatBoth(inputs.fairHose)} → {formatBoth(book.shouldBe)}
+        </p>
+        <p className="mt-1 text-xs text-black/50">
+          Fair hose typed only. What it should have been. = DAP + Fair hose when both complete. Else —.
+        </p>
+      </li>
+      <li data-rung="invoice" className="border border-black/10 bg-white p-3">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">9 · Invoice → fat take</p>
+        <p className="mt-1 font-mono text-sm tabular-nums">
+          {formatBoth(inputs.invoiceDelivered)} → {formatBoth(book.fatTake)}
+        </p>
+        <p className="mt-1 text-xs text-black/50">
+          Typed cost-to-cost. Fat take = invoice − posted rack. The pitch stays on the short path.
+        </p>
+      </li>
+      <li data-rung="leftover" className="border border-black/10 bg-black/[0.02] p-3">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-black/40">10 · Posted leftover</p>
+        <p className="mt-1 font-mono text-sm tabular-nums text-black/70">{formatBoth(leftover)}</p>
+        <p className="mt-1 text-xs text-black/45">
+          posted vs should-be. Dock remaining {formatBoth(book.dockRemaining)}. Quiet end of the
+          stack — not the pitch.
+        </p>
         <div className="mt-2">
           <ProductField
             label="Posted pump"
@@ -424,22 +451,6 @@ function PressureLadder({
           />
         </div>
       </li>
-      <LadderRung
-        n={9}
-        rung="fatTake"
-        label="Fat take"
-        value={book.fatTake}
-        note="invoice − posted rack. Cost-to-cost. First screen on the short path — not buried here."
-        loud
-      />
-      <LadderRung
-        n={10}
-        rung="postedLeftover"
-        label="Posted leftover"
-        value={leftover}
-        note="posted vs should-be. Leftover only — never fat-take sales copy."
-        quiet
-      />
     </ol>
   );
 }

@@ -499,16 +499,16 @@ export function jobberOnStack(invoice: Cents, jobber: Cents): Cents {
 }
 
 export const PRESSURE_LADDER_KEYS = [
-  "dap",
+  "pipe",
   "freight",
+  "inbound",
+  "postedRack",
   "jobber",
   "tax",
-  "invoice",
+  "dap",
   "fairHose",
-  "shouldBe",
-  "postedPump",
-  "fatTake",
-  "postedLeftover",
+  "invoice",
+  "leftover",
 ] as const;
 
 export const RIN_STACK_NOTE =
