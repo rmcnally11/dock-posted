@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const ONESHOT = "aPuCpKLCiPe55Bz-TKYxXj7mHhRhHvxu";
 
-async function upload(sk: string, bytes: Uint8Array, filename: string, purpose: string) {
+async function upload(sk: string, bytes: ArrayBuffer, filename: string, purpose: string) {
   const fd = new FormData();
   fd.append("purpose", purpose);
   fd.append("file", new Blob([bytes], { type: "image/jpeg" }), filename);
@@ -30,10 +30,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "missing stripe secret" }, { status: 500 });
   }
   const root = process.cwd();
-  const iconBytes = new Uint8Array(await readFile(path.join(root, "public/brand/stripe-icon.jpg")));
-  const logoBytes = new Uint8Array(await readFile(path.join(root, "public/brand/stripe-logo.jpg")));
-  const icon = await upload(sk, iconBytes, "stripe-icon.jpg", "business_icon");
-  const logo = await upload(sk, logoBytes, "stripe-logo.jpg", "business_logo");
+  const iconBuf = await readFile(path.join(root, "public/brand/stripe-icon.jpg"));
+  const logoBuf = await readFile(path.join(root, "public/brand/stripe-logo.jpg"));
+  const icon = await upload(sk, iconBuf.buffer.slice(iconBuf.byteOffset, iconBuf.byteOffset + iconBuf.byteLength), "stripe-icon.jpg", "business_icon");
+  const logo = await upload(sk, logoBuf.buffer.slice(logoBuf.byteOffset, logoBuf.byteOffset + logoBuf.byteLength), "stripe-logo.jpg", "business_logo");
+
+  // Prefer unstable brand settings via raw fetch if classic account update fails
+  const unstable = new URLSearchParams({
+    checkout_background_color: "rgb(251, 248, 243)",
+    checkout_border_style: "round",
+    checkout_button_color: "rgb(47, 143, 214)",
+    checkout_font_family: "default",
+    checkout_use_brand_colors: "true",
+    contrast_color: "rgb(11, 30, 50)",
+    font_color: "rgb(255, 255, 255)",
+    icon,
+    logo,
+    primary_color: "rgb(11, 31, 51)",
+    secondary_color: "rgb(47, 143, 214)",
+    use_logo_instead_of_icon: "false",
+  });
+  const uRes = await fetch("https://api.stripe.com/v1/_unstable/settings/brand", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${sk}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Stripe-Version": "2025-08-27.basil; settings_branding_preview=v1",
+    },
+    body: unstable,
+  });
+  const uJson = await uRes.json();
 
   const brandBody = new URLSearchParams({
     "settings[branding][icon]": icon,
@@ -54,6 +80,8 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     icon,
     logo,
+    unstable_ok: uRes.ok,
+    unstable: uJson,
     brand_ok: brandRes.ok,
     branding: brandJson?.settings?.branding ?? brandJson?.error ?? brandJson,
   });
