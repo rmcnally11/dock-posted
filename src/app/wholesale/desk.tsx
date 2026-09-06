@@ -1,14 +1,9 @@
 import {
-  MARINE_TAX_NOTE,
-  PRODUCT_LABEL,
   WHOLESALE_AREA_ORDER,
   WHOLESALE_PRODUCTS,
   areaLabel,
-  displayInputValue,
   deskFootnotes,
-  fattestTakeAcross,
   formatBoth,
-  formatCents,
   netbackHasFigures,
   tcnLabel,
   type AreaTerminalRef,
@@ -19,22 +14,19 @@ import {
   type ProductNetback,
   type ProductTaxSlice,
   type TerminalWorksheet,
-  type WaterfallRung,
   type WholesaleArea,
   type WholesaleAreaId,
-  type WholesaleProduct,
   type WholesaleTerminal,
 } from "@/lib/wholesale";
 import type { NymexScreenPull } from "@/lib/wholesale-nymex";
 import {
   addTerminalDiff,
   applyTerminalDiff,
-  computeWholesaleWorksheet,
   loginWholesale,
   logoutWholesale,
   removeTerminalDiff,
-  saveWholesaleWorksheet,
 } from "./actions";
+import { ShortPathForm } from "./short-path";
 
 export function DeskLogout() {
   return (
@@ -202,6 +194,8 @@ export function Worksheet({
   terminal,
   sheet,
   prepared,
+  rb,
+  ho,
   unit,
   diffs,
   screens,
@@ -213,6 +207,8 @@ export function Worksheet({
   terminal: WholesaleTerminal;
   sheet: TerminalWorksheet;
   prepared?: PreparedWorksheet;
+  rb: ProductNetback;
+  ho: ProductNetback;
   unit: InputUnit;
   diffs: DiffRow[];
   screens: NymexScreenPull;
@@ -249,10 +245,10 @@ export function Worksheet({
     <section className="mt-8" data-testid="worksheet">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-sm font-medium">Override strip</h2>
+          <h2 className="text-sm font-medium">This terminal</h2>
           <p className="mt-1 text-sm text-black/55">
-            {terminal.city} · {tcnLabel(terminal)} · {terminal.operator}. Empty stays blank. Freight
-            is typed tariff only — miles are labels, not cents.
+            {terminal.city} · {tcnLabel(terminal)} · {terminal.operator}. Posted rack and invoice
+            first. Empty stays blank. Freight is typed tariff only — miles are labels, not cents.
           </p>
         </div>
         <div className="flex gap-2 text-xs print:hidden">
@@ -285,45 +281,29 @@ export function Worksheet({
         </p>
       ) : null}
 
-      <form className="mt-4 print:hidden" key={formKey}>
-        <input type="hidden" name="area" value={areaId} />
-        <input type="hidden" name="terminal" value={terminal.id} />
-        <input type="hidden" name="unit" value={unit} />
-        <WorksheetFields
-          sheet={display}
-          prepared={prepared}
-          unit={unit}
-          unitLabel={unitLabel}
-          screens={screens}
-        />
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button
-            type="submit"
-            formAction={computeWholesaleWorksheet}
-            className="h-9 border border-black/20 bg-white px-3 text-sm"
-            data-testid="compute-worksheet"
-          >
-            Compute
-          </button>
-          <button
-            type="submit"
-            formAction={saveWholesaleWorksheet}
-            className="h-9 border border-black bg-black px-3 text-sm text-white"
-            data-testid="save-worksheet"
-          >
-            Save terminal
-          </button>
-        </div>
-      </form>
+      <ShortPathForm
+        key={formKey}
+        areaId={areaId}
+        terminalId={terminal.id}
+        sheet={display}
+        prepared={prepared}
+        rb={rb}
+        ho={ho}
+        unit={unit}
+        unitLabel={unitLabel}
+        screens={screens}
+      />
 
-      <DiffEditor areaId={areaId} terminalId={terminal.id} unit={unit} diffs={diffs} sheet={sheet} />
+      <details className="mt-6 border border-black/15 bg-white print:hidden" data-testid="named-diffs">
+        <summary className="cursor-pointer px-3 py-2.5 text-sm font-medium text-black/70">
+          Named differentials
+        </summary>
+        <div className="border-t border-black/10">
+          <DiffEditor areaId={areaId} terminalId={terminal.id} unit={unit} diffs={diffs} sheet={sheet} />
+        </div>
+      </details>
     </section>
   );
-}
-
-function yahooHint(cents: number | null, unit: InputUnit): string {
-  if (cents == null) return "";
-  return `${displayInputValue(cents, unit)} yahoo`;
 }
 
 function displayTaxBox(
@@ -335,216 +315,6 @@ function displayTaxBox(
   const value = slice?.[part] ?? null;
   if (slice?.touched && value == null) return null;
   return value ?? shared ?? prepared ?? null;
-}
-
-function WorksheetFields({
-  sheet,
-  prepared,
-  unit,
-  unitLabel,
-  screens,
-}: {
-  sheet: TerminalWorksheet;
-  prepared?: PreparedWorksheet;
-  unit: InputUnit;
-  unitLabel: string;
-  screens: NymexScreenPull;
-}) {
-  return (
-    <div className="overflow-x-auto border border-black/15 bg-white">
-      <table className="min-w-full text-sm">
-        <thead>
-          <tr className="border-b border-black/10 text-left text-[11px] uppercase tracking-[0.08em] text-black/45">
-            <th className="px-3 py-2 font-medium">Override · {unitLabel}</th>
-            <th className="px-3 py-2 font-medium">{PRODUCT_LABEL.RB}</th>
-            <th className="px-3 py-2 font-medium">{PRODUCT_LABEL.HO}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <FieldRow
-            label="NYMEX screen"
-            name="nymex"
-            rb={sheet.rb.nymexScreen}
-            ho={sheet.ho.nymexScreen}
-            unit={unit}
-            rbPlaceholder={yahooHint(screens.RB.cents, unit)}
-            hoPlaceholder={yahooHint(screens.HO.cents, unit)}
-            rbHint={
-              sheet.rb.nymexScreen != null
-                ? "typed — not the Yahoo pull"
-                : screens.RB.status === "ok"
-                  ? `Yahoo ${screens.RB.asOfLabel ? `as of ${screens.RB.asOfLabel}` : "screen"} · used if this box stays blank`
-                  : screens.RB.note ?? "Yahoo screen blank"
-            }
-            hoHint={
-              sheet.ho.nymexScreen != null
-                ? "typed — not the Yahoo pull"
-                : screens.HO.status === "ok"
-                  ? `Yahoo ${screens.HO.asOfLabel ? `as of ${screens.HO.asOfLabel}` : "screen"} · used if this box stays blank`
-                  : screens.HO.note ?? "Yahoo screen blank"
-            }
-            rbTyped={sheet.rb.nymexScreen != null}
-            hoTyped={sheet.ho.nymexScreen != null}
-          />
-          <FieldRow label="Terminal differential vs screen" name="diff" rb={sheet.rb.terminalDiff} ho={sheet.ho.terminalDiff} unit={unit} />
-          <FieldRow label="Inbound freight / pipeline / truck" name="freight" rb={sheet.rb.inboundFreight} ho={sheet.ho.inboundFreight} unit={unit} />
-          <FieldRow label="Posted rack" name="rack" rb={sheet.rb.postedRack} ho={sheet.ho.postedRack} unit={unit} />
-          <FieldRow label="Jobber sell" name="jobber" rb={sheet.rb.jobberSell} ho={sheet.ho.jobberSell} unit={unit} />
-          <FieldRow
-            label="Posted pump"
-            name="dock"
-            rb={sheet.rb.dockPosted}
-            ho={sheet.ho.dockPosted}
-            unit={unit}
-            rbHint={prepared?.rb.labels.dockPosted ?? "Boater's number. Not the cost sheet."}
-            hoHint={prepared?.ho.labels.dockPosted ?? "Boater's number. Not the cost sheet."}
-          />
-          <FieldRow
-            label="Federal tax"
-            name="tax_federal"
-            rb={sheet.taxRb?.federal ?? null}
-            ho={sheet.taxHo?.federal ?? null}
-            unit={unit}
-            rbHint={prepared?.rb.tax.federal.sourceLabel ?? null}
-            hoHint={prepared?.ho.tax.federal.sourceLabel ?? null}
-          />
-          <FieldRow
-            label="State tax"
-            name="tax_state"
-            rb={sheet.taxRb?.state ?? null}
-            ho={sheet.taxHo?.state ?? null}
-            unit={unit}
-            rbHint={prepared?.rb.tax.state.sourceLabel ?? null}
-            hoHint={prepared?.ho.tax.state.sourceLabel ?? null}
-          />
-          <tr className="border-t border-black/10 bg-black/[0.03]">
-            <th colSpan={3} className="px-3 py-2 text-left text-xs font-medium text-black/70">
-              What it should have been.
-            </th>
-          </tr>
-          <FieldRow
-            label="Fair hose."
-            name="hose"
-            rb={sheet.rb.fairHose}
-            ho={sheet.ho.fairHose}
-            unit={unit}
-            rbHint="Typed cost-to-cost. Blank until you type it."
-            hoHint="Typed cost-to-cost. Blank until you type it."
-            rbTyped={sheet.rb.fairHose != null}
-            hoTyped={sheet.ho.fairHose != null}
-          />
-          <FieldRow
-            label="Invoice / delivered"
-            name="invoice"
-            rb={sheet.rb.invoiceDelivered}
-            ho={sheet.ho.invoiceDelivered}
-            unit={unit}
-            rbHint="Typed only. Never from the board or posted pump."
-            hoHint="Typed only. Never from the board or posted pump."
-            rbTyped={sheet.rb.invoiceDelivered != null}
-            hoTyped={sheet.ho.invoiceDelivered != null}
-          />
-        </tbody>
-      </table>
-      <div className="grid gap-3 border-t border-black/10 p-3 sm:grid-cols-2">
-        <TaxField label="Other tax" name="tax_other" value={sheet.tax.other} unit={unit} />
-        <TaxField label="One line (replaces federal tax and state tax)" name="tax_one" value={sheet.tax.oneLine} unit={unit} />
-      </div>
-      <p className="px-3 pb-3 text-xs text-black/45">
-        {MARINE_TAX_NOTE} Published federal and state defaults come from the IRS / EIA table on this
-        desk on first load only. Clearing federal, state, or the one-line tax leaves that product
-        incomplete — DAP, should-be, dock ex-tax, and remaining stay —, never $0.00, and the published
-        default is not written back in. One tax line overrides the split. Fair hose and invoice stay
-        blank until typed. Fat take is invoice versus posted rack, not posted pump.
-      </p>
-    </div>
-  );
-}
-
-function FieldRow({
-  label,
-  name,
-  rb,
-  ho,
-  unit,
-  rbHint,
-  hoHint,
-  rbPlaceholder,
-  hoPlaceholder,
-  rbTyped,
-  hoTyped,
-}: {
-  label: string;
-  name: string;
-  rb: number | null;
-  ho: number | null;
-  unit: InputUnit;
-  rbHint?: string | null;
-  hoHint?: string | null;
-  rbPlaceholder?: string;
-  hoPlaceholder?: string;
-  rbTyped?: boolean;
-  hoTyped?: boolean;
-}) {
-  return (
-    <tr className="border-t border-black/10">
-      <th className="px-3 py-2 text-left text-xs font-medium text-black/60">{label}</th>
-      <td className="px-3 py-2">
-        <input
-          name={`${name}_rb`}
-          inputMode="decimal"
-          defaultValue={displayInputValue(rb, unit)}
-          placeholder={rbPlaceholder}
-          data-typed={rbTyped ? "1" : "0"}
-          className={
-            rbTyped
-              ? "h-9 w-full border border-black/40 bg-[#f7f4ee] px-2 font-mono text-sm"
-              : "h-9 w-full border border-black/15 px-2 font-mono text-sm"
-          }
-        />
-        {rbHint ? <p className="mt-1 text-[11px] text-black/40">{rbHint}</p> : null}
-      </td>
-      <td className="px-3 py-2">
-        <input
-          name={`${name}_ho`}
-          inputMode="decimal"
-          defaultValue={displayInputValue(ho, unit)}
-          placeholder={hoPlaceholder}
-          data-typed={hoTyped ? "1" : "0"}
-          className={
-            hoTyped
-              ? "h-9 w-full border border-black/40 bg-[#f7f4ee] px-2 font-mono text-sm"
-              : "h-9 w-full border border-black/15 px-2 font-mono text-sm"
-          }
-        />
-        {hoHint ? <p className="mt-1 text-[11px] text-black/40">{hoHint}</p> : null}
-      </td>
-    </tr>
-  );
-}
-
-function TaxField({
-  label,
-  name,
-  value,
-  unit,
-}: {
-  label: string;
-  name: string;
-  value: number | null;
-  unit: InputUnit;
-}) {
-  return (
-    <label className="block text-xs text-black/60">
-      {label}
-      <input
-        name={name}
-        inputMode="decimal"
-        defaultValue={displayInputValue(value, unit)}
-        className="mt-1 h-9 w-full border border-black/15 px-2 font-mono text-sm"
-      />
-    </label>
-  );
 }
 
 function DiffEditor({
@@ -561,7 +331,7 @@ function DiffEditor({
   sheet: TerminalWorksheet;
 }) {
   return (
-    <div className="mt-6 border border-black/15 bg-white p-4 print:hidden">
+    <div className="p-4 print:hidden">
       <h3 className="text-sm font-medium">Differentials for this terminal</h3>
       <p className="mt-1 text-xs text-black/45">
         Named rows are a separate book from the worksheet Δ. Apply writes that ¢ into this
@@ -638,154 +408,6 @@ function DiffEditor({
         </button>
       </form>
     </div>
-  );
-}
-
-export function Waterfall({
-  rb,
-  ho,
-}: {
-  rb: ProductNetback;
-  ho: ProductNetback;
-}) {
-  const scale = fattestTakeAcross([rb, ho]);
-  return (
-    <section className="mt-8" data-testid="waterfall">
-      <div>
-        <div className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.08em] text-black/45">
-          <span>Terminal</span>
-          <span>Dock</span>
-        </div>
-      </div>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        {WHOLESALE_PRODUCTS.map((product) => {
-          const book = product === "RB" ? rb : ho;
-          return (
-            <WaterfallColumn
-              key={product}
-              product={product}
-              book={book}
-              scale={scale}
-            />
-          );
-        })}
-      </div>
-      <p className="mt-3 text-xs text-black/45">{MARINE_TAX_NOTE}</p>
-    </section>
-  );
-}
-
-function WaterfallColumn({
-  product,
-  book,
-  scale,
-}: {
-  product: WholesaleProduct;
-  book: ProductNetback;
-  scale: number;
-}) {
-  const winner = book.fattestTake;
-  return (
-    <div
-      className="border border-black/15 bg-white p-4"
-      data-testid={`waterfall-${product.toLowerCase()}`}
-      data-nymex-source={book.nymexSource ?? ""}
-      data-tax-incomplete={book.taxIncomplete ? "1" : "0"}
-    >
-      <div className="flex items-baseline justify-between gap-2">
-        <h3 className="text-sm font-medium">{PRODUCT_LABEL[product]}</h3>
-        {winner ? (
-          <p className="text-[11px] uppercase tracking-[0.08em] text-[#8a2c12]" data-testid={`fattest-${product.toLowerCase()}`}>
-            {book.takes[0]?.label} {formatCents(book.takes[0]?.cents ?? null)}
-          </p>
-        ) : (
-          <p className="text-[11px] text-black/40">—</p>
-        )}
-      </div>
-      <ol className="mt-4 space-y-2.5">
-        {book.rungs.map((rung) => (
-          <WaterfallRungRow key={rung.key} rung={rung} scale={scale} winner={winner === rung.takeKey} product={product} />
-        ))}
-      </ol>
-      {book.taxIncomplete ? (
-        <p className="mt-3 text-xs text-[#8a2c12]" data-testid={`tax-incomplete-${product.toLowerCase()}`}>
-          Tax strip incomplete. Federal and state stay visible. DAP, should-be, and dock remaining stay —.
-        </p>
-      ) : null}
-      <p className="mt-4 text-[11px] text-black/45" data-testid={`implied-${product.toLowerCase()}`}>
-        Implied Δ {formatBoth(book.impliedDiff)}
-        {book.typedDiff != null ? ` · typed Δ ${formatBoth(book.typedDiff)}` : ""}
-        {book.edgeVsTyped != null ? ` · edge ${formatBoth(book.edgeVsTyped)}` : ""}
-        {book.nymexSource ? ` · NYMEX source ${book.nymexSource}` : ""}
-      </p>
-    </div>
-  );
-}
-
-function WaterfallRungRow({
-  rung,
-  scale,
-  winner,
-  product,
-}: {
-  rung: WaterfallRung;
-  scale: number;
-  winner: boolean;
-  product: WholesaleProduct;
-}) {
-  const cents = rung.cents;
-  const empty = cents == null;
-  const width = cents == null || scale === 0 ? 0 : Math.max(6, (Math.abs(cents) / scale) * 100);
-  const isTake = rung.role === "take" || rung.role === "leftover";
-  const isTax = rung.takeKey === "tax" || rung.takeKey === "taxFederal" || rung.takeKey === "taxState" || rung.takeKey === "taxOther";
-  return (
-    <li
-      data-testid={`rung-${product.toLowerCase()}-${rung.key}`}
-      data-empty={empty ? "1" : "0"}
-      data-winner={winner ? "1" : "0"}
-      data-source={rung.origin ?? ""}
-      className={rung.role === "start" || rung.role === "level" ? "pt-1" : ""}
-    >
-      <div className="flex items-baseline justify-between gap-3">
-        <span className={`text-xs ${isTax ? "font-medium text-black" : "font-medium text-black/70"}`}>
-          {rung.role === "level" || rung.role === "start" ? `= ${rung.label}` : rung.label}
-        </span>
-        <span className="font-mono text-xs tabular-nums">
-          {empty ? "Call / —" : formatBoth(rung.cents)}
-        </span>
-      </div>
-      {isTake ? (
-        empty ? (
-          <div className="mt-1 h-3 border border-dashed border-black/20 bg-[repeating-linear-gradient(90deg,transparent,transparent_6px,rgba(11,31,51,0.06)_6px,rgba(11,31,51,0.06)_7px)]" />
-        ) : (
-          <div className="mt-1 h-3 w-full bg-black/[0.04]">
-            <div
-              style={{ width: `${width}%` }}
-              className={
-                winner
-                  ? isTax
-                    ? "h-full bg-[#8a2c12]"
-                    : "h-full bg-black"
-                  : isTax
-                    ? "h-full bg-[#8a2c12]/55"
-                    : rung.role === "leftover"
-                      ? "h-full bg-black/25"
-                      : "h-full bg-black/45"
-              }
-            />
-          </div>
-        )
-      ) : (
-        <div className="mt-1 border-b border-black/10" />
-      )}
-      {rung.sourceLabel || rung.origin === "incomplete" ? (
-        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/40">
-          {rung.origin === "incomplete" ? "incomplete" : rung.sourceLabel}
-        </p>
-      ) : empty && isTake ? (
-        <p className="mt-0.5 text-[10px] uppercase tracking-[0.06em] text-black/35">Call / —</p>
-      ) : null}
-    </li>
   );
 }
 
