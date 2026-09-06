@@ -672,9 +672,49 @@ assert.match(deskUi, /Diesel stays dark until you open it/);
 assert.match(deskUi, /posted vs should-be/);
 assert.match(deskUi, /not the pitch/);
 assert.match(deskUi, /invoice − posted rack/);
-assert.match(deskUi, /Netback to retail from pipe barrels/);
+assert.match(deskUi, /Net to retail/);
+assert.match(deskUi, /net to the retail \/ posted pump/);
 assert.match(deskUi, /Terminal \/ pipe/);
 assert.match(deskUi, /Inbound rack cost/);
+
+const productShortPath = shortPathSource.slice(
+  shortPathSource.indexOf("function ProductShortPath"),
+  shortPathSource.indexOf("function PressureLadder"),
+);
+assert.match(productShortPath, /data-testid=\{`tax-strip-\$\{p\}`\}/);
+assert.match(productShortPath, /data-testid=\{`net-to-retail-\$\{p\}`\}/);
+assert.match(productShortPath, /data-testid=\{`net-dap-\$\{p\}`\}/);
+assert.match(productShortPath, /data-testid=\{`net-should-be-\$\{p\}`\}/);
+assert.match(productShortPath, /label="Federal tax"/);
+assert.match(productShortPath, /label="State tax"/);
+assert.match(productShortPath, /formatBoth\(book\.dap\)/);
+assert.match(productShortPath, /formatBoth\(book\.shouldBe\)/);
+assert.match(productShortPath, /What the retail \/ posted pump should have been/);
+assert.match(productShortPath, /The net-to-retail check/);
+assert.ok(
+  !productShortPath.includes('data-testid="full-stack"'),
+  "tax strip and net-to-retail stand on the short path without opening Full stack",
+);
+assert.ok(
+  productShortPath.indexOf("data-testid={`net-to-retail-${p}`}") >
+    productShortPath.indexOf("data-testid={`fat-take-${p}`}"),
+  "net to retail sits after fat take on the short path",
+);
+const taxStrip = productShortPath.slice(
+  productShortPath.indexOf("data-testid={`tax-strip-${p}`}"),
+  productShortPath.indexOf('label="Posted rack"'),
+);
+assert.match(taxStrip, /label="Federal tax"/);
+assert.match(taxStrip, /label="State tax"/);
+assert.match(taxStrip, /\bprimary\b/);
+assert.doesNotMatch(taxStrip, /\bquiet\b/, "federal/state tax must not be quiet-buried on the short path");
+assert.match(productShortPath, /data-testid=\{`tax-incomplete-\$\{p\}`\}/);
+const netRetail = productShortPath.slice(productShortPath.indexOf("data-testid={`net-to-retail-${p}`}"));
+assert.match(netRetail, /formatBoth\(book\.dap\)/);
+assert.match(netRetail, /formatBoth\(inputs\.fairHose\)/);
+assert.match(netRetail, /formatBoth\(book\.shouldBe\)/);
+assert.match(netRetail, /posted vs should-be/);
+assert.match(shortPathSource, /<details[\s\S]*data-testid="full-stack"/);
 assert.match(shortPathSource, /data-rung="pipe"[\s\S]*data-rung="freight"[\s\S]*rung="inbound"[\s\S]*data-rung="postedRack"[\s\S]*data-rung="jobber"[\s\S]*data-rung="tax"[\s\S]*rung="dap"[\s\S]*data-rung="fairHose"[\s\S]*data-rung="invoice"[\s\S]*data-rung="leftover"/);
 assert.deepEqual([...PRESSURE_LADDER_KEYS], [
   "pipe",

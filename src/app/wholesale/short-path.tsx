@@ -124,8 +124,8 @@ export function ShortPathForm({
         <summary className="cursor-pointer px-3 py-2.5 text-sm font-medium">Full stack</summary>
         <div className="border-t border-black/10 px-3 pb-4 pt-3">
           <p className="text-xs text-black/50">
-            Netback to retail from pipe barrels at this spoke. Fat take stays invoice − posted rack
-            on the short path. Incomplete tax stays —, never $0.00.
+            Long ladder from pipe barrels. Federal tax, state tax, DAP, and should-be already sit on
+            the short path. Fat take stays invoice − posted rack. Incomplete tax stays —, never $0.00.
           </p>
           {WHOLESALE_PRODUCTS.map((item) => (
             <PressureLadder
@@ -160,7 +160,8 @@ export function ShortPathForm({
         desk on first load only. Clearing federal, state, or the one-line tax leaves that product
         incomplete — DAP, should-be, dock ex-tax, and remaining stay —, never $0.00, and the published
         default is not written back in. One tax line overrides the split. Fair hose and invoice stay
-        blank until typed. Fat take is invoice versus posted rack, not posted pump.
+        blank until typed. Fat take is invoice versus posted rack, not posted pump. Net to retail is
+        DAP + Fair hose versus the posted pump.
       </p>
       <p className="mt-2 text-[11px] text-black/40" data-testid="rin-footnote">
         {RIN_STACK_NOTE}
@@ -192,6 +193,8 @@ function ProductShortPath({
   const quote = screens[product];
   const hoseOpen = inputs.fairHose != null;
   const loud = book.fatTake != null && book.fatTake > 0;
+  const leftover = postedLeftoverCents(inputs.dockPosted, book.shouldBe);
+  const shouldBeReady = book.shouldBe != null;
 
   return (
     <div
@@ -219,14 +222,17 @@ function ProductShortPath({
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div
+        data-testid={`tax-strip-${p}`}
+        className="grid gap-3 border border-black/20 bg-white p-3 sm:grid-cols-2"
+      >
         <ProductField
           label="Federal tax"
           name={`tax_federal_${p}`}
           value={sheet[product === "RB" ? "taxRb" : "taxHo"]?.federal ?? null}
           unit={unit}
           hint={preparedProduct?.tax.federal.sourceLabel ?? null}
-          quiet
+          primary
         />
         <ProductField
           label="State tax"
@@ -234,9 +240,15 @@ function ProductShortPath({
           value={sheet[product === "RB" ? "taxRb" : "taxHo"]?.state ?? null}
           unit={unit}
           hint={preparedProduct?.tax.state.sourceLabel ?? null}
-          quiet
+          primary
         />
       </div>
+
+      {book.taxIncomplete ? (
+        <p className="text-xs text-[#8a2c12]" data-testid={`tax-incomplete-${p}`}>
+          Tax strip incomplete. Federal and state stay visible. DAP, should-be, and dock remaining stay —.
+        </p>
+      ) : null}
 
       <div className="space-y-3 border border-black/20 bg-white p-3">
         <ProductField
@@ -256,21 +268,6 @@ function ProductShortPath({
           hint="Typed only. Never from the board or posted pump."
           primary
         />
-        <details data-testid={`fair-hose-${p}`} open={hoseOpen}>
-          <summary className="cursor-pointer text-xs font-medium text-black/55">
-            Fair hose.{hoseOpen ? "" : " Optional — blank until typed."}
-          </summary>
-          <div className="mt-2">
-            <ProductField
-              label="Fair hose."
-              name={`hose_${p}`}
-              value={inputs.fairHose}
-              unit={unit}
-              typed={inputs.fairHose != null}
-              hint="Typed cost-to-cost. Blank until you type it."
-            />
-          </div>
-        </details>
       </div>
 
       <div
@@ -289,6 +286,75 @@ function ProductShortPath({
         <p className="mt-2 text-xs text-black/50">invoice − posted rack</p>
       </div>
 
+      <div
+        data-testid={`net-to-retail-${p}`}
+        className="space-y-3 border border-black bg-white p-4"
+      >
+        <p className="text-[11px] uppercase tracking-[0.12em] text-black">Net to retail</p>
+        <p className="text-xs text-black/55">
+          How you net to the retail / posted pump. Should-be = DAP + Fair hose when both complete.
+          Else —. Fat take (above) is invoice − posted rack — a different check.
+        </p>
+
+        <div data-testid={`net-dap-${p}`} data-empty={book.dap == null ? "1" : "0"}>
+          <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">DAP</p>
+          <p className="mt-1 font-mono text-sm tabular-nums">{formatBoth(book.dap)}</p>
+          <p className="mt-1 text-xs text-black/50">
+            Delivered cost. Includes tax when the strip is complete.
+          </p>
+        </div>
+
+        <div data-testid={`net-fair-hose-${p}`}>
+          <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">Fair hose</p>
+          <p className="mt-1 font-mono text-sm tabular-nums">{formatBoth(inputs.fairHose)}</p>
+          <details data-testid={`fair-hose-${p}`} open={hoseOpen} className="mt-2">
+            <summary className="cursor-pointer text-xs font-medium text-black/55">
+              Fair hose.{hoseOpen ? "" : " Optional — blank until typed."}
+            </summary>
+            <div className="mt-2">
+              <ProductField
+                label="Fair hose."
+                name={`hose_${p}`}
+                value={inputs.fairHose}
+                unit={unit}
+                typed={inputs.fairHose != null}
+                hint="Typed cost-to-cost. Blank until you type it."
+              />
+            </div>
+          </details>
+        </div>
+
+        <div
+          data-testid={`net-should-be-${p}`}
+          data-empty={book.shouldBe == null ? "1" : "0"}
+          className={
+            shouldBeReady
+              ? "border border-black bg-[#f7f4ee] px-3 py-3"
+              : "border border-black/15 px-3 py-3"
+          }
+        >
+          <p className="text-[11px] uppercase tracking-[0.08em] text-black">Should-be</p>
+          <p className="mt-1 font-mono text-2xl tabular-nums leading-none">
+            {formatBoth(book.shouldBe)}
+          </p>
+          <p className="mt-2 text-xs text-black/50">
+            What the retail / posted pump should have been. DAP + Fair hose when both complete.
+            Else —. The net-to-retail check.
+          </p>
+        </div>
+
+        <div
+          data-testid={`net-leftover-${p}`}
+          className="border border-black/10 bg-black/[0.02] px-3 py-3"
+        >
+          <p className="text-[11px] uppercase tracking-[0.08em] text-black/40">Posted leftover</p>
+          <p className="mt-1 font-mono text-sm tabular-nums text-black/70">{formatBoth(leftover)}</p>
+          <p className="mt-1 text-xs text-black/45">
+            posted vs should-be. Quiet end — not the pitch.
+          </p>
+        </div>
+      </div>
+
       <div data-testid={`terminal-settings-${p}`}>
         <ProductField
           label="Terminal differential vs screen"
@@ -298,12 +364,6 @@ function ProductShortPath({
           quiet
         />
       </div>
-
-      {book.taxIncomplete ? (
-        <p className="text-xs text-[#8a2c12]" data-testid={`tax-incomplete-${p}`}>
-          Tax strip incomplete. Federal and state stay visible. DAP, should-be, and dock remaining stay —.
-        </p>
-      ) : null}
     </div>
   );
 }
