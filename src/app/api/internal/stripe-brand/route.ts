@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const ONESHOT = "aPuCpKLCiPe55Bz-TKYxXj7mHhRhHvxu";
 
-async function upload(sk: string, bytes: Buffer, filename: string, purpose: string) {
+async function upload(sk: string, bytes: Uint8Array, filename: string, purpose: string) {
   const fd = new FormData();
   fd.append("purpose", purpose);
   fd.append("file", new Blob([bytes], { type: "image/jpeg" }), filename);
@@ -30,12 +30,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "missing stripe secret" }, { status: 500 });
   }
   const root = process.cwd();
-  const iconBytes = await readFile(path.join(root, "public/brand/stripe-icon.jpg"));
-  const logoBytes = await readFile(path.join(root, "public/brand/stripe-logo.jpg"));
+  const iconBytes = new Uint8Array(await readFile(path.join(root, "public/brand/stripe-icon.jpg")));
+  const logoBytes = new Uint8Array(await readFile(path.join(root, "public/brand/stripe-logo.jpg")));
   const icon = await upload(sk, iconBytes, "stripe-icon.jpg", "business_icon");
   const logo = await upload(sk, logoBytes, "stripe-logo.jpg", "business_logo");
 
-  // Classic account branding (works with file ids)
   const brandBody = new URLSearchParams({
     "settings[branding][icon]": icon,
     "settings[branding][logo]": logo,
