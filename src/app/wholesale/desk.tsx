@@ -1,11 +1,15 @@
 import {
+  PRODUCT_DOCK_LABEL,
+  TEAR_SHEET_NEED,
   WHOLESALE_AREA_ORDER,
   WHOLESALE_PRODUCTS,
   areaLabel,
   deskFootnotes,
   formatBoth,
+  marinaPitchReady,
   netbackHasFigures,
   tcnLabel,
+  tearSheetPath,
   type AreaTerminalRef,
   type Cents,
   type DiffRow,
@@ -189,6 +193,58 @@ export function NymexBanner({ screens }: { screens: NymexScreenPull }) {
   );
 }
 
+export function TearSheetControl({
+  areaId,
+  terminalId,
+  rb,
+  ho,
+}: {
+  areaId: WholesaleAreaId;
+  terminalId: string;
+  rb: ProductNetback;
+  ho: ProductNetback;
+}) {
+  const ready = WHOLESALE_PRODUCTS.filter((product) =>
+    marinaPitchReady(product === "RB" ? rb : ho),
+  );
+  if (ready.length === 0) {
+    return (
+      <div className="print:hidden" data-testid="tear-sheet-disabled">
+        <button
+          type="button"
+          disabled
+          aria-describedby="tear-sheet-reason"
+          className="h-9 cursor-not-allowed border border-black/15 bg-white px-3 text-sm text-black/35"
+        >
+          Tear sheet
+        </button>
+        <p
+          id="tear-sheet-reason"
+          className="mt-1 max-w-xs text-[11px] leading-4 text-black/45"
+          data-testid="tear-sheet-reason"
+        >
+          {TEAR_SHEET_NEED}
+        </p>
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-2 print:hidden" data-testid="tear-sheet-control">
+      {ready.map((product) => (
+        <a
+          key={product}
+          href={tearSheetPath(areaId, terminalId, product)}
+          data-testid={`tear-sheet-${product.toLowerCase()}`}
+          className="inline-flex h-9 items-center border border-black bg-black px-3 text-sm text-white hover:bg-black/90"
+        >
+          Tear sheet
+          {ready.length > 1 ? ` · ${PRODUCT_DOCK_LABEL[product]}` : ""}
+        </a>
+      ))}
+    </div>
+  );
+}
+
 export function Worksheet({
   areaId,
   terminal,
@@ -264,13 +320,8 @@ export function Worksheet({
           >
             $/gal
           </a>
-          <a
-            href={`/wholesale/print?area=${areaId}`}
-            className="text-black/55 underline-offset-2 hover:underline"
-          >
-            Print
-          </a>
         </div>
+        <TearSheetControl areaId={areaId} terminalId={terminal.id} rb={rb} ho={ho} />
       </div>
 
       {error ? <p className="mt-3 text-sm text-[#8a2c12]">{error}</p> : null}

@@ -214,3 +214,22 @@ body {
 .waterline-svg .waterline-pair {
   vector-effect: non-scaling-stroke;
 }
+
+@page {
+  size: letter portrait;
+  margin: 0.5in;
+}
+
+@media print {
+  html,
+  body {
+    background: white;
+  }
+
+  .tear-sheet {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

@@ -16,6 +16,15 @@ export const PRODUCT_LABEL: Record<WholesaleProduct, string> = {
   HO: "HO (ULSD / diesel)",
 };
 
+/** Dock-side names. Not the worksheet codes. */
+export const PRODUCT_DOCK_LABEL: Record<WholesaleProduct, string> = {
+  RB: "Gas",
+  HO: "Diesel",
+};
+
+export const TEAR_SHEET_NEED =
+  "Need a fat take and a should-be. Invoice versus posted rack, hose, and the tax strip. We don’t print a blank dock.";
+
 export const WHOLESALE_AREA_ORDER: WholesaleAreaId[] = [
   "galveston-bay",
   "texas",
@@ -347,6 +356,81 @@ export function netbackHasFigures(book: ProductNetback): boolean {
     book.dockRemaining != null ||
     book.impliedDiff != null
   );
+}
+
+/**
+ * Marina tear-sheet gate. Fat take is invoice − posted rack. Should-be is DAP +
+ * fair hose, so tax and freight already resolved. Investor figures (spot,
+ * jobber, implied Δ) are a different book — see netbackHasFigures.
+ */
+export function marinaPitchReady(book: ProductNetback): boolean {
+  return book.fatTake != null && book.shouldBe != null;
+}
+
+export function parseProductId(raw: string | undefined): WholesaleProduct | null {
+  if (raw === "RB" || raw === "HO") return raw;
+  return null;
+}
+
+export function parsePrintView(raw: string | undefined): "sheet" | "book" {
+  return raw === "book" ? "book" : "sheet";
+}
+
+export function pickMarinaPitchProduct(
+  books: Record<WholesaleProduct, ProductNetback>,
+  preferred?: WholesaleProduct | null,
+): WholesaleProduct {
+  if (preferred && marinaPitchReady(books[preferred])) return preferred;
+  const ready = WHOLESALE_PRODUCTS.filter((product) => marinaPitchReady(books[product]));
+  if (ready.length === 1) return ready[0]!;
+  if (ready.length === 2) {
+    const rbTake = Math.abs(books.RB.fatTake ?? 0);
+    const hoTake = Math.abs(books.HO.fatTake ?? 0);
+    return hoTake >= rbTake ? "HO" : "RB";
+  }
+  return preferred ?? "HO";
+}
+
+export function tearSheetPath(
+  areaId: WholesaleAreaId,
+  terminalId: string,
+  product: WholesaleProduct,
+): string {
+  return `/wholesale/print?area=${areaId}&terminal=${encodeURIComponent(terminalId)}&product=${product}`;
+}
+
+export function fullBookPath(areaId: WholesaleAreaId, terminalId?: string): string {
+  const terminal = terminalId ? `&terminal=${encodeURIComponent(terminalId)}` : "";
+  return `/wholesale/print?area=${areaId}${terminal}&view=book`;
+}
+
+export function marinaPostedNumber(book: ProductNetback): {
+  cents: Cents;
+  kind: "pump" | "rack" | null;
+} {
+  const pump = book.steps.find((step) => step.key === "dock")?.cents ?? null;
+  const rack = book.steps.find((step) => step.key === "posted")?.cents ?? null;
+  if (pump != null) return { cents: pump, kind: "pump" };
+  if (rack != null) return { cents: rack, kind: "rack" };
+  return { cents: null, kind: null };
+}
+
+/** Picnic-table dollars. Tenths of a cent stay visible. Same cents as formatDollars. */
+export function formatDockDollars(value: Cents): string {
+  if (value == null) return "—";
+  const sign = value < 0 ? "−" : "";
+  const dollars = Math.abs(value) / 100;
+  const places = Number.isInteger(value) ? 2 : 3;
+  return `${sign}$${dollars.toFixed(places)}`;
+}
+
+export function tearSheetDate(now = new Date()): string {
+  return now.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }
 
 export function emptyWholesaleStore(): WholesaleStoreFile {

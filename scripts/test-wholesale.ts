@@ -31,10 +31,14 @@ import {
   findArea,
   findTerminal,
   formatCents,
+  formatDockDollars,
   formatDollars,
   loadWholesaleCatalog,
   loadWholesaleTax,
+  marinaPitchReady,
+  marinaPostedNumber,
   netbackHasFigures,
+  pickMarinaPitchProduct,
   parseOptionalCents,
   rankTakes,
   resolveTaxForProduct,
@@ -561,6 +565,7 @@ assert.ok(underwater.takes[0]!.cents < 0);
 assert.match(formatCents(underwater.dockRemaining), /−/);
 assert.equal(netbackHasFigures(underwater), true);
 assert.equal(netbackHasFigures(blank.RB), false);
+assert.equal(marinaPitchReady(blank.RB), false);
 
 const applied = applyDiffRow(emptyWorksheet(), {
   id: "d1",
@@ -656,6 +661,9 @@ const shortPathSource = readFileSync(path.join(process.cwd(), "src/app/wholesale
 const deskUi = `${deskSource}\n${shortPathSource}`;
 const wholesalePage = readFileSync(path.join(process.cwd(), "src/app/wholesale/page.tsx"), "utf8");
 const printPage = readFileSync(path.join(process.cwd(), "src/app/wholesale/print/page.tsx"), "utf8");
+const tearSheetSource = readFileSync(path.join(process.cwd(), "src/app/wholesale/print/tear-sheet.tsx"), "utf8");
+const fullBookSource = readFileSync(path.join(process.cwd(), "src/app/wholesale/print/full-book.tsx"), "utf8");
+const globalCss = readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");
 assert.match(deskSource, />Wholesale</);
 assert.match(deskSource, /What it cost\. What they posted\./);
 assert.match(deskSource, /Continue/);
@@ -747,16 +755,36 @@ assert.doesNotMatch(deskUi, /Sign in to dashboard/);
 assert.doesNotMatch(deskUi, /silly|gotcha|bargain|call-out|shame/i);
 assert.doesNotMatch(deskUi, /posted − should-be|posted - should-be|posted − DAP|posted - DAP/);
 assert.doesNotMatch(deskUi, /fat take is posted|fat take = posted/i);
+assert.match(deskSource, /TearSheetControl/);
+assert.match(deskSource, /marinaPitchReady/);
+assert.match(deskSource, /tear-sheet-disabled/);
+assert.doesNotMatch(deskSource, /href=\{`\/wholesale\/print\?area=\$\{areaId\}`\}/);
 assert.match(wholesalePage, /How the gallon got that way\./);
 assert.doesNotMatch(wholesalePage, /<Waterfall/);
 assert.match(wholesalePage, /rb=\{live\.RB\}/);
 assert.doesNotMatch(wholesalePage, /The take/);
 assert.doesNotMatch(wholesalePage, /Come in/);
 assert.doesNotMatch(wholesalePage, /Where the cents went/);
-assert.match(printPage, /Wholesale · /);
+assert.match(printPage, /marinaPitchReady/);
+assert.match(printPage, /TearSheet/);
+assert.match(printPage, /parsePrintView/);
 assert.doesNotMatch(printPage, /This week.s sheet/);
 assert.doesNotMatch(printPage, /The book/);
 assert.doesNotMatch(printPage, /Investor/);
+assert.match(tearSheetSource, /Fat take/);
+assert.match(tearSheetSource, /What it should have been/);
+assert.match(tearSheetSource, /Dock Posted · Waterdog 2027/);
+assert.match(tearSheetSource, /No Platts\. No OPIS/);
+assert.match(tearSheetSource, /print-full-book/);
+assert.match(tearSheetSource, /print:hidden/);
+assert.doesNotMatch(tearSheetSource, /Investor/);
+assert.doesNotMatch(tearSheetSource, /NYMEX/);
+assert.match(fullBookSource, /Wholesale · /);
+assert.match(fullBookSource, /print-matrix/);
+assert.doesNotMatch(fullBookSource, /Investor/);
+assert.match(globalCss, /@media print/);
+assert.match(globalCss, /size: letter/);
+assert.match(globalCss, /\.tear-sheet/);
 assert.equal(filled.rungs.find((rung) => rung.key === "taxFederal")?.label, "Federal tax");
 assert.equal(filled.rungs.find((rung) => rung.key === "taxState")?.label, "State tax");
 assert.equal(filled.rungs.find((rung) => rung.key === "shouldBe")?.label, "What it should have been.");
@@ -799,6 +827,17 @@ assert.equal(
   274,
 );
 assert.notEqual(costSheet.fatTake, 360 - 284, "fat take is not posted − should-be");
+assert.equal(marinaPitchReady(costSheet), true);
+assert.equal(marinaPitchReady(filled), false, "investor figures are not a marina pitch");
+assert.equal(netbackHasFigures(filled), true);
+assert.equal(formatDockDollars(170), "$1.70");
+assert.equal(formatDockDollars(18.4), "$0.184");
+assert.equal(formatDockDollars(-30), "−$0.30");
+assert.equal(formatDockDollars(null), "—");
+assert.equal(marinaPostedNumber(costSheet).kind, "pump");
+assert.equal(marinaPostedNumber(costSheet).cents, 360);
+assert.equal(pickMarinaPitchProduct({ RB: costSheet, HO: blank.HO }, "HO"), "RB");
+assert.equal(pickMarinaPitchProduct({ RB: filled, HO: blank.HO }), "HO");
 assert.notEqual(costSheet.fatTake, 360 - 274, "fat take is not posted − DAP");
 assert.equal(postedLeftoverCents(360, 284), 76);
 assert.equal(postedLeftoverCents(360, null), null);
@@ -836,6 +875,7 @@ const noHose = computeProductNetback(
 assert.equal(noHose.dap, 274);
 assert.equal(noHose.shouldBe, null);
 assert.equal(formatCents(noHose.shouldBe), "—");
+assert.equal(marinaPitchReady(noHose), false, "fat take alone is not a marina pitch");
 assert.equal(noHose.fatTake, 50, "fat take is invoice − rack even when hose is blank");
 assert.notEqual(noHose.fatTake, 360 - 274);
 
@@ -856,6 +896,7 @@ const noInvoice = computeProductNetback(
 assert.equal(noInvoice.shouldBe, 230 + 4 + 44.4 + 12);
 assert.equal(noInvoice.fatTake, null);
 assert.equal(formatCents(noInvoice.fatTake), "—");
+assert.equal(marinaPitchReady(noInvoice), false, "should-be alone is not a marina pitch");
 assert.ok(!noInvoice.takes.some((take) => take.key === "fatTake"));
 
 const underInvoice = computeProductNetback(
@@ -875,6 +916,7 @@ const underInvoice = computeProductNetback(
 assert.equal(underInvoice.fatTake, -30);
 assert.ok(!underInvoice.takes.some((take) => take.key === "fatTake"), "negative fat take stays quiet");
 assert.equal(underInvoice.fattestTake, "remaining");
+assert.equal(marinaPitchReady(underInvoice), true, "a negative fat take is still a filled pitch");
 
 const incompleteWithHose = computeProductNetback(
   "HO",
@@ -894,6 +936,7 @@ assert.equal(incompleteWithHose.taxIncomplete, true);
 assert.equal(incompleteWithHose.dap, null);
 assert.equal(incompleteWithHose.shouldBe, null);
 assert.equal(incompleteWithHose.fatTake, 70);
+assert.equal(marinaPitchReady(incompleteWithHose), false);
 assert.notEqual(incompleteWithHose.dap, 0);
 assert.equal(formatCents(incompleteWithHose.dap), "—");
 assert.equal(formatCents(incompleteWithHose.shouldBe), "—");
