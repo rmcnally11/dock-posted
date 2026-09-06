@@ -21,6 +21,10 @@ import {
   computeWorksheet,
   deliveredAtPlace,
   fatTakeCents,
+  jobberOnStack,
+  postedLeftoverCents,
+  PRESSURE_LADDER_KEYS,
+  RIN_STACK_NOTE,
   defaultTaxForTerminal,
   deskFootnotes,
   emptyWorksheet,
@@ -648,26 +652,64 @@ assert.equal(partialBook.RB.terminalSpot, null);
 assert.equal(formatCents(partialBook.RB.rackMargin), "—");
 
 const deskSource = readFileSync(path.join(process.cwd(), "src/app/wholesale/desk.tsx"), "utf8");
+const shortPathSource = readFileSync(path.join(process.cwd(), "src/app/wholesale/short-path.tsx"), "utf8");
+const deskUi = `${deskSource}\n${shortPathSource}`;
 const wholesalePage = readFileSync(path.join(process.cwd(), "src/app/wholesale/page.tsx"), "utf8");
 const printPage = readFileSync(path.join(process.cwd(), "src/app/wholesale/print/page.tsx"), "utf8");
 assert.match(deskSource, />Wholesale</);
 assert.match(deskSource, /What it cost\. What they posted\./);
 assert.match(deskSource, /Continue/);
-assert.match(deskSource, /What it should have been\./);
-assert.match(deskSource, /Fair hose\./);
-assert.match(deskSource, /Invoice \/ delivered/);
-assert.match(deskSource, /Fat\s+take is invoice versus posted rack, not posted pump/);
-assert.doesNotMatch(deskSource, /Come in/);
-assert.doesNotMatch(deskSource, /Where the cents went/);
-assert.doesNotMatch(deskSource, /The take/);
-assert.doesNotMatch(deskSource, /The book/);
-assert.doesNotMatch(deskSource, /Open the book/);
-assert.doesNotMatch(deskSource, /hacking the gallon/);
-assert.doesNotMatch(deskSource, /Investor print/);
-assert.doesNotMatch(deskSource, /Sign in to dashboard/);
-assert.doesNotMatch(deskSource, /silly|gotcha|bargain|call-out|shame/i);
-assert.doesNotMatch(deskSource, /posted − should-be|posted - should-be|posted − DAP|posted - DAP/);
+assert.match(deskUi, /What it should have been\./);
+assert.match(deskUi, /Fair hose\./);
+assert.match(deskUi, /Invoice \/ delivered/);
+assert.match(deskUi, /Fat\s+take is invoice versus posted rack, not posted pump/);
+assert.doesNotMatch(shortPathSource, /['"]use client['"]/);
+assert.match(deskUi, /data-testid="short-path"/);
+assert.match(deskUi, /data-testid="full-stack"/);
+assert.match(deskUi, /data-testid=\{`fat-take-\$\{p\}`\}/);
+assert.match(deskUi, /data-testid="product-ho"/);
+assert.match(deskUi, /Diesel stays dark until you open it/);
+assert.match(deskUi, /posted vs should-be/);
+assert.match(deskUi, /not the pitch/);
+assert.match(deskUi, /invoice − posted rack/);
+assert.match(deskUi, /Netback to retail from pipe barrels/);
+assert.match(deskUi, /Terminal \/ pipe/);
+assert.match(deskUi, /Inbound rack cost/);
+assert.match(shortPathSource, /data-rung="pipe"[\s\S]*data-rung="freight"[\s\S]*rung="inbound"[\s\S]*data-rung="postedRack"[\s\S]*data-rung="jobber"[\s\S]*data-rung="tax"[\s\S]*rung="dap"[\s\S]*data-rung="fairHose"[\s\S]*data-rung="invoice"[\s\S]*data-rung="leftover"/);
+assert.deepEqual([...PRESSURE_LADDER_KEYS], [
+  "pipe",
+  "freight",
+  "inbound",
+  "postedRack",
+  "jobber",
+  "tax",
+  "dap",
+  "fairHose",
+  "invoice",
+  "leftover",
+]);
+assert.match(shortPathSource, /RIN_STACK_NOTE/);
+assert.match(
+  readFileSync(path.join(process.cwd(), "src/lib/wholesale.ts"), "utf8"),
+  /RVO \/ RIN is already inside the typed DAP and posted rack/,
+);
+assert.equal(RIN_STACK_NOTE.includes("Not a second RIN line"), true);
+assert.doesNotMatch(deskUi, /Waterdog RIN|live RIN|name="rin"|OPIS RIN|Platts RIN/i);
+assert.doesNotMatch(deskUi, /riodata2026|\bn8n\b/i);
+assert.doesNotMatch(deskUi, /Come in/);
+assert.doesNotMatch(deskUi, /Where the cents went/);
+assert.doesNotMatch(deskUi, /The take/);
+assert.doesNotMatch(deskUi, /The book/);
+assert.doesNotMatch(deskUi, /Open the book/);
+assert.doesNotMatch(deskUi, /hacking the gallon/);
+assert.doesNotMatch(deskUi, /Investor print/);
+assert.doesNotMatch(deskUi, /Sign in to dashboard/);
+assert.doesNotMatch(deskUi, /silly|gotcha|bargain|call-out|shame/i);
+assert.doesNotMatch(deskUi, /posted − should-be|posted - should-be|posted − DAP|posted - DAP/);
+assert.doesNotMatch(deskUi, /fat take is posted|fat take = posted/i);
 assert.match(wholesalePage, /How the gallon got that way\./);
+assert.doesNotMatch(wholesalePage, /<Waterfall/);
+assert.match(wholesalePage, /rb=\{live\.RB\}/);
 assert.doesNotMatch(wholesalePage, /The take/);
 assert.doesNotMatch(wholesalePage, /Come in/);
 assert.doesNotMatch(wholesalePage, /Where the cents went/);
@@ -718,6 +760,13 @@ assert.equal(
 );
 assert.notEqual(costSheet.fatTake, 360 - 284, "fat take is not posted − should-be");
 assert.notEqual(costSheet.fatTake, 360 - 274, "fat take is not posted − DAP");
+assert.equal(postedLeftoverCents(360, 284), 76);
+assert.equal(postedLeftoverCents(360, null), null);
+assert.equal(formatCents(postedLeftoverCents(360, null)), "—");
+assert.notEqual(costSheet.fatTake, postedLeftoverCents(360, 284), "fat take is not posted leftover");
+assert.equal(jobberOnStack(400, 245), null);
+assert.equal(jobberOnStack(null, 245), 245);
+assert.equal(jobberOnStack(null, null), null);
 assert.equal(costSheet.postedVsDap, 86);
 assert.equal(costSheet.dockRemaining, 75);
 assert.equal(costSheet.rackMargin, 18);
@@ -883,14 +932,14 @@ const publicPages = [
   "src/components/dock-card.tsx",
   "src/components/fuel-map.tsx",
 ];
-const publicLeak = /should-be|Fair hose|invoice \/ delivered|nymex|\bTCN\b|platts|n8n|riodata2026/i;
+const publicLeak = /should-be|Fair hose|invoice \/ delivered|nymex|\bTCN\b|platts|n8n|riodata2026|\bRIN\b/i;
 for (const file of publicPages) {
   const text = readFileSync(path.join(process.cwd(), file), "utf8");
   assert.doesNotMatch(text, publicLeak, `${file} leaked a wholesale cost-sheet term`);
 }
 assert.match(readFileSync(path.join(process.cwd(), "src/app/wholesale/desk.tsx"), "utf8"), /LoginPanel/);
 const loginSlice = deskSource.slice(deskSource.indexOf("export function LoginPanel"), deskSource.length);
-assert.doesNotMatch(loginSlice, /should-be|Fair hose|\binvoice\b|nymex|\brack\b|\bTCN\b|Platts/i);
+assert.doesNotMatch(loginSlice, /should-be|Fair hose|\binvoice\b|nymex|\brack\b|\bTCN\b|Platts|\bRIN\b/i);
 
 async function storeRoundtrip() {
   const dir = await mkdtemp(path.join(tmpdir(), "dock-posted-wholesale-"));

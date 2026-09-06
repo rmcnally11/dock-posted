@@ -487,6 +487,33 @@ export function postedVsDapCents(posted: Cents, dap: Cents): Cents {
   return subCents(posted, dap);
 }
 
+/** Posted leftover on the pressure-test ladder. Not fat take. */
+export function postedLeftoverCents(posted: Cents, shouldBe: Cents): Cents {
+  return subCents(posted, shouldBe);
+}
+
+/** Jobber is omitted from the stack when the invoice already carries delivered cost. */
+export function jobberOnStack(invoice: Cents, jobber: Cents): Cents {
+  if (invoice != null) return null;
+  return jobber;
+}
+
+export const PRESSURE_LADDER_KEYS = [
+  "pipe",
+  "freight",
+  "inbound",
+  "postedRack",
+  "jobber",
+  "tax",
+  "dap",
+  "fairHose",
+  "invoice",
+  "leftover",
+] as const;
+
+export const RIN_STACK_NOTE =
+  "RVO / RIN is already inside the typed DAP and posted rack. Not a second RIN line.";
+
 export function computeProductNetback(
   product: WholesaleProduct,
   input: Partial<ProductInputs>,

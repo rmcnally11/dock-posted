@@ -803,7 +803,7 @@ try {
   const wholesaleRes = await page.goto(`${base}/wholesale`, { waitUntil: "domcontentloaded" });
   check("wholesale 404 without password", wholesaleRes?.status() === 404, String(wholesaleRes?.status()));
   const wholesaleCopy = await page.$eval("body", (el) => el.textContent ?? "");
-  check("wholesale 404 has no desk book", !/nymex|platts|\bTCN\b|differential|should-be|Fair hose|\binvoice\b|\brack\b/i.test(wholesaleCopy));
+  check("wholesale 404 has no desk book", !/nymex|platts|\bTCN\b|differential|should-be|Fair hose|\binvoice\b|\brack\b|\bRIN\b/i.test(wholesaleCopy));
 } catch (error) {
   failures.push(error instanceof Error ? error.message : String(error));
   console.error(error);

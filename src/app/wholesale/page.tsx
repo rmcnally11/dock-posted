@@ -14,7 +14,7 @@ import {
 import { WHOLESALE_DRAFT_COOKIE, parseWholesaleDraft } from "@/lib/wholesale-draft";
 import { fetchYahooNymexScreens, nymexFallbackMap } from "@/lib/wholesale-nymex";
 import { isWholesaleAuthed } from "./gate";
-import { AreaChips, DeskLogout, LoginPanel, NymexBanner, TerminalTable, Waterfall, Worksheet } from "./desk";
+import { AreaChips, DeskLogout, LoginPanel, NymexBanner, TerminalTable, Worksheet } from "./desk";
 
 export const dynamic = "force-dynamic";
 
@@ -95,21 +95,20 @@ export default async function WholesalePage({
       <NymexBanner screens={screens} />
 
       {selected && selectedId ? (
-        <>
-          <Waterfall rb={live.RB} ho={live.HO} />
-          <Worksheet
-            areaId={areaId}
-            terminal={selected}
-            sheet={sheet}
-            prepared={prepared}
-            unit={unit}
-            diffs={store.differentials.filter((row) => row.terminalId === selectedId)}
-            screens={screens}
-            draft={usingDraft}
-            error={params.error}
-            saved={params.saved === "1"}
-          />
-        </>
+        <Worksheet
+          areaId={areaId}
+          terminal={selected}
+          sheet={sheet}
+          prepared={prepared}
+          rb={live.RB}
+          ho={live.HO}
+          unit={unit}
+          diffs={store.differentials.filter((row) => row.terminalId === selectedId)}
+          screens={screens}
+          draft={usingDraft}
+          error={params.error}
+          saved={params.saved === "1"}
+        />
       ) : null}
 
       <TerminalTable area={area} rows={tableRows} selectedId={selectedId} unit={unit} />
