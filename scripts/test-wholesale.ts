@@ -663,9 +663,10 @@ assert.match(deskUi, /What it should have been\./);
 assert.match(deskUi, /Fair hose\./);
 assert.match(deskUi, /Invoice \/ delivered/);
 assert.match(deskUi, /Fat\s+take is invoice versus posted rack, not posted pump/);
+assert.doesNotMatch(shortPathSource, /['"]use client['"]/);
 assert.match(deskUi, /data-testid="short-path"/);
 assert.match(deskUi, /data-testid="full-stack"/);
-assert.match(deskUi, /data-testid="fat-take-rb"/);
+assert.match(deskUi, /data-testid=\{`fat-take-\$\{p\}`\}/);
 assert.match(deskUi, /data-testid="product-ho"/);
 assert.match(deskUi, /Diesel stays dark until you open it/);
 assert.match(deskUi, /posted vs should-be/);
@@ -684,7 +685,12 @@ assert.deepEqual([...PRESSURE_LADDER_KEYS], [
   "fatTake",
   "postedLeftover",
 ]);
-assert.ok(deskUi.includes(RIN_STACK_NOTE));
+assert.match(shortPathSource, /RIN_STACK_NOTE/);
+assert.match(
+  readFileSync(path.join(process.cwd(), "src/lib/wholesale.ts"), "utf8"),
+  /RVO \/ RIN is already inside the typed DAP and posted rack/,
+);
+assert.equal(RIN_STACK_NOTE.includes("Not a second RIN line"), true);
 assert.doesNotMatch(deskUi, /Waterdog RIN|live RIN|name="rin"|OPIS RIN|Platts RIN/i);
 assert.doesNotMatch(deskUi, /riodata2026|\bn8n\b/i);
 assert.doesNotMatch(deskUi, /Come in/);

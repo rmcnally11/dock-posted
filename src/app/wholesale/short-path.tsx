@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import {
   MARINE_TAX_NOTE,
   PRESSURE_LADDER_KEYS,
@@ -42,52 +39,59 @@ export function ShortPathForm({
   unitLabel: string;
   screens: NymexScreenPull;
 }) {
-  const [product, setProduct] = useState<WholesaleProduct>("RB");
   const books = { RB: rb, HO: ho };
 
   return (
-    <form className="mt-4 print:hidden" data-testid="short-path" data-product={product}>
+    <form
+      className="mt-4 print:hidden [&:has([data-ui-product=ho]:checked)_[data-panel=rb]]:hidden [&:has([data-ui-product=rb]:checked)_[data-panel=ho]]:hidden [&:has([data-ui-product=ho]:checked)_[data-testid=ho-collapsed]]:hidden [&:has([data-ui-product=rb]:checked)_[data-testid=product-ho]]:bg-[#161616] [&:has([data-ui-product=rb]:checked)_[data-testid=product-ho]]:text-white/40 [&:has([data-ui-product=ho]:checked)_[data-testid=product-ho]]:bg-black [&:has([data-ui-product=ho]:checked)_[data-testid=product-ho]]:text-white [&:has([data-ui-product=rb]:checked)_[data-testid=product-rb]]:bg-black [&:has([data-ui-product=rb]:checked)_[data-testid=product-rb]]:text-white [&:has([data-ui-product=ho]:checked)_[data-testid=product-rb]]:bg-white [&:has([data-ui-product=ho]:checked)_[data-testid=product-rb]]:text-black/60"
+      data-testid="short-path"
+      data-product="RB"
+    >
       <input type="hidden" name="area" value={areaId} />
       <input type="hidden" name="terminal" value={terminalId} />
       <input type="hidden" name="unit" value={unit} />
+      <input
+        id="ui-product-rb"
+        type="radio"
+        name="ui_product"
+        value="RB"
+        data-ui-product="rb"
+        defaultChecked
+        className="sr-only"
+      />
+      <input
+        id="ui-product-ho"
+        type="radio"
+        name="ui_product"
+        value="HO"
+        data-ui-product="ho"
+        className="sr-only"
+      />
 
       <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Product">
-        <button
-          type="button"
+        <label
+          htmlFor="ui-product-rb"
           role="tab"
-          aria-selected={product === "RB"}
           data-testid="product-rb"
-          onClick={() => setProduct("RB")}
-          className={
-            product === "RB"
-              ? "border border-black bg-black px-3 py-1.5 text-xs text-white"
-              : "border border-black/20 bg-white px-3 py-1.5 text-xs text-black/60"
-          }
+          className="cursor-pointer border border-black bg-black px-3 py-1.5 text-xs text-white"
         >
           {PRODUCT_LABEL.RB}
-        </button>
-        <button
-          type="button"
+        </label>
+        <label
+          htmlFor="ui-product-ho"
           role="tab"
-          aria-selected={product === "HO"}
           data-testid="product-ho"
-          data-collapsed={product === "HO" ? "0" : "1"}
-          onClick={() => setProduct("HO")}
-          className={
-            product === "HO"
-              ? "border border-black bg-black px-3 py-1.5 text-xs text-white"
-              : "border border-black bg-[#161616] px-3 py-1.5 text-xs text-white/40"
-          }
+          data-collapsed="1"
+          className="cursor-pointer border border-black bg-[#161616] px-3 py-1.5 text-xs text-white/40"
         >
           Diesel · {PRODUCT_LABEL.HO}
-        </button>
+        </label>
       </div>
 
       {WHOLESALE_PRODUCTS.map((item) => (
         <ProductShortPath
           key={item}
           product={item}
-          hidden={item !== product}
           sheet={sheet}
           prepared={prepared}
           book={books[item]}
@@ -127,21 +131,18 @@ export function ShortPathForm({
             <PressureLadder
               key={item}
               product={item}
-              hidden={item !== product}
               sheet={sheet}
               prepared={prepared}
               book={books[item]}
               unit={unit}
             />
           ))}
-          {product === "RB" ? (
-            <div
-              data-testid="ho-collapsed"
-              className="mt-3 flex min-h-[4.5rem] items-center justify-center border border-black bg-[#111] px-4 text-center text-sm text-white/40"
-            >
-              Diesel stays dark until you open it.
-            </div>
-          ) : null}
+          <div
+            data-testid="ho-collapsed"
+            className="mt-3 flex min-h-[4.5rem] items-center justify-center border border-black bg-[#111] px-4 text-center text-sm text-white/40"
+          >
+            Diesel stays dark until you open it.
+          </div>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <TaxField label="Other tax" name="tax_other" value={sheet.tax.other} unit={unit} />
             <TaxField
@@ -170,7 +171,6 @@ export function ShortPathForm({
 
 function ProductShortPath({
   product,
-  hidden,
   sheet,
   prepared,
   book,
@@ -179,7 +179,6 @@ function ProductShortPath({
   screens,
 }: {
   product: WholesaleProduct;
-  hidden: boolean;
   sheet: TerminalWorksheet;
   prepared?: PreparedWorksheet;
   book: ProductNetback;
@@ -196,9 +195,8 @@ function ProductShortPath({
 
   return (
     <div
-      hidden={hidden}
+      data-panel={p}
       data-testid={`short-path-${p}`}
-      data-active={hidden ? "0" : "1"}
       className="mt-4 max-w-xl space-y-4"
     >
       <p className="text-[11px] uppercase tracking-[0.08em] text-black/40">
@@ -312,14 +310,12 @@ function ProductShortPath({
 
 function PressureLadder({
   product,
-  hidden,
   sheet,
   prepared,
   book,
   unit,
 }: {
   product: WholesaleProduct;
-  hidden: boolean;
   sheet: TerminalWorksheet;
   prepared?: PreparedWorksheet;
   book: ProductNetback;
@@ -337,7 +333,7 @@ function PressureLadder({
 
   return (
     <ol
-      hidden={hidden}
+      data-panel={p}
       data-testid={`pressure-ladder-${p}`}
       data-ladder={PRESSURE_LADDER_KEYS.join(" ")}
       className="mt-4 max-w-xl space-y-3"
