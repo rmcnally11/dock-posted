@@ -77,6 +77,8 @@ Each of those pins has a real name, city, state, and a public lat/lng for the ha
 
 Exception: St. Augustine Municipal Marina. City rates page https://www.citystaug.com/338/Rates, fetched 3 Oct 2026, same fuel block as About Us: Gasoline $6.59, Diesel $7.39, as of 9/25/26. Octane not named, so the product is `gasoline` and the pin says Gasoline. Ethanol not named. Tax not stated (`taxIncluded` null). `lastVerifiedAt` is the marina's as-of date, 2026-09-25.
 
+Exception: Madeira Beach Municipal Marina. City page https://madeirabeachfl.gov/departments/marina/, read 3 Oct 2026: Gas Ethanol-Free $6.05, Diesel $6.65. The city page did not date the price, so `lastVerifiedAt` is the read date, 2026-10-03, not an invented as-of. Octane not named, so the product is `gasoline`. Ethanol is named ethanol-free (`E0`). Tax not stated (`taxIncluded` null). Hours are the marina's one operating clock (open 7 days, Monday–Thursday 7:00 AM–7:00 PM, Friday–Sunday 7:00 AM–8:00 PM, closed Thanksgiving and Christmas Day). The page does not give a separate fuel-dock clock. Email bcrabtree@madeirabeachfl.gov is notes only. Pin is the OpenStreetMap node named Madeira Beach Municipal Marina, 27.803974, -82.795903, on Tom Stuart Causeway. The US Census address-range match for 503 150th Ave, Madeira Beach, FL 33708 is 27.804498, -82.797240, an interpolation of 501–599, not a rooftop. The two points are the same marina, so the named node is the pin.
+
 No Waterway Guide scrape of the expanded coast succeeded from this environment. Cloudflare still challenges unattended fetches. That is a failed scrape, not a silent success. Do not treat this file as a fresh weekly report for the new pins.
 
 Public WG report URLs the fetcher will try again (login not required):
