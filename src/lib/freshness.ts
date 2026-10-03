@@ -2,6 +2,18 @@ import type { Dock, FuelQuote } from "./types";
 
 export const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
 
+/** A marina that prints "Gasoline" with no octane often dates it a few days
+ *  before the morning we read the page. That pin stays up for 14 days.
+ *  Octane hoses, including Galveston, stay on the one-week gate. */
+const UNLABELED_GASOLINE_MS = 14 * 24 * 60 * 60 * 1000;
+
+function postsUnlabeledGasoline(dock: Dock): boolean {
+  return dock.quotes.some(
+    (quote) =>
+      quote.product === "gasoline" && quote.status === "posted" && quote.pricePerGallon != null,
+  );
+}
+
 export type Freshness = "fresh" | "stale" | "call" | "no-report" | "never";
 
 export function postedQuotes(dock: Dock): FuelQuote[] {
@@ -23,7 +35,8 @@ export function isOlderThanWeek(dock: Dock, now = Date.now()): boolean {
   if (!dock.lastVerifiedAt) return true;
   const then = Date.parse(dock.lastVerifiedAt);
   if (Number.isNaN(then)) return true;
-  return now - then > STALE_AFTER_MS;
+  const limit = postsUnlabeledGasoline(dock) ? UNLABELED_GASOLINE_MS : STALE_AFTER_MS;
+  return now - then > limit;
 }
 
 function openQuotes(dock: Dock): FuelQuote[] {
@@ -93,7 +106,7 @@ export function displayGas(dock: Dock): FuelQuote | null {
 }
 
 export interface PinQuoteSlot {
-  id: "regular" | "non-ethanol" | "diesel";
+  id: "regular" | "gasoline" | "non-ethanol" | "diesel";
   label: string;
   quote: FuelQuote | null;
   kind: "gas" | "diesel";
@@ -104,6 +117,7 @@ export interface PinQuoteSlot {
  * That dock posts regular 87 and non-ethanol 93. displayGas prefers the
  * ethanol-free hose, which would put $6.27 under Regular. No other posted
  * dock has a second gas grade, so the extra line stays on this pin.
+ * Unlabeled gasoline — the marina printed "Gasoline", not an octane — uses that word.
  */
 export function pinQuoteSlots(dock: Dock, now = Date.now()): PinQuoteSlot[] {
   const diesel: PinQuoteSlot = {
@@ -113,11 +127,23 @@ export function pinQuoteSlots(dock: Dock, now = Date.now()): PinQuoteSlot[] {
     kind: "diesel",
   };
   if (dock.id !== "galveston-yacht-marina") {
+    const gas = displayGas(dock);
+    if (gas?.product === "gasoline") {
+      return [
+        {
+          id: "gasoline",
+          label: "Gasoline",
+          quote: boardQuote(dock, gas, now),
+          kind: "gas",
+        },
+        diesel,
+      ];
+    }
     return [
       {
         id: "regular",
         label: "Regular",
-        quote: boardQuote(dock, displayGas(dock), now),
+        quote: boardQuote(dock, gas, now),
         kind: "gas",
       },
       diesel,

@@ -2777,28 +2777,28 @@
       "phone": "(904) 825-1026",
       "hours": null,
       "website": "https://www.citystaug.com/marina",
-      "notes": "City marina under the Bridge of Lions. Municipal site; call.",
+      "notes": "City marina under the Bridge of Lions. City rates page, fetched 3 Oct 2026: Gasoline $6.59, Diesel $7.39, as of 9/25/26. The line says Gasoline, not an octane. Ethanol not named. Tax not stated.",
       "access": "public",
       "ethanol": "unknown",
       "quotes": [
         {
-          "product": "87",
-          "pricePerGallon": null,
+          "product": "gasoline",
+          "pricePerGallon": 6.59,
           "ethanol": "unknown",
-          "status": "call",
+          "status": "posted",
           "taxIncluded": null
         },
         {
           "product": "diesel",
-          "pricePerGallon": null,
+          "pricePerGallon": 7.39,
           "ethanol": "unknown",
-          "status": "call",
+          "status": "posted",
           "taxIncluded": null
         }
       ],
-      "lastVerifiedAt": null,
+      "lastVerifiedAt": "2026-09-25",
       "lastVerifiedSource": "marina site",
-      "sourceUrl": "https://www.citystaug.com/marina"
+      "sourceUrl": "https://www.citystaug.com/338/Rates"
     },
     {
       "id": "fernandina-harbor-marina",

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { boardHref, dockPath, filterDocks, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
-import { formatQuote, telHref } from "../src/lib/format";
+import { formatDate, formatQuote, telHref } from "../src/lib/format";
 import { boardQuote, boardTally, displayGas, freshness, freshnessLabel, pinQuoteSlots, pinTrust } from "../src/lib/freshness";
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
 import { DEFAULT_X_HANDLE, publicXHandle, xProfileUrl } from "../src/lib/x-handle";
@@ -228,6 +228,59 @@ assert.deepEqual(
     ["Regular", "90", 6.27],
     ["Diesel", "diesel", 6.18],
   ],
+);
+
+const stAugustine = docks.find((dock) => dock.id === "st-augustine-municipal-marina");
+assert.ok(stAugustine);
+assert.equal(stAugustine.region, "east-florida");
+assert.equal(stAugustine.lastVerifiedAt, "2026-09-25");
+assert.equal(stAugustine.lastVerifiedSource, "marina site");
+assert.equal(stAugustine.sourceUrl, "https://www.citystaug.com/338/Rates");
+assert.equal(stAugustine.website, "https://www.citystaug.com/marina");
+assert.equal(stAugustine.ethanol, "unknown");
+assert.deepEqual(
+  stAugustine.quotes.map((quote) => [
+    quote.product,
+    quote.pricePerGallon,
+    quote.ethanol,
+    quote.taxIncluded,
+    quote.status,
+  ]),
+  [
+    ["gasoline", 6.59, "unknown", null, "posted"],
+    ["diesel", 7.39, "unknown", null, "posted"],
+  ],
+);
+assert.equal(formatDate("2026-09-25"), "Sep 24, 2026");
+const readOn = Date.parse("2026-10-03T21:00:00Z");
+assert.equal(freshness(stAugustine, readOn), "fresh");
+assert.equal(pinTrust(stAugustine), "verified");
+const stAugustineSlots = pinQuoteSlots(stAugustine, readOn);
+assert.deepEqual(
+  stAugustineSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon]),
+  [
+    ["gasoline", "Gasoline", "gasoline", 6.59],
+    ["diesel", "Diesel", "diesel", 7.39],
+  ],
+);
+assert.equal(formatQuote(stAugustineSlots[0]?.quote ?? null), "$6.590 Gasoline");
+assert.equal(formatQuote(stAugustineSlots[1]?.quote ?? null), "$7.390 diesel");
+assert.deepEqual(
+  stAugustine.quotes.map((quote) => quote.product),
+  ["gasoline", "diesel"],
+);
+assert.ok(stAugustine.quotes.every((quote) => quote.ethanol === "unknown" && quote.taxIncluded == null));
+assert.ok(stAugustineSlots.every((slot) => slot.label === "Gasoline" || slot.label === "Diesel"));
+assert.equal(freshness(stAugustine, Date.parse("2026-10-10T00:00:00Z")), "stale");
+assert.equal(
+  boardQuote(stAugustine, stAugustine.quotes[0] ?? null, Date.parse("2026-10-10T00:00:00Z"))?.pricePerGallon,
+  null,
+);
+assert.equal(freshness(gym, Date.parse("2026-10-11T00:00:00Z")), "stale");
+const withoutStAugustine = docks.filter((dock) => dock.id !== "st-augustine-municipal-marina");
+assert.equal(
+  boardTally(docks, readOn).postedThisWeek,
+  boardTally(withoutStAugustine, readOn).postedThisWeek + 1,
 );
 
 const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
