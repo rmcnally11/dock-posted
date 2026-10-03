@@ -92,6 +92,57 @@ export function displayGas(dock: Dock): FuelQuote | null {
   return posted.find((quote) => quote.ethanol === "E0") ?? posted[0];
 }
 
+export interface PinQuoteSlot {
+  id: "regular" | "non-ethanol" | "diesel";
+  label: string;
+  quote: FuelQuote | null;
+  kind: "gas" | "diesel";
+}
+
+/**
+ * One gas figure for the board, except Galveston Yacht Marina.
+ * That dock posts regular 87 and non-ethanol 93. displayGas prefers the
+ * ethanol-free hose, which would put $6.27 under Regular. No other posted
+ * dock has a second gas grade, so the extra line stays on this pin.
+ */
+export function pinQuoteSlots(dock: Dock, now = Date.now()): PinQuoteSlot[] {
+  const diesel: PinQuoteSlot = {
+    id: "diesel",
+    label: "Diesel",
+    quote: boardQuote(dock, displayDiesel(dock), now),
+    kind: "diesel",
+  };
+  if (dock.id !== "galveston-yacht-marina") {
+    return [
+      {
+        id: "regular",
+        label: "Regular",
+        quote: boardQuote(dock, displayGas(dock), now),
+        kind: "gas",
+      },
+      diesel,
+    ];
+  }
+  const regular = dock.quotes.find((quote) => quote.product === "87") ?? null;
+  const nonEthanol =
+    dock.quotes.find((quote) => quote.product === "93" && quote.ethanol === "E0") ?? null;
+  return [
+    {
+      id: "regular",
+      label: "Regular 87",
+      quote: boardQuote(dock, regular, now),
+      kind: "gas",
+    },
+    {
+      id: "non-ethanol",
+      label: "Non-ethanol 93",
+      quote: boardQuote(dock, nonEthanol, now),
+      kind: "gas",
+    },
+    diesel,
+  ];
+}
+
 export function displayDiesel(dock: Dock): FuelQuote | null {
   return dock.quotes.find((quote) => quote.product === "diesel") ?? null;
 }

@@ -1,25 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { QuoteFigure } from "@/components/dock-card";
+import { DockQuoteGrid } from "@/components/dock-card";
 import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { boardHref } from "@/lib/board-query";
-import { ethanolCopy, formatDate, formatQuote, isBlankPrice, sourceLabel, telHref } from "@/lib/format";
+import { formatDate, sourceLabel, telHref } from "@/lib/format";
 import { dockWaterLabel, runWatchHref } from "@/lib/income";
-import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
+import { hasPostedPrice, pinTrust } from "@/lib/freshness";
 import { readDocks } from "@/lib/store";
 import type { Dock } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
-
-function quoteTone(quote: ReturnType<typeof boardQuote>, kind: "gas" | "diesel"): string {
-  const text = formatQuote(quote);
-  if (isBlankPrice(text)) return "text-[color:var(--signal)]";
-  if (text === "Not sold") return "text-[color:var(--ink)]/55";
-  return kind === "diesel" ? "text-[color:var(--diesel)]" : "text-[color:var(--signal)]";
-}
 
 function accessLabel(dock: Dock): string | null {
   if (dock.access === "members" || dock.access === "private") return "Members’ dock";
@@ -118,8 +110,6 @@ export default async function DockPage({
   const dock = await loadDock(id);
   if (!dock) notFound();
 
-  const gas = boardQuote(dock, displayGas(dock));
-  const diesel = boardQuote(dock, displayDiesel(dock));
   const trust = pinTrust(dock);
   const flags = flagLabels(dock);
   const callHref = dock.phone ? telHref(dock.phone) : null;
@@ -152,30 +142,10 @@ export default async function DockPage({
       <Waterline className="mt-3" />
 
       <dl className="mt-8 grid max-w-xl grid-cols-2 gap-2 text-sm">
-        <div className="rounded-lg bg-[color:var(--fog)] px-3 py-2">
-          <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Regular</dt>
-          <dd
-            data-testid={`quote-regular-${dock.id}`}
-            className={cn("mt-1", quoteTone(gas, "gas"))}
-          >
-            <QuoteFigure quote={gas} />
-          </dd>
-        </div>
-        <div className="rounded-lg bg-[color:var(--fog)] px-3 py-2">
-          <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Diesel</dt>
-          <dd
-            data-testid={`quote-diesel-${dock.id}`}
-            className={cn("mt-1", quoteTone(diesel, "diesel"))}
-          >
-            <QuoteFigure quote={diesel} />
-          </dd>
-        </div>
-        <div className="rounded-lg bg-[color:var(--fog)] px-3 py-2">
-          <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Blend</dt>
-          <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--navy)]">
-            {ethanolCopy(dock.ethanol)}
-          </dd>
-        </div>
+        <DockQuoteGrid
+          dock={dock}
+          tileClassName="rounded-lg bg-[color:var(--fog)] px-3 py-2"
+        />
         <div className="col-span-2 rounded-lg bg-[color:var(--fog)] px-3 py-2">
           <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Hours</dt>
           <dd className="font-mono text-[15px] font-medium text-[color:var(--navy)]">

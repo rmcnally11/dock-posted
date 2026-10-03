@@ -309,10 +309,10 @@ const galvRb = boardDockDefault(docks, "galveston-bay", "RB");
 const galvHo = boardDockDefault(docks, "galveston-bay", "HO");
 assert.ok(galvRb);
 assert.equal(galvRb.dockId, "galveston-yacht-marina");
-assert.equal(galvRb.cents, 445);
+assert.equal(galvRb.cents, 483);
 assert.match(galvRb.label, /from the board/);
 assert.ok(galvHo);
-assert.equal(galvHo.cents, 528);
+assert.equal(galvHo.cents, 633);
 assert.equal(boardDockDefault(docks, "keys", "RB"), null);
 assert.equal(boardDockDefault(docks, "keys", "HO"), null);
 assert.equal(boardDockDefault(docks, "upper-keys", "RB"), null);
@@ -322,9 +322,9 @@ const boardApplied = applyWorksheetDefaults(emptyWorksheet(), {
   areaId: "galveston-bay",
   docks,
 });
-assert.equal(boardApplied.rb.input.dockPosted, 445);
+assert.equal(boardApplied.rb.input.dockPosted, 483);
 assert.equal(boardApplied.rb.origins.dockPosted, "board");
-assert.equal(boardApplied.ho.input.dockPosted, 528);
+assert.equal(boardApplied.ho.input.dockPosted, 633);
 assert.equal(boardApplied.rb.input.invoiceDelivered, null);
 assert.equal(boardApplied.rb.input.fairHose, null);
 assert.equal(boardApplied.ho.input.invoiceDelivered, null);
@@ -346,7 +346,7 @@ const stripped = stripUnchangedDefaults(
     ...emptyWorksheet(),
     taxRb: { federal: 18.4, state: 20 },
     taxHo: { federal: 24.4, state: 20 },
-    rb: { ...emptyWorksheet().rb, dockPosted: 445 },
+    rb: { ...emptyWorksheet().rb, dockPosted: 483 },
   },
   "TX",
   { areaId: "galveston-bay", docks },

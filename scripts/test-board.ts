@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { boardHref, dockPath, filterDocks, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
 import { formatQuote, telHref } from "../src/lib/format";
-import { boardQuote, boardTally, freshness, freshnessLabel, pinTrust } from "../src/lib/freshness";
+import { boardQuote, boardTally, displayGas, freshness, freshnessLabel, pinQuoteSlots, pinTrust } from "../src/lib/freshness";
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
 import { DEFAULT_X_HANDLE, publicXHandle, xProfileUrl } from "../src/lib/x-handle";
 import seed from "../data/docks.seed.json";
@@ -185,6 +185,50 @@ for (const id of hemingwayHome) {
 const gym = docks.find((dock) => dock.id === "galveston-yacht-marina");
 assert.ok(gym);
 assert.equal(pinTrust(gym), "verified");
+assert.equal(gym.lastVerifiedAt, "2026-10-03");
+assert.equal(gym.lastVerifiedSource, "marina site");
+assert.equal(gym.sourceUrl, "https://galvestonyachtbasin.com/");
+assert.deepEqual(
+  gym.quotes.map((quote) => [quote.product, quote.pricePerGallon, quote.ethanol, quote.taxIncluded]),
+  [
+    ["87", 4.83, "unknown", null],
+    ["93", 6.27, "E0", null],
+    ["diesel", 6.33, "unknown", null],
+  ],
+);
+assert.match(gym.hours ?? "", /Daily 9AM–7PM/);
+assert.match(gym.hours ?? "", /fuel dock Daily 6:00am–5:00pm/);
+assert.match(gym.hours ?? "", /store and ramp 6:00am–5:00pm/);
+assert.match(gym.notes ?? "", /Diesel \$6\.33/);
+assert.match(gym.notes ?? "", /Regular 87 \$4\.83/);
+assert.match(gym.notes ?? "", /Non-Ethanol 93 \$6\.27/);
+assert.match(gym.notes ?? "", /don't agree/);
+assert.doesNotMatch(`${gym.hours ?? ""} ${gym.notes ?? ""}`, /waterdog/i);
+assert.equal(displayGas(gym)?.product, "93");
+assert.equal(displayGas(gym)?.pricePerGallon, 6.27);
+const gymSlots = pinQuoteSlots(gym, Date.parse("2026-10-03T18:00:00Z"));
+assert.deepEqual(
+  gymSlots.map((slot) => [slot.label, slot.quote?.product, slot.quote?.pricePerGallon]),
+  [
+    ["Regular 87", "87", 4.83],
+    ["Non-ethanol 93", "93", 6.27],
+    ["Diesel", "diesel", 6.33],
+  ],
+);
+assert.ok(gymSlots.every((slot) => slot.label !== "Regular"));
+const mangrove = docks.find((dock) => dock.id === "mangrove-marina");
+assert.ok(mangrove);
+assert.deepEqual(
+  pinQuoteSlots(mangrove, Date.parse("2026-08-28T18:00:00Z")).map((slot) => [
+    slot.label,
+    slot.quote?.product,
+    slot.quote?.pricePerGallon,
+  ]),
+  [
+    ["Regular", "90", 6.27],
+    ["Diesel", "diesel", 6.18],
+  ],
+);
 
 const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
 assert.ok(blueMarlin);
@@ -641,8 +685,8 @@ assert.equal(publicXHandle("SomeOther_1"), "SomeOther_1");
 assert.equal(xProfileUrl("DockPosted"), "https://x.com/DockPosted");
 const dockPageSource = readFileSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx"), "utf8");
 assert.match(dockPageSource, /data-testid="dock-page"/);
-assert.match(dockPageSource, /boardQuote/);
-assert.match(dockPageSource, /formatQuote/);
+assert.match(dockPageSource, /DockQuoteGrid/);
+assert.match(dockPageSource, /formatDate/);
 assert.match(dockPageSource, /A blank is a fact\. Silence is not a price\./);
 assert.match(dockPageSource, /dock\.hours \?\? "—"/);
 assert.doesNotMatch(dockPageSource, /BrandPhoto|\/brand\/.*\.jpg/);
@@ -665,9 +709,10 @@ for (const file of ["src/app/page.tsx", "src/app/docks/[id]/page.tsx"]) {
 }
 
 const cardSource = readFileSync(path.join(process.cwd(), "src/components/dock-card.tsx"), "utf8");
-assert.match(cardSource, />Regular</);
-assert.match(cardSource, />Diesel</);
+assert.match(cardSource, /DockQuoteGrid/);
 assert.match(cardSource, />Blend</);
+assert.match(readFileSync(path.join(process.cwd(), "src/lib/freshness.ts"), "utf8"), /label: "Regular"/);
+assert.match(readFileSync(path.join(process.cwd(), "src/lib/freshness.ts"), "utf8"), /label: "Diesel"/);
 assert.match(cardSource, />Hours</);
 assert.match(cardSource, />Date</);
 assert.match(cardSource, /telHref/);

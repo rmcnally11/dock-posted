@@ -57,35 +57,35 @@
       "lat": 29.319,
       "lng": -94.7789,
       "phone": "(409) 765-3000",
-      "hours": "Daily 9am–7pm (marina site, 30 Aug 2026)",
+      "hours": "Top of the page: Daily 9AM–7PM. Contact block: fuel dock Daily 6:00am–5:00pm; store and ramp 6:00am–5:00pm.",
       "website": "https://galvestonyachtbasin.com/",
-      "notes": "Galveston Island, not the Clear Lake mouth. Marina homepage on 30 Aug 2026 posted Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79. Matches Waterway Guide 08/28/26.",
+      "notes": "Galveston Island, not the Clear Lake mouth. Marina homepage on 3 Oct 2026 posted Diesel $6.33, Regular 87 $4.83, Non-Ethanol 93 $6.27. That line doesn't say tax in or tax out. Hours on the same page don't agree. Top of the page says Daily 9AM–7PM. The contact block says the fuel dock is Daily 6:00am–5:00pm, and the store and ramp are 6:00am–5:00pm.",
       "access": "public",
       "ethanol": "E0",
       "quotes": [
         {
-          "product": "89",
-          "pricePerGallon": 4.45,
-          "ethanol": "E10",
+          "product": "87",
+          "pricePerGallon": 4.83,
+          "ethanol": "unknown",
           "status": "posted",
-          "taxIncluded": true
+          "taxIncluded": null
         },
         {
-          "product": "90",
-          "pricePerGallon": 5.79,
+          "product": "93",
+          "pricePerGallon": 6.27,
           "ethanol": "E0",
           "status": "posted",
-          "taxIncluded": true
+          "taxIncluded": null
         },
         {
           "product": "diesel",
-          "pricePerGallon": 5.28,
+          "pricePerGallon": 6.33,
           "ethanol": "unknown",
           "status": "posted",
-          "taxIncluded": true
+          "taxIncluded": null
         }
       ],
-      "lastVerifiedAt": "2026-08-30",
+      "lastVerifiedAt": "2026-10-03",
       "lastVerifiedSource": "marina site",
       "sourceUrl": "https://galvestonyachtbasin.com/",
       "region": "texas",
