@@ -1,8 +1,8 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { ethanolCopy, formatDate, formatQuote, isBlankPrice, quoteParts, sourceLabel, telHref } from "@/lib/format";
-import { boardQuote, displayDiesel, displayGas, hasPostedPrice, pinTrust } from "@/lib/freshness";
+import { hasPostedPrice, pinQuoteSlots, pinTrust } from "@/lib/freshness";
 import type { DockHref } from "@/lib/board-query";
-import type { Dock } from "@/lib/types";
+import type { Dock, FuelQuote } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function accessLabel(dock: Dock): string | null {
@@ -17,7 +17,7 @@ function payLabel(dock: Dock): string | null {
   return null;
 }
 
-function quoteTone(quote: ReturnType<typeof boardQuote>, kind: "gas" | "diesel"): string {
+function quoteTone(quote: FuelQuote | null, kind: "gas" | "diesel"): string {
   const text = formatQuote(quote);
   if (isBlankPrice(text)) return "text-[color:var(--signal)]";
   if (text === "Not sold") return "text-[color:var(--ink)]/55";
@@ -29,7 +29,7 @@ function dieselOnly(dock: Dock): boolean {
   return gas.length > 0 && gas.every((quote) => quote.status === "not-sold");
 }
 
-export function QuoteFigure({ quote }: { quote: ReturnType<typeof boardQuote> }) {
+export function QuoteFigure({ quote }: { quote: FuelQuote | null }) {
   const parts = quoteParts(quote);
   if (parts.blank) {
     return <span className="price-blank">{parts.figure}</span>;
@@ -58,6 +58,39 @@ function flagLabels(dock: Dock): string[] {
   return labels;
 }
 
+export function DockQuoteGrid({
+  dock,
+  tileClassName,
+}: {
+  dock: Dock;
+  tileClassName: string;
+}) {
+  const slots = pinQuoteSlots(dock);
+  return (
+    <>
+      {slots.map((slot) => (
+        <div key={slot.id} className={tileClassName}>
+          <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">
+            {slot.label}
+          </dt>
+          <dd
+            data-testid={`quote-${slot.id}-${dock.id}`}
+            className={cn("mt-1", quoteTone(slot.quote, slot.kind))}
+          >
+            <QuoteFigure quote={slot.quote} />
+          </dd>
+        </div>
+      ))}
+      <div className={tileClassName}>
+        <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Blend</dt>
+        <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--navy)]">
+          {ethanolCopy(dock.ethanol)}
+        </dd>
+      </div>
+    </>
+  );
+}
+
 export function DockCard({
   dock,
   selected,
@@ -67,8 +100,6 @@ export function DockCard({
   selected?: boolean;
   href: DockHref;
 }) {
-  const gas = boardQuote(dock, displayGas(dock));
-  const diesel = boardQuote(dock, displayDiesel(dock));
   const trust = pinTrust(dock);
   const flags = flagLabels(dock);
   const callHref = dock.phone ? telHref(dock.phone) : null;
@@ -104,30 +135,7 @@ export function DockCard({
         </div>
 
         <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-          <div className="rounded-lg bg-white px-3 py-2">
-            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Regular</dt>
-            <dd
-              data-testid={`quote-regular-${dock.id}`}
-              className={cn("mt-1", quoteTone(gas, "gas"))}
-            >
-              <QuoteFigure quote={gas} />
-            </dd>
-          </div>
-          <div className="rounded-lg bg-white px-3 py-2">
-            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Diesel</dt>
-            <dd
-              data-testid={`quote-diesel-${dock.id}`}
-              className={cn("mt-1", quoteTone(diesel, "diesel"))}
-            >
-              <QuoteFigure quote={diesel} />
-            </dd>
-          </div>
-          <div className="rounded-lg bg-white px-3 py-2">
-            <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Blend</dt>
-            <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--navy)]">
-              {ethanolCopy(dock.ethanol)}
-            </dd>
-          </div>
+          <DockQuoteGrid dock={dock} tileClassName="rounded-lg bg-white px-3 py-2" />
         </dl>
         <dl className="mt-2 text-sm">
           <div className="rounded-lg bg-white px-3 py-2">
