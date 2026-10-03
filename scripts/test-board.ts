@@ -185,6 +185,25 @@ for (const id of hemingwayHome) {
 const gym = docks.find((dock) => dock.id === "galveston-yacht-marina");
 assert.ok(gym);
 assert.equal(pinTrust(gym), "verified");
+assert.equal(gym.lastVerifiedAt, "2026-10-03");
+assert.equal(gym.lastVerifiedSource, "marina site");
+assert.equal(gym.sourceUrl, "https://galvestonyachtbasin.com/");
+assert.deepEqual(
+  gym.quotes.map((quote) => [quote.product, quote.pricePerGallon, quote.ethanol, quote.taxIncluded]),
+  [
+    ["87", 4.83, "unknown", null],
+    ["93", 6.27, "E0", null],
+    ["diesel", 6.33, "unknown", null],
+  ],
+);
+assert.match(gym.hours ?? "", /Daily 9AM–7PM/);
+assert.match(gym.hours ?? "", /fuel dock Daily 6:00am–5:00pm/);
+assert.match(gym.hours ?? "", /store and ramp 6:00am–5:00pm/);
+assert.match(gym.notes ?? "", /Diesel \$6\.33/);
+assert.match(gym.notes ?? "", /Regular 87 \$4\.83/);
+assert.match(gym.notes ?? "", /Non-Ethanol 93 \$6\.27/);
+assert.match(gym.notes ?? "", /don't agree/);
+assert.doesNotMatch(`${gym.hours ?? ""} ${gym.notes ?? ""}`, /waterdog/i);
 
 const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
 assert.ok(blueMarlin);

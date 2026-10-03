@@ -61,7 +61,7 @@ Dropped from the coast set (no weekend routing / no fuel):
 
 Marina marketing sites with a live board:
 
-- https://galvestonyachtbasin.com/ — 30 Aug 2026: Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79
+- https://galvestonyachtbasin.com/ — 3 Oct 2026: Diesel $6.33, Regular 87 $4.83, Non-Ethanol 93 $6.27. That line doesn't say tax in or tax out. Hours on the same page don't agree: top line Daily 9AM–7PM; contact block fuel dock Daily 6:00am–5:00pm, store and ramp 6:00am–5:00pm.
 
 Marina sites that confirm fuel but show no pump price (home set):
 
@@ -156,5 +156,5 @@ Slow published numbers only. File: `data/wholesale-tax.json`. Tax table is not a
 3. If a terminal state is not in that table, state tax stays —. No neighbor-state copy. No average.
 4. Highway undyed rates only. Dyed / off-road diesel and local option taxes are not assumed. Marina diesel is not treated as tax-free.
 5. Freight / pipeline tariff is not defaulted. No FERC tariff was copied for a specific Buckeye/KM movement into these hubs.
-6. Dock posted default is offered only when exactly one public pin in that wholesale area has a real posted $ (not Call). Not an average. Galveston Bay / Texas: Galveston Yacht Marina (marina site, 30 Aug 2026). Keys areas have several posted pins, so dock stays —.
+6. Dock posted default is offered only when exactly one public pin in that wholesale area has a real posted $ (not Call). Not an average. Galveston Bay / Texas: Galveston Yacht Marina (marina site, 3 Oct 2026). Keys areas have several posted pins, so dock stays —.
 

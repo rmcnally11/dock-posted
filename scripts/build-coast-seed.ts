@@ -169,8 +169,10 @@ const HOME_PATCHES: Record<
   },
   "galveston-yacht-marina": {
     lead: 12,
+    hours:
+      "Top of the page: Daily 9AM–7PM. Contact block: fuel dock Daily 6:00am–5:00pm; store and ramp 6:00am–5:00pm.",
     notes:
-      "Galveston Island, not the Clear Lake mouth. Marina homepage on 30 Aug 2026 posted Diesel $5.28, Unleaded $4.45, Non-Ethanol $5.79. Matches Waterway Guide 08/28/26.",
+      "Galveston Island, not the Clear Lake mouth. Marina homepage on 3 Oct 2026 posted Diesel $6.33, Regular 87 $4.83, Non-Ethanol 93 $6.27. That line doesn't say tax in or tax out. Hours on the same page don't agree. Top of the page says Daily 9AM–7PM. The contact block says the fuel dock is Daily 6:00am–5:00pm, and the store and ramp are 6:00am–5:00pm.",
   },
   "key-largo-harbor": {
     lead: 1,
