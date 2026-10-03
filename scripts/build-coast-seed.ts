@@ -870,6 +870,40 @@ const ADDITIONS: Addition[] = [
     notes: "City marina on the downtown waterfront. Call for fuel.",
   },
   {
+    id: "madeira-beach-municipal-marina",
+    name: "Madeira Beach Municipal Marina",
+    region: "west-florida",
+    city: "Madeira Beach",
+    state: "FL",
+    lat: 27.803974,
+    lng: -82.795903,
+    phone: "(727) 399-2631",
+    website: "https://madeirabeachfl.gov/departments/marina/",
+    hours:
+      "Open 7 days. Monday–Thursday 7:00 AM–7:00 PM, Friday–Sunday 7:00 AM–8:00 PM. Closed Thanksgiving and Christmas Day.",
+    notes:
+      "Madeira Beach municipal marina at 503 150th Ave, Madeira Beach, FL 33708. City page, read 3 Oct 2026: Gas Ethanol-Free $6.05, Diesel $6.65. The city page did not date the price. The line says Gas, not an octane. Ethanol-free. Tax not stated. Email bcrabtree@madeirabeachfl.gov. Hours on the page are the marina's operating hours; the page does not give a separate fuel-dock clock. Pin is the OpenStreetMap node named Madeira Beach Municipal Marina (27.803974, -82.795903) on Tom Stuart Causeway. The Census address-range match for 503 150th Ave is 27.804498, -82.797240, interpolated across 501–599, not a rooftop. Those two points are the same marina, so the named node is the pin.",
+    ethanol: "E0",
+    quotes: [
+      {
+        product: "gasoline",
+        pricePerGallon: 6.05,
+        ethanol: "E0",
+        status: "posted",
+        taxIncluded: null,
+      },
+      {
+        product: "diesel",
+        pricePerGallon: 6.65,
+        ethanol: "unknown",
+        status: "posted",
+        taxIncluded: null,
+      },
+    ],
+    lastVerifiedAt: "2026-10-03",
+    sourceUrl: "https://madeirabeachfl.gov/departments/marina/",
+  },
+  {
     id: "clearwater-beach-marina",
     name: "Clearwater Beach Marina",
     region: "west-florida",

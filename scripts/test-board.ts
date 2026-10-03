@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { boardHref, dockPath, filterDocks, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
-import { formatDate, formatQuote, telHref } from "../src/lib/format";
+import { ethanolCopy, formatDate, formatQuote, quoteParts, telHref } from "../src/lib/format";
 import { boardQuote, boardTally, displayGas, freshness, freshnessLabel, pinQuoteSlots, pinTrust } from "../src/lib/freshness";
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
 import { DEFAULT_X_HANDLE, publicXHandle, xProfileUrl } from "../src/lib/x-handle";
@@ -281,6 +281,88 @@ const withoutStAugustine = docks.filter((dock) => dock.id !== "st-augustine-muni
 assert.equal(
   boardTally(docks, readOn).postedThisWeek,
   boardTally(withoutStAugustine, readOn).postedThisWeek + 1,
+);
+
+const madeira = docks.find((dock) => dock.id === "madeira-beach-municipal-marina");
+assert.ok(madeira);
+assert.equal(madeira.region, "west-florida");
+assert.equal(madeira.corridor, null);
+assert.equal(madeira.city, "Madeira Beach");
+assert.equal(madeira.state, "FL");
+assert.equal(madeira.lat, 27.803974);
+assert.equal(madeira.lng, -82.795903);
+assert.equal(madeira.phone, "(727) 399-2631");
+assert.equal(madeira.website, "https://madeirabeachfl.gov/departments/marina/");
+assert.equal(madeira.sourceUrl, "https://madeirabeachfl.gov/departments/marina/");
+assert.equal(madeira.lastVerifiedAt, "2026-10-03");
+assert.equal(madeira.lastVerifiedSource, "marina site");
+assert.equal(madeira.ethanol, "E0");
+assert.equal(
+  madeira.hours,
+  "Open 7 days. Monday–Thursday 7:00 AM–7:00 PM, Friday–Sunday 7:00 AM–8:00 PM. Closed Thanksgiving and Christmas Day.",
+);
+assert.match(madeira.notes ?? "", /did not date the price/);
+assert.match(madeira.notes ?? "", /read 3 Oct 2026/);
+assert.match(madeira.notes ?? "", /bcrabtree@madeirabeachfl.gov/);
+assert.match(madeira.notes ?? "", /27\.803974, -82\.795903/);
+assert.match(madeira.notes ?? "", /named node is the pin/);
+assert.doesNotMatch(madeira.notes ?? "", /as of/i);
+assert.deepEqual(
+  madeira.quotes.map((quote) => [
+    quote.product,
+    quote.pricePerGallon,
+    quote.ethanol,
+    quote.taxIncluded,
+    quote.status,
+  ]),
+  [
+    ["gasoline", 6.05, "E0", null, "posted"],
+    ["diesel", 6.65, "unknown", null, "posted"],
+  ],
+);
+assert.ok(madeira.quotes.every((quote) => quote.product === "gasoline" || quote.product === "diesel"));
+assert.equal(pinTrust(madeira), "verified");
+assert.equal(freshness(madeira, readOn), "fresh");
+const madeiraSlots = pinQuoteSlots(madeira, readOn);
+assert.deepEqual(
+  madeiraSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon, slot.quote?.ethanol]),
+  [
+    ["gasoline", "Gasoline", "gasoline", 6.05, "E0"],
+    ["diesel", "Diesel", "diesel", 6.65, "unknown"],
+  ],
+);
+assert.equal(formatQuote(madeiraSlots[0]?.quote ?? null), "$6.050 Gasoline E0");
+assert.equal(formatQuote(madeiraSlots[1]?.quote ?? null), "$6.650 diesel");
+assert.equal(quoteParts(madeiraSlots[0]?.quote ?? null).rest, "Gasoline E0");
+assert.equal(ethanolCopy(madeira.ethanol), "E0");
+assert.ok(madeiraSlots.every((slot) => slot.label === "Gasoline" || slot.label === "Diesel"));
+assert.ok(!madeiraSlots.some((slot) => /87|89|90|93/.test(`${slot.label} ${slot.quote?.product ?? ""}`)));
+const eightDays = Date.parse("2026-10-11T00:00:00Z");
+const fourteenDays = Date.parse("2026-10-17T00:00:00Z");
+const pastFourteen = Date.parse("2026-10-18T00:00:00Z");
+assert.equal(freshness(madeira, eightDays), "fresh");
+assert.equal(freshness(madeira, fourteenDays), "fresh");
+assert.equal(freshness(madeira, pastFourteen), "stale");
+assert.equal(boardQuote(madeira, madeira.quotes[0] ?? null, eightDays)?.pricePerGallon, 6.05);
+assert.equal(boardQuote(madeira, madeira.quotes[0] ?? null, pastFourteen)?.pricePerGallon, null);
+assert.equal(freshness(gym, eightDays), "stale");
+assert.equal(
+  boardQuote(gym, gym.quotes.find((quote) => quote.product === "87") ?? null, eightDays)?.pricePerGallon,
+  null,
+);
+assert.equal(
+  boardQuote(gym, gym.quotes.find((quote) => quote.product === "87") ?? null, eightDays)?.status,
+  "call",
+);
+const withoutMadeira = docks.filter((dock) => dock.id !== "madeira-beach-municipal-marina");
+assert.equal(
+  boardTally(docks, readOn).postedThisWeek,
+  boardTally(withoutMadeira, readOn).postedThisWeek + 1,
+);
+assert.ok(
+  filterDocks(docks, parseBoardQuery({ region: "west-florida" })).visible.some(
+    (dock) => dock.id === "madeira-beach-municipal-marina",
+  ),
 );
 
 const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
