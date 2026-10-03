@@ -42,7 +42,7 @@ export type SourceLabel = "Waterway Guide" | "marina site" | "user report" | "ma
 
 export type PayKind = "cash" | "card" | "both";
 
-export type Product = "87" | "89" | "90" | "91" | "93" | "diesel";
+export type Product = "87" | "89" | "90" | "91" | "93" | "gasoline" | "diesel";
 
 export type QuoteStatus = "posted" | "call" | "no-report" | "not-sold";
 
@@ -120,7 +120,7 @@ export interface OverlayStoreFile {
   overlays: Record<string, DockOverlay>;
 }
 
-export const PRODUCTS: Product[] = ["87", "89", "90", "91", "93", "diesel"];
+export const PRODUCTS: Product[] = ["87", "89", "90", "91", "93", "gasoline", "diesel"];
 
 export const ETHANOLS: Ethanol[] = ["E0", "E10", "E15", "unknown"];
 

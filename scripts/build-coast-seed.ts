@@ -27,6 +27,8 @@ type Addition = {
   access?: DockAccess;
   ethanol?: Ethanol;
   products?: Product[];
+  quotes?: FuelQuote[];
+  lastVerifiedAt?: string | null;
   sourceUrl?: string | null;
 };
 
@@ -61,8 +63,8 @@ function toDock(row: Addition): Dock {
     notes: row.notes,
     access: row.access ?? "public",
     ethanol: row.ethanol ?? "unknown",
-    quotes: callQuotes(row.products ?? ["87", "diesel"]),
-    lastVerifiedAt: null,
+    quotes: row.quotes ?? callQuotes(row.products ?? ["87", "diesel"]),
+    lastVerifiedAt: row.lastVerifiedAt ?? null,
     lastVerifiedSource: row.website ? "marina site" : null,
     sourceUrl: row.sourceUrl ?? row.website,
   };
@@ -1145,7 +1147,26 @@ const ADDITIONS: Addition[] = [
     lng: -81.3098,
     phone: "(904) 825-1026",
     website: "https://www.citystaug.com/marina",
-    notes: "City marina under the Bridge of Lions. Municipal site; call.",
+    notes:
+      "City marina under the Bridge of Lions. City rates page, fetched 3 Oct 2026: Gasoline $6.59, Diesel $7.39, as of 9/25/26. The line says Gasoline, not an octane. Ethanol not named. Tax not stated.",
+    quotes: [
+      {
+        product: "gasoline",
+        pricePerGallon: 6.59,
+        ethanol: "unknown",
+        status: "posted",
+        taxIncluded: null,
+      },
+      {
+        product: "diesel",
+        pricePerGallon: 7.39,
+        ethanol: "unknown",
+        status: "posted",
+        taxIncluded: null,
+      },
+    ],
+    lastVerifiedAt: "2026-09-25",
+    sourceUrl: "https://www.citystaug.com/338/Rates",
   },
   {
     id: "fernandina-harbor-marina",

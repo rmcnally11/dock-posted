@@ -75,6 +75,8 @@ The rest of the seed (Texas beyond Clear Lake, Louisiana, Mississippi, Alabama, 
 
 Each of those pins has a real name, city, state, and a public lat/lng for the harbor. Phone and website are included when the public page listed them. Quotes are **Call**. `lastVerifiedAt` is empty (Never) until a public board or a boater report fills it.
 
+Exception: St. Augustine Municipal Marina. City rates page https://www.citystaug.com/338/Rates, fetched 3 Oct 2026, same fuel block as About Us: Gasoline $6.59, Diesel $7.39, as of 9/25/26. Octane not named, so the product is `gasoline` and the pin says Gasoline. Ethanol not named. Tax not stated (`taxIncluded` null). `lastVerifiedAt` is the marina's as-of date, 2026-09-25.
+
 No Waterway Guide scrape of the expanded coast succeeded from this environment. Cloudflare still challenges unattended fetches. That is a failed scrape, not a silent success. Do not treat this file as a fresh weekly report for the new pins.
 
 Public WG report URLs the fetcher will try again (login not required):

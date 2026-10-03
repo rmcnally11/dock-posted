@@ -66,7 +66,7 @@ export function ReportForm({
           >
             {PRODUCTS.map((item) => (
               <option key={item} value={item}>
-                {item === "diesel" ? "Diesel" : `${item} octane`}
+                {item === "diesel" ? "Diesel" : item === "gasoline" ? "Gasoline" : `${item} octane`}
               </option>
             ))}
           </select>

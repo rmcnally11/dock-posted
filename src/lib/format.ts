@@ -18,7 +18,8 @@ export function quoteParts(quote: FuelQuote | null): {
   if (quote.status === "no-report" || quote.status === "call" || quote.pricePerGallon == null) {
     return { figure: BLANK, rest: "", blank: true };
   }
-  const grade = quote.product === "diesel" ? "diesel" : quote.product;
+  const grade =
+    quote.product === "diesel" ? "diesel" : quote.product === "gasoline" ? "Gasoline" : quote.product;
   const ethanol = quote.ethanol === "unknown" ? "" : ` ${quote.ethanol}`;
   return {
     figure: formatPrice(quote.pricePerGallon),
