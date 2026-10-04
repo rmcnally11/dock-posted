@@ -1213,7 +1213,7 @@ const ADDITIONS: Addition[] = [
     phone: "(904) 327-2285",
     website: "https://www.lambsyachtcenter.com/fuel/",
     hours:
-      "Near the price: Hours: M-F 8-5 Saturday & Sunday 8:30-4:30. Lower on the page: Fuel Dock Hours: 7 Days a week 8:30AM-4:30PM.",
+      "Two clocks on their fuel page. One is Monday–Friday 8–5, Saturday and Sunday 8:30–4:30. The fuel dock says 7 days a week, 8:30 AM–4:30 PM.",
     notes:
       "Lamb's Yacht Center, 3376 Lake Shore Boulevard, Jacksonville, FL 32210. Marina fuel page, read 3 Oct 2026: $5.15 Gas, $5.50 Diesel. The page did not date the price. It was read 3 Oct 2026. The price line says Gas. The same page names the gas Rec 90/non ethanol gas, Gate Petroleum. Diesel is ultra low sulfur diesel. Tax not stated. Discount, not the posted price: 10% off Diesel for MTOA and AGLCA members. Pump out $10 is not fuel. Office (904) 384-5577. Email murphy@lambsyachtcenter.com. Dockmaster VHF 16. The page gives both clocks and we did not choose. Near the price: Hours M-F 8-5 Saturday & Sunday 8:30-4:30. Lower on the page: Fuel Dock Hours 7 Days a week 8:30AM-4:30PM. The fuel page has no map embed with a coordinate. OpenStreetMap had no node named Lamb's Yacht Center when searched 3 Oct 2026. Pin is the US Census address-range match, 30.273784, -81.721019, interpolated across 3354–3480, not a rooftop.",
     ethanol: "E0",

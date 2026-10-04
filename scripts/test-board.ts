@@ -383,10 +383,11 @@ assert.equal(lambs.lastVerifiedSource, "marina site");
 assert.equal(lambs.ethanol, "E0");
 assert.equal(
   lambs.hours,
-  "Near the price: Hours: M-F 8-5 Saturday & Sunday 8:30-4:30. Lower on the page: Fuel Dock Hours: 7 Days a week 8:30AM-4:30PM.",
+  "Two clocks on their fuel page. One is Monday–Friday 8–5, Saturday and Sunday 8:30–4:30. The fuel dock says 7 days a week, 8:30 AM–4:30 PM.",
 );
-assert.match(lambs.hours ?? "", /Hours: M-F 8-5 Saturday & Sunday 8:30-4:30/);
-assert.match(lambs.hours ?? "", /Fuel Dock Hours: 7 Days a week 8:30AM-4:30PM/);
+assert.match(lambs.hours ?? "", /Monday–Friday 8–5, Saturday and Sunday 8:30–4:30/);
+assert.match(lambs.hours ?? "", /7 days a week, 8:30 AM–4:30 PM/);
+assert.doesNotMatch(lambs.hours ?? "", /Near the price|Lower on the page/);
 assert.match(lambs.notes ?? "", /did not date the price/);
 assert.match(lambs.notes ?? "", /read 3 Oct 2026/);
 assert.match(lambs.notes ?? "", /did not choose/);
