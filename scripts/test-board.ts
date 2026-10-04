@@ -365,6 +365,106 @@ assert.ok(
   ),
 );
 
+const lambs = docks.find((dock) => dock.id === "lambs-yacht-center");
+assert.ok(lambs);
+assert.equal(lambs.name, "Lamb's Yacht Center");
+assert.equal(lambs.region, "east-florida");
+assert.equal(lambs.corridor, null);
+assert.equal(lambs.city, "Jacksonville");
+assert.equal(lambs.state, "FL");
+assert.equal(lambs.lat, 30.273784);
+assert.equal(lambs.lng, -81.721019);
+assert.equal(lambs.phone, "(904) 327-2285");
+assert.doesNotMatch(lambs.phone ?? "", /384-5577/);
+assert.equal(lambs.website, "https://www.lambsyachtcenter.com/fuel/");
+assert.equal(lambs.sourceUrl, "https://www.lambsyachtcenter.com/fuel/");
+assert.equal(lambs.lastVerifiedAt, "2026-10-03");
+assert.equal(lambs.lastVerifiedSource, "marina site");
+assert.equal(lambs.ethanol, "E0");
+assert.equal(
+  lambs.hours,
+  "Two clocks on their fuel page. One is Monday–Friday 8–5, Saturday and Sunday 8:30–4:30. The fuel dock says 7 days a week, 8:30 AM–4:30 PM.",
+);
+assert.match(lambs.hours ?? "", /Monday–Friday 8–5, Saturday and Sunday 8:30–4:30/);
+assert.match(lambs.hours ?? "", /7 days a week, 8:30 AM–4:30 PM/);
+assert.doesNotMatch(lambs.hours ?? "", /Near the price|Lower on the page/);
+assert.match(lambs.notes ?? "", /did not date the price/);
+assert.match(lambs.notes ?? "", /read 3 Oct 2026/);
+assert.match(lambs.notes ?? "", /did not choose/);
+assert.match(lambs.notes ?? "", /murphy@lambsyachtcenter.com/);
+assert.match(lambs.notes ?? "", /\(904\) 384-5577/);
+assert.match(lambs.notes ?? "", /10% off Diesel for MTOA and AGLCA members/);
+assert.match(lambs.notes ?? "", /30\.273784, -81\.721019/);
+assert.match(lambs.notes ?? "", /interpolated across 3354–3480/);
+assert.match(lambs.notes ?? "", /not a rooftop/);
+assert.match(lambs.notes ?? "", /Pump out \$10 is not fuel/);
+assert.doesNotMatch(lambs.notes ?? "", /as of/i);
+assert.doesNotMatch(lambs.notes ?? "", /as-of/i);
+assert.deepEqual(
+  lambs.quotes.map((quote) => [
+    quote.product,
+    quote.pricePerGallon,
+    quote.ethanol,
+    quote.taxIncluded,
+    quote.status,
+  ]),
+  [
+    ["90", 5.15, "E0", null, "posted"],
+    ["diesel", 5.5, "unknown", null, "posted"],
+  ],
+);
+assert.deepEqual(
+  lambs.quotes.map((quote) => quote.product),
+  ["90", "diesel"],
+);
+assert.ok(lambs.quotes.every((quote) => quote.taxIncluded == null));
+assert.ok(!lambs.quotes.some((quote) => quote.pricePerGallon === 10));
+assert.equal(pinTrust(lambs), "verified");
+assert.equal(freshness(lambs, readOn), "fresh");
+const lambsSlots = pinQuoteSlots(lambs, readOn);
+assert.deepEqual(
+  lambsSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon, slot.quote?.ethanol]),
+  [
+    ["regular", "Regular", "90", 5.15, "E0"],
+    ["diesel", "Diesel", "diesel", 5.5, "unknown"],
+  ],
+);
+assert.equal(formatQuote(lambsSlots[0]?.quote ?? null), "$5.150 90 E0");
+assert.equal(formatQuote(lambsSlots[1]?.quote ?? null), "$5.500 diesel");
+assert.equal(quoteParts(lambsSlots[0]?.quote ?? null).rest, "90 E0");
+assert.equal(ethanolCopy(lambs.ethanol), "E0");
+assert.ok(!lambsSlots.some((slot) => /87|89|93|gasoline/i.test(`${slot.label} ${slot.quote?.product ?? ""}`)));
+assert.equal(freshness(lambs, eightDays), "stale");
+assert.equal(
+  boardQuote(lambs, lambs.quotes.find((quote) => quote.product === "90") ?? null, eightDays)?.pricePerGallon,
+  null,
+);
+assert.equal(
+  boardQuote(lambs, lambs.quotes.find((quote) => quote.product === "90") ?? null, eightDays)?.status,
+  "call",
+);
+assert.equal(freshness(lambs, fourteenDays), "stale");
+assert.equal(freshness(gym, eightDays), "stale");
+assert.equal(
+  boardQuote(gym, gym.quotes.find((quote) => quote.product === "93") ?? null, eightDays)?.pricePerGallon,
+  null,
+);
+assert.equal(freshness(madeira, eightDays), "fresh");
+assert.equal(freshness(madeira, fourteenDays), "fresh");
+assert.equal(freshness(stAugustine, readOn), "fresh");
+assert.equal(freshness(stAugustine, Date.parse("2026-10-09T00:00:00Z")), "fresh");
+assert.equal(freshness(stAugustine, Date.parse("2026-10-10T00:00:00Z")), "stale");
+const withoutLambs = docks.filter((dock) => dock.id !== "lambs-yacht-center");
+assert.equal(
+  boardTally(docks, readOn).postedThisWeek,
+  boardTally(withoutLambs, readOn).postedThisWeek + 1,
+);
+assert.ok(
+  filterDocks(docks, parseBoardQuery({ region: "east-florida" })).visible.some(
+    (dock) => dock.id === "lambs-yacht-center",
+  ),
+);
+
 const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
 assert.ok(blueMarlin);
 assert.equal(pinTrust(blueMarlin), "unverified");
