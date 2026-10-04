@@ -33,15 +33,20 @@ export function formatQuote(quote: FuelQuote | null): string {
   return parts.rest ? `${parts.figure} ${parts.rest}` : parts.figure;
 }
 
+/**
+ * lastVerifiedAt is a calendar date (YYYY-MM-DD), the day the price was checked.
+ * Date-only ISO is UTC midnight; formatting that instant in Chicago shows the day before.
+ */
 export function formatDate(iso: string | null): string {
   if (!iso) return BLANK;
-  const date = new Date(iso);
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(iso);
+  const date = new Date(dateOnly ? `${iso}T00:00:00Z` : iso);
   if (Number.isNaN(date.getTime())) return iso;
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
-    timeZone: "America/Chicago",
+    timeZone: dateOnly ? "UTC" : "America/Chicago",
   }).format(date);
 }
 

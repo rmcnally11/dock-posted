@@ -251,7 +251,10 @@ assert.deepEqual(
     ["diesel", 7.39, "unknown", null, "posted"],
   ],
 );
-assert.equal(formatDate("2026-09-25"), "Sep 24, 2026");
+assert.equal(formatDate("2026-09-25"), "Sep 25, 2026");
+assert.equal(formatDate("2026-10-03"), "Oct 3, 2026");
+assert.equal(formatDate("2022-08-26"), "Aug 26, 2022");
+assert.equal(formatDate(null), "—");
 const readOn = Date.parse("2026-10-03T21:00:00Z");
 assert.equal(freshness(stAugustine, readOn), "fresh");
 assert.equal(pinTrust(stAugustine), "verified");
