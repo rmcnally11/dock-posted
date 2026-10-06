@@ -9,7 +9,7 @@ import { readDocks } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Your dock",
+  title: "Fuel Near You",
   description: "This is your dock. You write the number when the truck comes. We never invent a price.",
 };
 
@@ -30,7 +30,7 @@ export default async function PinPage({
         For the marina
       </p>
       <h1 data-testid="pin-headline" className="page-title mt-3 text-[color:var(--navy)]">
-        This is your dock.
+        Fuel Near You
       </h1>
       <p data-testid="pin-deck" className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--ink)]/70">
         Boats look here before they leave the ramp. You put up the price you are charging.

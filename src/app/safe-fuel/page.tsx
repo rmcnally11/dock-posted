@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 
 export const metadata: Metadata = {
-  title: "What’s in the hose",
+  title: "What’s at the Pump",
   description: "If the sticker says 15% ethanol, walk away.",
 };
 
@@ -12,7 +12,7 @@ export default function SafeFuelPage() {
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-6">
       <p className="kicker text-[color:var(--signal)]">Don’t guess the hose</p>
-      <h1 className="page-title mt-3 text-[color:var(--navy)]">What’s in the hose</h1>
+      <h1 className="page-title mt-3 text-[color:var(--navy)]">What’s at the Pump</h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
         If the sticker says 15% ethanol, walk away. Ethanol is
         what the sticker says, not what the octane implies. Octane is not a test for

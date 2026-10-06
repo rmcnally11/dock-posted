@@ -145,8 +145,10 @@ try {
   check("board fact line", boardFact === "A blank is a fact. Silence is not a price.", boardFact);
   check("nav today", /Today/.test(headerCopy));
   check("nav yard seats", /Yard seats/.test(headerCopy) && !/Haul-out/.test(headerCopy));
-  check("nav I was there", /I was there/.test(headerCopy));
-  check("nav hose", /hose/.test(headerCopy));
+  check("nav fuel near you", /Fuel Near You/.test(headerCopy));
+  check("nav boaters say", /Boaters Say/.test(headerCopy));
+  check("nav pump", /What.s at the Pump/.test(headerCopy));
+  check("nav drops old tab names", !/Your dock|I was there|What.s in the hose/.test(headerCopy));
   check("nav who writes this", /Who writes this/.test(headerCopy) && !/Wholesale/.test(headerCopy));
   const whoWrites = await page.$eval("[data-testid=who-writes-this] a", (el) => ({
     text: el.textContent?.trim(),
@@ -395,7 +397,7 @@ try {
   await page.goto(`${base}/report?dock=galveston-yacht-marina`, { waitUntil: "networkidle0" });
   const reportHero = await page.$eval("main h1", (el) => el.textContent?.trim());
   const reportHeader = await page.$eval("header", (el) => el.textContent ?? "");
-  check("report is its own page", reportHero === "You were there.", reportHero);
+  check("report is its own page", reportHero === "Boaters Say", reportHero);
   check("report header is not a family lockup", !/what the dock posted/i.test(reportHeader));
   const reporting = await page.$eval("[data-testid=reporting-for]", (el) => el.textContent);
   check("report marina label", reporting?.includes("Galveston Yacht Marina"));
@@ -409,7 +411,7 @@ try {
 
   await page.goto(`${base}/safe-fuel`, { waitUntil: "networkidle0" });
   const safe = await page.$eval("main", (el) => el.textContent ?? "");
-  check("safe fuel", /What.s in the hose/i.test(safe));
+  check("safe fuel", /What.s at the Pump/i.test(safe));
   check("safe fuel don't guess", /don.t guess the hose/i.test(safe));
   check("safe fuel four states", /e15 walk away/i.test(safe) && /if the card is blank/i.test(safe));
   check("safe fuel is a warning", /walk away/i.test(safe) && !/save|deal|cheap/i.test(safe));
@@ -475,7 +477,7 @@ try {
   const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
     page.$eval("main", (el) => el.textContent ?? ""),
   );
-  check("report headline", /You were there/.test(reportCopy) && /What did they have on the hose\./.test(reportCopy));
+  check("report headline", /Boaters Say/.test(reportCopy) && /What did they have on the hose\./.test(reportCopy));
   check("report community line", /If they did not post, leave it blank/.test(reportCopy));
   check("report send it button", /Send it/.test(reportCopy) && !/submit a price/i.test(reportCopy));
   check(

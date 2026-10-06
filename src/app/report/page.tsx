@@ -9,7 +9,7 @@ import { readDocks } from "@/lib/store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "I was there",
+  title: "Boaters Say",
   description: "You were there. What did they have on the hose.",
 };
 
@@ -26,7 +26,7 @@ export default async function ReportPage({
   return (
     <main className="mx-auto flex w-full max-w-7xl min-w-0 flex-1 flex-col overflow-x-hidden px-4 py-4 md:px-6 lg:py-6">
       <p className="kicker text-[color:var(--signal)]">Today</p>
-      <h1 className="page-title mt-3 text-[color:var(--navy)]">You were there.</h1>
+      <h1 className="page-title mt-3 text-[color:var(--navy)]">Boaters Say</h1>
       <p className="mt-2 max-w-2xl text-sm text-[color:var(--ink)]/70">
         What did they have on the hose.
       </p>

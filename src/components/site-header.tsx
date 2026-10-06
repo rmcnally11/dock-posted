@@ -27,20 +27,20 @@ export async function SiteHeader() {
             Yard seats
           </a>
           {" "}
-          <a className={navLink} href="/pin" data-testid="nav-pin" aria-label="Your dock">
-            Your dock
+          <a className={navLink} href="/pin" data-testid="nav-pin" aria-label="Fuel Near You">
+            Fuel Near You
           </a>
           {" "}
           <a className={navLink} href="/run" data-testid="nav-run" aria-label="This trip">
             This trip
           </a>
           {" "}
-          <a className={navLink} href="/report" aria-label="I was there">
-            I was there
+          <a className={navLink} href="/report" aria-label="Boaters Say">
+            Boaters Say
           </a>
           {" "}
-          <a className={navLink} href="/safe-fuel" aria-label="What’s in the hose">
-            What’s in the hose
+          <a className={navLink} href="/safe-fuel" aria-label="What’s at the Pump">
+            What’s at the Pump
           </a>
           {" "}
           <a className={navLink} href="/about" data-testid="nav-about" aria-label="Who writes this">
