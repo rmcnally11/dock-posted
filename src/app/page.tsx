@@ -1,7 +1,9 @@
 import { DockBoard } from "@/components/dock-board";
+import { PostedHome } from "@/components/posted-home";
 import { Masthead } from "@/components/wordmark";
 import { filterDocks, parseBoardQuery } from "@/lib/board-query";
 import { boardTally, heroCountLine } from "@/lib/freshness";
+import { HOME_AREAS, homeAreaHref, homeCards, parseHomeArea } from "@/lib/posted";
 import { readDocks } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -18,11 +20,22 @@ export default async function Home({
     e0?: string;
     fresh?: string;
     dock?: string;
+    waters?: string;
   }>;
 }) {
   const docks = await readDocks();
   const params = await searchParams;
   const query = parseBoardQuery(params);
+  const area = parseHomeArea(params.waters);
+  const cards = homeCards(docks);
+  const areaLinks = [
+    { id: "all" as const, label: "All", href: homeAreaHref(null, params) },
+    ...HOME_AREAS.map((item) => ({
+      id: item.id,
+      label: item.label,
+      href: homeAreaHref(item.id, params),
+    })),
+  ];
   const { inCorridor, visible } = filterDocks(docks, query);
   const tally = boardTally(docks);
   const reportedDock = query.reported
@@ -31,6 +44,7 @@ export default async function Home({
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
+      <PostedHome cards={cards} area={area} links={areaLinks} />
       <section
         data-testid="landing"
         className="flex min-h-0 flex-col justify-center bg-[color:var(--navy)] px-4 py-10 text-[color:var(--cream)] md:min-h-[calc(100dvh-3.6rem)] md:px-6 md:py-24"
@@ -44,12 +58,12 @@ export default async function Home({
             >
               Marina fuel · Sabine to Key West
             </p>
-            <h1
+            <h2
               data-testid="hero-headline"
               className="home-line mt-4 max-w-4xl text-[color:var(--cream)]"
             >
               What they wrote on the pump.
-            </h1>
+            </h2>
             <p
               data-testid="hero-deck"
               className="mt-6 max-w-xl text-base leading-7 text-[color:var(--cream)]/70 md:text-lg"
