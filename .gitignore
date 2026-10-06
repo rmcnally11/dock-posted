@@ -37,6 +37,7 @@ yarn-error.log*
 
 # local runtime copies of docks + reports
 /data/runtime/*.json
+/data/runtime/report-photos/
 
 # vercel
 .vercel

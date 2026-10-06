@@ -21,16 +21,19 @@ import {
   type WatchInput,
   type WaterWatch,
 } from "./income";
+import type { AlertPlan, ReportPlan } from "./price-report";
 import {
   readHaulOutFile,
   readIncomeFile,
   readOverlayFile,
   readReportFile,
+  readReviewFile,
   readWholesaleFile,
   writeHaulOutFile,
   writeIncomeFile,
   writeOverlayFile,
   writeReportFile,
+  writeReviewFile,
   writeWholesaleFile,
 } from "./persist";
 import {
@@ -43,10 +46,13 @@ import {
 import type {
   Dock,
   DockOverlay,
+  DockPriceAlert,
   DockStoreFile,
   PayKind,
   PriceReport,
   Product,
+  QueuedPriceReport,
+  ReviewQueueFile,
 } from "./types";
 
 const SEED_PATH = path.join(process.cwd(), "data", "docks.seed.json");
@@ -153,7 +159,111 @@ export async function resetFromSeed(): Promise<DockStoreFile> {
   await writeHaulOutFile(await emptyHaulOutStore());
   await writeWholesaleFile(emptyWholesaleStore());
   await writeIncomeFile(emptyIncomeStore());
+  await writeReviewFile({ submissions: [], alerts: [] });
   return readDockStore();
+}
+
+export async function readReviewQueue(): Promise<ReviewQueueFile> {
+  return readReviewFile();
+}
+
+export async function queuePriceReport(
+  input: AcceptedQueueInput,
+): Promise<QueuedPriceReport> {
+  const store = await readDockStore();
+  if (!store.docks.some((dock) => dock.id === input.dockId)) {
+    throw new Error("Unknown marina");
+  }
+
+  const report: QueuedPriceReport = {
+    id: input.id ?? randomUUID(),
+    dockId: input.dockId,
+    product: input.product,
+    ethanol: input.ethanol,
+    pricePerGallon: input.pricePerGallon,
+    seenAt: input.seenAt,
+    note: input.note,
+    marinaOwned: Boolean(input.marinaOwned),
+    hours: input.hours?.trim() || null,
+    pay: input.pay ?? null,
+    closed: Boolean(input.closed),
+    dieselOnly: Boolean(input.dieselOnly),
+    photoPath: input.photoPath ?? null,
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  };
+
+  const queue = await readReviewFile();
+  queue.submissions.unshift(report);
+  await writeReviewFile(queue);
+  return report;
+}
+
+/** Writes the review queue only. Does not touch the public dock board. */
+export async function commitQueuedReport(
+  plan: ReportPlan,
+  extra: { id: string; photoPath: string | null },
+): Promise<{ stored: false } | { stored: true; report: QueuedPriceReport }> {
+  if (plan.kind !== "accept") return { stored: false };
+  const report = await queuePriceReport({ ...plan.value, id: extra.id, photoPath: extra.photoPath });
+  return { stored: true, report };
+}
+
+export async function addDockPriceAlert(input: {
+  dockId: string;
+  email: string;
+  consent: string;
+}): Promise<DockPriceAlert> {
+  const store = await readDockStore();
+  if (!store.docks.some((dock) => dock.id === input.dockId)) {
+    throw new Error("Unknown marina");
+  }
+  const queue = await readReviewFile();
+  const email = input.email.trim().toLowerCase();
+  const existing = queue.alerts.find(
+    (row) => row.dockId === input.dockId && row.email.toLowerCase() === email,
+  );
+  if (existing) {
+    existing.consent = input.consent;
+    existing.createdAt = new Date().toISOString();
+    await writeReviewFile(queue);
+    return existing;
+  }
+  const alert: DockPriceAlert = {
+    id: randomUUID(),
+    dockId: input.dockId,
+    email,
+    consent: input.consent,
+    createdAt: new Date().toISOString(),
+  };
+  queue.alerts.unshift(alert);
+  await writeReviewFile(queue);
+  return alert;
+}
+
+/** Stores the email and dock. Does not send mail. */
+export async function commitPriceAlert(
+  plan: AlertPlan,
+): Promise<{ stored: false } | { stored: true; alert: DockPriceAlert }> {
+  if (plan.kind !== "accept") return { stored: false };
+  const alert = await addDockPriceAlert(plan.value);
+  return { stored: true, alert };
+}
+
+interface AcceptedQueueInput {
+  id?: string;
+  dockId: string;
+  product: Product;
+  ethanol: PriceReport["ethanol"];
+  pricePerGallon: number;
+  seenAt: string;
+  note: string | null;
+  marinaOwned?: boolean;
+  hours?: string | null;
+  pay?: PayKind | null;
+  closed?: boolean;
+  dieselOnly?: boolean;
+  photoPath?: string | null;
 }
 
 export async function readWholesaleStore(): Promise<WholesaleStoreFile> {

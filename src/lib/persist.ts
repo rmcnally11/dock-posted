@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { HaulOutStoreFile } from "./haul-out";
 import { emptyIncomeStore, type IncomeStoreFile } from "./income";
-import type { OverlayStoreFile, ReportStoreFile } from "./types";
+import type { OverlayStoreFile, ReportStoreFile, ReviewQueueFile } from "./types";
 import { emptyWholesaleStore, type WholesaleStoreFile } from "./wholesale";
 
 const REPORTS_BLOB = "dock-posted/reports.json";
@@ -10,6 +10,7 @@ const OVERLAYS_BLOB = "dock-posted/overlays.json";
 const HAUL_OUT_BLOB = "dock-posted/haul-out.json";
 const WHOLESALE_BLOB = "dock-posted/wholesale.json";
 const INCOME_BLOB = "dock-posted/income.json";
+const REVIEW_BLOB = "dock-posted/review-queue.json";
 
 function runtimeDir() {
   if (process.env.DATA_DIR) return process.env.DATA_DIR;
@@ -35,6 +36,10 @@ function wholesalePath() {
 
 function incomePath() {
   return path.join(runtimeDir(), "income.json");
+}
+
+function reviewPath() {
+  return path.join(runtimeDir(), "review-queue.json");
 }
 
 export function blobConfigured(): boolean {
@@ -186,4 +191,54 @@ export async function writeIncomeFile(file: IncomeStoreFile): Promise<void> {
     return;
   }
   await writeJsonFile(incomePath(), file);
+}
+
+function emptyReviewQueue(): ReviewQueueFile {
+  return { submissions: [], alerts: [] };
+}
+
+export async function readReviewFile(): Promise<ReviewQueueFile> {
+  const empty = emptyReviewQueue();
+  if (blobConfigured()) {
+    try {
+      return (await readBlobJson<ReviewQueueFile>(REVIEW_BLOB)) ?? empty;
+    } catch (error) {
+      console.warn("Blob review queue read failed; using empty queue.", error);
+      return empty;
+    }
+  }
+  return readJsonFile(reviewPath(), empty);
+}
+
+export async function writeReviewFile(file: ReviewQueueFile): Promise<void> {
+  if (blobConfigured()) {
+    await writeBlobJson(REVIEW_BLOB, file);
+    return;
+  }
+  await writeJsonFile(reviewPath(), file);
+}
+
+export async function saveReportPhoto(
+  id: string,
+  bytes: Uint8Array,
+  extension: string,
+  contentType: string,
+): Promise<string> {
+  const safeExt = extension.replace(/[^a-z0-9]/gi, "").toLowerCase() || "jpg";
+  const pathname = `dock-posted/report-photos/${id}.${safeExt}`;
+  if (blobConfigured()) {
+    const { put } = await import("@vercel/blob");
+    await put(pathname, Buffer.from(bytes), {
+      access: "private",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType,
+    });
+    return pathname;
+  }
+  const dir = path.join(runtimeDir(), "report-photos");
+  await mkdir(dir, { recursive: true });
+  const filePath = path.join(dir, `${id}.${safeExt}`);
+  await writeFile(filePath, bytes);
+  return filePath;
 }

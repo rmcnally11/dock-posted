@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { BrandPhoto } from "@/components/brand-photo";
-import { ReportForm } from "@/components/report-form";
+import { PriceAlertForm } from "@/components/price-alert-form";
+import { ReportForm, type ReportDockChoice } from "@/components/report-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { matchesSearch } from "@/lib/board-query";
+import { chicagoToday } from "@/lib/price-report";
 import { readDocks } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -16,12 +18,30 @@ export const metadata: Metadata = {
 export default async function ReportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ dock?: string; error?: string; q?: string; who?: string }>;
+  searchParams: Promise<{
+    dock?: string;
+    error?: string;
+    q?: string;
+    who?: string;
+    sent?: string;
+    alert?: string;
+    alertError?: string;
+  }>;
 }) {
   const docks = await readDocks();
   const params = await searchParams;
   const q = (params.q ?? "").trim();
-  const visible = q.length >= 2 ? docks.filter((dock) => matchesSearch(dock, q)) : docks;
+  const matched = q.length >= 2 ? docks.filter((dock) => matchesSearch(dock, q)) : docks;
+  const visible: ReportDockChoice[] = matched.map((dock) => ({
+    id: dock.id,
+    name: dock.name,
+    city: dock.city,
+    state: dock.state,
+    phone: dock.phone,
+    quotes: dock.quotes,
+  }));
+  const today = chicagoToday();
+  const savedDock = params.dock ? (docks.find((dock) => dock.id === params.dock) ?? null) : null;
 
   return (
     <main className="mx-auto flex w-full max-w-7xl min-w-0 flex-1 flex-col overflow-x-hidden px-4 py-4 md:px-6 lg:py-6">
@@ -63,12 +83,33 @@ export default async function ReportPage({
             {params.error}
           </p>
         ) : null}
-        {visible.length === 0 ? (
+        {params.sent === "1" && savedDock ? (
+          <div>
+            <p data-testid="report-saved" className="text-sm text-[color:var(--navy)]">
+              Got it. We&apos;ll look at the number before it goes on the board.
+            </p>
+            <p className="mt-2 text-sm text-[color:var(--ink)]/70">
+              {savedDock.name}, {savedDock.city} {savedDock.state}.
+            </p>
+            {params.alert === "1" ? (
+              <p className="mt-6 text-sm text-[color:var(--ink)]/80" data-testid="alert-saved">
+                Saved. We&apos;ll hold your email for this dock.
+              </p>
+            ) : (
+              <PriceAlertForm dockId={savedDock.id} dockName={savedDock.name} error={params.alertError} />
+            )}
+          </div>
+        ) : visible.length === 0 ? (
           <p className="text-sm text-[color:var(--ink)]/70">
             No marina by that name. Try Seabrook, Key Largo, or Beaufort.
           </p>
         ) : (
-          <ReportForm docks={visible} initialDockId={params.dock} initialWho={params.who} />
+          <ReportForm
+            docks={visible}
+            initialDockId={params.dock}
+            initialWho={params.who}
+            today={today}
+          />
         )}
       </div>
       <p className="mt-6 text-sm text-[color:var(--ink)]/55">

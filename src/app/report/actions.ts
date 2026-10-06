@@ -1,80 +1,127 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { addPriceReport } from "@/lib/store";
 import { clientKey, takeReportSlot } from "@/lib/rate-limit";
-import { ETHANOLS, PRODUCTS, type Ethanol, type PayKind, type Product } from "@/lib/types";
+import { saveReportPhoto } from "@/lib/persist";
+import {
+  inspectPhoto,
+  photoContentType,
+  photoExtension,
+  planAlertIntake,
+  planReportIntake,
+} from "@/lib/price-report";
+import { commitPriceAlert, commitQueuedReport, readDocks } from "@/lib/store";
+
+function reportError(message: string, dockId: string): never {
+  const dock = dockId ? `&dock=${encodeURIComponent(dockId)}` : "";
+  redirect(`/report?error=${encodeURIComponent(message)}${dock}`);
+}
 
 export async function submitPriceReport(formData: FormData): Promise<void> {
-  const honeypot = String(formData.get("website_url") ?? "").trim();
-  if (honeypot) {
+  const dockId = String(formData.get("marina") ?? "").trim();
+  const docks = await readDocks();
+  const dock = docks.find((row) => row.id === dockId) ?? null;
+  const plan = planReportIntake(
+    {
+      websiteUrl: String(formData.get("website_url") ?? ""),
+      dockId,
+      grade: String(formData.get("grade") ?? ""),
+      price: String(formData.get("price") ?? ""),
+      seenAt: String(formData.get("seenAt") ?? ""),
+      note: String(formData.get("note") ?? ""),
+      who: String(formData.get("who") ?? ""),
+      hours: String(formData.get("hours") ?? ""),
+      pay: String(formData.get("pay") ?? ""),
+      closed: formData.get("closed") === "1",
+      dieselOnly: formData.get("dieselOnly") === "1",
+    },
+    dock,
+  );
+
+  if (plan.kind === "drop") {
     redirect("/");
   }
-
-  const dockId = String(formData.get("marina") ?? "").trim();
-  const product = String(formData.get("product") ?? "") as Product;
-  const ethanolRaw = String(formData.get("ethanol") ?? "") as Ethanol;
-  const priceRaw = String(formData.get("price") ?? "").trim();
-  const pricePerGallon = priceRaw === "" ? 0 : Number(priceRaw);
-  const seenAt = String(formData.get("seenAt") ?? "").trim();
-  const note = String(formData.get("note") ?? "").trim();
-  const marinaOwned = String(formData.get("who") ?? "") === "marina";
-  const hours = String(formData.get("hours") ?? "").trim();
-  const payRaw = String(formData.get("pay") ?? "").trim();
-  const pay: PayKind | null =
-    payRaw === "cash" || payRaw === "card" || payRaw === "both" ? payRaw : null;
-  const closed = formData.get("closed") === "1";
-  const dieselOnly = formData.get("dieselOnly") === "1";
-
-  if (!dockId) {
-    redirect("/report?error=Pick%20the%20dock.");
-  }
-  if (!PRODUCTS.includes(product)) {
-    redirect(`/report?error=Pick%20the%20hose.&dock=${encodeURIComponent(dockId)}`);
-  }
-  if (!marinaOwned && (!Number.isFinite(pricePerGallon) || pricePerGallon <= 0 || pricePerGallon > 20)) {
-    redirect(
-      `/report?error=The%20number%20on%20the%20pump%2C%20per%20gallon.&dock=${encodeURIComponent(dockId)}`,
-    );
-  }
-  if (marinaOwned && priceRaw !== "" && (!Number.isFinite(pricePerGallon) || pricePerGallon <= 0 || pricePerGallon > 20)) {
-    redirect(
-      `/report?error=The%20number%20on%20the%20pump%2C%20per%20gallon.&dock=${encodeURIComponent(dockId)}`,
-    );
-  }
-  if (!seenAt) {
-    redirect(`/report?error=When%20did%20you%20see%20it%3F&dock=${encodeURIComponent(dockId)}`);
+  if (plan.kind === "reject") {
+    reportError(plan.error, dockId);
   }
 
-  const ethanol: Ethanol =
-    product === "diesel" ? "unknown" : ETHANOLS.includes(ethanolRaw) ? ethanolRaw : "unknown";
+  const photoValue = formData.get("photo");
+  let photoBytes: Uint8Array | null = null;
+  let photoKind: ReturnType<typeof inspectPhoto> | null = null;
+  if (photoValue instanceof File && photoValue.size > 0) {
+    photoBytes = new Uint8Array(await photoValue.arrayBuffer());
+    photoKind = inspectPhoto(photoBytes);
+    if (!photoKind.ok) reportError(photoKind.error, dockId);
+  }
 
   const slot = takeReportSlot(clientKey(await headers()));
   if (!slot.ok) {
-    redirect(
-      `/report?error=Too%20many%20reports%20from%20this%20network.&dock=${encodeURIComponent(dockId)}`,
+    reportError("Too many reports from this network.", dockId);
+  }
+
+  const id = randomUUID();
+  let photoPath: string | null = null;
+  if (photoBytes && photoKind && photoKind.ok) {
+    photoPath = await saveReportPhoto(
+      id,
+      photoBytes,
+      photoExtension(photoKind.kind),
+      photoContentType(photoKind.kind),
     );
   }
 
   try {
-    await addPriceReport({
-      dockId,
-      product,
-      ethanol,
-      pricePerGallon,
-      seenAt,
-      note: note || null,
-      marinaOwned,
-      hours: hours || null,
-      pay,
-      closed,
-      dieselOnly,
-    });
+    await commitQueuedReport(plan, { id, photoPath });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not save report";
-    redirect(`/report?error=${encodeURIComponent(message)}&dock=${encodeURIComponent(dockId)}`);
+    reportError(message, dockId);
   }
 
-  redirect(`/?reported=${dockId}#board`);
+  // A saved price used to redirect(`/?reported=${dockId}#board`).
+  // It waits for a look now. The boater stays on this page.
+  redirect(`/report?dock=${encodeURIComponent(dockId)}&sent=1`);
+}
+
+export async function submitPriceAlert(formData: FormData): Promise<void> {
+  const dockId = String(formData.get("dock") ?? "").trim();
+  const docks = await readDocks();
+  const dock = docks.find((row) => row.id === dockId) ?? null;
+  const plan = planAlertIntake(
+    {
+      websiteUrl: String(formData.get("website_url") ?? ""),
+      dockId,
+      email: String(formData.get("email") ?? ""),
+      consent: formData.get("consent") === "yes",
+    },
+    dock,
+  );
+
+  if (plan.kind === "drop") {
+    redirect("/");
+  }
+  if (plan.kind === "reject") {
+    redirect(
+      `/report?dock=${encodeURIComponent(dockId)}&sent=1&alertError=${encodeURIComponent(plan.error)}`,
+    );
+  }
+
+  const slot = takeReportSlot(clientKey(await headers()));
+  if (!slot.ok) {
+    redirect(
+      `/report?dock=${encodeURIComponent(dockId)}&sent=1&alertError=${encodeURIComponent("Too many notes from this network.")}`,
+    );
+  }
+
+  try {
+    await commitPriceAlert(plan);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not save that";
+    redirect(
+      `/report?dock=${encodeURIComponent(dockId)}&sent=1&alertError=${encodeURIComponent(message)}`,
+    );
+  }
+
+  redirect(`/report?dock=${encodeURIComponent(dockId)}&sent=1&alert=1`);
 }

@@ -104,6 +104,39 @@ export interface ReportStoreFile {
   reports: PriceReport[];
 }
 
+/** A boater's price stays here until someone checks it. It is not on the board. */
+export interface QueuedPriceReport {
+  id: string;
+  dockId: string;
+  product: Product;
+  ethanol: Ethanol;
+  pricePerGallon: number;
+  seenAt: string;
+  note: string | null;
+  marinaOwned: boolean;
+  hours: string | null;
+  pay: PayKind | null;
+  closed: boolean;
+  dieselOnly: boolean;
+  photoPath: string | null;
+  status: "pending";
+  createdAt: string;
+}
+
+/** Email held for one dock. Nothing is sent from the signup. */
+export interface DockPriceAlert {
+  id: string;
+  dockId: string;
+  email: string;
+  consent: string;
+  createdAt: string;
+}
+
+export interface ReviewQueueFile {
+  submissions: QueuedPriceReport[];
+  alerts: DockPriceAlert[];
+}
+
 export interface DockOverlay {
   quotes?: FuelQuote[];
   ethanol?: Ethanol;
