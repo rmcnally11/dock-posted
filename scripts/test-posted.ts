@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import seed from "../data/docks.seed.json";
 import { chicagoCivilDate, civilDate, formatPrice, sourceInstant, telHref } from "../src/lib/format";
 import { freshness } from "../src/lib/freshness";
@@ -27,6 +29,8 @@ import {
 } from "../src/lib/posted";
 import { readDocks } from "../src/lib/store";
 import type { Dock, FuelQuote } from "../src/lib/types";
+import { PostedHome } from "../src/components/posted-home";
+import { SiteHeader } from "../src/components/site-header";
 
 const docks = seed.docks as Dock[];
 const readOn = Date.parse("2026-10-03T21:00:00Z");
@@ -366,6 +370,99 @@ assert.match(client, /card\.callHref/);
 assert.doesNotMatch(client, /localStorage|sessionStorage|indexedDB|document\.cookie/);
 assert.doesNotMatch(client, /useEffect/);
 assert.doesNotMatch(client, /Regular/);
+assert.match(client, /<details/);
+assert.match(client, /More fuel docks, call ahead/);
+assert.match(client, /Seen a price\? Report it/);
+assert.doesNotMatch(client, /DATE_UNKNOWN \? DATE_UNKNOWN/);
+
+const areaLinks = [
+  { id: "all" as const, label: "All", href: "/" },
+  ...HOME_AREAS.map((item) => ({
+    id: item.id,
+    label: item.label,
+    href: `/?waters=${item.id}`,
+  })),
+];
+const homeHtml = renderToStaticMarkup(
+  createElement(PostedHome, { cards, area: null, links: areaLinks }),
+);
+assert.doesNotMatch(homeHtml, /Date unknown/);
+assert.doesNotMatch(homeHtml, /<details[^>]*\sopen[\s=]/);
+assert.match(homeHtml, /More fuel docks, call ahead/);
+assert.match(homeHtml, /Seen a price\? Report it/);
+assert.match(homeHtml, /href="\/report"/);
+assert.match(homeHtml, /Galveston Bay · 12 docks/);
+assert.match(homeHtml, /Tampa Bay · 6 docks/);
+assert.match(homeHtml, /Northeast Florida · 9 docks/);
+
+function sliceBetween(html: string, start: string, end: string): string {
+  const from = html.indexOf(start);
+  assert.ok(from >= 0, `missing ${start}`);
+  const to = end ? html.indexOf(end, from) : html.length;
+  assert.ok(to > from, `missing ${end}`);
+  return html.slice(from, to);
+}
+
+for (const [id, label] of [
+  ["galveston-bay", "Galveston Bay"],
+  ["tampa-bay", "Tampa Bay"],
+  ["northeast-florida", "Northeast Florida"],
+] as const) {
+  const block = sliceBetween(homeHtml, `data-testid="posted-call-area-${id}"`, "</details>");
+  const unpriced = cardsInArea(cards, id).filter((card) => !card.hasPrice);
+  assert.equal((block.match(/<li\b/g) ?? []).length, unpriced.length, `${label} row count`);
+  assert.doesNotMatch(block, /Date unknown|As of |Stale|posted-grade-|posted-price-/);
+  for (const card of unpriced) {
+    assert.equal(
+      (block.match(new RegExp(`data-testid="posted-row-${card.id}"`, "g")) ?? []).length,
+      1,
+      `${card.name} should be one row`,
+    );
+    assert.equal(card.lines.length > 0, true);
+    const row = sliceBetween(block, `data-testid="posted-row-${card.id}"`, "</li>");
+    assert.doesNotMatch(row, /\$\d/);
+    for (const line of card.lines) {
+      assert.equal(row.includes(`>${line.label}<`), false, `${card.name} repeated ${line.label}`);
+    }
+    if (card.callHref) assert.match(row, /href="tel:/);
+    else assert.doesNotMatch(row, />\s*Call\s*</);
+    assert.match(row, />\s*Directions\s*</);
+  }
+}
+
+const gymHtml = sliceBetween(homeHtml, 'data-testid="posted-card-galveston-yacht-marina"', "</article>");
+assert.equal((gymHtml.match(/As of /g) ?? []).length, 1);
+assert.match(gymHtml, /As of Oct 3, 2026/);
+assert.doesNotMatch(gymHtml, /posted-asof-galveston-yacht-marina-87/);
+const arlingtonHtml = sliceBetween(homeHtml, 'data-testid="posted-card-arlington-marina"', "</article>");
+assert.match(arlingtonHtml, />\s*Stale\s*</);
+assert.match(arlingtonHtml, /\$6\.399/);
+assert.doesNotMatch(arlingtonHtml, /Date unknown|As of /);
+
+const mixedDates = toPostedCard(dockById("galveston-yacht-marina"), readOn);
+assert.ok(mixedDates);
+mixedDates.id = "mixed-dates";
+mixedDates.name = "Mixed Date Dock";
+mixedDates.lines = [
+  { ...mixedDates.lines[0], asOf: "Oct 1, 2026" },
+  { ...mixedDates.lines[1], asOf: "Oct 2, 2026" },
+];
+const mixedHtml = renderToStaticMarkup(
+  createElement(PostedHome, { cards: [mixedDates], area: null, links: areaLinks }),
+);
+const mixedCard = sliceBetween(mixedHtml, 'data-testid="posted-card-mixed-dates"', "</article>");
+assert.doesNotMatch(mixedCard, /As of /);
+assert.match(mixedCard, /Oct 1, 2026/);
+assert.match(mixedCard, /Oct 2, 2026/);
+
+const headerHtml = renderToStaticMarkup(createElement(SiteHeader));
+assert.match(headerHtml, /data-testid="nav-wholesale"[^>]*href="\/wholesale"|href="\/wholesale"[^>]*data-testid="nav-wholesale"/);
+assert.match(headerHtml, />\s*Wholesale\s*</);
+const headerLabels = [...headerHtml.matchAll(/data-testid="nav-[^"]+"[^>]*>([\s\S]*?)<\/a>/g)].map((match) =>
+  (match[1] ?? "").replace(/<[^>]*>/g, "").trim(),
+);
+assert.equal(headerLabels.at(-1), "Wholesale");
+assert.ok(headerHtml.indexOf('href="/about"') < headerHtml.indexOf('href="/wholesale"'));
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /<PostedHome/);
@@ -463,7 +560,7 @@ const strayDock: Dock = {
   ...gymDock,
   id: "stray-rec-90",
   lastVerifiedSource: "user report",
-  lastVerifiedAt: "2026-10-06",
+  lastVerifiedAt: "2099-06-01",
   sourceUrl: null,
   quotes: [
     ...gymDock.quotes,

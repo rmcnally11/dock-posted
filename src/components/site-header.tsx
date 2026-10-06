@@ -32,6 +32,9 @@ export function SiteHeader() {
           </a>{" "}
           <a className={navLink} href="/about" data-testid="nav-about">
             About
+          </a>{" "}
+          <a className={navLink} href="/wholesale" data-testid="nav-wholesale">
+            Wholesale
           </a>
         </NavScroll>
       </div>

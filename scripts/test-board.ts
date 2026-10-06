@@ -1103,7 +1103,9 @@ assert.match(headerSource, /href="\/about"/);
 assert.match(headerSource, />\s*About\s*</);
 assert.match(headerSource, /data-testid="nav-about"/);
 assert.doesNotMatch(headerSource, /Locked door/);
-assert.doesNotMatch(headerSource, /nav-wholesale|href="\/wholesale"|>\s*Wholesale\s*</);
+assert.match(headerSource, /href="\/wholesale"/);
+assert.match(headerSource, />\s*Wholesale\s*</);
+assert.match(headerSource, /data-testid="nav-wholesale"/);
 assert.doesNotMatch(headerSource, />Haul-out</);
 assert.doesNotMatch(headerSource, />Board</);
 assert.doesNotMatch(headerSource, />Report</);
@@ -1116,6 +1118,7 @@ const navOrder = [
   "Storm Haul-Out",
   "For Marinas",
   "About",
+  "Wholesale",
 ];
 let navAt = -1;
 for (const label of navOrder) {
@@ -1281,8 +1284,9 @@ assert.deepEqual(sharedMenu, [
   ["/run", "Trip Fuel Cost", "Trip Fuel Cost"],
   ["/haul-out", "Storm Haul-Out", "Storm Haul-Out"],
   ["/pin", "For Marinas", "For Marinas"],
+  ["/wholesale", "Wholesale", "Wholesale"],
 ]);
-assert.equal(headerLinks.has("/wholesale"), false);
+assert.equal(headerLinks.get("/wholesale"), "Wholesale");
 assert.equal(footerLinks.get("/wholesale"), "Wholesale");
 assert.equal(footerLinks.get("/how"), "How It Works");
 assert.equal(footerLinks.get("/pin"), headerLinks.get("/pin"));

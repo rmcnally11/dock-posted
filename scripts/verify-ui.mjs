@@ -170,7 +170,8 @@ try {
   check("nav storm haul-out", /Storm Haul-Out/.test(headerCopy));
   check("nav report a price", /Report a Price/.test(headerCopy));
   check("nav ethanol guide", /Ethanol Guide/.test(headerCopy));
-  check("nav about", /About/.test(headerCopy) && !/Wholesale/.test(headerCopy));
+  check("nav about", /About/.test(headerCopy));
+  check("nav wholesale", /Wholesale/.test(headerCopy));
   const whoWrites = await page.$eval("[data-testid=who-writes-this] a", (el) => ({
     text: el.textContent?.trim(),
     href: el.getAttribute("href"),
@@ -367,11 +368,13 @@ try {
   check("no waterdog twitter", !/RJMtweets11/i.test(homeCopy));
   check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
   check("board has no wholesale book", !/nymex|differential|\bTCN\b|should-be|Fair hose|\binvoice\b/i.test(`${kicker} ${headline} ${deck} ${tally} ${dockListCopy} ${mapCopy}`));
-  check("board omits wholesale nav without password", !(await page.$("[data-testid=nav-wholesale]")));
+  const wholesaleNav = await page.$eval("header a[href='/wholesale']", (el) => el.textContent?.trim() ?? "");
+  check("header nav links wholesale", wholesaleNav === "Wholesale" && Boolean(await page.$("[data-testid=nav-wholesale]")), wholesaleNav);
   check("call the dock action", /call the dock/i.test(homeCopy));
   check("company footer", /if they didn.t put a number up, we leave it blank/i.test(homeCopy));
   check("osm attribution in footer", /openstreetmap/i.test(homeCopy));
-  check("no call ahead", !/call ahead/i.test(homeCopy));
+  check("call ahead list", /More fuel docks, call ahead/.test(homeCopy));
+  check("home has no date unknown", !/Date unknown/.test(homeCopy));
   check(
     "no tbd or unknown",
     !/\bTBD\b|\bunknown\b/i.test(homeCopy.replace(/\bdate unknown\b/gi, "")),
@@ -766,21 +769,21 @@ try {
     check(`phone ${phone.width} header one row`, headerBox.oneRow && headerBox.height < 80, JSON.stringify(headerBox));
 
     const navReach = await page.$eval("[data-testid=site-nav]", (nav) => {
-      const about = nav.querySelector("[data-testid=nav-about]");
+      const wholesale = nav.querySelector("[data-testid=nav-wholesale]");
       const hintBefore = Boolean(document.querySelector("[data-testid=nav-scroll-hint]"));
       const overflows = nav.scrollWidth > nav.clientWidth + 1;
       nav.scrollLeft = nav.scrollWidth;
       const navBox = nav.getBoundingClientRect();
-      const aboutBox = about?.getBoundingClientRect();
-      const aboutVisible = Boolean(
-        aboutBox && aboutBox.right <= navBox.right + 2 && aboutBox.left < navBox.right,
+      const wholesaleBox = wholesale?.getBoundingClientRect();
+      const wholesaleVisible = Boolean(
+        wholesaleBox && wholesaleBox.right <= navBox.right + 2 && wholesaleBox.left < navBox.right,
       );
       const labels = [...nav.querySelectorAll("a:not(.sr-only)")].map((el) => el.textContent?.trim());
-      return { overflows, hintBefore, aboutVisible, labels };
+      return { overflows, hintBefore, wholesaleVisible, labels };
     });
     check(
-      `phone ${phone.width} nav reaches about`,
-      navReach.aboutVisible && navReach.labels.at(-1) === "About",
+      `phone ${phone.width} nav reaches wholesale`,
+      navReach.wholesaleVisible && navReach.labels.at(-1) === "Wholesale",
       JSON.stringify(navReach),
     );
     check(
@@ -791,7 +794,7 @@ try {
     check(
       `phone ${phone.width} nav order`,
       navReach.labels.join("|") ===
-        "Fuel Prices|Report a Price|Trip Fuel Cost|Ethanol Guide|Storm Haul-Out|For Marinas|About",
+        "Fuel Prices|Report a Price|Trip Fuel Cost|Ethanol Guide|Storm Haul-Out|For Marinas|About|Wholesale",
       JSON.stringify(navReach.labels),
     );
 

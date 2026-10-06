@@ -5,6 +5,7 @@ import {
   CALL_FIGURE,
   DATE_UNKNOWN,
   HOME_AREAS,
+  NOT_SOLD_FIGURE,
   cardsInArea,
   cardsNearest,
   formatMiles,
@@ -24,87 +25,107 @@ export type AreaLink = {
 type Origin = { lat: number; lng: number };
 
 const chip =
-  "inline-flex h-11 shrink-0 items-center rounded-full border px-3.5 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]";
+  "inline-flex h-9 shrink-0 items-center rounded-full border px-3 text-[13px] font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)] md:h-11 md:px-3.5 md:text-sm";
+
+const smallButton =
+  "inline-flex h-8 items-center justify-center rounded-md px-2.5 text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]";
 
 function figureTone(line: PostedLine): string {
   if (line.figure === CALL_FIGURE) return "text-[color:var(--signal)]";
-  if (line.figure === "Not sold") return "text-[color:var(--ink)]/55";
+  if (line.figure === NOT_SOLD_FIGURE) return "text-[color:var(--ink)]/55";
   return line.kind === "diesel" ? "text-[color:var(--diesel)]" : "text-[color:var(--signal)]";
 }
 
+/** One card date when every grade shares a real day. Unknown is not a day. */
+function sharedAsOf(lines: PostedLine[]): string | null {
+  const first = lines[0]?.asOf;
+  if (!first || first === DATE_UNKNOWN) return null;
+  if (lines.some((line) => line.asOf !== first)) return null;
+  return first;
+}
+
 function PriceCard({ card, miles }: { card: PostedCard; miles: number | null }) {
+  const asOf = sharedAsOf(card.lines);
   return (
     <article
       data-testid={`posted-card-${card.id}`}
       data-stale={card.stale ? "true" : "false"}
-      className="flex h-full flex-col rounded-3xl border border-[color:var(--line)] bg-[color:var(--fog)] p-5 md:p-6"
+      className="flex flex-col rounded-2xl border border-[color:var(--line)] bg-[color:var(--fog)] px-3.5 py-3"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="font-heading text-xl leading-tight text-[color:var(--navy)]">
-            <a
-              href={card.href}
-              className="underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]"
-            >
-              {card.name}
-            </a>
-          </h3>
-          <p className="mt-1 text-sm text-[color:var(--ink)]/70">
+      <div className="flex items-baseline justify-between gap-2">
+        <h3 className="min-w-0 font-heading text-lg leading-tight text-[color:var(--navy)]">
+          <a
+            href={card.href}
+            className="underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]"
+          >
+            {card.name}
+          </a>
+          <span className="font-sans text-sm font-normal text-[color:var(--ink)]/65">
+            {" · "}
             {card.city}, {card.state}
-            {miles != null ? <span className="text-[color:var(--ink)]/55"> · {card.areaLabel}</span> : null}
-          </p>
-          {miles != null ? (
-            <p className="mt-1 font-mono text-xs tabular-nums text-[color:var(--ink)]/60">
-              {formatMiles(miles)}
-            </p>
-          ) : null}
-          {card.note ? (
-            <p className="mt-1 text-[11px] font-medium tracking-wide text-[color:var(--ink)]/70">
-              {card.note}
-            </p>
-          ) : null}
-        </div>
+            {miles != null ? (
+              <span className="font-mono text-xs tabular-nums"> · {formatMiles(miles)}</span>
+            ) : null}
+          </span>
+        </h3>
         {card.stale ? (
           <span
             data-testid={`posted-stale-${card.id}`}
-            className="shrink-0 rounded-full border border-gold bg-gold/20 px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[color:var(--navy)]"
+            className="shrink-0 text-[10px] font-medium uppercase tracking-[0.14em] text-[color:var(--stale)]"
           >
             Stale
           </span>
         ) : null}
       </div>
+      {card.note ? (
+        <p className="mt-0.5 text-[11px] font-medium tracking-wide text-[color:var(--ink)]/70">{card.note}</p>
+      ) : null}
 
-      <dl className="mt-4 space-y-3">
-        {card.lines.map((line) => (
-          <div key={line.key} className="flex items-start justify-between gap-3 border-b border-[color:var(--line)] pb-3 last:border-b-0 last:pb-0">
-            <dt className="min-w-0 text-sm text-[color:var(--ink)]/70" data-testid={`posted-grade-${card.id}-${line.key}`}>
-              {line.label}
-            </dt>
-            <dd className="shrink-0 text-right">
-              <span
-                data-testid={`posted-price-${card.id}-${line.key}`}
-                className={cn("price-up", figureTone(line))}
+      <dl className="mt-1.5">
+        {card.lines.map((line) => {
+          const rowDate = !asOf && line.asOf !== DATE_UNKNOWN ? line.asOf : null;
+          return (
+            <div key={line.key} className="flex items-baseline justify-between gap-3 py-0.5">
+              <dt
+                className="min-w-0 text-sm text-[color:var(--ink)]/65"
+                data-testid={`posted-grade-${card.id}-${line.key}`}
               >
-                {line.figure}
-              </span>
-              <span
-                data-testid={`posted-asof-${card.id}-${line.key}`}
-                className="mt-1 block text-xs text-[color:var(--ink)]/55"
-              >
-                {line.asOf === DATE_UNKNOWN ? DATE_UNKNOWN : `As of ${line.asOf}`}
-              </span>
-            </dd>
-          </div>
-        ))}
+                {line.label}
+              </dt>
+              <dd className="flex shrink-0 items-baseline gap-2">
+                <span
+                  data-testid={`posted-price-${card.id}-${line.key}`}
+                  className={cn("price-up", figureTone(line))}
+                >
+                  {line.figure}
+                </span>
+                {rowDate ? (
+                  <span
+                    data-testid={`posted-asof-${card.id}-${line.key}`}
+                    className="text-[11px] text-[color:var(--ink)]/45"
+                  >
+                    {rowDate}
+                  </span>
+                ) : null}
+              </dd>
+            </div>
+          );
+        })}
       </dl>
 
-      <div className="mt-4 flex gap-2">
+      {asOf ? (
+        <p data-testid={`posted-asof-${card.id}`} className="mt-1 text-[11px] text-[color:var(--ink)]/45">
+          As of {asOf}
+        </p>
+      ) : null}
+
+      <div className="mt-2 flex gap-2">
         {card.callHref ? (
           <a
             data-testid={`posted-call-${card.id}`}
             href={card.callHref}
             aria-label={`Call ${card.name}`}
-            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-md bg-[color:var(--navy)] px-3 text-sm font-medium text-[color:var(--cream)] hover:bg-[color:var(--navy)]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]"
+            className={cn(smallButton, "bg-[color:var(--navy)] text-[color:var(--cream)] hover:bg-[color:var(--navy)]/90")}
           >
             Call
           </a>
@@ -116,7 +137,7 @@ function PriceCard({ card, miles }: { card: PostedCard; miles: number | null }) 
           rel="noopener noreferrer"
           aria-label={`Directions to ${card.name}`}
           className={cn(
-            "inline-flex min-h-11 flex-1 items-center justify-center rounded-md px-3 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]",
+            smallButton,
             card.callHref
               ? "border border-[color:var(--line)] bg-white text-[color:var(--navy)] hover:bg-[color:var(--cream)]"
               : "bg-[color:var(--navy)] text-[color:var(--cream)] hover:bg-[color:var(--navy)]/90",
@@ -129,76 +150,52 @@ function PriceCard({ card, miles }: { card: PostedCard; miles: number | null }) 
   );
 }
 
-function CardList({
-  cards,
-  origin,
-  layout = "wrap",
-}: {
-  cards: PostedCard[];
-  origin: Origin | null;
-  layout?: "stack" | "wrap";
-}) {
-  if (cards.length === 0) {
-    return (
-      <p className="rounded-2xl border border-dashed border-[color:var(--line)] bg-[color:var(--fog)] p-6 text-sm text-[color:var(--ink)]/70">
-        No docks in this area.
-      </p>
-    );
-  }
+function CallRow({ card }: { card: PostedCard }) {
   return (
-    <ul
-      className={cn(
-        "grid grid-cols-1 gap-4",
-        layout === "wrap" && cards.length > 1 && "md:grid-cols-2 xl:grid-cols-3",
-      )}
+    <li
+      data-testid={`posted-row-${card.id}`}
+      className="flex items-baseline justify-between gap-3 border-b border-[color:var(--line)] py-2 last:border-b-0"
     >
-      {cards.map((card) => (
-        <li key={card.id}>
-          <PriceCard
-            card={card}
-            miles={origin ? milesBetween(origin.lat, origin.lng, card.lat, card.lng) : null}
-          />
-        </li>
-      ))}
-    </ul>
+      <p className="min-w-0 text-sm leading-5">
+        <a
+          href={card.href}
+          className="font-heading text-[15px] text-[color:var(--navy)] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]"
+        >
+          {card.name}
+        </a>
+        <span className="text-[color:var(--ink)]/60">
+          {" · "}
+          {card.city}, {card.state}
+        </span>
+      </p>
+      <p className="flex shrink-0 items-center gap-3 text-sm">
+        {card.callHref ? (
+          <a
+            data-testid={`posted-call-${card.id}`}
+            href={card.callHref}
+            aria-label={`Call ${card.name}`}
+            className="font-medium text-[color:var(--diesel)] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]"
+          >
+            Call
+          </a>
+        ) : null}
+        <a
+          data-testid={`posted-directions-${card.id}`}
+          href={card.directionsHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Directions to ${card.name}`}
+          className="font-medium text-[color:var(--navy)] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]"
+        >
+          Directions
+        </a>
+      </p>
+    </li>
   );
 }
 
-function AreaSection({
-  label,
-  cards,
-  testId,
-  callList = false,
-  layout = "wrap",
-}: {
-  label: string;
-  cards: PostedCard[];
-  testId: string;
-  callList?: boolean;
-  layout?: "stack" | "wrap";
-}) {
-  if (cards.length === 0) return null;
-  const headingId = `${testId}-heading`;
-  return (
-    <section aria-labelledby={headingId} data-testid={testId} className="min-w-0">
-      <h2
-        id={headingId}
-        className={
-          callList
-            ? "mb-4 font-heading text-xl text-[color:var(--navy)]/80"
-            : "mb-4 font-heading text-2xl text-[color:var(--navy)]"
-        }
-      >
-        {label}
-        {callList ? (
-          <span className="ml-2 align-middle font-sans text-sm font-medium text-[color:var(--signal)]">
-            Call
-          </span>
-        ) : null}
-      </h2>
-      <CardList cards={cards} origin={null} layout={layout} />
-    </section>
-  );
+function dockCount(count: number): string {
+  return count === 1 ? "1 dock" : `${count} docks`;
 }
 
 export function PostedHome({
@@ -234,34 +231,37 @@ export function PostedHome({
     );
   }
 
-  const areas = area ? HOME_AREAS.filter((item) => item.id === area) : HOME_AREAS;
-  const nearest = origin ? cardsNearest(cards, origin.lat, origin.lng) : null;
+  const areas = origin || !area ? HOME_AREAS : HOME_AREAS.filter((item) => item.id === area);
+  const priced = (
+    origin
+      ? cardsNearest(cards, origin.lat, origin.lng)
+      : area
+        ? cardsInArea(cards, area)
+        : HOME_AREAS.flatMap((item) => cardsInArea(cards, item.id))
+  ).filter((card) => card.hasPrice);
+  const callGroups = areas
+    .map((item) => ({
+      id: item.id,
+      label: item.label,
+      cards: cardsInArea(cards, item.id).filter((card) => !card.hasPrice),
+    }))
+    .filter((group) => group.cards.length > 0);
   const status = pending ? "Finding you." : locationNote;
 
   return (
-    <section data-testid="posted-home" className="min-w-0 bg-[color:var(--cream)] px-4 py-6 md:px-6 md:py-10">
-      <div className="mx-auto flex w-full min-w-0 max-w-7xl flex-col gap-8">
-        <header className="flex min-w-0 flex-col gap-5">
+    <section data-testid="posted-home" className="min-w-0 bg-[color:var(--cream)] px-4 py-4 md:px-6 md:py-8">
+      <div className="mx-auto flex w-full min-w-0 max-w-7xl flex-col gap-4">
+        <header className="flex min-w-0 flex-col gap-3">
           <div>
-            <h1 className="font-heading text-[2rem] leading-[1.1] text-[color:var(--navy)] md:text-5xl">
+            <h1 className="font-heading text-[1.75rem] leading-none text-[color:var(--navy)] md:text-5xl md:leading-[1.05]">
               Where to get fuel
             </h1>
-            <p className="mt-2 max-w-xl text-base leading-7 text-[color:var(--ink)]/70">
-              Gas and diesel on the dock.
-            </p>
+            <p className="mt-1.5 text-sm leading-5 text-[color:var(--ink)]/70">Gas and diesel on the dock.</p>
           </div>
-          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <nav
-              data-testid="area-picker"
-              aria-label="Area"
-              className="flex min-w-0 flex-wrap gap-2"
-            >
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <nav data-testid="area-picker" aria-label="Area" className="flex min-w-0 flex-wrap gap-2">
               {links.map((link) => {
-                const current = origin
-                  ? false
-                  : link.id === "all"
-                    ? area == null
-                    : link.id === area;
+                const current = origin ? false : link.id === "all" ? area == null : link.id === area;
                 return (
                   <a
                     key={link.id}
@@ -286,6 +286,7 @@ export function PostedHome({
               onClick={askLocation}
               className={cn(
                 chip,
+                "self-start",
                 origin
                   ? "border-[color:var(--diesel)] bg-[color:var(--diesel)]/15 text-[color:var(--navy)]"
                   : "border-[color:var(--navy)] bg-[color:var(--navy)] text-[color:var(--cream)] hover:bg-[color:var(--navy)]/90",
@@ -303,40 +304,55 @@ export function PostedHome({
           </p>
         </header>
 
-        {nearest ? (
-          <section aria-label="Nearest docks" data-testid="posted-nearest">
-            <CardList cards={nearest} origin={origin} />
-          </section>
-        ) : area ? (
-          <AreaSection
-            label={areas[0]?.label ?? ""}
-            cards={cardsInArea(cards, area)}
-            testId={`posted-area-${area}`}
-          />
-        ) : (
-          <div className="flex flex-col gap-10">
-            <div className="grid grid-cols-1 items-start gap-10 xl:grid-cols-3">
-              {areas.map((item) => (
-                <AreaSection
-                  key={`priced-${item.id}`}
-                  label={item.label}
-                  cards={cardsInArea(cards, item.id).filter((card) => card.hasPrice)}
-                  testId={`posted-area-${item.id}`}
-                  layout="stack"
-                />
+        <div data-testid="posted-priced" className="flex flex-col gap-3">
+          {priced.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-[color:var(--line)] bg-[color:var(--fog)] px-4 py-3 text-sm text-[color:var(--ink)]/70">
+              No docks in this area.
+            </p>
+          ) : (
+            <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {priced.map((card) => (
+                <li key={card.id}>
+                  <PriceCard
+                    card={card}
+                    miles={origin ? milesBetween(origin.lat, origin.lng, card.lat, card.lng) : null}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="text-sm text-[color:var(--ink)]/65">
+            <a
+              href="/report"
+              data-testid="seen-a-price"
+              className="underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]"
+            >
+              Seen a price? Report it
+            </a>
+          </p>
+        </div>
+
+        {callGroups.length > 0 ? (
+          <section data-testid="posted-call-ahead" aria-labelledby="call-ahead-heading">
+            <h2 id="call-ahead-heading" className="font-heading text-lg text-[color:var(--navy)]">
+              More fuel docks, call ahead
+            </h2>
+            <div className="mt-1 divide-y divide-[color:var(--line)] border-t border-[color:var(--line)]">
+              {callGroups.map((group) => (
+                <details key={group.id} data-testid={`posted-call-area-${group.id}`}>
+                  <summary className="cursor-pointer py-3 text-sm font-medium text-[color:var(--navy)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]">
+                    {group.label} · {dockCount(group.cards.length)}
+                  </summary>
+                  <ul className="pb-2">
+                    {group.cards.map((card) => (
+                      <CallRow key={card.id} card={card} />
+                    ))}
+                  </ul>
+                </details>
               ))}
             </div>
-            {areas.map((item) => (
-              <AreaSection
-                key={`call-${item.id}`}
-                label={item.label}
-                cards={cardsInArea(cards, item.id).filter((card) => !card.hasPrice)}
-                testId={`posted-call-area-${item.id}`}
-                callList
-              />
-            ))}
-          </div>
-        )}
+          </section>
+        ) : null}
       </div>
     </section>
   );
