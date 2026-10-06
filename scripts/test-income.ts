@@ -310,7 +310,10 @@ const footer = readFileSync(path.join(process.cwd(), "src/components/site-footer
 assert.match(footer, /href="\/pin"/);
 assert.match(footer, /href="\/run"/);
 assert.match(footer, /href="\/how"/);
-assert.match(footer, /Waterdog Fuel[\s\S]*Your dock[\s\S]*This trip/);
+assert.match(
+  footer,
+  /Waterdog Fuel[\s\S]*For Marinas[\s\S]*Trip Fuel Cost[\s\S]*How It Works[\s\S]*Storm Haul-Out[\s\S]*Wholesale/,
+);
 assert.match(footer, /On This Water/);
 assert.match(footer, /sisterHomeHref/);
 

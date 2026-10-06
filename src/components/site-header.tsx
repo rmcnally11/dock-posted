@@ -1,15 +1,10 @@
-import { headers } from "next/headers";
 import { NavScroll } from "@/components/nav-scroll";
 import { BrandSpine, Wordmark } from "@/components/wordmark";
-import { wholesalePasswordConfigured } from "@/lib/wholesale-auth";
 
 const navLink =
   "nav-link inline-flex h-12 shrink-0 items-center whitespace-nowrap px-2 text-[color:var(--ink)]/75 transition hover:bg-[color:var(--navy)]/6 hover:text-[color:var(--navy)] md:h-14";
 
-export async function SiteHeader() {
-  await headers();
-  const wholesaleOpen = wholesalePasswordConfigured();
-
+export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 bg-[color:var(--cream)]/90 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden">
       <div className="mx-auto flex h-12 w-full max-w-7xl items-center justify-between gap-x-3 px-3 md:h-14 md:px-6">
@@ -38,11 +33,6 @@ export async function SiteHeader() {
           <a className={navLink} href="/about" data-testid="nav-about">
             About
           </a>
-          {wholesaleOpen ? (
-            <a className="sr-only" href="/wholesale" data-testid="nav-wholesale">
-              Locked door
-            </a>
-          ) : null}
         </NavScroll>
       </div>
       <BrandSpine />

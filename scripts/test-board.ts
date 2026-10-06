@@ -1089,7 +1089,8 @@ assert.match(headerSource, /For Marinas/);
 assert.match(headerSource, /href="\/about"/);
 assert.match(headerSource, />\s*About\s*</);
 assert.match(headerSource, /data-testid="nav-about"/);
-assert.match(headerSource, /Locked door/);
+assert.doesNotMatch(headerSource, /Locked door/);
+assert.doesNotMatch(headerSource, /nav-wholesale|href="\/wholesale"|>\s*Wholesale\s*</);
 assert.doesNotMatch(headerSource, />Haul-out</);
 assert.doesNotMatch(headerSource, />Board</);
 assert.doesNotMatch(headerSource, />Report</);
@@ -1102,7 +1103,6 @@ const navOrder = [
   "Storm Haul-Out",
   "For Marinas",
   "About",
-  "Locked door",
 ];
 let navAt = -1;
 for (const label of navOrder) {
@@ -1247,6 +1247,34 @@ assert.match(reportActions, /redirect\(`\/\?reported=\$\{dockId\}#board`\)/);
 assert.match(footerSource, /If they didn.t put a number up, we leave it blank\. Call the dock\./);
 assert.match(footerSource, /OpenStreetMap/);
 assert.match(footerSource, /Waterdog Fuel\. Opens 2027\./);
+
+function linkLabels(source: string): Map<string, string> {
+  const labels = new Map<string, string>();
+  for (const match of source.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)) {
+    const href = (match[1] ?? "").match(/href="([^"]+)"/)?.[1];
+    const text = (match[2] ?? "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    if (!href || !text) continue;
+    labels.set(href, text);
+  }
+  return labels;
+}
+
+const headerLinks = linkLabels(headerSource);
+const footerLinks = linkLabels(footerSource);
+const sharedMenu = [...headerLinks.keys()]
+  .filter((href) => footerLinks.has(href))
+  .map((href) => [href, headerLinks.get(href), footerLinks.get(href)]);
+assert.deepEqual(sharedMenu, [
+  ["/run", "Trip Fuel Cost", "Trip Fuel Cost"],
+  ["/haul-out", "Storm Haul-Out", "Storm Haul-Out"],
+  ["/pin", "For Marinas", "For Marinas"],
+]);
+assert.equal(headerLinks.has("/wholesale"), false);
+assert.equal(footerLinks.get("/wholesale"), "Wholesale");
+assert.equal(footerLinks.get("/how"), "How It Works");
+assert.equal(footerLinks.get("/pin"), headerLinks.get("/pin"));
+assert.equal(footerLinks.get("/run"), headerLinks.get("/run"));
+assert.equal(footerLinks.get("/haul-out"), headerLinks.get("/haul-out"));
 assert.match(footerSource, /https:\/\/coastalcavaliers\.com/);
 assert.match(footerSource, /data-testid="sister-credit"/);
 assert.match(footerSource, /On This Water/);
