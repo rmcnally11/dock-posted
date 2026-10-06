@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer-core";
 
-const base = process.env.APP_URL ?? "http://127.0.0.1:43123";
+const base = process.env.APP_URL ?? "http://localhost:43123";
 const chrome = process.env.CHROME_PATH ?? "/usr/local/bin/google-chrome";
 
 const browser = await puppeteer.launch({
@@ -22,7 +22,38 @@ function check(name, ok, detail = "") {
 }
 
 try {
-  await page.goto(base, { waitUntil: "networkidle0" });
+  const homeResponse = await page.goto(base, { waitUntil: "networkidle0" });
+  await page.waitForSelector("[data-testid=posted-home]");
+  const homeBytes = homeResponse ? (await homeResponse.buffer()).length : 0;
+  check("home html under 200kb", homeBytes > 0 && homeBytes < 200 * 1024, `${homeBytes} bytes`);
+  check(
+    "home has no coast board",
+    !(await page.$("[data-testid=board]")) && !(await page.$("[data-testid=fuel-map]")),
+  );
+  const seeEvery = await page.$eval("[data-testid=see-every-dock]", (el) => ({
+    text: el.textContent?.trim(),
+    href: el.getAttribute("href"),
+  }));
+  check(
+    "see every fuel dock",
+    seeEvery.text === "See every fuel dock from Sabine to Key West" && seeEvery.href === "/board",
+    JSON.stringify(seeEvery),
+  );
+  const postedVisible = await page.$eval("[data-testid=posted-home]", (el) => el.innerText);
+  check("home has no date unknown", !/Date unknown/.test(postedVisible));
+  check("call ahead list", /More fuel docks, call ahead/.test(postedVisible));
+
+  await page.goto(`${base}/#board`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => location.pathname === "/board");
+  await page.waitForSelector("[data-testid=corridor-heading]");
+  const legacyHash = new URL(page.url());
+  check(
+    "legacy hash opens the board",
+    legacyHash.pathname === "/board" && legacyHash.hash === "#board",
+    page.url(),
+  );
+
+  await page.goto(`${base}/board`, { waitUntil: "networkidle0" });
   await page.waitForSelector("[data-testid=corridor-heading]");
 
   const kicker = await page.$eval("[data-testid=hero-kicker]", (el) => el.textContent?.trim());
@@ -62,8 +93,8 @@ try {
   );
   const landing = await page.$("[data-testid=landing]");
   const boardSection = await page.$("[data-testid=board]");
-  check("landing on home", Boolean(landing));
-  check("board section on home", Boolean(boardSection));
+  check("landing on the fuel page", Boolean(landing));
+  check("board section on the fuel page", Boolean(boardSection));
   const landingHeight = await page.$eval("[data-testid=landing]", (el) => el.getBoundingClientRect().height);
   check("landing is a first screen", landingHeight > 500, `h=${landingHeight}`);
   const seeBoard = await page.$eval("[data-testid=see-the-board]", (el) => ({
@@ -170,7 +201,8 @@ try {
   check("nav storm haul-out", /Storm Haul-Out/.test(headerCopy));
   check("nav report a price", /Report a Price/.test(headerCopy));
   check("nav ethanol guide", /Ethanol Guide/.test(headerCopy));
-  check("nav about", /About/.test(headerCopy) && !/Wholesale/.test(headerCopy));
+  check("nav about", /About/.test(headerCopy));
+  check("nav wholesale", /Wholesale/.test(headerCopy));
   const whoWrites = await page.$eval("[data-testid=who-writes-this] a", (el) => ({
     text: el.textContent?.trim(),
     href: el.getAttribute("href"),
@@ -367,11 +399,11 @@ try {
   check("no waterdog twitter", !/RJMtweets11/i.test(homeCopy));
   check("no rack desk", !/opis|argus|platts|cents-over-rack|jobber|\bRIN\b/i.test(homeCopy));
   check("board has no wholesale book", !/nymex|differential|\bTCN\b|should-be|Fair hose|\binvoice\b/i.test(`${kicker} ${headline} ${deck} ${tally} ${dockListCopy} ${mapCopy}`));
-  check("board omits wholesale nav without password", !(await page.$("[data-testid=nav-wholesale]")));
+  const wholesaleNav = await page.$eval("header a[href='/wholesale']", (el) => el.textContent?.trim() ?? "");
+  check("header nav links wholesale", wholesaleNav === "Wholesale" && Boolean(await page.$("[data-testid=nav-wholesale]")), wholesaleNav);
   check("call the dock action", /call the dock/i.test(homeCopy));
   check("company footer", /if they didn.t put a number up, we leave it blank/i.test(homeCopy));
   check("osm attribution in footer", /openstreetmap/i.test(homeCopy));
-  check("no call ahead", !/call ahead/i.test(homeCopy));
   check(
     "no tbd or unknown",
     !/\bTBD\b|\bunknown\b/i.test(homeCopy.replace(/\bdate unknown\b/gi, "")),
@@ -381,7 +413,7 @@ try {
     /Marina's price|No price posted|Price over a week old/.test(homeCopy),
     homeCopy.slice(0, 200),
   );
-  check("claim path", /Your dock/.test(homeCopy));
+  check("claim path", /For Marinas/.test(homeCopy));
   check("no bargain", !/cheapest|savings|bargain/i.test(homeCopy));
   check("no slips pitch", !/wet-slip|Holds Fast/i.test(homeCopy));
 
@@ -527,7 +559,7 @@ try {
   });
   check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber|should-be|Fair hose|\binvoice\b/i.test(haulSansFooter));
   check("haul-out footer credit", /Waterdog Fuel\. Opens 2027\./.test(haulCopy));
-  check("haul-out header omits wholesale nav without password", !/wholesale/i.test(haulHeader));
+  check("haul-out header links wholesale", /Wholesale/.test(haulHeader));
 
   const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
     page.$eval("main", (el) => el.textContent ?? ""),
@@ -626,15 +658,24 @@ try {
   check("about no invented domain", !/waterdogfuel\.com/i.test(aboutCopy));
   check("about footer credit", /Waterdog Fuel\. Opens 2027\./.test(aboutCopy));
   const headerOverflow = await page.$eval("header", (el) => el.scrollWidth > el.clientWidth + 1);
-  const aboutNavBox = await page.$eval("[data-testid=nav-about]", (el) => {
+  check("header does not overflow at 375", !headerOverflow);
+  await page.waitForFunction(() =>
+    Object.keys(document.querySelector("[data-testid=nav-menu]") ?? {}).some((key) => key.startsWith("__reactProps")),
+  );
+  await page.click("[data-testid=nav-menu]");
+  const aboutNavBox = await page.$eval("#site-menu [data-testid=nav-about]", (el) => {
     const r = el.getBoundingClientRect();
     return { width: r.width, height: r.height, top: r.top };
   });
-  check("header does not overflow at 375", !headerOverflow);
+  const menuWholesale = await page.$eval("#site-menu a[href='/wholesale']", (el) => el.getAttribute("href"));
   check("about nav readable at 375", aboutNavBox.width > 20 && aboutNavBox.height > 10, JSON.stringify(aboutNavBox));
+  check("mobile menu contains wholesale", menuWholesale === "/wholesale", menuWholesale ?? "");
+  await page.keyboard.press("Escape");
+  const menuClosed = await page.$eval("[data-testid=nav-menu]", (el) => el.getAttribute("aria-expanded"));
+  check("mobile menu closes on escape", menuClosed === "false", menuClosed ?? "");
 
   await page.setViewport({ width: 375, height: 812 });
-  await page.goto(base, { waitUntil: "networkidle0" });
+  await page.goto(`${base}/board`, { waitUntil: "networkidle0" });
   const phoneLanding = await page.$eval("[data-testid=landing]", (el) => el.getBoundingClientRect().height);
   const phoneMapTop = await page.$eval("[data-testid=fuel-map]", (el) => el.getBoundingClientRect().top);
   check("phone landing fills first screen", phoneLanding > 600, `h=${phoneLanding}`);
@@ -753,47 +794,50 @@ try {
 
     const headerBox = await page.$eval("header", (el) => {
       const wordmark = el.querySelector("[data-testid=wordmark]");
-      const nav = el.querySelector("nav");
+      const menu = el.querySelector("[data-testid=nav-menu]");
       const wr = wordmark?.getBoundingClientRect();
-      const nr = nav?.getBoundingClientRect();
+      const mr = menu?.getBoundingClientRect();
       return {
         overflow: el.scrollWidth > el.clientWidth + 1,
-        oneRow: wr && nr ? Math.abs(wr.top - nr.top) < 24 : false,
+        oneRow: wr && mr && mr.width > 0 ? Math.abs(wr.top + wr.height / 2 - (mr.top + mr.height / 2)) < 20 : false,
         height: el.getBoundingClientRect().height,
+        expanded: menu?.getAttribute("aria-expanded") ?? "",
       };
     });
     check(`phone ${phone.width} header no overflow`, !headerBox.overflow, JSON.stringify(headerBox));
     check(`phone ${phone.width} header one row`, headerBox.oneRow && headerBox.height < 80, JSON.stringify(headerBox));
+    check(`phone ${phone.width} menu starts closed`, headerBox.expanded === "false", headerBox.expanded);
 
-    const navReach = await page.$eval("[data-testid=site-nav]", (nav) => {
-      const about = nav.querySelector("[data-testid=nav-about]");
-      const hintBefore = Boolean(document.querySelector("[data-testid=nav-scroll-hint]"));
-      const overflows = nav.scrollWidth > nav.clientWidth + 1;
-      nav.scrollLeft = nav.scrollWidth;
-      const navBox = nav.getBoundingClientRect();
-      const aboutBox = about?.getBoundingClientRect();
-      const aboutVisible = Boolean(
-        aboutBox && aboutBox.right <= navBox.right + 2 && aboutBox.left < navBox.right,
-      );
-      const labels = [...nav.querySelectorAll("a:not(.sr-only)")].map((el) => el.textContent?.trim());
-      return { overflows, hintBefore, aboutVisible, labels };
+    await page.waitForFunction(() =>
+      Object.keys(document.querySelector("[data-testid=nav-menu]") ?? {}).some((key) => key.startsWith("__reactProps")),
+    );
+    await page.click("[data-testid=nav-menu]");
+    const menuOpen = await page.$eval("#site-menu", (nav) => {
+      const labels = [...nav.querySelectorAll("a")].map((el) => el.textContent?.trim());
+      return {
+        expanded: document.querySelector("[data-testid=nav-menu]")?.getAttribute("aria-expanded") ?? "",
+        hidden: nav.hasAttribute("hidden"),
+        labels,
+        wholesale: nav.querySelector("a[href='/wholesale']")?.getAttribute("href") ?? "",
+      };
     });
     check(
-      `phone ${phone.width} nav reaches about`,
-      navReach.aboutVisible && navReach.labels.at(-1) === "About",
-      JSON.stringify(navReach),
+      `phone ${phone.width} menu lists wholesale`,
+      menuOpen.expanded === "true" &&
+        !menuOpen.hidden &&
+        menuOpen.wholesale === "/wholesale" &&
+        menuOpen.labels.at(-1) === "Wholesale",
+      JSON.stringify(menuOpen),
     );
     check(
-      `phone ${phone.width} nav scroll hint`,
-      !navReach.overflows || navReach.hintBefore,
-      JSON.stringify(navReach),
+      `phone ${phone.width} menu order`,
+      menuOpen.labels.join("|") ===
+        "Fuel Prices|Report a Price|Trip Fuel Cost|Ethanol Guide|Storm Haul-Out|For Marinas|About|Wholesale",
+      JSON.stringify(menuOpen.labels),
     );
-    check(
-      `phone ${phone.width} nav order`,
-      navReach.labels.join("|") ===
-        "Fuel Prices|Report a Price|Trip Fuel Cost|Ethanol Guide|Storm Haul-Out|For Marinas|About",
-      JSON.stringify(navReach.labels),
-    );
+    await page.keyboard.press("Escape");
+    const menuAfterEscape = await page.$eval("[data-testid=nav-menu]", (el) => el.getAttribute("aria-expanded"));
+    check(`phone ${phone.width} menu closes on escape`, menuAfterEscape === "false", menuAfterEscape ?? "");
 
     const chipTops = await page.$$eval("[data-testid=coast-jumps] a", (els) =>
       els.map((el) => el.getBoundingClientRect().top),
@@ -824,6 +868,18 @@ try {
       `phone ${phone.width} hours full width`,
       Boolean(hours && hours.hoursW > hours.regularW * 1.4),
       JSON.stringify(hours),
+    );
+
+    await page.click("[data-testid=nav-menu]");
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: "networkidle0" }),
+      page.click("#site-menu a[href='/about']"),
+    ]);
+    const closedOnTap = await page.$eval("[data-testid=nav-menu]", (el) => el.getAttribute("aria-expanded"));
+    check(
+      `phone ${phone.width} menu closes on link`,
+      closedOnTap === "false" && new URL(page.url()).pathname === "/about",
+      `${closedOnTap} ${page.url()}`,
     );
 
     await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
