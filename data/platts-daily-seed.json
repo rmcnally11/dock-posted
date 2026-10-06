@@ -1,0 +1,11 @@
+{
+  "dateKey": "2026-10-02",
+  "unit": "cents_per_gallon",
+  "rbCents": 331.24,
+  "hoCents": 450.11,
+  "gcCbobDiffCents": -3.25,
+  "gcCbob93DiffCents": 41.75,
+  "gcUlsdDiffCents": -1.75,
+  "tampaCbobDiffCents": 9,
+  "note": "Owner Platts Daily row for DateKey 2026-10-02. Desk-only seed. Not a public price and not a live Airtable fetch."
+}

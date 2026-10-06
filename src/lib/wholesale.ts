@@ -417,10 +417,11 @@ export function marinaPostedNumber(book: ProductNetback): {
 
 /** Picnic-table dollars. Tenths of a cent stay visible. Same cents as formatDollars. */
 export function formatDockDollars(value: Cents): string {
-  if (value == null) return "—";
-  const sign = value < 0 ? "−" : "";
-  const dollars = Math.abs(value) / 100;
-  const places = Number.isInteger(value) ? 2 : 3;
+  if (value == null || !Number.isFinite(value)) return "—";
+  const rounded = Math.round(value * 100) / 100;
+  const sign = rounded < 0 ? "−" : "";
+  const dollars = Math.abs(rounded) / 100;
+  const places = Number.isInteger(rounded) ? 2 : 3;
   return `${sign}$${dollars.toFixed(places)}`;
 }
 
@@ -769,6 +770,24 @@ export function computeProductNetback(
   return book;
 }
 
+export {
+  buildDerivedLandedCostBook as computeDerivedMarinaLandedCost,
+  derivedLegBlankText,
+  formatDerivedCents,
+  plattsOutrights,
+  roundDerivedCents,
+  sumDerivedAddLegs,
+} from "./derived-landed-cost";
+export type {
+  DerivedDockEstimate,
+  DerivedLandedCostBook,
+  DerivedLandedCostInput,
+  DerivedLeg,
+  DerivedProductEstimate,
+  DieselTaxFlag,
+  PlattsSpotKey,
+} from "./derived-landed-cost";
+
 export function computeWorksheet(
   sheet: TerminalWorksheet,
   context: WorksheetContext = {},
@@ -792,16 +811,22 @@ export function computeWorksheet(
   };
 }
 
+function displayCents(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
 export function formatCents(value: Cents): string {
-  if (value == null) return "—";
-  const sign = value < 0 ? "−" : "";
-  return `${sign}${Math.abs(value).toFixed(2)} ¢/gal`;
+  if (value == null || !Number.isFinite(value)) return "—";
+  const rounded = displayCents(value);
+  const sign = rounded < 0 ? "−" : "";
+  return `${sign}${Math.abs(rounded).toFixed(2)} ¢/gal`;
 }
 
 export function formatDollars(value: Cents): string {
-  if (value == null) return "—";
-  const sign = value < 0 ? "−" : "";
-  return `${sign}$${(Math.abs(value) / 100).toFixed(4)}/gal`;
+  if (value == null || !Number.isFinite(value)) return "—";
+  const rounded = displayCents(value);
+  const sign = rounded < 0 ? "−" : "";
+  return `${sign}$${(Math.abs(rounded) / 100).toFixed(4)}/gal`;
 }
 
 export function formatBoth(value: Cents): string {
