@@ -29,6 +29,7 @@ import {
 } from "../src/lib/posted";
 import { readDocks } from "../src/lib/store";
 import type { Dock, FuelQuote } from "../src/lib/types";
+import { HomeWelcome } from "../src/components/home-welcome";
 import { PostedHome } from "../src/components/posted-home";
 import { SiteHeader } from "../src/components/site-header";
 
@@ -133,7 +134,14 @@ const corridorOnly: Dock = {
 assert.equal(homeArea(corridorOnly), "galveston-bay");
 
 const pricedIds = ["galveston-yacht-marina", "madeira-beach-municipal-marina", "lambs-yacht-center", "st-augustine-municipal-marina"];
-for (const file of ["src/lib/posted.ts", "src/components/posted-home.tsx", "src/app/page.tsx", "src/app/board/page.tsx"]) {
+for (const file of [
+  "src/lib/posted.ts",
+  "src/components/posted-home.tsx",
+  "src/components/home-welcome.tsx",
+  "src/lib/home-welcome.ts",
+  "src/app/page.tsx",
+  "src/app/board/page.tsx",
+]) {
   const text = readFileSync(path.join(process.cwd(), file), "utf8");
   for (const id of pricedIds) {
     assert.equal(text.includes(id), false, `${file} hardcoded ${id}`);
@@ -390,6 +398,8 @@ assert.doesNotMatch(homeHtml, /Date unknown/);
 assert.doesNotMatch(homeHtml, /<details[^>]*\sopen[\s=]/);
 assert.match(homeHtml, /More fuel docks, call ahead/);
 assert.match(homeHtml, /Seen a price\? Report it/);
+assert.match(homeHtml, /id="dock-prices"/);
+assert.match(homeHtml, /Fuel prices by dock/);
 assert.match(homeHtml, /href="\/report"/);
 assert.match(homeHtml, /Galveston Bay · 12 docks/);
 assert.match(homeHtml, /Tampa Bay · 6 docks/);
@@ -475,6 +485,17 @@ assert.equal(
 const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-header.tsx"), "utf8");
 assert.match(headerSource, /Escape/);
 assert.match(headerSource, /setOpen\(false\)/);
+
+const welcomeHtml = renderToStaticMarkup(createElement(HomeWelcome));
+assert.match(welcomeHtml.replace(/<[^>]+>/g, ""), /Fuel prices at the dock, from Texas to Florida\./);
+assert.match(welcomeHtml, /data-testid="home-hero-headline"/);
+assert.match(welcomeHtml, /<button[^>]*data-testid="find-fuel-near-me"[^>]*>Find fuel near me<\/button>/);
+assert.match(welcomeHtml, /<a[^>]*href="\/report"[^>]*>Report a price<\/a>/);
+const welcomeSource = readFileSync(path.join(process.cwd(), "src/components/home-welcome.tsx"), "utf8");
+assert.match(welcomeSource, /getElementById\("dock-prices"\)/);
+assert.match(welcomeSource, /scrollIntoView/);
+assert.match(welcomeSource, /\[data-testid=near-me\]/);
+assert.doesNotMatch(welcomeSource, LEAK);
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /<PostedHome/);

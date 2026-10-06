@@ -1,5 +1,6 @@
 import type { Route } from "next";
 import { redirect } from "next/navigation";
+import { HomeWelcome, MarinaStrip } from "@/components/home-welcome";
 import { PostedHome } from "@/components/posted-home";
 import { SiteFooter } from "@/components/site-footer";
 import { legacyHomeBoardPath } from "@/lib/board-query";
@@ -56,6 +57,7 @@ export default async function Home({
             'function leaveBoardHash(){if(location.pathname==="/"&&location.hash==="#board")location.replace("/board#board")}leaveBoardHash();addEventListener("hashchange",leaveBoardHash)',
         }}
       />
+      <HomeWelcome />
       <PostedHome cards={cards} area={area} links={areaLinks} />
       <div className="bg-[color:var(--cream)] px-4 pb-10 md:px-6">
         <p className="mx-auto w-full max-w-7xl">
@@ -68,6 +70,7 @@ export default async function Home({
           </a>
         </p>
       </div>
+      <MarinaStrip />
       <SiteFooter />
     </main>
   );

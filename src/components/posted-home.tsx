@@ -14,6 +14,7 @@ import {
   type PostedCard,
   type PostedLine,
 } from "@/lib/posted";
+import { HOME_WELCOME } from "@/lib/home-welcome";
 import { cn } from "@/lib/utils";
 
 export type AreaLink = {
@@ -251,13 +252,10 @@ export function PostedHome({
   return (
     <section data-testid="posted-home" className="min-w-0 bg-[color:var(--cream)] px-4 py-4 md:px-6 md:py-8">
       <div className="mx-auto flex w-full min-w-0 max-w-7xl flex-col gap-4">
-        <header className="flex min-w-0 flex-col gap-3">
-          <div>
-            <h1 className="font-heading text-[1.75rem] leading-none text-[color:var(--navy)] md:text-5xl md:leading-[1.05]">
-              Where to get fuel
-            </h1>
-            <p className="mt-1.5 text-sm leading-5 text-[color:var(--ink)]/70">Gas and diesel on the dock.</p>
-          </div>
+        <header id="dock-prices" className="flex min-w-0 scroll-mt-16 flex-col gap-3">
+          <h2 className="font-heading text-xl leading-tight text-[color:var(--navy)] md:text-2xl">
+            {HOME_WELCOME.pricesHeading}
+          </h2>
           <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <nav data-testid="area-picker" aria-label="Area" className="flex min-w-0 flex-wrap gap-2">
               {links.map((link) => {
