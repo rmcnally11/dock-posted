@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { readDocks, readWholesaleStore } from "@/lib/store";
 import {
   applyWorksheetDefaults,
+  computeDerivedMarinaLandedCost,
   computeWorksheet,
   emptyWorksheet,
   findArea,
@@ -14,6 +15,7 @@ import {
 import { WHOLESALE_DRAFT_COOKIE, parseWholesaleDraft } from "@/lib/wholesale-draft";
 import { fetchYahooNymexScreens, nymexFallbackMap } from "@/lib/wholesale-nymex";
 import { isWholesaleAuthed } from "./gate";
+import { DerivedEstimate } from "./derived-estimate";
 import { AreaChips, DeskLogout, LoginPanel, NymexBanner, TerminalTable, Worksheet } from "./desk";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +59,20 @@ export default async function WholesalePage({
   };
   const live = computeWorksheet(sheet, context);
   const prepared = applyWorksheetDefaults(sheet, context);
+  const { loadPlattsDailyRow } = await import("@/lib/platts-daily");
+  const platts = await loadPlattsDailyRow();
+  const derived = computeDerivedMarinaLandedCost({
+    docks,
+    row: platts.row,
+    typed: {
+      RB: { invoiceCents: sheet.rb.invoiceDelivered, rackCents: sheet.rb.postedRack },
+      HO: { invoiceCents: sheet.ho.invoiceDelivered, rackCents: sheet.ho.postedRack },
+    },
+    todayKey: platts.todayKey,
+    stale: platts.stale,
+    rowSource: platts.source,
+    rowNote: platts.note,
+  });
 
   const tableRows = attached.map(({ terminal, ref }) => {
     const stored = store.worksheets[terminal.id] ?? emptyWorksheet();
@@ -113,9 +129,12 @@ export default async function WholesalePage({
 
       <TerminalTable area={area} rows={tableRows} selectedId={selectedId} unit={unit} />
 
+      <DerivedEstimate book={derived} />
+
       <p className="mt-8 text-xs text-black/45" data-testid="desk-feed-footer">
         Yahoo Finance public screen (RB=F / HO=F) when the pull succeeds, with as-of on the quote.
-        Platts is not used. Typed NYMEX cells are the desk&apos;s number, not a live market tile.
+        Typed NYMEX cells are the desk&apos;s number, not a live market tile. Platts Daily is used only
+        for the derived landed-cost estimate on this desk. It does not fill invoice, posted rack, or fat take.
       </p>
     </main>
   );

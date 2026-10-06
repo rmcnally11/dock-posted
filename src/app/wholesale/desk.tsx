@@ -167,9 +167,9 @@ export function NymexBanner({ screens }: { screens: NymexScreenPull }) {
     <section className="mt-6 border border-black/15 bg-white p-4" data-testid="nymex-yahoo">
       <h2 className="text-sm font-medium">NYMEX screen · Yahoo Finance (public)</h2>
       <p className="mt-1 text-xs text-black/45">
-        RB=F (RBOB / gasoline) and HO=F (NY Harbor ULSD / heating oil). Server pull only. Not Platts,
-        OPIS, DTN, or a paid vendor. Typed screen wins — a typed cell is your number, not the live
-        pull. Failed or stale quotes stay —.
+        RB=F (RBOB / gasoline) and HO=F (NY Harbor ULSD / heating oil). Server pull only. This screen
+        is not the Platts Daily row, OPIS, DTN, or a paid vendor. Typed screen wins — a typed cell is
+        your number, not the live pull. Failed or stale quotes stay —.
       </p>
       <ul className="mt-3 space-y-1 text-sm">
         {WHOLESALE_PRODUCTS.map((product) => {

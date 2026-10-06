@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -17,10 +17,13 @@ import {
   applyDiffRow,
   applyWorksheetDefaults,
   boardDockDefault,
+  computeDerivedMarinaLandedCost,
   computeProductNetback,
   computeWorksheet,
   deliveredAtPlace,
+  derivedLegBlankText,
   fatTakeCents,
+  formatDerivedCents,
   jobberOnStack,
   postedLeftoverCents,
   PRESSURE_LADDER_KEYS,
@@ -47,12 +50,28 @@ import {
   rememberClearedTax,
   stripUnchangedDefaults,
   subCents,
+  sumDerivedAddLegs,
   taxCents,
+  westFloridaSpotKey,
   tcnLabel,
   terminalsForArea,
   worksheetFromFields,
   worksheetHasInputs,
 } from "../src/lib/wholesale";
+import { renderToStaticMarkup } from "react-dom/server";
+import { DerivedEstimate } from "../src/app/wholesale/derived-estimate";
+import {
+  AIRTABLE_PLATTS_TOKEN_ENV,
+  OUTRIGHT_MISMATCH_CENTS,
+  PLATTS_AIRTABLE_BASE_ID,
+  PLATTS_AIRTABLE_FIELDS,
+  PLATTS_AIRTABLE_TABLE_ID,
+  latestPlattsRecord,
+  loadPlattsDailyRow,
+  outrightGap,
+  plattsRowFromAirtableFields,
+  plattsRowIsStale,
+} from "../src/lib/platts-daily";
 import { parseWholesaleDraft, serializeWholesaleDraft } from "../src/lib/wholesale-draft";
 import {
   NYMEX_YAHOO_TICKERS,
@@ -1023,6 +1042,478 @@ for (const file of publicPages) {
 assert.match(readFileSync(path.join(process.cwd(), "src/app/wholesale/desk.tsx"), "utf8"), /LoginPanel/);
 const loginSlice = deskSource.slice(deskSource.indexOf("export function LoginPanel"), deskSource.length);
 assert.doesNotMatch(loginSlice, /should-be|Fair hose|\binvoice\b|nymex|\brack\b|\bTCN\b|Platts|\bRIN\b/i);
+assert.doesNotMatch(loginSlice, /DERIVED ESTIMATE|Platts row unavailable|AIRTABLE_PLATTS/);
+
+assert.equal(formatCents(229.99999999999997), "230.00 ¢/gal");
+assert.equal(formatDollars(229.99999999999997), "$2.3000/gal");
+assert.doesNotMatch(formatCents(229.99999999999997), /999999/);
+assert.equal(formatDerivedCents(22.125), "22.125 ¢/gal");
+assert.equal(formatDerivedCents(0), "0.00 ¢/gal");
+assert.equal(formatDerivedCents(null), "—");
+assert.equal(existsSync(path.join(process.cwd(), "data/platts-daily-seed.json")), false);
+
+async function derivedChecks() {
+  // Synthetic stand-in for a Platts Daily payload. These decimals are not a licensed print.
+  const syntheticOlder = {
+    DateKey: "2026-09-30",
+    NYMEX_RB_Implied: 101.11,
+    NYMEX_HO_Implied: 202.22,
+    GC_CBOB_Diff: 11.11,
+    GC_CBOB93_Diff: 22.22,
+    GC_ULSD_Diff: 33.33,
+    TPA_CBOB_Diff: 12.12,
+    TPA_ULSD_Diff: 13.13,
+    TPA_PRE_Diff: 14.14,
+    GC_CBOB_Out: 112.22,
+    GC_CBOB93_Out: 123.33,
+    GC_ULSD_Out: 235.55,
+    TPA_CBOB_Out: 113.23,
+    TPA_PRE_Out: 115.25,
+    TPA_ULSD_Out: 215.35,
+  };
+  const syntheticLatest = {
+    ...syntheticOlder,
+    DateKey: "2026-10-05",
+    NYMEX_RB_Implied: "101.11",
+    GC_CBOB_Out: "112.30",
+    TPA_PRE_Out: 115.4,
+  };
+  const mockedAirtableBody = {
+    records: [
+      { id: "recOlder", fields: syntheticOlder },
+      { id: "recLatest", fields: syntheticLatest },
+    ],
+  };
+
+  const realPrints = [
+    ["327", "99"],
+    ["372", "99"],
+    ["448", "36"],
+    ["340", "24"],
+    ["331", "24"],
+    ["450", "11"],
+    ["41", "75"],
+    ["-3", "25"],
+    ["-1", "75"],
+  ].map((parts) => parts.join("."));
+  const feedDecimals = decimalNeedles(mockedAirtableBody);
+  assert.ok(feedDecimals.length >= 8);
+  for (const file of walkRepo(process.cwd())) {
+    const text = readText(file);
+    if (text == null) continue;
+    for (const needle of realPrints) {
+      const hit = new RegExp(`(?<![A-Za-z0-9.])${needle.replace(".", "\\.")}(?![0-9])`).test(text);
+      assert.equal(hit, false, `${path.relative(process.cwd(), file)} contains a licensed print`);
+    }
+    if (path.relative(process.cwd(), file) === "scripts/test-wholesale.ts") continue;
+    for (const needle of feedDecimals) {
+      assert.equal(
+        new RegExp(`(?<![0-9.])${needle.replace(".", "\\.")}(?![0-9])`).test(text),
+        false,
+        `${path.relative(process.cwd(), file)} contains a mocked feed value`,
+      );
+    }
+  }
+
+  assert.equal(outrightGap(110.05, 100, 10), 0.05);
+  assert.equal(outrightGap(110.05, 100, 10) > OUTRIGHT_MISMATCH_CENTS, false);
+  assert.equal(outrightGap(110.06, 100, 10) > OUTRIGHT_MISMATCH_CENTS, true);
+  assert.equal(plattsRowIsStale("2026-10-05", "2026-10-06"), false);
+  assert.equal(plattsRowIsStale("2026-10-02", "2026-10-05"), false);
+  assert.equal(plattsRowIsStale("2026-10-02", "2026-10-06"), true);
+  assert.equal(AIRTABLE_PLATTS_TOKEN_ENV, "AIRTABLE_PLATTS_TOKEN");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.dateKey, "DateKey");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.nymexRbImplied, "NYMEX_RB_Implied");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.nymexHoImplied, "NYMEX_HO_Implied");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.gcCbobDiff, "GC_CBOB_Diff");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.gcCbob93Diff, "GC_CBOB93_Diff");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.gcUlsdDiff, "GC_ULSD_Diff");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.tpaCbobDiff, "TPA_CBOB_Diff");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.tpaUlsdDiff, "TPA_ULSD_Diff");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.tpaPreDiff, "TPA_PRE_Diff");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.gcCbobOut, "GC_CBOB_Out");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.gcCbob93Out, "GC_CBOB93_Out");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.gcUlsdOut, "GC_ULSD_Out");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.tpaCbobOut, "TPA_CBOB_Out");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.tpaPreOut, "TPA_PRE_Out");
+  assert.equal(PLATTS_AIRTABLE_FIELDS.tpaUlsdOut, "TPA_ULSD_Out");
+
+  const cleanRow = plattsRowFromAirtableFields(syntheticOlder);
+  assert.ok(cleanRow);
+  assert.equal(cleanRow.gcCbob.out, syntheticOlder.GC_CBOB_Out);
+  assert.equal(cleanRow.gcCbob.flagged, false);
+  assert.equal(cleanRow.tpaUlsd.out, syntheticOlder.TPA_ULSD_Out);
+  assert.equal(cleanRow.tpaPre.flagged, false);
+
+  const blankTyped = {
+    RB: { invoiceCents: null, rackCents: null },
+    HO: { invoiceCents: null, rackCents: null },
+  };
+  const derivedBook = computeDerivedMarinaLandedCost({
+    docks,
+    row: cleanRow,
+    typed: blankTyped,
+    todayKey: "2026-10-06",
+    stale: false,
+    rowSource: "airtable",
+    rowNote: "synthetic",
+  });
+  assert.equal(derivedBook.label, "DERIVED ESTIMATE");
+  assert.equal(derivedBook.outrightFlag, false);
+  assert.deepEqual(
+    derivedBook.docks.map((dock) => dock.dockId),
+    [
+      "galveston-yacht-marina",
+      "madeira-beach-municipal-marina",
+      "st-augustine-municipal-marina",
+      "lambs-yacht-center",
+    ],
+  );
+  assert.ok(derivedBook.docks.every((dock) => !/california|pacific/i.test(dock.dockId)));
+  assert.equal(westFloridaSpotKey("premium"), "tpaPre");
+  assert.equal(westFloridaSpotKey("gasoline"), "tpaCbob");
+  assert.equal(westFloridaSpotKey("diesel"), "tpaUlsd");
+  assert.ok(derivedBook.docks.every((dock) => dock.products.every((product) => product.spotKey !== "tpaPre")));
+
+  const galveston = derivedBook.docks[0]!;
+  const regular = galveston.products.find((product) => product.product === "87")!;
+  const premium = galveston.products.find((product) => product.product === "93")!;
+  const galvestonDiesel = galveston.products.find((product) => product.product === "diesel")!;
+  assert.equal(regular.approximate, false);
+  assert.equal(regular.spotKey, "gcCbob");
+  assert.equal(regular.legs.find((leg) => leg.key === "spot")?.cents, syntheticOlder.GC_CBOB_Out);
+  assert.equal(premium.approximate, true);
+  assert.equal(premium.spotKey, "gcCbob93");
+  assert.equal(premium.legs.find((leg) => leg.key === "spot")?.cents, syntheticOlder.GC_CBOB93_Out);
+  assert.equal(galvestonDiesel.spotKey, "gcUlsd");
+  assert.equal(galvestonDiesel.legs.find((leg) => leg.key === "spot")?.cents, syntheticOlder.GC_ULSD_Out);
+  assert.equal(galvestonDiesel.dieselFlag?.estimateUsed, "undyed-clear");
+  assert.match(galvestonDiesel.dieselFlag?.notApplied ?? "", /noncommercial vessel/i);
+  assert.equal(regular.postedPumpCents, postedCents("galveston-yacht-marina", "87"));
+  assert.equal(premium.postedPumpCents, postedCents("galveston-yacht-marina", "93"));
+  assert.equal(galvestonDiesel.postedPumpCents, postedCents("galveston-yacht-marina", "diesel"));
+  for (const product of galveston.products) {
+    const freight = product.legs.find((leg) => leg.key === "marinePipelineFreight")!;
+    assert.equal(freight.disposition, "not_on_path");
+    assert.equal(freight.cents, null);
+    assert.equal(freight.blank, null);
+    assert.match(freight.note, /Colonial/);
+    for (const key of ["terminalThroughput", "truckFreight"] as const) {
+      const leg = product.legs.find((item) => item.key === key)!;
+      assert.equal(leg.cents, null);
+      assert.equal(leg.blank, "not sourced");
+      assert.notEqual(leg.cents, 0);
+      assert.equal(derivedLegBlankText(leg), `${leg.label} — not sourced`);
+    }
+    assert.equal(product.legs.find((leg) => leg.key === "federalTax")?.cents, product.product === "diesel" ? 24.4 : 18.4);
+    assert.equal(product.legs.find((leg) => leg.key === "stateTax")?.cents, 20);
+    const local = product.legs.find((leg) => leg.key === "localTax")!;
+    assert.equal(local.cents, 0);
+    assert.equal(local.blank, null);
+    assert.ok(local.sourceUrl);
+    assert.equal(product.legs.find((leg) => leg.key === "invoice")?.blank, "not typed");
+    assert.equal(product.legs.find((leg) => leg.key === "rack")?.blank, "not typed");
+    assert.equal(product.dapComplete, false);
+    assert.equal(product.dapCents, null);
+    assert.notEqual(product.dapCents, 0);
+    assert.equal(product.impliedMarginCents, null);
+    assert.equal(product.fatTakeStatus, "NO CALL");
+    assert.equal(product.fatTakeCents, null);
+  }
+
+  const madeira = derivedBook.docks[1]!;
+  const madeiraGas = madeira.products.find((product) => product.product === "gasoline")!;
+  const madeiraDiesel = madeira.products.find((product) => product.product === "diesel")!;
+  assert.equal(madeiraGas.approximate, true);
+  assert.equal(madeiraGas.spotKey, "tpaCbob");
+  assert.equal(madeiraGas.legs.find((leg) => leg.key === "spot")?.cents, syntheticOlder.TPA_CBOB_Out);
+  assert.equal(madeiraGas.legs.find((leg) => leg.key === "marinePipelineFreight")?.disposition, "embedded");
+  assert.equal(madeiraGas.legs.find((leg) => leg.key === "marinePipelineFreight")?.cents, null);
+  assert.equal(madeiraGas.postedPumpCents, postedCents("madeira-beach-municipal-marina", "gasoline"));
+  assert.equal(madeiraGas.legs.find((leg) => leg.key === "stateTax")?.cents, 22.125);
+  assert.equal(madeiraGas.legs.find((leg) => leg.key === "localTax")?.cents, 16.9);
+  assert.equal(madeiraDiesel.spotKey, "tpaUlsd");
+  assert.equal(madeiraDiesel.legs.find((leg) => leg.key === "spot")?.cents, syntheticOlder.TPA_ULSD_Out);
+  assert.equal(madeiraDiesel.legs.find((leg) => leg.key === "marinePipelineFreight")?.disposition, "embedded");
+  assert.equal(madeiraDiesel.legs.find((leg) => leg.key === "marinePipelineFreight")?.blank, null);
+  assert.equal(madeiraDiesel.legs.find((leg) => leg.key === "federalTax")?.cents, 24.4);
+  assert.equal(madeiraDiesel.legs.find((leg) => leg.key === "stateTax")?.cents, 22);
+  assert.equal(madeiraDiesel.legs.find((leg) => leg.key === "localTax")?.cents, 16.9);
+  assert.equal(madeiraDiesel.postedPumpCents, postedCents("madeira-beach-municipal-marina", "diesel"));
+  assert.doesNotMatch(madeira.gaps.join(" "), /Marine \/ pipeline freight — not sourced/);
+
+  const augustine = derivedBook.docks[2]!;
+  const augustineGas = augustine.products.find((product) => product.product === "gasoline")!;
+  assert.equal(augustineGas.approximate, true);
+  assert.equal(augustineGas.spotKey, "gcCbob");
+  assert.equal(augustineGas.legs.find((leg) => leg.key === "marinePipelineFreight")?.blank, "not sourced");
+  assert.equal(augustineGas.legs.find((leg) => leg.key === "localTax")?.cents, 15.9);
+  assert.equal(augustineGas.postedPumpCents, postedCents("st-augustine-municipal-marina", "gasoline"));
+  assert.equal(augustine.products.find((product) => product.product === "diesel")?.postedPumpCents, postedCents("st-augustine-municipal-marina", "diesel"));
+
+  const lambs = derivedBook.docks[3]!;
+  const lambsGas = lambs.products.find((product) => product.product === "90")!;
+  assert.equal(lambsGas.approximate, true);
+  assert.equal(lambsGas.spotKey, "gcCbob");
+  assert.match(lambsGas.matchNote, /not CBOB93/);
+  assert.equal(lambsGas.legs.find((leg) => leg.key === "localTax")?.cents, 21.9);
+  assert.equal(lambsGas.postedPumpCents, postedCents("lambs-yacht-center", "90"));
+  assert.equal(lambs.products.find((product) => product.product === "diesel")?.postedPumpCents, postedCents("lambs-yacht-center", "diesel"));
+  assert.match(lambs.gaps.join(" "), /Truck freight — not sourced/);
+  assert.match(lambs.gaps.join(" "), /Invoice — not typed/);
+  assert.match(lambs.gaps.join(" "), /Posted rack — not typed/);
+  assert.doesNotMatch(lambsGas.gaps.join(" "), /Local tax/);
+
+  const typedBook = computeDerivedMarinaLandedCost({
+    docks,
+    row: cleanRow,
+    typed: {
+      RB: { invoiceCents: 400, rackCents: 230 },
+      HO: { invoiceCents: null, rackCents: 210 },
+    },
+    todayKey: "2026-10-06",
+    stale: false,
+    rowSource: "airtable",
+    rowNote: "synthetic",
+  });
+  const typedRegular = typedBook.docks[0]!.products.find((product) => product.product === "87")!;
+  const typedDiesel = typedBook.docks[0]!.products.find((product) => product.product === "diesel")!;
+  assert.equal(typedRegular.legs.find((leg) => leg.key === "invoice")?.cents, 400);
+  assert.equal(typedRegular.legs.find((leg) => leg.key === "rack")?.cents, 230);
+  assert.equal(typedRegular.fatTakeStatus, "typed");
+  assert.equal(typedRegular.fatTakeCents, 170);
+  assert.equal(typedRegular.dapCents, null);
+  assert.notEqual(typedRegular.legs.find((leg) => leg.key === "rack")?.cents, typedRegular.legs.find((leg) => leg.key === "spot")?.cents);
+  assert.equal(typedDiesel.fatTakeStatus, "NO CALL");
+  assert.equal(typedDiesel.legs.find((leg) => leg.key === "invoice")?.blank, "not typed");
+  assert.equal(typedDiesel.legs.find((leg) => leg.key === "rack")?.cents, 210);
+
+  const missingOut: Record<string, unknown> = { ...syntheticOlder };
+  delete missingOut.GC_CBOB_Out;
+  const missingRow = plattsRowFromAirtableFields(missingOut);
+  assert.ok(missingRow);
+  assert.equal(missingRow.gcCbob.out, null);
+  assert.notEqual(missingRow.gcCbob.out, 0);
+  assert.equal(missingRow.gcCbob.flagged, false);
+  const missingBook = computeDerivedMarinaLandedCost({
+    docks,
+    row: missingRow,
+    typed: blankTyped,
+    todayKey: "2026-10-06",
+    stale: false,
+    rowSource: "airtable",
+    rowNote: "synthetic",
+  });
+  const missingSpot = missingBook.docks[0]!.products.find((product) => product.product === "87")!.legs.find((leg) => leg.key === "spot")!;
+  assert.equal(missingSpot.blank, "not sourced");
+  assert.equal(missingSpot.cents, null);
+  assert.equal(derivedLegBlankText(missingSpot), "Spot — not sourced");
+
+  const zeroFields = { ...syntheticOlder, GC_CBOB_Out: 0 };
+  const zeroRow = plattsRowFromAirtableFields(zeroFields);
+  assert.equal(zeroRow?.gcCbob.out, 0);
+  assert.equal(zeroRow?.gcCbob.flagged, true);
+  const blankText = { ...syntheticOlder, GC_CBOB_Out: "  " };
+  assert.equal(plattsRowFromAirtableFields(blankText)?.gcCbob.out, null);
+  const badText = { ...syntheticOlder, TPA_ULSD_Out: "n/a" };
+  assert.equal(plattsRowFromAirtableFields(badText)?.tpaUlsd.out, null);
+  const wrongCase: Record<string, unknown> = { ...syntheticOlder };
+  delete wrongCase.GC_CBOB_Out;
+  assert.equal(plattsRowFromAirtableFields({ ...wrongCase, gc_cbob_out: syntheticOlder.GC_CBOB_Out })?.gcCbob.out, null);
+  assert.equal(plattsRowFromAirtableFields({ DateKey: "not-a-date", GC_CBOB_Out: syntheticOlder.GC_CBOB_Out }), null);
+
+  const unavailable = await loadPlattsDailyRow({ token: "", todayKey: "2026-10-06" });
+  assert.equal(unavailable.source, "unavailable");
+  assert.equal(unavailable.row, null);
+  assert.equal(unavailable.stale, false);
+  assert.equal(unavailable.outrightFlag, false);
+  assert.equal(JSON.stringify(unavailable).includes(String(syntheticOlder.NYMEX_RB_Implied)), false);
+  const unavailableBook = computeDerivedMarinaLandedCost({
+    docks,
+    row: null,
+    typed: blankTyped,
+    todayKey: unavailable.todayKey,
+    stale: unavailable.stale,
+    rowSource: unavailable.source,
+    rowNote: unavailable.note,
+  });
+  assert.equal(unavailableBook.dateKey, null);
+  assert.equal(unavailableBook.stale, false);
+  const unavailableSpot = unavailableBook.docks[0]!.products[0]!.legs.find((leg) => leg.key === "spot")!;
+  assert.equal(unavailableSpot.blank, "Platts row unavailable");
+  assert.equal(unavailableSpot.cents, null);
+  assert.equal(derivedLegBlankText(unavailableSpot), "Spot — Platts row unavailable");
+  assert.equal(unavailableBook.docks[0]!.products[0]!.dapComplete, false);
+  assert.match(unavailableBook.docks[0]!.gaps.join(" "), /Spot — Platts row unavailable/);
+  const unavailableHtml = renderToStaticMarkup(DerivedEstimate({ book: unavailableBook }));
+  assert.match(unavailableHtml, /Platts row unavailable/);
+  assert.doesNotMatch(unavailableHtml, /data-testid="platts-stale"/);
+  assert.equal(unavailableHtml.includes(String(syntheticOlder.GC_CBOB_Out)), false);
+
+  const handLegs = [
+    { key: "spot" as const, label: "Spot", cents: 100, blank: null, disposition: "add" as const, sourceUrl: "https://example.test", asOf: "2026-10-06", sourceTitle: "row", note: "" },
+    { key: "truckFreight" as const, label: "Truck freight", cents: null, blank: "not sourced" as const, disposition: "add" as const, sourceUrl: null, asOf: null, sourceTitle: null, note: "" },
+    { key: "localTax" as const, label: "Local tax", cents: 0, blank: null, disposition: "add" as const, sourceUrl: "https://example.test/local", asOf: "2026-10-06", sourceTitle: "statute", note: "" },
+    { key: "invoice" as const, label: "Invoice", cents: 50, blank: null, disposition: "typed_input" as const, sourceUrl: null, asOf: null, sourceTitle: null, note: "" },
+  ];
+  assert.equal(sumDerivedAddLegs(handLegs), null);
+  assert.notEqual(sumDerivedAddLegs(handLegs), 0);
+  const completeLegs = handLegs.map((leg) => (leg.key === "truckFreight" ? { ...leg, cents: 4, blank: null } : leg));
+  assert.equal(sumDerivedAddLegs(completeLegs), 104);
+
+  const derivedHtml = renderToStaticMarkup(DerivedEstimate({ book: derivedBook }));
+  assert.match(derivedHtml, /DERIVED ESTIMATE/);
+  assert.match(derivedHtml, /Truck freight — not sourced/);
+  assert.match(derivedHtml, /Terminal throughput — not sourced/);
+  assert.match(derivedHtml, /Marine \/ pipeline freight — not sourced/);
+  assert.match(derivedHtml, /Invoice — not typed/);
+  assert.match(derivedHtml, /Posted rack — not typed/);
+  assert.match(derivedHtml, /NO CALL/);
+  assert.match(derivedHtml, /Incomplete/);
+  assert.match(derivedHtml, /Included in Tampa DDP basis/);
+  assert.match(derivedHtml, /not on path/);
+  assert.match(derivedHtml, /undyed \(clear\) rate/i);
+  assert.doesNotMatch(derivedHtml, /Truck freight — 0/);
+  assert.equal(derivedHtml.includes(">$0.00<"), false);
+  assert.doesNotMatch(derivedHtml, /data-testid="platts-stale"/);
+
+  let airtableCalls = 0;
+  const airtableRow = await loadPlattsDailyRow({
+    token: "test-token",
+    todayKey: "2026-10-06",
+    fetch: async (url, init) => {
+      airtableCalls += 1;
+      assert.match(url, new RegExp(PLATTS_AIRTABLE_BASE_ID));
+      assert.match(url, new RegExp(PLATTS_AIRTABLE_TABLE_ID));
+      assert.match(url, /sort\[0\]\[field\]=DateKey/);
+      assert.equal((init?.headers as Record<string, string>).Authorization, "Bearer test-token");
+      assert.equal(url.includes("test-token"), false);
+      return new Response(JSON.stringify(mockedAirtableBody), { status: 200 });
+    },
+  });
+  assert.equal(airtableCalls, 1);
+  assert.equal(airtableRow.source, "airtable");
+  assert.equal(airtableRow.stale, false);
+  assert.equal(airtableRow.row?.dateKey, "2026-10-05");
+  assert.equal(airtableRow.row?.gcCbob.out, 112.3);
+  assert.equal(airtableRow.row?.gcCbob.flagged, true);
+  assert.equal(airtableRow.row?.tpaPre.flagged, true);
+  assert.equal(airtableRow.outrightFlag, true);
+  assert.equal(JSON.stringify(airtableRow).includes("test-token"), false);
+  const flaggedBook = computeDerivedMarinaLandedCost({
+    docks,
+    row: airtableRow.row,
+    typed: blankTyped,
+    todayKey: "2026-10-06",
+    stale: airtableRow.stale,
+    rowSource: airtableRow.source,
+    rowNote: airtableRow.note,
+  });
+  assert.equal(flaggedBook.outrightFlag, true);
+  assert.equal(flaggedBook.docks[1]!.products.find((product) => product.product === "diesel")?.spotKey, "tpaUlsd");
+  assert.match(renderToStaticMarkup(DerivedEstimate({ book: flaggedBook })), /data-testid="platts-outright-flag"/);
+
+  assert.equal(
+    latestPlattsRecord([
+      { fields: { ...syntheticOlder, DateKey: "2026-10-04", GC_CBOB_Out: syntheticLatest.GC_CBOB_Out } },
+      { fields: { ...syntheticOlder, DateKey: "2026-10-04", GC_CBOB_Out: syntheticOlder.GC_CBOB_Out } },
+    ])?.gcCbob.out,
+    112.3,
+  );
+  assert.equal(
+    latestPlattsRecord([
+      { fields: syntheticOlder },
+      { fields: { ...syntheticOlder, DateKey: "2026-10-01" } },
+    ])?.dateKey,
+    "2026-10-01",
+  );
+
+  let retryCalls = 0;
+  const retried = await loadPlattsDailyRow({
+    token: "test-token",
+    todayKey: "2026-10-06",
+    fetch: async () => {
+      retryCalls += 1;
+      if (retryCalls === 1) return new Response("no", { status: 422 });
+      return new Response(JSON.stringify({ records: [{ id: "recOnly", fields: syntheticOlder }] }), { status: 200 });
+    },
+  });
+  assert.equal(retryCalls, 2);
+  assert.equal(retried.row?.dateKey, syntheticOlder.DateKey);
+
+  const staleRow = await loadPlattsDailyRow({
+    token: "test-token",
+    todayKey: "2026-10-06",
+    fetch: async () => new Response(JSON.stringify({ records: [{ fields: { ...syntheticOlder, DateKey: "2026-10-02" } }] }), { status: 200 }),
+  });
+  assert.equal(staleRow.stale, true);
+  assert.equal(staleRow.row?.dateKey, "2026-10-02");
+  assert.match(renderToStaticMarkup(DerivedEstimate({
+    book: computeDerivedMarinaLandedCost({
+      docks,
+      row: staleRow.row,
+      typed: blankTyped,
+      todayKey: "2026-10-06",
+      stale: staleRow.stale,
+      rowSource: staleRow.source,
+      rowNote: staleRow.note,
+    }),
+  })), /data-testid="platts-stale"/);
+
+  const failedFetch = await loadPlattsDailyRow({
+    token: "test-token",
+    todayKey: "2026-10-06",
+    fetch: async () => {
+      throw new Error("network");
+    },
+  });
+  assert.equal(failedFetch.source, "unavailable");
+  assert.equal(failedFetch.row, null);
+  assert.equal(failedFetch.stale, false);
+  assert.equal(failedFetch.note.includes("test-token"), false);
+
+  const priorFatTake = fatTakeCents(400, 230);
+  assert.equal(priorFatTake, 170);
+  assert.equal(typedRegular.fatTakeCents, priorFatTake);
+}
+
+function postedCents(dockId: string, product: string): number {
+  const dock = docks.find((row) => row.id === dockId);
+  const quote = dock?.quotes.find((item) => item.product === product);
+  assert.ok(quote?.pricePerGallon != null);
+  return Math.round(quote.pricePerGallon * 100);
+}
+
+function decimalNeedles(value: unknown, found: string[] = []): string[] {
+  if (typeof value === "number" && String(value).includes(".")) found.push(String(value));
+  if (typeof value === "string" && /^-?\d+\.\d+$/.test(value)) found.push(value);
+  if (Array.isArray(value)) {
+    for (const item of value) decimalNeedles(item, found);
+  } else if (value && typeof value === "object") {
+    for (const item of Object.values(value)) decimalNeedles(item, found);
+  }
+  return [...new Set(found)];
+}
+
+function walkRepo(dir: string, found: string[] = []): string[] {
+  for (const name of readdirSync(dir)) {
+    if (name === "node_modules" || name === ".git" || name === ".next") continue;
+    const full = path.join(dir, name);
+    if (statSync(full).isDirectory()) walkRepo(full, found);
+    else found.push(full);
+  }
+  return found;
+}
+
+function readText(file: string): string | null {
+  try {
+    const text = readFileSync(file);
+    if (text.includes(0)) return null;
+    return text.toString("utf8");
+  } catch {
+    return null;
+  }
+}
 
 async function storeRoundtrip() {
   const dir = await mkdtemp(path.join(tmpdir(), "dock-posted-wholesale-"));
@@ -1045,7 +1536,8 @@ async function storeRoundtrip() {
   await rm(dir, { recursive: true, force: true });
 }
 
-storeRoundtrip()
+derivedChecks()
+  .then(() => storeRoundtrip())
   .then(() => {
     console.log(
       `wholesale ok — ${catalog.terminals.length} terminals, ${catalog.areas.length} areas, blank stays blank`,

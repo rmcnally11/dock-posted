@@ -91,6 +91,7 @@ npm run test:parser
 | `RESEND_API_KEY` | for mail | unset = store only | Pin, watch, and Monday desk mail |
 | `RESEND_FROM` | with Resend | `Dock Posted <rmcnally11@gmail.com>` | Must be a verified sender |
 | `AIRTABLE_API_KEY` | for the desk base | unset = Blob only | Pins, watches, calls |
+| `AIRTABLE_PLATTS_TOKEN` | Platts Daily on `/wholesale` | unset = spot blank | Server-only. Base `appokfrHKXUhGXjVo`, table `tbl5y8ORe6aOumuJn`. Never a public page |
 | `STRIPE_SECRET_KEY` | for pin / watch cards | unset = desk bills | Not for gallons |
 | `STRIPE_PRICE_PIN` | with Stripe catalog | unset = inline `$299` | Price ID `price_1UAg3MGW7cXXvgqvz72XMgTu` (lookup `dock_posted_pin_season`) |
 | `STRIPE_PRICE_WATCH` | with Stripe catalog | unset = inline `$29` | Price ID `price_1UAg63GW7cXXvgqvvlOgWIa4` (lookup `dock_posted_watch_year`) |
@@ -121,7 +122,9 @@ The desk default is a terminal→retail waterfall (RB and HO side by side). Tax 
 
 Differentials and per-terminal inputs persist next to haul-out: `DATA_DIR` / `data/runtime/wholesale.json`, or Blob `dock-posted/wholesale.json`. Terminal TCNs are in `data/wholesale-terminals.json` (IRS directory + Buckeye / KM pages). Blank TCN stays blank.
 
-The desk may pull the public Yahoo Finance NYMEX front-month screens — `RB=F` (RBOB / gasoline) and `HO=F` (NY Harbor ULSD / heating oil). Fetch is server-side. If Yahoo fails, is stale, or will not parse, the screen stays — and the desk says so. A typed screen wins. Not Platts, OPIS, DTN, RINs, or Rio Energy.
+The desk may pull the public Yahoo Finance NYMEX front-month screens — `RB=F` (RBOB / gasoline) and `HO=F` (NY Harbor ULSD / heating oil). Fetch is server-side. If Yahoo fails, is stale, or will not parse, the screen stays — and the desk says so. A typed screen wins. That screen is not Platts, OPIS, DTN, RINs, or Rio Energy.
+
+The same password desk also shows a derived landed-cost estimate from the Platts Daily feed (Airtable when `AIRTABLE_PLATTS_TOKEN` is set). The feed stays on the server. If the token is unset or the fetch fails, spot shows “Platts row unavailable” and no substitute number is used. The estimate does not fill invoice, posted rack, or fat take, and it is not on the public board.
 
 ```bash
 npm run test:wholesale
