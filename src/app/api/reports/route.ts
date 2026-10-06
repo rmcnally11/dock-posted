@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { addPriceReport, readReports } from "@/lib/store";
+import { calendarDay, isFutureChicagoDate } from "@/lib/price-report";
+import { queuePriceReport, readReports } from "@/lib/store";
 import { clientKey, takeReportSlot } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +44,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  const seenAt = calendarDay(parsed.data.seenAt);
+  if (!seenAt || isFutureChicagoDate(seenAt)) {
+    return NextResponse.json({ error: "That day hasn't happened yet." }, { status: 400 });
+  }
+
   const slot = takeReportSlot(clientKey(request.headers));
   if (!slot.ok) {
     return NextResponse.json(
@@ -52,15 +58,21 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { report, dock } = await addPriceReport({
+    const report = await queuePriceReport({
       dockId: parsed.data.dockId,
       product: parsed.data.product,
       ethanol: parsed.data.ethanol,
       pricePerGallon: parsed.data.pricePerGallon,
-      seenAt: parsed.data.seenAt,
+      seenAt,
       note: parsed.data.note?.trim() || null,
+      marinaOwned: false,
+      hours: null,
+      pay: null,
+      closed: false,
+      dieselOnly: false,
+      photoPath: null,
     });
-    return NextResponse.json({ ok: true, report, dock });
+    return NextResponse.json({ ok: true, queued: true, report });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not save report";
     return NextResponse.json({ error: message }, { status: 400 });

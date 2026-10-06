@@ -28,7 +28,7 @@ Then:
 - `/docks/[id]` — one dock, posted or Call
 - `/haul-out` — leftover haul-out seats (Clear Lake / Kemah / Upper Keys). Blank = Call
 - `/haul-out/plan/[id]` — Named Storm Plan one-pager
-- `/report` — post a price (honeypot + 8 reports/hour/IP)
+- `/report` — send the number you saw. It waits in a review queue and does not go on the board by itself. Honeypot + 8 reports/hour/IP. Optional photo. Optional email for when that dock's price changes (stored only, no mail).
 - `/safe-fuel` — E15 / E10 / E0 at the pump
 
 ## Seed data
@@ -46,7 +46,7 @@ npm run seed          # clear runtime reports + overlays
 
 Local `npm run dev` writes reports to `data/runtime/`. On Vercel the filesystem is `/tmp` and evaporates.
 
-When a Blob store is connected, reports, dock overlays, haul-out plans, and the wholesale desk live in Vercel Blob under `dock-posted/reports.json`, `dock-posted/overlays.json`, `dock-posted/haul-out.json`, and `dock-posted/wholesale.json`.
+When a Blob store is connected, reports, the review queue, dock overlays, haul-out plans, and the wholesale desk live in Vercel Blob under `dock-posted/reports.json`, `dock-posted/review-queue.json`, `dock-posted/overlays.json`, `dock-posted/haul-out.json`, and `dock-posted/wholesale.json`. Pump photos are private objects at `dock-posted/report-photos/`. A queued price does not change the public board.
 
 One dashboard click on the existing Dock Posted project:
 
@@ -82,10 +82,12 @@ npm run test:parser
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
 | `DATA_DIR` | no | `data/runtime` or `/tmp/...` | Local file fallback for reports, overlays, haul-out, and wholesale |
-| `BLOB_READ_WRITE_TOKEN` | no | unset | Vercel Blob. Injected when a Blob store is connected |
+| `BLOB_READ_WRITE_TOKEN` | for production queue and photos | unset | Vercel Blob. Review queue, pump photos, reports, overlays. Injected when a Blob store is connected |
 | `VERCEL` | set by Vercel | — | Local fallback uses `/tmp/dock-posted` if Blob is not configured |
 | `WHOLESALE_PASSWORD` | for `/wholesale` | unset = 404 | Shared password for the internal netback desk |
 | `WHOLESALE_SESSION_SECRET` | no | derived from the password | Signs the HttpOnly wholesale cookie |
+| `REVIEW_PASSWORD` | for `/review` | unset = 404 | Shared password for the price-report queue |
+| `REVIEW_SESSION_SECRET` | no | derived from the password | Signs the HttpOnly review cookie |
 | `DESK_PASSWORD` | for `/desk` | falls back to wholesale | Monday call sheet |
 | `DESK_NOTIFY_EMAIL` | no | `rmcnally11@gmail.com` | Where the desk and new pins land |
 | `RESEND_API_KEY` | for mail | unset = store only | Pin, watch, and Monday desk mail |
@@ -116,6 +118,8 @@ npm start             # same port as dev: 43123
 ## Internal wholesale desk
 
 `/wholesale` is a password-gated netback worksheet. The footer’s Wholesale link is the only way in. If `WHOLESALE_PASSWORD` is unset, the route is 404. Unauthenticated visitors see a password form only.
+
+`/review` is a separate password-gated queue for reported pump prices. Set `REVIEW_PASSWORD`. If it is unset, the route is 404. It is not in the public nav or the sitemap, and the page is `noindex`. Each waiting report shows the dock, the hose, the price, the day, and the photo. Approve puts it on the board. Reject leaves it off.
 
 The desk default is a terminal→retail waterfall (RB and HO side by side). Tax is a first-class take: federal and state rungs from published IRS/EIA tables in `data/wholesale-tax.json`, always overrideable. Market cells (NYMEX, diff, rack, jobber) start blank. Freight stays blank unless typed.
 

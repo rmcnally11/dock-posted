@@ -18,6 +18,7 @@
     "test:income": "tsx scripts/test-income.ts",
     "test:thank-you": "tsx scripts/test-thank-you.ts",
     "test:sister": "tsx scripts/test-sister.ts",
+    "test:report": "tsx scripts/test-report.ts",
     "test:ui": "node scripts/verify-ui.mjs"
   },
   "dependencies": {

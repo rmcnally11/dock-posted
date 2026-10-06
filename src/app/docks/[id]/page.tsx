@@ -171,6 +171,16 @@ export default async function DockPage({
 
       <p className="mt-6 text-sm text-[color:var(--ink)]/70">
         <a
+          href={`/report?dock=${dock.id}`}
+          data-testid="report-a-price"
+          className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
+        >
+          Report a price
+        </a>
+        . The number on the pump today.
+      </p>
+      <p className="mt-3 text-sm text-[color:var(--ink)]/70">
+        <a
           href={boardHref({
             corridor: null,
             state: null,

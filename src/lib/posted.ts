@@ -143,7 +143,15 @@ function marinaSourced(dock: Dock): boolean {
   return dock.lastVerifiedSource === "marina site" || dock.lastVerifiedSource === "marina";
 }
 
-/** A dollar stays up only when a marina page is the source. Anything else is dropped. */
+/** A person already checked this boater report. A raw user report is not this. */
+function reviewedBoaterReport(dock: Dock): boolean {
+  return dock.lastVerifiedSource === "boater report (reviewed)";
+}
+
+/**
+ * A priced quote stays when a marina posted it, or someone checked a boater report.
+ * A raw user report is dropped.
+ */
 export function quotesOnHome(dock: Dock): FuelQuote[] {
   return dock.quotes.filter((quote) => {
     const priced =
@@ -151,7 +159,7 @@ export function quotesOnHome(dock: Dock): FuelQuote[] {
       quote.pricePerGallon != null &&
       !Number.isNaN(quote.pricePerGallon);
     if (!priced) return true;
-    return marinaSourced(dock);
+    return marinaSourced(dock) || reviewedBoaterReport(dock);
   });
 }
 

@@ -108,6 +108,8 @@ export function publicBadge(dock: Dock, now = Date.now()): string {
         return "From Waterway Guide";
       case "marina":
         return "Marina staff report, not checked";
+      case "boater report (reviewed)":
+        return "Boater report, checked";
       case "user report":
         return "Boater report";
       default:
@@ -138,6 +140,7 @@ export function publicSource(dock: Dock, now = Date.now()): string {
       return date ? `Waterway Guide listed a price ${date}` : "Waterway Guide listed a price";
     }
     if (source === "marina") return withDate("Marina staff report, not checked", date);
+    if (source === "boater report (reviewed)") return withDate("Boater report, checked", date);
     if (source === "user report") return withDate("Boater report", date);
     return date;
   }
@@ -148,6 +151,7 @@ export function publicSource(dock: Dock, now = Date.now()): string {
     }
     if (source === "Waterway Guide") return withDate("From Waterway Guide", date);
     if (source === "marina") return withDate("Marina staff report, not checked", date);
+    if (source === "boater report (reviewed)") return withDate("Boater report, checked", date);
     if (source === "user report") return withDate("Boater report", date);
     return date;
   }
@@ -157,6 +161,7 @@ export function publicSource(dock: Dock, now = Date.now()): string {
     return date ? `No price on the marina's website, checked ${date}` : "";
   }
   if (source === "marina") return withDate("Marina staff report, not checked", date);
+  if (source === "boater report (reviewed)") return withDate("Boater report, checked", date);
   if (source === "user report") return withDate("Boater report", date);
   return date;
 }
@@ -181,6 +186,11 @@ export function pinAriaLabel(dock: Dock, now = Date.now()): string {
     return date
       ? `${dock.name}: marina staff report, not checked, ${date}`
       : `${dock.name}: marina staff report, not checked`;
+  }
+  if (dock.lastVerifiedSource === "boater report (reviewed)") {
+    return date
+      ? `${dock.name}: boater report, checked, ${date}`
+      : `${dock.name}: boater report, checked`;
   }
   return date ? `${dock.name}: boater report, ${date}` : `${dock.name}: boater report`;
 }
