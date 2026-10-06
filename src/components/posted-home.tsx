@@ -128,7 +128,15 @@ function PriceCard({ card, miles }: { card: PostedCard; miles: number | null }) 
   );
 }
 
-function CardList({ cards, origin }: { cards: PostedCard[]; origin: Origin | null }) {
+function CardList({
+  cards,
+  origin,
+  layout = "wrap",
+}: {
+  cards: PostedCard[];
+  origin: Origin | null;
+  layout?: "stack" | "wrap";
+}) {
   if (cards.length === 0) {
     return (
       <p className="rounded-2xl border border-dashed border-[color:var(--line)] bg-[color:var(--fog)] p-6 text-sm text-[color:var(--ink)]/70">
@@ -137,7 +145,12 @@ function CardList({ cards, origin }: { cards: PostedCard[]; origin: Origin | nul
     );
   }
   return (
-    <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <ul
+      className={cn(
+        "grid grid-cols-1 gap-4",
+        layout === "wrap" && cards.length > 1 && "md:grid-cols-2 xl:grid-cols-3",
+      )}
+    >
       {cards.map((card) => (
         <li key={card.id}>
           <PriceCard
@@ -155,11 +168,13 @@ function AreaSection({
   cards,
   testId,
   callList = false,
+  layout = "wrap",
 }: {
   label: string;
   cards: PostedCard[];
   testId: string;
   callList?: boolean;
+  layout?: "stack" | "wrap";
 }) {
   if (cards.length === 0) return null;
   const headingId = `${testId}-heading`;
@@ -180,7 +195,7 @@ function AreaSection({
           </span>
         ) : null}
       </h2>
-      <CardList cards={cards} origin={null} />
+      <CardList cards={cards} origin={null} layout={layout} />
     </section>
   );
 }
@@ -238,7 +253,7 @@ export function PostedHome({
             <nav
               data-testid="area-picker"
               aria-label="Area"
-              className="chip-scroll flex min-w-0 gap-2 overflow-x-auto"
+              className="flex min-w-0 flex-wrap gap-2"
             >
               {links.map((link) => {
                 const current = origin
@@ -299,14 +314,17 @@ export function PostedHome({
           />
         ) : (
           <div className="flex flex-col gap-10">
-            {areas.map((item) => (
-              <AreaSection
-                key={`priced-${item.id}`}
-                label={item.label}
-                cards={cardsInArea(cards, item.id).filter((card) => card.hasPrice)}
-                testId={`posted-area-${item.id}`}
-              />
-            ))}
+            <div className="grid grid-cols-1 items-start gap-10 xl:grid-cols-3">
+              {areas.map((item) => (
+                <AreaSection
+                  key={`priced-${item.id}`}
+                  label={item.label}
+                  cards={cardsInArea(cards, item.id).filter((card) => card.hasPrice)}
+                  testId={`posted-area-${item.id}`}
+                  layout="stack"
+                />
+              ))}
+            </div>
             {areas.map((item) => (
               <AreaSection
                 key={`call-${item.id}`}

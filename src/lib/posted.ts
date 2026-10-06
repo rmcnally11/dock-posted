@@ -1,7 +1,7 @@
 import { dockPath } from "@/lib/board-query";
 import { formatDate, formatPrice, telHref } from "@/lib/format";
 import { freshness } from "@/lib/freshness";
-import type { Dock, Ethanol, FuelQuote } from "@/lib/types";
+import type { Dock, FuelQuote } from "@/lib/types";
 
 export type HomeAreaId = "galveston-bay" | "tampa-bay" | "northeast-florida";
 
@@ -123,7 +123,6 @@ export type PostedLine = {
   figure: string;
   asOf: string;
   kind: "gas" | "diesel";
-  ethanol: Ethanol;
 };
 
 export type PostedCard = {
@@ -166,7 +165,6 @@ function linesFor(dock: Dock): PostedLine[] {
         figure: CALL_FIGURE,
         asOf,
         kind: "gas",
-        ethanol: "unknown",
       },
     ];
   }
@@ -176,7 +174,6 @@ function linesFor(dock: Dock): PostedLine[] {
     figure: postedFigure(quote),
     asOf,
     kind: quote.product === "diesel" ? "diesel" : "gas",
-    ethanol: quote.ethanol,
   }));
 }
 
