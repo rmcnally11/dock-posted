@@ -486,6 +486,18 @@ export async function approveQueuedReport(
   return { report, dock: updatedDock };
 }
 
+/** Drops a waiting report. An approved price stays on the dock. */
+export async function rejectQueuedReport(id: string): Promise<QueuedPriceReport | null> {
+  const queue = await readReviewFile();
+  const report = queue.submissions.find((row) => row.id === id);
+  if (!report || report.status === "approved") return null;
+  if (report.status !== "rejected") {
+    report.status = "rejected";
+    await writeReviewFile(queue);
+  }
+  return report;
+}
+
 export async function readIncomeStore(): Promise<IncomeStoreFile> {
   return readIncomeFile();
 }

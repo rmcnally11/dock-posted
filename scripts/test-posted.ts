@@ -374,8 +374,12 @@ assert.match(homeSource, /data-testid="hero-headline"/);
 assert.doesNotMatch(homeSource, LEAK);
 
 const reportForm = readFileSync(path.join(process.cwd(), "src/components/report-form.tsx"), "utf8");
-assert.match(reportForm, /America\/Chicago/);
+assert.match(reportForm, /defaultValue=\{today\}/);
 assert.doesNotMatch(reportForm, /getDate\(\)/);
+const reportPageSource = readFileSync(path.join(process.cwd(), "src/app/report/page.tsx"), "utf8");
+assert.match(reportPageSource, /chicagoToday\(/);
+const priceReportSource = readFileSync(path.join(process.cwd(), "src/lib/price-report.ts"), "utf8");
+assert.match(priceReportSource, /America\/Chicago/);
 
 const gymDock = dockById("galveston-yacht-marina");
 assert.equal(gymDock.lastVerifiedAt, "2026-10-03");
@@ -467,6 +471,21 @@ const strayDock: Dock = {
   ],
 };
 assert.equal(quotesOnHome(strayDock).length, 0);
+const reviewedDock: Dock = {
+  ...strayDock,
+  id: "reviewed-rec-90",
+  lastVerifiedSource: "boater report (reviewed)",
+};
+assert.equal(
+  quotesOnHome(reviewedDock).some((quote) => quote.pricePerGallon === 5.28),
+  true,
+);
+assert.equal(
+  quotesOnHome({ ...reviewedDock, lastVerifiedSource: "user report" }).some(
+    (quote) => quote.pricePerGallon === 5.28,
+  ),
+  false,
+);
 const stray = toPostedCard(strayDock, Date.now());
 assert.ok(stray);
 assert.equal(stray.lines.length, 1);

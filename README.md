@@ -86,6 +86,8 @@ npm run test:parser
 | `VERCEL` | set by Vercel | — | Local fallback uses `/tmp/dock-posted` if Blob is not configured |
 | `WHOLESALE_PASSWORD` | for `/wholesale` | unset = 404 | Shared password for the internal netback desk |
 | `WHOLESALE_SESSION_SECRET` | no | derived from the password | Signs the HttpOnly wholesale cookie |
+| `REVIEW_PASSWORD` | for `/review` | unset = 404 | Shared password for the price-report queue |
+| `REVIEW_SESSION_SECRET` | no | derived from the password | Signs the HttpOnly review cookie |
 | `DESK_PASSWORD` | for `/desk` | falls back to wholesale | Monday call sheet |
 | `DESK_NOTIFY_EMAIL` | no | `rmcnally11@gmail.com` | Where the desk and new pins land |
 | `RESEND_API_KEY` | for mail | unset = store only | Pin, watch, and Monday desk mail |
@@ -116,6 +118,8 @@ npm start             # same port as dev: 43123
 ## Internal wholesale desk
 
 `/wholesale` is a password-gated netback worksheet. The footer’s Wholesale link is the only way in. If `WHOLESALE_PASSWORD` is unset, the route is 404. Unauthenticated visitors see a password form only.
+
+`/review` is a separate password-gated queue for reported pump prices. Set `REVIEW_PASSWORD`. If it is unset, the route is 404. It is not in the public nav or the sitemap, and the page is `noindex`. Each waiting report shows the dock, the hose, the price, the day, and the photo. Approve puts it on the board. Reject leaves it off.
 
 The desk default is a terminal→retail waterfall (RB and HO side by side). Tax is a first-class take: federal and state rungs from published IRS/EIA tables in `data/wholesale-tax.json`, always overrideable. Market cells (NYMEX, diff, rack, jobber) start blank. Freight stays blank unless typed.
 

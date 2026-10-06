@@ -124,7 +124,7 @@ export interface QueuedPriceReport {
   closed: boolean;
   dieselOnly: boolean;
   photoPath: string | null;
-  status: "pending" | "approved";
+  status: "pending" | "approved" | "rejected";
   createdAt: string;
 }
 

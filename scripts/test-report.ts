@@ -17,7 +17,8 @@ import {
   reportGrades,
   type ReportFormFields,
 } from "../src/lib/price-report";
-import { saveReportPhoto } from "../src/lib/persist";
+import { readReportPhoto, saveReportPhoto } from "../src/lib/persist";
+import { reviewPasswordConfigured, reviewSessionToken, reviewSessionValid } from "../src/lib/review-auth";
 import {
   addPriceReport,
   approveQueuedReport,
@@ -26,6 +27,7 @@ import {
   readDocks,
   readReports,
   readReviewQueue,
+  rejectQueuedReport,
 } from "../src/lib/store";
 import type { Dock, FuelQuote } from "../src/lib/types";
 import seed from "../data/docks.seed.json";
@@ -132,6 +134,34 @@ const heic = new Uint8Array(12);
 for (const [index, char] of [..."ftypheic"].entries()) heic[4 + index] = char.charCodeAt(0);
 assert.equal(detectPhotoKind(heic), "heic");
 
+const previousReviewPassword = process.env.REVIEW_PASSWORD;
+delete process.env.REVIEW_PASSWORD;
+assert.equal(reviewPasswordConfigured(), false);
+assert.equal(reviewSessionValid("leftover"), false);
+process.env.REVIEW_PASSWORD = "review-only";
+assert.equal(reviewPasswordConfigured(), true);
+const reviewToken = reviewSessionToken();
+assert.equal(reviewSessionValid(reviewToken), true);
+assert.equal(reviewSessionValid("not-the-session"), false);
+if (previousReviewPassword) process.env.REVIEW_PASSWORD = previousReviewPassword;
+else delete process.env.REVIEW_PASSWORD;
+
+const robotsSource = readFileSync(path.join(process.cwd(), "src/app/robots.ts"), "utf8");
+assert.match(robotsSource, /\/review/);
+const sitemapSource = readFileSync(path.join(process.cwd(), "src/app/sitemap.ts"), "utf8");
+assert.doesNotMatch(sitemapSource, /\/review/);
+const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-header.tsx"), "utf8");
+assert.doesNotMatch(headerSource, /href="\/review"/);
+const footerSource = readFileSync(path.join(process.cwd(), "src/components/site-footer.tsx"), "utf8");
+assert.doesNotMatch(footerSource, /\/review/);
+const reviewLayout = readFileSync(path.join(process.cwd(), "src/app/review/layout.tsx"), "utf8");
+assert.match(reviewLayout, /index:\s*false/);
+assert.match(reviewLayout, /notFound\(\)/);
+const reviewPage = readFileSync(path.join(process.cwd(), "src/app/review/page.tsx"), "utf8");
+assert.match(reviewPage, /Approve/);
+assert.match(reviewPage, /Reject/);
+assert.match(reviewPage, /\/review\/photo\//);
+
 const formSource = readFileSync(path.join(process.cwd(), "src/components/report-form.tsx"), "utf8");
 assert.match(formSource, /Pick the hose/);
 assert.doesNotMatch(formSource, /grades\[0\]/);
@@ -221,6 +251,10 @@ assert.equal(queued.submissions[0]?.status, "pending");
 const photoPath = await saveReportPhoto("shot-1", jpeg, "jpg", "image/jpeg");
 assert.equal(existsSync(photoPath), true);
 assert.match(photoPath, /report-photos/);
+const photo = await readReportPhoto(photoPath);
+assert.equal(photo?.contentType, "image/jpeg");
+assert.equal(photo?.bytes[0], 0xff);
+assert.equal(await readReportPhoto(path.join(photoPath, "..", "..", "passwd")), null);
 
 const alertSpam = planAlertIntake(
   { websiteUrl: "http://spam.example", dockId: gym.id, email: "a@b.co", consent: true },
@@ -303,6 +337,22 @@ const marinaApproved = await approveQueuedReport("marina-1");
 assert.equal(marinaApproved?.dock.lastVerifiedSource, "marina");
 assert.equal(marinaApproved?.dock.lastVerifiedAt, "2026-10-05");
 assert.equal(marinaApproved?.dock.quotes.find((quote) => quote.product === "93")?.pricePerGallon, 4.44);
+
+const rejected = await rejectQueuedReport(raw.id);
+assert.equal(rejected?.status, "rejected");
+const afterReject = await readDocks();
+const rejectedGym = afterReject.find((dock) => dock.id === gym.id);
+assert.equal(
+  rejectedGym?.quotes.some((quote) => quote.pricePerGallon === 9.111),
+  false,
+);
+assert.equal(rejectedGym?.quotes.find((quote) => quote.product === "93")?.pricePerGallon, 4.44);
+assert.equal(await rejectQueuedReport("marina-1"), null);
+assert.equal(
+  (await readDocks()).find((dock) => dock.id === gym.id)?.quotes.find((quote) => quote.product === "93")
+    ?.pricePerGallon,
+  4.44,
+);
 
 const storeSource = readFileSync(path.join(process.cwd(), "src/lib/store.ts"), "utf8");
 const reviewedSource = storeSource.slice(

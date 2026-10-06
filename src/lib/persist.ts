@@ -242,3 +242,37 @@ export async function saveReportPhoto(
   await writeFile(filePath, bytes);
   return filePath;
 }
+
+function photoContentType(storedPath: string): string {
+  const ext = path.extname(storedPath).toLowerCase();
+  if (ext === ".png") return "image/png";
+  if (ext === ".heic") return "image/heic";
+  if (ext === ".heif") return "image/heif";
+  return "image/jpeg";
+}
+
+/** Reads a pump photo saved by saveReportPhoto. Refuses a path outside that folder. */
+export async function readReportPhoto(
+  storedPath: string,
+): Promise<{ bytes: Buffer; contentType: string } | null> {
+  if (blobConfigured()) {
+    const pathname = storedPath.replace(/^\/+/, "");
+    if (!pathname.startsWith("dock-posted/report-photos/") || pathname.includes("..")) return null;
+    const { get } = await import("@vercel/blob");
+    const result = await get(pathname, { access: "private", useCache: false });
+    if (!result || result.stream == null) return null;
+    const bytes = Buffer.from(await new Response(result.stream as ReadableStream).arrayBuffer());
+    return { bytes, contentType: result.blob.contentType || photoContentType(pathname) };
+  }
+
+  const root = path.resolve(path.join(runtimeDir(), "report-photos"));
+  const file = path.resolve(storedPath);
+  const relative = path.relative(root, file);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) return null;
+  try {
+    const bytes = await readFile(file);
+    return { bytes, contentType: photoContentType(file) };
+  } catch {
+    return null;
+  }
+}
