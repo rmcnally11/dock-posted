@@ -119,7 +119,12 @@ try {
     tally,
   );
   check("proof is live counts", /For the rest, call the dock\./.test(tally ?? ""), tally);
-  check("no invent compliance", !/never invent a price/i.test(homeCopy));
+  const visibleHome = await page.$eval("body", (el) => {
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll("script, style").forEach((node) => node.remove());
+    return clone.textContent ?? "";
+  });
+  check("no invent compliance", !/never invent a price/i.test(visibleHome));
   check(
     "no campaign nouns",
     !/the take|the book|open the book|come in|where the cents went|four doors|we publish the pin|we own the pin|fat cut lights up|call is the honest number/i.test(

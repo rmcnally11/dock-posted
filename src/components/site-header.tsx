@@ -19,22 +19,22 @@ export async function SiteHeader() {
         <NavScroll>
           <a className={navLink} href="/#board">
             Fuel Prices
-          </a>
+          </a>{" "}
           <a className={navLink} href="/report">
             Report a Price
-          </a>
+          </a>{" "}
           <a className={navLink} href="/run" data-testid="nav-run">
             Trip Fuel Cost
-          </a>
+          </a>{" "}
           <a className={navLink} href="/safe-fuel">
             Ethanol Guide
-          </a>
+          </a>{" "}
           <a className={navLink} href="/haul-out">
             Storm Haul-Out
-          </a>
+          </a>{" "}
           <a className={navLink} href="/pin" data-testid="nav-pin">
             For Marinas
-          </a>
+          </a>{" "}
           <a className={navLink} href="/about" data-testid="nav-about">
             About
           </a>
