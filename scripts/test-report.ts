@@ -18,7 +18,15 @@ import {
   type ReportFormFields,
 } from "../src/lib/price-report";
 import { saveReportPhoto } from "../src/lib/persist";
-import { commitPriceAlert, commitQueuedReport, readDocks, readReports, readReviewQueue } from "../src/lib/store";
+import {
+  addPriceReport,
+  approveQueuedReport,
+  commitPriceAlert,
+  commitQueuedReport,
+  readDocks,
+  readReports,
+  readReviewQueue,
+} from "../src/lib/store";
 import type { Dock, FuelQuote } from "../src/lib/types";
 import seed from "../data/docks.seed.json";
 
@@ -59,6 +67,11 @@ assert.equal(calendarDay("2026-10-06T23:00:00Z"), "2026-10-06");
 assert.equal(isFutureChicagoDate("2026-10-07", stillYesterdayInChicago), true);
 assert.equal(isFutureChicagoDate("2026-10-06", stillYesterdayInChicago), false);
 
+const afterSevenCt = new Date("2026-10-07T00:30:00Z");
+assert.equal(chicagoToday(afterSevenCt), "2026-10-06");
+assert.equal(isFutureChicagoDate("2026-10-07", afterSevenCt), true);
+assert.equal(isFutureChicagoDate("2026-10-06", afterSevenCt), false);
+
 function fields(overrides: Partial<ReportFormFields> = {}): ReportFormFields {
   return {
     websiteUrl: "",
@@ -91,6 +104,15 @@ if (todayPlan.kind === "accept") {
 const wrongHose = planReportIntake(fields({ grade: "90:E0" }), gym, afternoon);
 assert.equal(wrongHose.kind, "reject");
 
+const blankHose = planReportIntake(fields({ grade: "" }), gym, afternoon);
+assert.equal(blankHose.kind, "reject");
+if (blankHose.kind === "reject") assert.match(blankHose.error, /Pick the hose/);
+
+const eveningTomorrow = planReportIntake(fields({ seenAt: "2026-10-07" }), gym, afterSevenCt);
+assert.equal(eveningTomorrow.kind, "reject");
+const eveningToday = planReportIntake(fields({ seenAt: "2026-10-06" }), gym, afterSevenCt);
+assert.equal(eveningToday.kind, "accept");
+
 const spam = planReportIntake(fields({ websiteUrl: "https://spam.example" }), gym, afternoon);
 assert.equal(spam.kind, "drop");
 
@@ -109,6 +131,15 @@ if (!tooBig.ok) assert.match(tooBig.error, /too big/);
 const heic = new Uint8Array(12);
 for (const [index, char] of [..."ftypheic"].entries()) heic[4 + index] = char.charCodeAt(0);
 assert.equal(detectPhotoKind(heic), "heic");
+
+const formSource = readFileSync(path.join(process.cwd(), "src/components/report-form.tsx"), "utf8");
+assert.match(formSource, /Pick the hose/);
+assert.doesNotMatch(formSource, /grades\[0\]/);
+assert.match(formSource, /defaultValue=\{today\}/);
+assert.doesNotMatch(formSource, /getUTCDate|toISOString\(\)\.slice/);
+const reportPage = readFileSync(path.join(process.cwd(), "src/app/report/page.tsx"), "utf8");
+assert.match(reportPage, /chicagoToday\(/);
+assert.doesNotMatch(reportPage, /getUTCDate|toISOString\(\)\.slice\(0,\s*10\)/);
 
 const actions = readFileSync(path.join(process.cwd(), "src/app/report/actions.ts"), "utf8");
 const dropAt = actions.indexOf('plan.kind === "drop"');
@@ -218,6 +249,74 @@ assert.equal(
   after.some((dock) => dock.quotes.some((quote) => quote.pricePerGallon === 8.771)),
   false,
 );
+
+const raw = await addPriceReport({
+  dockId: gym.id,
+  product: "93",
+  ethanol: "E0",
+  pricePerGallon: 9.111,
+  seenAt: "2026-10-06",
+  note: null,
+});
+assert.equal(raw.status, "pending");
+const afterRaw = await readDocks();
+const rawGym = afterRaw.find((dock) => dock.id === gym.id);
+if (!rawGym) throw new Error("missing dock");
+assert.equal(
+  rawGym.quotes.some((quote) => quote.pricePerGallon === 9.111),
+  false,
+);
+assert.notEqual(rawGym.lastVerifiedSource, "user report");
+assert.notEqual(rawGym.lastVerifiedSource, "boater report (reviewed)");
+
+const approved = await approveQueuedReport("price-1");
+if (!approved) throw new Error("missing queued report");
+assert.equal(approved.report.status, "approved");
+assert.equal(approved.dock.lastVerifiedSource, "boater report (reviewed)");
+assert.equal(approved.dock.lastVerifiedAt, "2026-10-06");
+assert.notEqual(approved.dock.lastVerifiedSource, "user report");
+const posted = approved.dock.quotes.find((quote) => quote.product === "93");
+assert.equal(posted?.pricePerGallon, 8.771);
+assert.equal(posted?.ethanol, "E0");
+const onBoard = await readDocks();
+const postedGym = onBoard.find((dock) => dock.id === gym.id);
+assert.equal(postedGym?.quotes.find((quote) => quote.product === "93")?.pricePerGallon, 8.771);
+assert.equal(postedGym?.lastVerifiedSource, "boater report (reviewed)");
+assert.equal(postedGym?.lastVerifiedAt, "2026-10-06");
+assert.equal(
+  onBoard.some((dock) => dock.quotes.some((quote) => quote.pricePerGallon === 9.111)),
+  false,
+);
+
+const again = await approveQueuedReport("price-1");
+assert.equal(again?.report.status, "approved");
+assert.equal(again?.dock.quotes.find((quote) => quote.product === "93")?.pricePerGallon, 8.771);
+
+const marinaPlan = planReportIntake(
+  fields({ price: "4.440", who: "marina", seenAt: "2026-10-05" }),
+  gym,
+  afternoon,
+);
+const marinaStored = await commitQueuedReport(marinaPlan, { id: "marina-1", photoPath: "dock-posted/report-photos/marina-1.jpg" });
+assert.equal(marinaStored.stored, true);
+const marinaApproved = await approveQueuedReport("marina-1");
+assert.equal(marinaApproved?.dock.lastVerifiedSource, "marina");
+assert.equal(marinaApproved?.dock.lastVerifiedAt, "2026-10-05");
+assert.equal(marinaApproved?.dock.quotes.find((quote) => quote.product === "93")?.pricePerGallon, 4.44);
+
+const storeSource = readFileSync(path.join(process.cwd(), "src/lib/store.ts"), "utf8");
+const reviewedSource = storeSource.slice(
+  storeSource.indexOf("function applyReviewedReport"),
+  storeSource.indexOf("export async function addPriceReport"),
+);
+assert.match(reviewedSource, /boater report \(reviewed\)/);
+assert.match(reviewedSource, /lastVerifiedAt: report\.seenAt/);
+assert.doesNotMatch(reviewedSource, /"user report"/);
+const rawWriter = storeSource.slice(
+  storeSource.indexOf("export async function addPriceReport"),
+  storeSource.indexOf("export async function approveQueuedReport"),
+);
+assert.doesNotMatch(rawWriter, /writeDockStore|user report/);
 
 console.log("report checks passed");
 }

@@ -442,6 +442,20 @@ try {
   check("report header is not a family lockup", !/what the dock posted/i.test(reportHeader));
   const reporting = await page.$eval("[data-testid=reporting-for]", (el) => el.textContent);
   check("report marina label", reporting?.includes("Galveston Yacht Marina"));
+  const gradeValue = await page.$eval("#grade", (el) => el.value);
+  const gradeLabels = await page.$$eval("#grade option", (nodes) => nodes.map((node) => node.textContent?.trim() ?? ""));
+  check("report hose starts blank", gradeValue === "", gradeValue);
+  check("report hose is an explicit choice", gradeLabels[0] === "Pick the hose", gradeLabels.join("|"));
+  check("report hose is this dock", gradeLabels.includes("93 E0") && !gradeLabels.includes("90 E0"), gradeLabels.join("|"));
+  const seenAt = await page.$eval("#seenAt", (el) => el.value);
+  const chicagoToday = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Chicago",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  check("report date is Chicago today", seenAt === chicagoToday, seenAt);
+  await page.select("#grade", "93:E0");
   await page.type("#price", "5.280");
   await Promise.all([
     page.waitForNavigation({ waitUntil: "networkidle0" }),

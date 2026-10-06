@@ -35,7 +35,7 @@ export function ReportForm({
   const [dockId, setDockId] = useState(startingDock);
   const selected = docks.find((dock) => dock.id === dockId) ?? null;
   const grades = selected ? reportGrades(selected) : [];
-  const [gradeKey, setGradeKey] = useState(grades[0]?.key ?? "");
+  const [gradeKey, setGradeKey] = useState("");
   const [photoNote, setPhotoNote] = useState("");
   const [preparing, setPreparing] = useState(false);
   const grouped = STATE_CODES.map((state) => ({
@@ -45,9 +45,7 @@ export function ReportForm({
 
   function chooseDock(nextId: string) {
     setDockId(nextId);
-    const next = docks.find((dock) => dock.id === nextId);
-    const nextGrades = next ? reportGrades(next) : [];
-    setGradeKey(nextGrades[0]?.key ?? "");
+    setGradeKey("");
   }
 
   async function onPhoto(event: ChangeEvent<HTMLInputElement>) {
@@ -117,9 +115,11 @@ export function ReportForm({
             name="grade"
             value={gradeKey}
             onChange={(event) => setGradeKey(event.target.value)}
+            required
             data-testid="report-grade"
             className="h-11 w-full rounded-md border border-[color:var(--line)] bg-white px-3 text-base md:text-sm"
           >
+            <option value="">Pick the hose</option>
             {grades.map((grade) => (
               <option key={grade.key} value={grade.key}>
                 {grade.label}
@@ -136,7 +136,15 @@ export function ReportForm({
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="seenAt">The day you saw it</Label>
-          <Input id="seenAt" name="seenAt" type="date" defaultValue={today} max={today} required />
+          <Input
+            id="seenAt"
+            name="seenAt"
+            type="date"
+            defaultValue={today}
+            max={today}
+            required
+            data-testid="report-date"
+          />
         </div>
       </div>
 

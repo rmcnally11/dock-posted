@@ -38,7 +38,12 @@ export type StateCode =
 
 export type Ethanol = "E0" | "E10" | "E15" | "unknown";
 
-export type SourceLabel = "Waterway Guide" | "marina site" | "user report" | "marina";
+export type SourceLabel =
+  | "Waterway Guide"
+  | "marina site"
+  | "user report"
+  | "marina"
+  | "boater report (reviewed)";
 
 export type PayKind = "cash" | "card" | "both";
 
@@ -119,7 +124,7 @@ export interface QueuedPriceReport {
   closed: boolean;
   dieselOnly: boolean;
   photoPath: string | null;
-  status: "pending";
+  status: "pending" | "approved";
   createdAt: string;
 }
 

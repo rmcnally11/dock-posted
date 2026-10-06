@@ -10,6 +10,7 @@ import {
   freshness,
   freshnessLabel,
   hasEthanolFreeGas,
+  isMarinaSite,
   heroCountLine,
   pinAriaLabel,
   pinKind,
@@ -921,6 +922,18 @@ assert.equal(publicBadge(boaterReport, labelNow), "Boater report");
 assert.equal(publicSource(boaterReport, labelNow), "Boater report, Oct 6");
 assert.notEqual(pinTrust(boaterReport), "verified");
 assert.equal(pinKind(boaterReport, labelNow), "report");
+
+const reviewedReport = {
+  ...gym,
+  lastVerifiedSource: "boater report (reviewed)" as const,
+  lastVerifiedAt: "2026-10-06",
+};
+assert.equal(isMarinaSite(reviewedReport), false);
+assert.equal(publicBadge(reviewedReport, labelNow), "Boater report, checked");
+assert.equal(publicSource(reviewedReport, labelNow), "Boater report, checked, Oct 6");
+assert.equal(pinAriaLabel(reviewedReport, labelNow), "Galveston Yacht Marina: boater report, checked, Oct 6");
+assert.notEqual(pinTrust(reviewedReport), "verified");
+assert.equal(pinKind(reviewedReport, labelNow), "report");
 
 const blendOnly = {
   ...marinaBay,
