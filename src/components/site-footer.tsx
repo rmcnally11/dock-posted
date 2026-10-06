@@ -29,19 +29,19 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         </a>
         {" · "}
         <a href="/pin" className="underline-offset-2 hover:underline">
-          Your dock
+          For Marinas
         </a>
         {" · "}
         <a href="/run" className="underline-offset-2 hover:underline">
-          This trip
+          Trip Fuel Cost
         </a>
         {" · "}
         <a href="/how" className="underline-offset-2 hover:underline">
-          How it works
+          How It Works
         </a>
         {" · "}
         <a href="/haul-out" className="underline-offset-2 hover:underline">
-          Yard seats
+          Storm Haul-Out
         </a>
         {" · "}
         <a href="/wholesale" className="underline-offset-2 hover:underline">

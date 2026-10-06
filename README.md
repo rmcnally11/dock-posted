@@ -115,7 +115,7 @@ npm start             # same port as dev: 43123
 
 ## Internal wholesale desk
 
-`/wholesale` is a password-gated netback worksheet. The header shows **Wholesale** only when `WHOLESALE_PASSWORD` is set. If that env is unset, the route is 404 and the nav link is omitted. Unauthenticated visitors see a password form only.
+`/wholesale` is a password-gated netback worksheet. The footer’s Wholesale link is the only way in. If `WHOLESALE_PASSWORD` is unset, the route is 404. Unauthenticated visitors see a password form only.
 
 The desk default is a terminal→retail waterfall (RB and HO side by side). Tax is a first-class take: federal and state rungs from published IRS/EIA tables in `data/wholesale-tax.json`, always overrideable. Market cells (NYMEX, diff, rack, jobber) start blank. Freight stays blank unless typed.
 
