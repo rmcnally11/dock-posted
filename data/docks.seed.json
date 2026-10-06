@@ -89,7 +89,7 @@
       "lastVerifiedSource": "marina site",
       "sourceUrl": "https://galvestonyachtbasin.com/",
       "region": "texas",
-      "lead": 12
+      "lead": 13
     },
     {
       "id": "blue-marlin-seabrook",
@@ -909,6 +909,42 @@
       "lastVerifiedSource": "marina site",
       "sourceUrl": "https://www.pelicanrestmarina.com/",
       "lead": 11
+    },
+    {
+      "id": "stingaree-marina",
+      "name": "Stingaree Marina",
+      "corridor": "galveston-bay",
+      "region": "texas",
+      "city": "Crystal Beach",
+      "state": "TX",
+      "lat": 29.481923,
+      "lng": -94.605105,
+      "phone": "(409) 684-9530",
+      "hours": "Monday–Sunday 6am–6pm, weather permitting.",
+      "website": "https://stingaree.com/marina/",
+      "notes": "Crystal Beach, Bolivar Peninsula. Own marina page, read 6 Oct 2026: concrete ramps, gas, ice, beer, bait. The page does not name a diesel hose, an octane, or a pump dollar. Dock phone (409) 684-9530. Office (409) 684-2731. Body address 1297 N. Stingaree Rd; footer 1295 N. Stingaree Rd. Pin is the OpenStreetMap node named Stingaree at 1295 North Stingaree Drive, 29.481923, -94.605105. Census match for 1295 N Stingaree Dr is 29.481673, -94.604467. The named node is the pin.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "not-sold",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://stingaree.com/marina/",
+      "lead": 12
     },
     {
       "id": "cove-harbor-rockport",
@@ -1972,12 +2008,47 @@
       "phone": "(727) 893-7329",
       "hours": null,
       "website": "https://www.stpete.org/marina",
-      "notes": "City marina on the downtown waterfront. Call for fuel.",
+      "notes": "City marina page, read 6 Oct 2026: 90 Octane ETHANOL FREE gas and marine-grade diesel fuel, plus ValvTect. The page does not print a dollar. The 11.1.25 marina rate PDF is slip rates only. Phone (727) 893-7329.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.stpete.org/residents/parking___transportation/marina.php"
+    },
+    {
+      "id": "marjorie-park-yacht-basin",
+      "name": "Marjorie Park Yacht Basin",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Tampa",
+      "state": "FL",
+      "lat": 27.930752,
+      "lng": -82.455348,
+      "phone": "(813) 259-1604",
+      "hours": "9 am–5 pm daily",
+      "website": "https://www.tampa.gov/parks-and-recreation/parks-and-facilities/marina",
+      "notes": "City of Tampa marina page, read 6 Oct 2026: off-road diesel and mid-grade rec gasoline are sold at direct cost plus 40%. The page does not print a dollar. Mid-grade rec is not an octane. Address 97 Columbia Drive, Tampa, FL 33606. Pin is the US Census match, 27.930752, -82.455348. The page stamp Updated 09/09/2026 is a page stamp, not a fuel date.",
       "access": "public",
       "ethanol": "unknown",
       "quotes": [
         {
-          "product": "87",
+          "product": "gasoline",
           "pricePerGallon": null,
           "ethanol": "unknown",
           "status": "call",
@@ -1993,7 +2064,252 @@
       ],
       "lastVerifiedAt": null,
       "lastVerifiedSource": "marina site",
-      "sourceUrl": "https://www.stpete.org/marina"
+      "sourceUrl": "https://www.tampa.gov/parks-and-recreation/parks-and-facilities/marina"
+    },
+    {
+      "id": "port-tarpon-marina",
+      "name": "Port Tarpon Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Tarpon Springs",
+      "state": "FL",
+      "lat": 28.163523,
+      "lng": -82.769357,
+      "phone": "(727) 937-2200",
+      "hours": "Marina: 8 a.m. – 5 p.m. Daily",
+      "website": "https://www.porttarponmarina.com/amenities",
+      "notes": "Own amenities page, read 6 Oct 2026: Non-Ethanol Gas & Diesel. No octane and no dollar. Address 527 Anclote Road, Suite 200, Tarpon Springs, FL 34689. Pin is the US Census match for 527 Anclote Road, 28.163523, -82.769357.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.porttarponmarina.com/amenities"
+    },
+    {
+      "id": "anclote-village-marina",
+      "name": "Anclote Village Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Holiday",
+      "state": "FL",
+      "lat": 28.17707,
+      "lng": -82.785134,
+      "phone": "(727) 937-9737",
+      "hours": null,
+      "website": "https://anclotevillagemarina.com/",
+      "notes": "Own site, read 6 Oct 2026: high-quality 90-octane ethanol-free gas and diesel fuel. No dollar. Address 1029 Baillies Bluff Rd, Holiday, FL 34691. Pin is the US Census match, 28.177070, -82.785134. The page does not post a fuel-dock clock.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://anclotevillagemarina.com/"
+    },
+    {
+      "id": "belle-harbour-marina",
+      "name": "Belle Harbour Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Tarpon Springs",
+      "state": "FL",
+      "lat": 28.160802,
+      "lng": -82.765167,
+      "phone": "(727) 943-8489",
+      "hours": "Sunday–Saturday 8:30am–5:00pm",
+      "website": "https://belleharbourmarina.com/",
+      "notes": "Own site, read 6 Oct 2026: We have the fuel. The page does not name a grade or a dollar. Address 307 Anclote Rd, Tarpon Springs, FL 34689. Pin is the US Census match, 28.160802, -82.765167.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://belleharbourmarina.com/"
+    },
+    {
+      "id": "lands-end-marina",
+      "name": "Lands End Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Apollo Beach",
+      "state": "FL",
+      "lat": 27.781351,
+      "lng": -82.422627,
+      "phone": "(813) 645-5594",
+      "hours": "Open seven days. The page does not post a clock.",
+      "website": "https://www.landsendmarina.com/fuel",
+      "notes": "Own fuel page, read 6 Oct 2026: diesel and ethanol-free gasoline. No octane and no dollar. Address 1220 Apollo Beach Blvd, Apollo Beach, FL 33572. Pin is the US Census match, 27.781351, -82.422627.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.landsendmarina.com/fuel"
+    },
+    {
+      "id": "marker-1-marina",
+      "name": "Marker 1 Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Dunedin",
+      "state": "FL",
+      "lat": 28.050994,
+      "lng": -82.786363,
+      "phone": "(727) 733-9324",
+      "hours": null,
+      "website": "https://www.marker1marina.com/",
+      "notes": "Own site, read 6 Oct 2026: lists a Fuel Dock. The page does not name a grade or a dollar. Address 343 Causeway Boulevard, Dunedin, FL 34698. Pin is the US Census match, 28.050994, -82.786363.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.marker1marina.com/"
+    },
+    {
+      "id": "mariners-cove-marina",
+      "name": "Mariner's Cove Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Gulfport",
+      "state": "FL",
+      "lat": 27.738763,
+      "lng": -82.701244,
+      "phone": "(727) 321-5792",
+      "hours": null,
+      "website": "https://marinerscovemarina.com/",
+      "notes": "Own homepage, read 6 Oct 2026: navigation item FUEL DOCK. Address on the page: 5018 31st Ave South, Gulfport, FL 33707. The page does not name a grade or a dollar. Pin is the US Census match, 27.738763, -82.701244.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://marinerscovemarina.com/"
+    },
+    {
+      "id": "shell-point-marina",
+      "name": "Shell Point Marina",
+      "corridor": null,
+      "region": "west-florida",
+      "city": "Ruskin",
+      "state": "FL",
+      "lat": 27.719501,
+      "lng": -82.475789,
+      "phone": "(813) 645-1313",
+      "hours": null,
+      "website": "https://www.shellpointmarina.com/",
+      "notes": "Own site, read 6 Oct 2026: private marina and club with no access to the public other than fuel and pump out services. The fuel dock is public. The page does not name a grade or a dollar. Address 3340 West Shell Point Road, Ruskin. Pin is the US Census match, 27.719501, -82.475789. Guided-tour hours on the page are not the fuel dock.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.shellpointmarina.com/"
     },
     {
       "id": "madeira-beach-municipal-marina",
@@ -2879,15 +3195,15 @@
       "state": "FL",
       "lat": 30.6712,
       "lng": -81.4654,
-      "phone": "(904) 491-2090",
+      "phone": "(904) 310-3300",
       "hours": null,
-      "website": "https://www.fbfl.us/",
-      "notes": "Amelia Island waterfront. City / marina pages; call for fuel.",
+      "website": "https://www.fernandinaharbormarina.com/",
+      "notes": "Own site, read 6 Oct 2026: the fuel dock is fully operational. The page does not name a grade or a dollar. Phone on the site is (904) 310-3300.",
       "access": "public",
       "ethanol": "unknown",
       "quotes": [
         {
-          "product": "87",
+          "product": "gasoline",
           "pricePerGallon": null,
           "ethanol": "unknown",
           "status": "call",
@@ -2903,7 +3219,322 @@
       ],
       "lastVerifiedAt": null,
       "lastVerifiedSource": "marina site",
-      "sourceUrl": "https://www.fbfl.us/"
+      "sourceUrl": "https://www.fernandinaharbormarina.com/"
+    },
+    {
+      "id": "arlington-marina",
+      "name": "Arlington Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Jacksonville",
+      "state": "FL",
+      "lat": 30.333893,
+      "lng": -81.611545,
+      "phone": "(904) 743-2628",
+      "hours": "Daily 8:00 am–6:00 pm.",
+      "website": "https://arlingtonmarina.com/",
+      "notes": "5137 Arlington Rd, Jacksonville, FL 32211. Own site, read 6 Oct 2026, heading Current Fuel Prices: Unleaded $6.399, Diesel $5.999. The page did not date the price. Octane not named, so the product is gasoline, not 87. Ethanol not named on the price line. A ValvTect paragraph says the additive is designed to prevent the problems of ethanol gasoline. That is not a statement that the hose is ethanol-free, and it is not a second price. Tax not stated. Hours on the page agree: 8:00 am – 6:00 pm Daily, and NEW HOURS Daily 8:00 am – 6:00 PM. Slips are first-come. Pin is the US Census address match, 30.333893, -81.611545. A Nominatim house node at 30.3339163, -81.6115224 is the same place.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": 6.399,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": 5.999,
+          "ethanol": "unknown",
+          "status": "posted",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": "2026-10-06",
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://arlingtonmarina.com/"
+    },
+    {
+      "id": "beach-marine",
+      "name": "Beach Marine",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Jacksonville Beach",
+      "state": "FL",
+      "lat": 30.2888327,
+      "lng": -81.4177019,
+      "phone": "(904) 694-2080",
+      "hours": "Open 7 Days a Week 7:00 am – 6:00pm",
+      "website": "https://jaxbeachmarine.com/boat-slips/",
+      "notes": "Own boat-slips page, read 6 Oct 2026: Rec 90 Non-Ethanol Gasoline and Red Dyed Diesel. No dollar. Red dyed diesel is the diesel grade, not a second price. Header phone (904) 694-2080. The page also shows (904) 249-8200. Address 2315 Beach Blvd, Suite 104, Jacksonville Beach, FL 32250. Census matched 2315 S Beach Pkwy at 30.268698, -81.394714, a different street. Pin is the marina's own map place, 30.2888327, -81.4177019.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "90",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://jaxbeachmarine.com/boat-slips/"
+    },
+    {
+      "id": "morningstar-mayport",
+      "name": "Morningstar Marinas Mayport",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Jacksonville",
+      "state": "FL",
+      "lat": 30.39527,
+      "lng": -81.429149,
+      "phone": "(904) 246-8929",
+      "hours": "Daily: 8:00am - 5:00pm",
+      "website": "https://www.morningstarmarinas.com/location/709/fl/jacksonville/mayport/",
+      "notes": "Own Mayport location page, read 6 Oct 2026: Non Ethanol and High Speed Diesel. No octane and no dollar. Volume discounts over 1,000 gallons are a discount, not a posted price. Address 4852 Ocean Street, Jacksonville, FL 32233. Pin is the US Census match, 30.395270, -81.429149.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.morningstarmarinas.com/location/709/fl/jacksonville/mayport/"
+    },
+    {
+      "id": "palm-cove-marina",
+      "name": "Palm Cove Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Jacksonville",
+      "state": "FL",
+      "lat": 30.288034,
+      "lng": -81.429813,
+      "phone": "(904) 223-4757",
+      "hours": null,
+      "website": "https://www.palmcovemarina.com/?page_id=15",
+      "notes": "Own page, read 6 Oct 2026: Competitively priced Gate Gas and Diesel. Gate is a brand, not a dollar, and the page does not call the gas ethanol-free. Office phone (904) 223-4757. Service (904) 484-7249. Forklift (904) 223-1336. Address 14603 Beach Blvd, Jacksonville, FL 32250. Pin is the US Census match, 30.288034, -81.429813.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.palmcovemarina.com/?page_id=15"
+    },
+    {
+      "id": "doctors-lake-marina",
+      "name": "Doctors Lake Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Orange Park",
+      "state": "FL",
+      "lat": 30.14456,
+      "lng": -81.701243,
+      "phone": "(904) 264-0505",
+      "hours": null,
+      "website": "https://doctorslakemarina.com/",
+      "notes": "Own site, read 6 Oct 2026: Diesel & Gas and VALVTECT Marine Fuel. No octane and no dollar. The page does not say the hose is ethanol-free. Address 3108 US-17, Orange Park, FL 32003. Pin is the US Census match, 30.144560, -81.701243.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://doctorslakemarina.com/"
+    },
+    {
+      "id": "camachee-cove-yacht-harbor",
+      "name": "Camachee Cove Yacht Harbor",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "St. Augustine",
+      "state": "FL",
+      "lat": 29.915591,
+      "lng": -81.308434,
+      "phone": "(904) 829-5676",
+      "hours": null,
+      "website": "https://camacheeisland.com/boat-slips/",
+      "notes": "Own boat-slips page, read 6 Oct 2026: Ethanol-Free Gas & Diesel, and a Fuel Dock. No octane and no dollar. Address 3070 Harbor Dr, St. Augustine, FL 32084. Pin is the US Census match, 29.915591, -81.308434.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://camacheeisland.com/boat-slips/"
+    },
+    {
+      "id": "cats-paw-marina",
+      "name": "Cat's Paw Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "St. Augustine",
+      "state": "FL",
+      "lat": 29.87143,
+      "lng": -81.31951,
+      "phone": "(904) 829-8040",
+      "hours": null,
+      "website": "https://www.catspawmarina.com/",
+      "notes": "Own homepage, read 6 Oct 2026: ethanol-free gas, diesel. Mile marker 780. No octane and no dollar. Address 220 Nix Boat Yard Rd, St. Augustine, FL 32084. Pin is the US Census match, 29.871430, -81.319510.",
+      "access": "public",
+      "ethanol": "E0",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "E0",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.catspawmarina.com/"
+    },
+    {
+      "id": "met-park-marina",
+      "name": "Metropolitan Park Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Jacksonville",
+      "state": "FL",
+      "lat": 30.3197791,
+      "lng": -81.6412593,
+      "phone": "(904) 990-8466",
+      "hours": "Mon–Sun 8 AM–6 PM",
+      "website": "https://metparkmarina.com/amenities/",
+      "notes": "Own amenities page, read 6 Oct 2026: Marine Gas and Diesel. No octane and no dollar. Contact page: owned by the City of Jacksonville, managed by F3 Marina. Office 5 Tower Court Suite 200, Jacksonville, FL 32202 does not geocode to the marina. Pin is the OpenStreetMap way named Metropolitan Park Marina on Gator Bowl Boulevard, 30.3197791, -81.6412593. The site weather widget also carries latitude 30.3204576, longitude -81.641715.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://metparkmarina.com/amenities/"
+    },
+    {
+      "id": "amelia-island-marina",
+      "name": "Amelia Island Marina",
+      "corridor": null,
+      "region": "east-florida",
+      "city": "Fernandina Beach",
+      "state": "FL",
+      "lat": 30.632751,
+      "lng": -81.4764701,
+      "phone": "(904) 277-4615",
+      "hours": null,
+      "website": "https://www.ameliaislandmarina.com/",
+      "notes": "Own site, read 6 Oct 2026: amenities including a fuel dock. The page does not name a grade or a dollar. Address on the page: 251 Creekside Dr, Fernandina Beach, FL 32034. Census had no match for Creekside. Pin is the marina's own map place, 30.632751, -81.4764701. This is a different dock from Fernandina Harbor Marina.",
+      "access": "public",
+      "ethanol": "unknown",
+      "quotes": [
+        {
+          "product": "gasoline",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        },
+        {
+          "product": "diesel",
+          "pricePerGallon": null,
+          "ethanol": "unknown",
+          "status": "call",
+          "taxIncluded": null
+        }
+      ],
+      "lastVerifiedAt": null,
+      "lastVerifiedSource": "marina site",
+      "sourceUrl": "https://www.ameliaislandmarina.com/"
     },
     {
       "id": "golden-isles-marina",

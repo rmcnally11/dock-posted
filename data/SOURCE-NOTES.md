@@ -81,6 +81,43 @@ Exception: Madeira Beach Municipal Marina. City page https://madeirabeachfl.gov/
 
 Exception: Lamb's Yacht Center. Marina fuel page https://www.lambsyachtcenter.com/fuel/, read 3 Oct 2026: $5.15 Gas, $5.50 Diesel. The page did not date the price, so `lastVerifiedAt` is the read date, 2026-10-03. The price line says Gas. The same page names Rec 90/non ethanol gas, so the product is `90` with ethanol `E0`, not unlabeled gasoline and not 87 or 93. Diesel is ultra low sulfur diesel, ethanol unknown. Tax not stated (`taxIncluded` null). Posted diesel stays $5.50. The 10% off Diesel for MTOA and AGLCA members is a discount in notes, not the posted price. Pump out $10 is not fuel. Phone is the dockmaster line (904) 327-2285. Office (904) 384-5577 and murphy@lambsyachtcenter.com stay in notes. The page gives two clocks and neither was dropped: near the price, Hours M-F 8-5 Saturday & Sunday 8:30-4:30; lower on the page, Fuel Dock Hours 7 Days a week 8:30AM-4:30PM. The fuel page has no map embed with a coordinate. OpenStreetMap had no node named Lamb's Yacht Center when searched 3 Oct 2026. Pin is the US Census address-range match for 3376 Lake Shore Boulevard, Jacksonville, FL 32210: 30.273784, -81.721019, interpolated across 3354–3480, not a rooftop. Named octane stays on the one-week freshness window.
 
+## 6 Oct 2026 — Galveston Bay, Tampa Bay, Northeast Florida
+
+Read from each marina's own site or the city page that runs it. No aggregator dollar was copied. A page with a hose and no dollar stays Call. `taxIncluded` stays null unless the page says. Page as-of is null unless the page dates the fuel price.
+
+Live price added:
+
+- Arlington Marina (Jacksonville). https://arlingtonmarina.com/ read 6 Oct 2026. Heading Current Fuel Prices: Unleaded $6.399, Diesel $5.999. The page did not date the price, so `lastVerifiedAt` is the read date, 2026-10-06. Octane not named, so the product is `gasoline` (14-day window), not 87. Ethanol not named on the price line. A ValvTect sentence about ethanol problems is not an E0 claim and not a second price. Tax not stated. Hours agree: Daily 8:00 am–6:00 pm. Pin is the Census match for 5137 Arlington Rd, Jacksonville, FL 32211: 30.333893, -81.611545.
+
+Call pins added (prices blank, `lastVerifiedAt` null):
+
+- Stingaree Marina (Crystal Beach, TX). https://stingaree.com/marina/ — gas, ice, beer, bait. Diesel not named, so diesel is not-sold. No octane, no dollar. Hours Monday–Sunday 6am–6pm, weather permitting. Pin is the OpenStreetMap node named Stingaree, 29.481923, -94.605105. Galveston Yacht Marina lead moves from 12 to 13 so it stays last on the bay board. Its prices are unchanged.
+- Marjorie Park Yacht Basin (Tampa). https://www.tampa.gov/parks-and-recreation/parks-and-facilities/marina — off-road diesel and mid-grade rec gasoline at direct cost plus 40%. No dollar. Mid-grade rec is not an octane. Hours 9 am–5 pm daily. Census 27.930752, -82.455348.
+- Port Tarpon Marina (Tarpon Springs). https://www.porttarponmarina.com/amenities — Non-Ethanol Gas & Diesel. No octane, no dollar. Product `gasoline` ethanol `E0`. Hours 8 a.m.–5 p.m. daily. Census 28.163523, -82.769357.
+- Anclote Village Marina (Holiday). https://anclotevillagemarina.com/ — 90-octane ethanol-free gas and diesel. No dollar. Product `90` ethanol `E0`. Census 28.177070, -82.785134.
+- Belle Harbour Marina (Tarpon Springs). https://belleharbourmarina.com/ — "We have the fuel." Grade not named. Hours Sunday–Saturday 8:30am–5:00pm. Census 28.160802, -82.765167.
+- Lands End Marina (Apollo Beach). https://www.landsendmarina.com/fuel — diesel and ethanol-free gasoline. No octane, no dollar. Product `gasoline` ethanol `E0`. Open seven days, no clock. Census 27.781351, -82.422627.
+- Marker 1 Marina (Dunedin). https://www.marker1marina.com/ — Fuel Dock. Grade not named. Census 28.050994, -82.786363.
+- Mariner's Cove Marina (Gulfport). https://marinerscovemarina.com/ — FUEL DOCK in the site nav. Grade not named. Census 27.738763, -82.701244.
+- Shell Point Marina (Ruskin). https://www.shellpointmarina.com/ — public fuel and pump-out; the rest of the marina is private. Grade not named. Access stays public. Census 27.719501, -82.475789.
+- Beach Marine (Jacksonville Beach). https://jaxbeachmarine.com/boat-slips/ — Rec 90 Non-Ethanol Gasoline and Red Dyed Diesel. No dollar. Product `90` ethanol `E0`. Hours 7 days, 7:00 am–6:00pm. Census matched a different street (S Beach Pkwy). Pin is the marina's own map place, 30.2888327, -81.4177019.
+- Morningstar Marinas Mayport (Jacksonville). https://www.morningstarmarinas.com/location/709/fl/jacksonville/mayport/ — Non Ethanol and High Speed Diesel. No octane, no dollar. Product `gasoline` ethanol `E0`. Hours Daily 8:00am–5:00pm. Volume discount over 1,000 gallons is not a posted price. Census 30.395270, -81.429149.
+- Palm Cove Marina (Jacksonville). https://www.palmcovemarina.com/?page_id=15 — Gate Gas and Diesel. Gate is a brand, not a dollar, and not an ethanol claim. Census 30.288034, -81.429813.
+- Doctors Lake Marina (Orange Park). https://doctorslakemarina.com/ — Diesel & Gas, VALVTECT Marine Fuel. No octane, no dollar, not marked E0. Census 30.144560, -81.701243.
+- Camachee Cove Yacht Harbor (St. Augustine). https://camacheeisland.com/boat-slips/ — Ethanol-Free Gas & Diesel. No octane, no dollar. Product `gasoline` ethanol `E0`. Census 29.915591, -81.308434.
+- Cat's Paw Marina (St. Augustine). https://www.catspawmarina.com/ — ethanol-free gas, diesel. No octane, no dollar. Product `gasoline` ethanol `E0`. Census 29.871430, -81.319510.
+- Metropolitan Park Marina (Jacksonville). https://metparkmarina.com/amenities/ — Marine Gas and Diesel. No octane, no dollar. Hours Mon–Sun 8 AM–6 PM. City-owned, F3-managed. Office address does not geocode to the marina. Pin is the OpenStreetMap way named Metropolitan Park Marina, 30.3197791, -81.6412593.
+- Amelia Island Marina (Fernandina Beach). https://www.ameliaislandmarina.com/ — a fuel dock, grade not named. Census had no match for 251 Creekside Dr. Pin is the marina's own map place, 30.632751, -81.4764701. Different dock from Fernandina Harbor Marina.
+
+Updated, not added:
+
+- St. Petersburg Municipal Marina. City page https://www.stpete.org/residents/parking___transportation/marina.php read 6 Oct 2026: 90 Octane ETHANOL FREE gas and marine-grade diesel. No dollar. The rate PDF is slip rates. Quotes change from a default 87 call to product `90` ethanol `E0` call, plus diesel call. `lastVerifiedAt` stays null.
+- Fernandina Harbor Marina. https://www.fernandinaharbormarina.com/ read 6 Oct 2026: fuel dock fully operational. No grade, no dollar. Phone on the site is (904) 310-3300. Quotes change from a default 87 call to unlabeled gasoline call plus diesel call.
+
+Left unchanged: Galveston Yacht Marina prices (re-read 6 Oct 2026 still Diesel $6.33, Regular 87 $4.83, Non-Ethanol 93 $6.27), Madeira Beach, St. Augustine Municipal, Lamb's, the existing Galveston Bay call pins, Clearwater Beach Marina, and the Keys posted pins.
+
+Skipped: commented-out prices, slip rates, delivery services, members-only docks already modeled, and Pass-A-Grille (first-party pages name 90 ethanol-free and marine diesel, but no street address and no named map node).
+
 No Waterway Guide scrape of the expanded coast succeeded from this environment. Cloudflare still challenges unattended fetches. That is a failed scrape, not a silent success. Do not treat this file as a fresh weekly report for the new pins.
 
 Public WG report URLs the fetcher will try again (login not required):
