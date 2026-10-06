@@ -604,12 +604,15 @@ const arlingtonSlots = pinQuoteSlots(arlington, arlingtonRead);
 assert.deepEqual(
   arlingtonSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon]),
   [
-    ["gasoline", "Gasoline", "gasoline", 6.399],
+    ["gas-gasoline", "Gas, octane and ethanol not stated", "gasoline", 6.399],
     ["diesel", "Diesel", "diesel", 5.999],
   ],
 );
-assert.equal(formatQuote(arlingtonSlots[0]?.quote ?? null), "$6.399 Gasoline");
-assert.equal(formatQuote(arlingtonSlots[1]?.quote ?? null), "$5.999 diesel");
+assert.equal(
+  formatQuote(arlingtonSlots[0]?.quote ?? null),
+  "$6.399 a gallon. Gas, octane and ethanol not stated, tax not stated",
+);
+assert.equal(formatQuote(arlingtonSlots[1]?.quote ?? null), "$5.999 a gallon. Diesel, tax not stated");
 assert.equal(freshness(arlington, Date.parse("2026-10-19T00:00:00Z")), "fresh");
 assert.equal(freshness(arlington, Date.parse("2026-10-20T00:00:00Z")), "stale");
 assert.equal(freshness(gym, Date.parse("2026-10-11T00:00:00Z")), "stale");
@@ -652,7 +655,7 @@ for (const id of coverageCallIds) {
   assert.ok(dock.sourceUrl, `${id} needs the page that proves the hose`);
   assert.ok(dock.quotes.every((quote) => quote.pricePerGallon == null && quote.taxIncluded == null));
   assert.equal(freshness(dock, arlingtonRead), "never");
-  assert.equal(freshnessLabel(dock, arlingtonRead), "Call the dock");
+  assert.equal(freshnessLabel(dock, arlingtonRead), "No price posted");
 }
 
 const stingaree = docks.find((dock) => dock.id === "stingaree-marina");
