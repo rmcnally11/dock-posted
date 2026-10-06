@@ -399,7 +399,7 @@ assert.doesNotMatch(homeHtml, /<details[^>]*\sopen[\s=]/);
 assert.match(homeHtml, /More fuel docks, call ahead/);
 assert.match(homeHtml, /Seen a price\? Report it/);
 assert.match(homeHtml, /id="dock-prices"/);
-assert.match(homeHtml, /Today’s dock prices/);
+assert.match(homeHtml, /Fuel prices by dock/);
 assert.match(homeHtml, /href="\/report"/);
 assert.match(homeHtml, /Galveston Bay · 12 docks/);
 assert.match(homeHtml, /Tampa Bay · 6 docks/);
@@ -487,7 +487,7 @@ assert.match(headerSource, /Escape/);
 assert.match(headerSource, /setOpen\(false\)/);
 
 const welcomeHtml = renderToStaticMarkup(createElement(HomeWelcome));
-assert.match(welcomeHtml, /Fuel prices at the dock, from Sabine to Key West\./);
+assert.match(welcomeHtml.replace(/<[^>]+>/g, ""), /Fuel prices at the dock, from Texas to Florida\./);
 assert.match(welcomeHtml, /data-testid="home-hero-headline"/);
 assert.match(welcomeHtml, /<button[^>]*data-testid="find-fuel-near-me"[^>]*>Find fuel near me<\/button>/);
 assert.match(welcomeHtml, /<a[^>]*href="\/report"[^>]*>Report a price<\/a>/);

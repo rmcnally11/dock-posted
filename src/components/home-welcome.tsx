@@ -7,6 +7,18 @@ function findFuelNearMe() {
   document.querySelector<HTMLButtonElement>("[data-testid=near-me]")?.click();
 }
 
+/** Keep the closing place name on one line. */
+function WelcomeHeadline({ text }: { text: string }) {
+  const match = text.match(/^(.*\s)(\S+\s+\S+\s+\S+)$/);
+  if (!match) return text;
+  return (
+    <>
+      {match[1]}
+      <span className="whitespace-nowrap">{match[2]}</span>
+    </>
+  );
+}
+
 function StepIcon({ index }: { index: number }) {
   const common = {
     viewBox: "0 0 24 24",
@@ -106,7 +118,7 @@ export function HomeWelcome() {
               data-testid="home-hero-headline"
               className="font-heading text-[2.625rem] leading-[1.08] text-[color:var(--navy)] md:text-5xl md:leading-[1.05] xl:text-7xl"
             >
-              {HOME_WELCOME.headline}
+              <WelcomeHeadline text={HOME_WELCOME.headline} />
             </h1>
             <p
               data-testid="home-hero-subhead"
