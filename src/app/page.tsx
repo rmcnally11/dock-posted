@@ -1,7 +1,7 @@
 import { DockBoard } from "@/components/dock-board";
 import { Masthead } from "@/components/wordmark";
 import { filterDocks, parseBoardQuery } from "@/lib/board-query";
-import { boardTally } from "@/lib/freshness";
+import { boardTally, heroCountLine } from "@/lib/freshness";
 import { readDocks } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -69,9 +69,7 @@ export default async function Home({
               We don’t sell fuel. We don’t pull your boat.
             </p>
             <p data-testid="board-tally" className="mt-6 text-sm text-[color:var(--cream)]/55">
-              {tally.postedThisWeek} {tally.postedThisWeek === 1 ? "dock wrote" : "docks wrote"} a
-              number this week. Most still haven’t. That’s normal. That’s why the phone is on the
-              card.
+              {heroCountLine(tally.postedThisWeek, docks.length)}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
@@ -107,28 +105,28 @@ export default async function Home({
                 href="#board"
                 className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
               >
-                Today
+                Fuel Prices
               </a>
               <a
                 data-testid="landing-link-named-storm"
                 href="/haul-out"
                 className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
               >
-                When they name it
+                Storm Haul-Out
               </a>
               <a
                 data-testid="landing-link-pin"
                 href="/pin"
                 className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
               >
-                Your dock
+                For Marinas
               </a>
               <a
                 data-testid="landing-link-run"
                 href="/run"
                 className="inline-flex min-h-11 items-center underline decoration-[color:var(--cream)]/20 underline-offset-4 hover:text-[color:var(--cream)]"
               >
-                This trip
+                Trip Fuel Cost
               </a>
               <a
                 data-testid="landing-link-about"

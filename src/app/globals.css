@@ -25,6 +25,8 @@
   --line: rgba(11, 31, 51, 0.12);
   --background: #fbf8f3;
   --foreground: #0b1f33;
+  --gold: #c4a046;
+  --stale: #8d5a32;
 }
 
 html,

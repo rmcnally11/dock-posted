@@ -2,8 +2,23 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { boardHref, dockPath, filterDocks, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
-import { ethanolCopy, formatDate, formatQuote, quoteParts, telHref } from "../src/lib/format";
-import { boardQuote, boardTally, displayGas, freshness, freshnessLabel, pinQuoteSlots, pinTrust } from "../src/lib/freshness";
+import { ethanolCopy, formatDate, formatGallonPrice, formatQuote, quoteParts, telHref } from "../src/lib/format";
+import {
+  boardQuote,
+  boardTally,
+  displayGas,
+  freshness,
+  freshnessLabel,
+  hasEthanolFreeGas,
+  heroCountLine,
+  pinAriaLabel,
+  pinKind,
+  pinQuoteSlots,
+  pinTrust,
+  publicBadge,
+  publicCallLine,
+  publicSource,
+} from "../src/lib/freshness";
 import { mergeParsedIntoDocks } from "../src/lib/waterway-guide";
 import { DEFAULT_X_HANDLE, publicXHandle, xProfileUrl } from "../src/lib/x-handle";
 import seed from "../data/docks.seed.json";
@@ -207,7 +222,10 @@ for (const state of STATE_CODES) {
 
 const marinaBay = docks.find((dock) => dock.id === "marina-bay-harbor");
 assert.ok(marinaBay);
-assert.equal(formatQuote(marinaBay.quotes.find((quote) => quote.product === "87") ?? null), "—");
+assert.equal(
+  formatQuote(marinaBay.quotes.find((quote) => quote.product === "87") ?? null),
+  "Gas: no price posted. Call the dock.",
+);
 assert.equal(marinaBay.flags?.includes("last-pump"), true);
 assert.equal(marinaBay.flags?.includes("still-open"), false);
 assert.match(marinaBay.hours ?? "", /store only, not the hose/);
@@ -248,25 +266,35 @@ assert.equal(displayGas(gym)?.product, "93");
 assert.equal(displayGas(gym)?.pricePerGallon, 6.27);
 const gymSlots = pinQuoteSlots(gym, Date.parse("2026-10-03T18:00:00Z"));
 assert.deepEqual(
-  gymSlots.map((slot) => [slot.label, slot.quote?.product, slot.quote?.pricePerGallon]),
+  gymSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon]),
   [
-    ["Regular 87", "87", 4.83],
-    ["Non-ethanol 93", "93", 6.27],
-    ["Diesel", "diesel", 6.33],
+    ["gas-87", "Regular gas, 87 octane, ethanol not stated", "87", 4.83],
+    ["gas-93", "Gas, no ethanol, 93 octane", "93", 6.27],
+    ["diesel", "Diesel", "diesel", 6.33],
   ],
 );
+assert.equal(
+  formatQuote(gymSlots.find((slot) => slot.id === "gas-87")?.quote ?? null),
+  "$4.83 a gallon. Regular gas, 87 octane, ethanol not stated, tax not stated",
+);
+assert.equal(
+  formatQuote(gymSlots.find((slot) => slot.id === "gas-93")?.quote ?? null),
+  "$6.27 a gallon. Gas, no ethanol, 93 octane, tax not stated",
+);
+assert.equal(formatQuote(gymSlots.find((slot) => slot.id === "diesel")?.quote ?? null), "$6.33 a gallon. Diesel, tax not stated");
 assert.ok(gymSlots.every((slot) => slot.label !== "Regular"));
 const mangrove = docks.find((dock) => dock.id === "mangrove-marina");
 assert.ok(mangrove);
 assert.deepEqual(
   pinQuoteSlots(mangrove, Date.parse("2026-08-28T18:00:00Z")).map((slot) => [
+    slot.id,
     slot.label,
     slot.quote?.product,
     slot.quote?.pricePerGallon,
   ]),
   [
-    ["Regular", "90", 6.27],
-    ["Diesel", "diesel", 6.18],
+    ["gas-90", "Gas, no ethanol, 90 octane", "90", 6.27],
+    ["diesel", "Diesel", "diesel", 6.18],
   ],
 );
 
@@ -302,18 +330,25 @@ const stAugustineSlots = pinQuoteSlots(stAugustine, readOn);
 assert.deepEqual(
   stAugustineSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon]),
   [
-    ["gasoline", "Gasoline", "gasoline", 6.59],
+    ["gas-gasoline", "Gas, octane and ethanol not stated", "gasoline", 6.59],
     ["diesel", "Diesel", "diesel", 7.39],
   ],
 );
-assert.equal(formatQuote(stAugustineSlots[0]?.quote ?? null), "$6.590 Gasoline");
-assert.equal(formatQuote(stAugustineSlots[1]?.quote ?? null), "$7.390 diesel");
+assert.equal(
+  formatQuote(stAugustineSlots[0]?.quote ?? null),
+  "$6.59 a gallon. Gas, octane and ethanol not stated, tax not stated",
+);
+assert.equal(formatQuote(stAugustineSlots[1]?.quote ?? null), "$7.39 a gallon. Diesel, tax not stated");
 assert.deepEqual(
   stAugustine.quotes.map((quote) => quote.product),
   ["gasoline", "diesel"],
 );
 assert.ok(stAugustine.quotes.every((quote) => quote.ethanol === "unknown" && quote.taxIncluded == null));
-assert.ok(stAugustineSlots.every((slot) => slot.label === "Gasoline" || slot.label === "Diesel"));
+assert.ok(
+  stAugustineSlots.every(
+    (slot) => slot.label === "Gas, octane and ethanol not stated" || slot.label === "Diesel",
+  ),
+);
 assert.equal(freshness(stAugustine, Date.parse("2026-10-10T00:00:00Z")), "stale");
 assert.equal(
   boardQuote(stAugustine, stAugustine.quotes[0] ?? null, Date.parse("2026-10-10T00:00:00Z"))?.pricePerGallon,
@@ -370,15 +405,25 @@ const madeiraSlots = pinQuoteSlots(madeira, readOn);
 assert.deepEqual(
   madeiraSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon, slot.quote?.ethanol]),
   [
-    ["gasoline", "Gasoline", "gasoline", 6.05, "E0"],
+    ["gas-gasoline", "Gas, no ethanol, octane not stated", "gasoline", 6.05, "E0"],
     ["diesel", "Diesel", "diesel", 6.65, "unknown"],
   ],
 );
-assert.equal(formatQuote(madeiraSlots[0]?.quote ?? null), "$6.050 Gasoline E0");
-assert.equal(formatQuote(madeiraSlots[1]?.quote ?? null), "$6.650 diesel");
-assert.equal(quoteParts(madeiraSlots[0]?.quote ?? null).rest, "Gasoline E0");
+assert.equal(
+  formatQuote(madeiraSlots[0]?.quote ?? null),
+  "$6.05 a gallon. Gas, no ethanol, octane not stated, tax not stated",
+);
+assert.equal(formatQuote(madeiraSlots[1]?.quote ?? null), "$6.65 a gallon. Diesel, tax not stated");
+assert.equal(
+  quoteParts(madeiraSlots[0]?.quote ?? null).rest,
+  "Gas, no ethanol, octane not stated, tax not stated",
+);
 assert.equal(ethanolCopy(madeira.ethanol), "E0");
-assert.ok(madeiraSlots.every((slot) => slot.label === "Gasoline" || slot.label === "Diesel"));
+assert.ok(
+  madeiraSlots.every(
+    (slot) => slot.label === "Gas, no ethanol, octane not stated" || slot.label === "Diesel",
+  ),
+);
 assert.ok(!madeiraSlots.some((slot) => /87|89|90|93/.test(`${slot.label} ${slot.quote?.product ?? ""}`)));
 const eightDays = Date.parse("2026-10-11T00:00:00Z");
 const fourteenDays = Date.parse("2026-10-17T00:00:00Z");
@@ -468,13 +513,20 @@ const lambsSlots = pinQuoteSlots(lambs, readOn);
 assert.deepEqual(
   lambsSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon, slot.quote?.ethanol]),
   [
-    ["regular", "Regular", "90", 5.15, "E0"],
+    ["gas-90", "Gas, no ethanol, 90 octane", "90", 5.15, "E0"],
     ["diesel", "Diesel", "diesel", 5.5, "unknown"],
   ],
 );
-assert.equal(formatQuote(lambsSlots[0]?.quote ?? null), "$5.150 90 E0");
-assert.equal(formatQuote(lambsSlots[1]?.quote ?? null), "$5.500 diesel");
-assert.equal(quoteParts(lambsSlots[0]?.quote ?? null).rest, "90 E0");
+assert.equal(
+  formatQuote(lambsSlots[0]?.quote ?? null),
+  "$5.15 a gallon. Gas, no ethanol, 90 octane, tax not stated",
+);
+assert.equal(formatQuote(lambsSlots[1]?.quote ?? null), "$5.50 a gallon. Diesel, tax not stated");
+assert.equal(quoteParts(lambsSlots[0]?.quote ?? null).rest, "Gas, no ethanol, 90 octane, tax not stated");
+assert.equal(formatGallonPrice(5.659), "$5.659");
+assert.equal(formatGallonPrice(6.59), "$6.59");
+assert.equal(formatGallonPrice(6.59), "$6.59");
+assert.notEqual(lambs.quotes.find((quote) => quote.product === "90")?.pricePerGallon, 5.659);
 assert.equal(ethanolCopy(lambs.ethanol), "E0");
 assert.ok(!lambsSlots.some((slot) => /87|89|93|gasoline/i.test(`${slot.label} ${slot.quote?.product ?? ""}`)));
 assert.equal(freshness(lambs, eightDays), "stale");
@@ -662,13 +714,19 @@ assert.equal(blueMarlin.flags?.includes("last-pump"), true);
 assert.equal(blueMarlin.flags?.includes("west-of-146"), true);
 assert.equal(blueMarlin.flags?.includes("still-open"), false);
 assert.equal(blueMarlin.ethanol, "E0");
-assert.equal(freshnessLabel(blueMarlin), "Call the dock");
+assert.equal(freshnessLabel(blueMarlin), "No price posted");
 assert.ok(blueMarlin.quotes.every((quote) => quote.pricePerGallon == null));
-assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)), "—");
+assert.equal(
+  formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null)),
+  "Gas: no price posted. Call the dock.",
+);
 assert.equal(blueMarlin.lastVerifiedAt, "2026-08-28");
 
 const lastMonth = Date.parse("2026-08-30T12:00:00Z") + 40 * 24 * 60 * 60 * 1000;
-assert.equal(formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null, lastMonth)), "—");
+assert.equal(
+  formatQuote(boardQuote(blueMarlin, blueMarlin.quotes[0] ?? null, lastMonth)),
+  "Gas: no price posted. Call the dock.",
+);
 
 const wgReplay = mergeParsedIntoDocks(
   [blueMarlin],
@@ -704,13 +762,16 @@ assert.ok(southShore.quotes.every((quote) => quote.pricePerGallon == null));
 assert.match(southShore.hours ?? "", /8am–6pm \(summer\)/);
 assert.match(southShore.hours ?? "", /Winter 8am–4:30pm/);
 assert.equal(southShore.lastVerifiedAt, "2026-08-28");
-assert.equal(formatQuote(southShore.quotes[0] ?? null), "—");
+assert.doesNotMatch(formatQuote(southShore.quotes[0] ?? null), /\$/);
 
 const houstonYacht = docks.find((dock) => dock.id === "houston-yacht-club");
 assert.ok(houstonYacht);
-assert.equal(formatQuote(houstonYacht.quotes.find((quote) => quote.product === "89") ?? null), "—");
+assert.equal(
+  formatQuote(houstonYacht.quotes.find((quote) => quote.product === "89") ?? null),
+  "Gas: no price posted. Call the dock.",
+);
 assert.equal(freshness(houstonYacht), "never");
-assert.equal(freshnessLabel(houstonYacht), "Call the dock");
+assert.equal(freshnessLabel(houstonYacht), "No price posted");
 assert.equal(pinTrust(houstonYacht), "unverified");
 assert.equal(houstonYacht.access, "members");
 
@@ -728,7 +789,7 @@ assert.equal(bayland.access, "public");
 assert.equal(bayland.phone, "(281) 422-8900");
 assert.match(bayland.hours ?? "", /Tue–Sun 8am–5pm/);
 assert.ok(bayland.quotes.every((quote) => quote.pricePerGallon == null && quote.status === "call"));
-assert.equal(formatQuote(bayland.quotes[0] ?? null), "—");
+assert.doesNotMatch(formatQuote(bayland.quotes[0] ?? null), /\$/);
 
 const marineMax = docks.find((dock) => dock.id === "marinemax-houston");
 assert.ok(marineMax);
@@ -757,7 +818,123 @@ const keyLargoHarbor = docks.find((dock) => dock.id === "key-largo-harbor");
 assert.ok(keyLargoHarbor);
 assert.ok(keyLargoHarbor.quotes.every((quote) => quote.pricePerGallon == null));
 assert.equal(keyLargoHarbor.lastVerifiedAt, "2022-08-26");
-assert.equal(formatQuote(keyLargoHarbor.quotes[0] ?? null), "—");
+assert.equal(formatQuote(keyLargoHarbor.quotes[0] ?? null), "Gas: no price posted. Call the dock.");
+
+const labelNow = Date.parse("2026-10-06T15:00:00Z");
+assert.equal(heroCountLine(0, 145), "0 of 145 docks have a current posted price. For the rest, call the dock.");
+assert.equal(heroCountLine(1, 145), "1 of 145 docks has a current posted price. For the rest, call the dock.");
+assert.equal(heroCountLine(4, 145), "4 of 145 docks have a current posted price. For the rest, call the dock.");
+assert.equal(formatGallonPrice(5.659), "$5.659");
+assert.equal(formatGallonPrice(6.59), "$6.59");
+assert.equal(formatGallonPrice(5.5), "$5.50");
+assert.equal(
+  formatQuote({
+    product: "90",
+    pricePerGallon: 5.659,
+    ethanol: "E0",
+    status: "posted",
+    taxIncluded: true,
+  }),
+  "$5.659 a gallon. Gas, no ethanol, 90 octane, tax included",
+);
+assert.equal(
+  formatQuote({
+    product: "diesel",
+    pricePerGallon: 4.84,
+    ethanol: "unknown",
+    status: "posted",
+    taxIncluded: false,
+  }),
+  "$4.84 a gallon. Diesel, tax not included",
+);
+assert.doesNotMatch(formatQuote({
+  product: "90",
+  pricePerGallon: 5.659,
+  ethanol: "E0",
+  status: "posted",
+  taxIncluded: null,
+}), /\$5\.66/);
+
+assert.equal(publicBadge(gym, labelNow), "Marina's price");
+assert.equal(publicSource(gym, labelNow), "Posted on the marina's website, checked Oct 3");
+assert.equal(publicCallLine(gym, labelNow), "(409) 765-3000");
+assert.equal(pinKind(gym, labelNow), "marina-site");
+assert.equal(pinAriaLabel(gym, readOn), "Galveston Yacht Marina: marina's price, checked Oct 3");
+assert.equal(publicBadge(gym, readOn), "Marina's price");
+assert.equal(publicSource(gym, readOn), "Posted on the marina's website, checked Oct 3");
+assert.equal(pinKind(gym, readOn), "marina-site");
+assert.notEqual(publicBadge(gym, readOn), "Verified");
+const gymStaleAt = Date.parse("2026-10-11T00:00:00Z");
+assert.equal(publicBadge(gym, gymStaleAt), "Price over a week old");
+assert.equal(publicSource(gym, gymStaleAt), "Posted on the marina's website, checked Oct 3");
+assert.equal(publicCallLine(gym, gymStaleAt), "Too old to show. Call the dock: (409) 765-3000");
+assert.equal(pinKind(gym, gymStaleAt), "stale");
+assert.equal(pinAriaLabel(gym, gymStaleAt), "Galveston Yacht Marina: price over a week old, call the dock");
+
+assert.equal(publicBadge(lambs, readOn), "Marina's price");
+assert.equal(publicSource(lambs, readOn), "Posted on the marina's website, checked Oct 3");
+assert.equal(publicBadge(madeira, readOn), "Marina's price");
+assert.equal(publicSource(stAugustine, readOn), "Posted on the marina's website, checked Sep 25");
+assert.equal(publicBadge(stAugustine, readOn), "Marina's price");
+
+assert.equal(publicBadge(marinaBay, labelNow), "No price posted");
+assert.equal(publicSource(marinaBay, labelNow), "Waterway Guide, Aug 28");
+assert.equal(pinAriaLabel(marinaBay, labelNow), "Marina Bay Harbor: no price posted, call the dock");
+assert.doesNotMatch(publicSource(marinaBay, labelNow), /Verified|Last seen|Unverified/);
+
+assert.equal(publicBadge(keyLargoHarbor, labelNow), "No price posted");
+assert.equal(publicSource(keyLargoHarbor, labelNow), "Waterway Guide, Aug 26, 2022");
+assert.equal(pinAriaLabel(keyLargoHarbor, labelNow), "Key Largo Harbor Marina: no price posted, call the dock");
+assert.match(publicSource(keyLargoHarbor, labelNow), /2022/);
+assert.doesNotMatch(`${publicBadge(keyLargoHarbor, labelNow)} ${publicSource(keyLargoHarbor, labelNow)}`, /Verified|Last seen/);
+
+const pilotHouse = docks.find((dock) => dock.id === "pilot-house-marina");
+assert.ok(pilotHouse);
+assert.equal(freshness(pilotHouse, labelNow), "stale");
+assert.equal(publicBadge(pilotHouse, labelNow), "Price over a week old");
+assert.equal(publicSource(pilotHouse, labelNow), "Waterway Guide listed a price Aug 25");
+assert.equal(publicCallLine(pilotHouse, labelNow), "Too old to show. Call the dock: (305) 747-4359");
+assert.equal(pinKind(pilotHouse, labelNow), "stale");
+assert.equal(pinAriaLabel(pilotHouse, labelNow), "Pilot House Marina & Restaurant: price over a week old, call the dock");
+assert.equal(boardQuote(pilotHouse, pilotHouse.quotes[0] ?? null, labelNow)?.pricePerGallon, null);
+assert.equal(pilotHouse.quotes[0]?.pricePerGallon, 6.05);
+
+const staffReport = {
+  ...gym,
+  lastVerifiedSource: "marina" as const,
+  lastVerifiedAt: "2026-10-06",
+};
+const boaterReport = {
+  ...gym,
+  lastVerifiedSource: "user report" as const,
+  lastVerifiedAt: "2026-10-06",
+};
+assert.notEqual(pinTrust(staffReport), "verified");
+assert.equal(pinTrust(staffReport), "last-seen");
+assert.equal(publicBadge(staffReport, labelNow), "Marina staff report, not checked");
+assert.equal(publicSource(staffReport, labelNow), "Marina staff report, not checked, Oct 6");
+assert.equal(pinKind(staffReport, labelNow), "report");
+assert.equal(publicBadge(boaterReport, labelNow), "Boater report");
+assert.equal(publicSource(boaterReport, labelNow), "Boater report, Oct 6");
+assert.notEqual(pinTrust(boaterReport), "verified");
+assert.equal(pinKind(boaterReport, labelNow), "report");
+
+const blendOnly = {
+  ...marinaBay,
+  id: "blend-only",
+  ethanol: "E0" as const,
+  quotes: marinaBay.quotes.map((quote) => ({ ...quote, ethanol: "unknown" as const })),
+};
+assert.equal(hasEthanolFreeGas(blendOnly), false);
+assert.equal(hasEthanolFreeGas(marinaBay), true);
+assert.equal(
+  filterDocks([blendOnly, lambs], parseBoardQuery({ e0: "1" })).visible.some((dock) => dock.id === "blend-only"),
+  false,
+);
+assert.equal(
+  filterDocks([blendOnly, lambs], parseBoardQuery({ e0: "1" })).visible.some((dock) => dock.id === "lambs-yacht-center"),
+  true,
+);
 
 const tiles = readFileSync(
   path.join(process.cwd(), "src/app/api/tiles/[z]/[x]/[y]/route.ts"),
@@ -899,21 +1076,37 @@ for (const file of [
 const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-header.tsx"), "utf8");
 assert.match(headerSource, /Dock Posted/);
 assert.doesNotMatch(headerSource, /What the dock posted/);
-assert.match(headerSource, /Today/);
+assert.match(headerSource, /Fuel Prices/);
 assert.match(headerSource, /href="\/#board"/);
-assert.match(headerSource, /Yard seats/);
-assert.match(headerSource, /I was there/);
+assert.match(headerSource, /Report a Price/);
+assert.match(headerSource, /Trip Fuel Cost/);
+assert.match(headerSource, /Ethanol Guide/);
+assert.match(headerSource, /Storm Haul-Out/);
+assert.match(headerSource, /For Marinas/);
 assert.match(headerSource, /href="\/about"/);
-assert.match(headerSource, /Who writes this/);
+assert.match(headerSource, />\s*About\s*</);
 assert.match(headerSource, /data-testid="nav-about"/);
+assert.match(headerSource, /Locked door/);
 assert.doesNotMatch(headerSource, />Haul-out</);
 assert.doesNotMatch(headerSource, />Board</);
 assert.doesNotMatch(headerSource, />Report</);
-const e15At = headerSource.indexOf("hose");
-const aboutAt = headerSource.indexOf('href="/about"');
-const wholesaleAt = headerSource.indexOf("Locked door");
-assert.ok(e15At >= 0 && aboutAt > e15At, "About sits after E15");
-assert.ok(true, "public nav no longer names Wholesale");
+assert.doesNotMatch(headerSource, /Fuel Near You|What's at the Pump|Boaters Say/);
+const navOrder = [
+  "Fuel Prices",
+  "Report a Price",
+  "Trip Fuel Cost",
+  "Ethanol Guide",
+  "Storm Haul-Out",
+  "For Marinas",
+  "About",
+  "Locked door",
+];
+let navAt = -1;
+for (const label of navOrder) {
+  const next = headerSource.indexOf(label);
+  assert.ok(next > navAt, `${label} is out of menu order`);
+  navAt = next;
+}
 
 const haulSource =
   readFileSync(path.join(process.cwd(), "src/app/haul-out/page.tsx"), "utf8") +
@@ -962,7 +1155,8 @@ assert.match(homeSource, /<Masthead/);
 const wordmarkSource = readFileSync(path.join(process.cwd(), "src/components/wordmark.tsx"), "utf8");
 assert.match(wordmarkSource, /data-testid="masthead"/);
 assert.match(wordmarkSource, /\/logo\.svg/);
-assert.match(homeSource, /That.s normal\. That.s why the phone is on the\s+card\./);
+assert.match(homeSource, /heroCountLine\(tally\.postedThisWeek, docks\.length\)/);
+assert.doesNotMatch(homeSource, /That.s normal\. That.s why the phone is on the\s+card\./);
 assert.doesNotMatch(
   homeSource,
   /data-testid="hero-headline"[\s\S]*Sabine to Key West[\s\S]*data-testid="hero-deck"/,
@@ -984,7 +1178,11 @@ assert.match(homeSource, /data-testid="who-writes-this"/);
 assert.match(homeSource, /data-testid="landing-links"/);
 assert.match(homeSource, /data-testid="landing-link-board"[\s\S]*href="#board"/);
 assert.match(homeSource, /data-testid="landing-link-named-storm"[\s\S]*href="\/haul-out"/);
-assert.match(homeSource, />\s*When they name it\s*</);
+assert.match(homeSource, />\s*Fuel Prices\s*</);
+assert.match(homeSource, />\s*Storm Haul-Out\s*</);
+assert.match(homeSource, />\s*For Marinas\s*</);
+assert.match(homeSource, />\s*Trip Fuel Cost\s*</);
+assert.doesNotMatch(homeSource, />\s*When they name it\s*</);
 assert.match(homeSource, /data-testid="landing-link-about"[\s\S]*href="\/about"/);
 assert.doesNotMatch(homeSource, /Twitter feed|social/i);
 assert.doesNotMatch(homeSource, /waterdog|Waterdog/i);
@@ -1110,7 +1308,8 @@ assert.equal(xProfileUrl("DockPosted"), "https://x.com/DockPosted");
 const dockPageSource = readFileSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx"), "utf8");
 assert.match(dockPageSource, /data-testid="dock-page"/);
 assert.match(dockPageSource, /DockQuoteGrid/);
-assert.match(dockPageSource, /formatDate/);
+assert.match(dockPageSource, /DockProvenance/);
+assert.match(dockPageSource, /FreshnessBadge/);
 assert.match(dockPageSource, /A blank is a fact\. Silence is not a price\./);
 assert.match(dockPageSource, /dock\.hours \?\? "—"/);
 assert.doesNotMatch(dockPageSource, /BrandPhoto|\/brand\/.*\.jpg/);
@@ -1134,13 +1333,17 @@ for (const file of ["src/app/page.tsx", "src/app/docks/[id]/page.tsx"]) {
 
 const cardSource = readFileSync(path.join(process.cwd(), "src/components/dock-card.tsx"), "utf8");
 assert.match(cardSource, /DockQuoteGrid/);
-assert.match(cardSource, />Blend</);
-assert.match(readFileSync(path.join(process.cwd(), "src/lib/freshness.ts"), "utf8"), /label: "Regular"/);
-assert.match(readFileSync(path.join(process.cwd(), "src/lib/freshness.ts"), "utf8"), /label: "Diesel"/);
+assert.doesNotMatch(cardSource, />Blend</);
+const freshnessSource = readFileSync(path.join(process.cwd(), "src/lib/freshness.ts"), "utf8");
+assert.match(freshnessSource, /Marina's price/);
+assert.match(freshnessSource, /Marina staff report, not checked/);
+assert.match(freshnessSource, /Boater report/);
+assert.match(freshnessSource, /Price over a week old/);
+assert.match(freshnessSource, /Too old to show\. Call the dock: \$\{dock\.phone\}/);
+assert.doesNotMatch(freshnessSource, /lastVerifiedSource === "marina site" \|\| dock\.lastVerifiedSource === "marina"/);
 assert.match(cardSource, />Hours</);
-assert.match(cardSource, />Date</);
 assert.match(cardSource, /telHref/);
-assert.match(cardSource, /Call the dock · \$\{dock\.phone\}/);
+assert.match(cardSource, /publicCallLine/);
 assert.match(cardSource, /quoteTone/);
 assert.match(cardSource, /--signal/);
 assert.match(cardSource, /--diesel/);
@@ -1149,16 +1352,21 @@ assert.equal(telHref("(281) 535-2222"), "tel:+12815352222");
 assert.equal(telHref("(832) 256-6923"), "tel:+18322566923");
 assert.equal(telHref("not a phone"), null);
 
-assert.match(headerSource, /overflow-x-auto/);
+const navScrollSource = readFileSync(path.join(process.cwd(), "src/components/nav-scroll.tsx"), "utf8");
+assert.match(navScrollSource, /overflow-x-auto/);
+assert.match(navScrollSource, /nav-scroll-hint/);
 assert.doesNotMatch(headerSource, /flex-wrap items-center justify-between/);
 
 const fuelMapSource = readFileSync(path.join(process.cwd(), "src/components/fuel-map.tsx"), "utf8");
 assert.match(fuelMapSource, /fuel-map-board/);
 assert.match(fuelMapSource, /dock-pin-dot/);
-assert.match(fuelMapSource, />\s*No number\s*</);
-assert.match(fuelMapSource, />\s*On the hose\s*</);
-assert.match(fuelMapSource, />\s*Diesel\s*</);
-assert.match(fuelMapSource, />\s*Gas\s*</);
+assert.match(fuelMapSource, /Map © OpenStreetMap/);
+assert.match(fuelMapSource, /pinAriaLabel/);
+assert.doesNotMatch(fuelMapSource, /z\$\{zoom\}/);
+assert.doesNotMatch(fuelMapSource, />\s*No number\s*</);
+assert.doesNotMatch(fuelMapSource, />\s*On the hose\s*</);
+assert.doesNotMatch(fuelMapSource, />\s*Diesel\s*</);
+assert.doesNotMatch(fuelMapSource, />\s*Gas\s*</);
 assert.doesNotMatch(fuelMapSource, /status|trust level|map key|legend title/i);
 assert.doesNotMatch(fuelMapSource, /leaflet|mapbox|webgl/i);
 
@@ -1166,11 +1374,18 @@ const boardSource = readFileSync(path.join(process.cwd(), "src/components/dock-b
 assert.match(boardSource, /action="\/#board"/);
 assert.match(boardSource, /A blank is a fact\. Silence is not a price\./);
 assert.match(boardSource, /dockPath\(dock\.id\)/);
-assert.match(boardSource, /data-testid="pin-legend"/);
-assert.match(boardSource, />\s*No number\s*</);
-assert.match(boardSource, />\s*On the hose\s*</);
-assert.match(boardSource, />\s*Diesel\s*</);
-assert.match(boardSource, />\s*Gas\s*</);
+assert.match(boardSource, /pin-legend/);
+assert.match(boardSource, /Ethanol-free only/);
+const legendSource = readFileSync(path.join(process.cwd(), "src/components/price-legend.tsx"), "utf8");
+assert.match(legendSource, /PRICE_LEGEND/);
+assert.match(freshnessSource, /Marina's price/);
+assert.match(freshnessSource, /Waterway Guide or a report/);
+assert.match(freshnessSource, /Price over a week old, call the dock/);
+assert.match(freshnessSource, /No price posted, call the dock/);
+assert.match(freshnessSource, /--gold/);
+assert.match(freshnessSource, /--stale/);
+assert.doesNotMatch(legendSource, />\s*Diesel\s*</);
+assert.doesNotMatch(legendSource, />\s*Gas\s*</);
 assert.doesNotMatch(boardSource, /waterdog|Waterdog|nymex|platts|\bTCN\b/i);
 assert.match(boardSource, /text-base/);
 assert.match(boardSource, /coast-jumps/);

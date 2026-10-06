@@ -1,18 +1,12 @@
 import { boardHref, type BoardQuery } from "@/lib/board-query";
 import { latToTileY, lngToTileX } from "@/lib/geo";
-import { pinTrust } from "@/lib/freshness";
+import { pinAriaLabel, pinKind, pinSwatch } from "@/lib/freshness";
 import { tileGridForZoom, viewForBoard } from "@/lib/map-view";
+import { PriceLegend } from "@/components/price-legend";
 import type { Dock } from "@/lib/types";
 import type { CSSProperties } from "react";
 
 const TILE = 256;
-
-function pinColor(dock: Dock): string {
-  const trust = pinTrust(dock);
-  if (trust === "verified") return "#2F8FD6";
-  if (trust === "last-seen") return "#c4a046";
-  return "#E23B3B";
-}
 
 export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) {
   const view = viewForBoard(docks, query);
@@ -65,10 +59,11 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
             <a
               key={dock.id}
               href={boardHref({ ...query, dock: dock.id })}
-              aria-label={dock.name}
+              aria-label={pinAriaLabel(dock)}
               aria-current={selected ? "true" : undefined}
               className="dock-pin"
               data-selected={selected ? "true" : "false"}
+              data-pin-kind={pinKind(dock)}
               style={{
                 position: "absolute",
                 left: `${left}%`,
@@ -77,43 +72,18 @@ export function FuelMap({ docks, query }: { docks: Dock[]; query: BoardQuery }) 
                 zIndex: selected ? 3 : 2,
               }}
             >
-              <span className="dock-pin-dot" style={{ background: pinColor(dock) }} />
+              <span className="dock-pin-dot" style={{ background: pinSwatch(pinKind(dock)) }} />
             </a>
           );
         })}
       </div>
       <p className="pointer-events-none absolute bottom-2 left-2 z-[2] rounded-md bg-[color:var(--cream)]/90 px-1.5 py-0.5 font-mono text-[10px] text-[color:var(--ink)]/55">
-        {view.center[1].toFixed(2)}N {Math.abs(view.center[0]).toFixed(2)}W · z{zoom} · © OpenStreetMap
+        Map © OpenStreetMap
       </p>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-2 right-2 z-[2] max-w-[11rem] rounded-md bg-[color:var(--cream)]/90 px-1.5 py-1 font-mono text-[10px] leading-4 text-[color:var(--ink)]/70"
-      >
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
-            No number
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
-            On the hose
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--gold)]" />
-            Last seen
-          </span>
-        </p>
-        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
-            Diesel
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
-            Gas
-          </span>
-        </p>
-      </div>
+      <PriceLegend
+        ariaHidden
+        className="pointer-events-none absolute bottom-2 right-2 z-[2] max-w-[16rem] rounded-md bg-[color:var(--cream)]/90 px-1.5 py-1 font-mono text-[10px] leading-4 text-[color:var(--ink)]/70"
+      />
     </div>
   );
 }

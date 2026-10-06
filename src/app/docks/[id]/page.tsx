@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DockQuoteGrid } from "@/components/dock-card";
+import { DockPhone, DockProvenance, DockQuoteGrid } from "@/components/dock-card";
+import { FreshnessBadge } from "@/components/freshness-badge";
 import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { boardHref } from "@/lib/board-query";
-import { formatDate, sourceLabel, telHref } from "@/lib/format";
 import { dockWaterLabel, runWatchHref } from "@/lib/income";
-import { hasPostedPrice, pinTrust } from "@/lib/freshness";
+import { reportLinkLabel } from "@/lib/freshness";
 import { readDocks } from "@/lib/store";
 import type { Dock } from "@/lib/types";
 
@@ -110,9 +110,7 @@ export default async function DockPage({
   const dock = await loadDock(id);
   if (!dock) notFound();
 
-  const trust = pinTrust(dock);
   const flags = flagLabels(dock);
-  const callHref = dock.phone ? telHref(dock.phone) : null;
 
   return (
     <main
@@ -122,12 +120,15 @@ export default async function DockPage({
       <p className="kicker text-[color:var(--signal)]">
         The dock
       </p>
-      <h1
-        data-testid="dock-page-name"
-        className="page-title mt-3 text-[color:var(--navy)]"
-      >
-        {dock.name}
-      </h1>
+      <div className="mt-3 flex items-start justify-between gap-3">
+        <h1
+          data-testid="dock-page-name"
+          className="page-title min-w-0 flex-1 text-[color:var(--navy)]"
+        >
+          {dock.name}
+        </h1>
+        <FreshnessBadge dock={dock} />
+      </div>
       <p className="mt-2 text-sm text-[color:var(--ink)]/70">
         {dock.city}, {dock.state}
       </p>
@@ -154,32 +155,8 @@ export default async function DockPage({
         </div>
       </dl>
 
-      <p className="mt-4 text-xs text-[color:var(--ink)]/50" data-testid={`pin-trust-${dock.id}`}>
-        <span className="mr-2 text-[11px] text-[color:var(--ink)]/50">Date</span>
-        {formatDate(dock.lastVerifiedAt)}
-        {trust === "verified"
-          ? ` · Verified · ${sourceLabel(dock.lastVerifiedSource)}`
-          : hasPostedPrice(dock)
-            ? " · Last seen · Unverified"
-            : dock.lastVerifiedAt
-              ? " · Unverified"
-              : ""}
-      </p>
-
-      {callHref && dock.phone ? (
-        <p className="mt-5">
-          <a
-            href={callHref}
-            className="inline-flex min-h-11 items-center text-sm font-medium text-[color:var(--diesel)] underline-offset-2 hover:underline"
-          >
-            {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
-          </a>
-        </p>
-      ) : dock.phone ? (
-        <p className="mt-5 text-sm text-[color:var(--ink)]/70">
-          {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
-        </p>
-      ) : null}
+      <DockProvenance dock={dock} className="mt-4" />
+      <DockPhone dock={dock} className="mt-5" />
 
       {dock.website ? (
         <p className="mt-2 text-sm">
@@ -213,7 +190,7 @@ export default async function DockPage({
           href={`/report?dock=${dock.id}`}
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
         >
-          {trust === "verified" ? "Update the number" : "I was there"}
+          {reportLinkLabel(dock)}
         </a>
       </p>
       <p className="mt-3 max-w-xl text-sm text-[color:var(--ink)]/70">

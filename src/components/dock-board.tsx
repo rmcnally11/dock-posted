@@ -1,5 +1,6 @@
 import { DockCard } from "@/components/dock-card";
 import { FuelMap } from "@/components/fuel-map";
+import { PriceLegend } from "@/components/price-legend";
 import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { boardHref, dockPath, viewLabel, type BoardHref, type BoardQuery } from "@/lib/board-query";
@@ -62,32 +63,10 @@ export function DockBoard({
                 state={query.state}
                 compact
               />
-              <p
-                data-testid="pin-legend"
-                aria-label="On the hose and no number"
-                className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[color:var(--ink)]/70"
-              >
-                <span className="inline-flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
-                  No number
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
-                  On the hose
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--gold)]" />
-                  Last seen
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--diesel)]" />
-                  Diesel
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--signal)]" />
-                  Gas
-                </span>
-              </p>
+              <PriceLegend
+                testId="pin-legend"
+                className="mt-2 text-[11px] text-[color:var(--ink)]/70"
+              />
               {query.corridor === "galveston-bay" && !query.state && !query.region && query.q.length < 2 ? (
                 <p className="mt-1 text-xs text-[color:var(--ink)]/50">
                   Clear Lake mouth first. Hours beat a posted price. A 6:30 run cannot use
@@ -176,7 +155,7 @@ export function DockBoard({
               active={query.e0Only}
               href={boardHref({ ...query, e0Only: !query.e0Only, dock: null })}
             >
-              E0 only
+              Ethanol-free only
             </FilterChip>
             <FilterChip
               active={query.freshOnly}
@@ -276,7 +255,7 @@ function EmptyList({ query }: { query: BoardQuery }) {
       {query.q.length >= 2
         ? `Nothing named “${query.q}”. Try Seabrook, Key Largo, or Beaufort.`
         : query.freshOnly || query.e0Only
-          ? "No docks match. Clear E0 or This week."
+          ? "No docks match. Clear Ethanol-free only or This week."
           : "No docks here. Call the dock, or open Clear Lake or Key Largo."}
     </div>
   );
