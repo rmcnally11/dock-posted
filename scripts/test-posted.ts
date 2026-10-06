@@ -133,7 +133,7 @@ const corridorOnly: Dock = {
 assert.equal(homeArea(corridorOnly), "galveston-bay");
 
 const pricedIds = ["galveston-yacht-marina", "madeira-beach-municipal-marina", "lambs-yacht-center", "st-augustine-municipal-marina"];
-for (const file of ["src/lib/posted.ts", "src/components/posted-home.tsx", "src/app/page.tsx"]) {
+for (const file of ["src/lib/posted.ts", "src/components/posted-home.tsx", "src/app/page.tsx", "src/app/board/page.tsx"]) {
   const text = readFileSync(path.join(process.cwd(), file), "utf8");
   for (const id of pricedIds) {
     assert.equal(text.includes(id), false, `${file} hardcoded ${id}`);
@@ -463,12 +463,30 @@ const headerLabels = [...headerHtml.matchAll(/data-testid="nav-[^"]+"[^>]*>([\s\
 );
 assert.equal(headerLabels.at(-1), "Wholesale");
 assert.ok(headerHtml.indexOf('href="/about"') < headerHtml.indexOf('href="/wholesale"'));
+assert.match(headerHtml, /data-testid="nav-menu"/);
+assert.match(headerHtml, /aria-expanded="false"/);
+assert.match(headerHtml, /aria-controls="site-menu"/);
+const menuHtml = headerHtml.slice(headerHtml.indexOf('data-testid="nav-menu-list"'));
+assert.match(menuHtml, /href="\/wholesale"/);
+assert.equal(
+  [...menuHtml.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/g)].map((match) => (match[1] ?? "").replace(/<[^>]*>/g, "").trim()).at(-1),
+  "Wholesale",
+);
+const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-header.tsx"), "utf8");
+assert.match(headerSource, /Escape/);
+assert.match(headerSource, /setOpen\(false\)/);
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /<PostedHome/);
-assert.match(homeSource, /data-testid="landing"/);
-assert.match(homeSource, /data-testid="hero-headline"/);
+assert.match(homeSource, /See every fuel dock from Sabine to Key West/);
+assert.match(homeSource, /data-testid="see-every-dock"/);
+assert.doesNotMatch(homeSource, /<DockBoard/);
+assert.doesNotMatch(homeSource, /data-testid="landing"/);
 assert.doesNotMatch(homeSource, LEAK);
+const fuelPageSource = readFileSync(path.join(process.cwd(), "src/app/board/page.tsx"), "utf8");
+assert.match(fuelPageSource, /data-testid="landing"/);
+assert.match(fuelPageSource, /data-testid="hero-headline"/);
+assert.doesNotMatch(fuelPageSource, LEAK);
 
 const reportForm = readFileSync(path.join(process.cwd(), "src/components/report-form.tsx"), "utf8");
 assert.match(reportForm, /defaultValue=\{today\}/);

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { boardHref, dockPath, filterDocks, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
+import { boardHref, dockPath, filterDocks, legacyHomeBoardPath, parseBoardQuery, matchesSearch, viewLabel } from "../src/lib/board-query";
 import { ethanolCopy, formatDate, formatGallonPrice, formatQuote, quoteParts, telHref } from "../src/lib/format";
 import {
   boardQuote,
@@ -1058,6 +1058,7 @@ const fence =
   /cheapest fuel|bargain map|on this water|instrument family|field letter|almanac|onthiswater|wind is the tide|sister page|field board|us saltwater docks|the board at the dock|seven letter|opis|argus|platts|cents-over-rack|jobber|\bRIN\b|RVO|throughput|gal\/slip|invoice|savings pitch|pasadena rack|text us every morning|Holds Fast|waterdogfuel\.com|should-be|Fair hose/i;
 for (const file of [
   "src/app/page.tsx",
+  "src/app/board/page.tsx",
   "src/app/layout.tsx",
   "src/app/about/page.tsx",
   "src/app/report/page.tsx",
@@ -1093,19 +1094,27 @@ const headerSource = readFileSync(path.join(process.cwd(), "src/components/site-
 assert.match(headerSource, /Dock Posted/);
 assert.doesNotMatch(headerSource, /What the dock posted/);
 assert.match(headerSource, /Fuel Prices/);
-assert.match(headerSource, /href="\/#board"/);
+assert.match(headerSource, /href: "\/board"/);
+assert.doesNotMatch(headerSource, /href="\/#board"|href: "\/#board"/);
 assert.match(headerSource, /Report a Price/);
 assert.match(headerSource, /Trip Fuel Cost/);
 assert.match(headerSource, /Ethanol Guide/);
 assert.match(headerSource, /Storm Haul-Out/);
 assert.match(headerSource, /For Marinas/);
-assert.match(headerSource, /href="\/about"/);
-assert.match(headerSource, />\s*About\s*</);
-assert.match(headerSource, /data-testid="nav-about"/);
+assert.match(headerSource, /href: "\/about"/);
+assert.match(headerSource, /label: "About"/);
+assert.match(headerSource, /"nav-about"/);
 assert.doesNotMatch(headerSource, /Locked door/);
-assert.match(headerSource, /href="\/wholesale"/);
-assert.match(headerSource, />\s*Wholesale\s*</);
-assert.match(headerSource, /data-testid="nav-wholesale"/);
+assert.match(headerSource, /href: "\/wholesale"/);
+assert.match(headerSource, /label: "Wholesale"/);
+assert.match(headerSource, /"nav-wholesale"/);
+assert.match(headerSource, /aria-expanded/);
+assert.match(headerSource, /aria-controls="site-menu"/);
+assert.match(headerSource, /data-testid="nav-menu"/);
+assert.match(headerSource, /data-testid="nav-menu-list"/);
+assert.match(headerSource, /Escape/);
+assert.match(headerSource, /setOpen\(false\)/);
+assert.match(headerSource, /md:hidden/);
 assert.doesNotMatch(headerSource, />Haul-out</);
 assert.doesNotMatch(headerSource, />Board</);
 assert.doesNotMatch(headerSource, />Report</);
@@ -1157,65 +1166,76 @@ assert.match(
 );
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
-assert.match(homeSource, /data-testid="landing"/);
-assert.match(homeSource, /data-testid="hero-kicker"/);
-assert.match(homeSource, /data-testid="hero-headline"/);
-assert.match(homeSource, /data-testid="hero-deck"/);
-assert.match(homeSource, /data-testid="hero-geo"/);
-assert.match(homeSource, /Marina fuel/);
-assert.match(homeSource, /What they wrote on the pump/);
+assert.match(homeSource, /<PostedHome/);
+assert.match(homeSource, /See every fuel dock from Sabine to Key West/);
+assert.match(homeSource, /data-testid="see-every-dock"[\s\S]*href="\/board"/);
+assert.match(homeSource, /legacyHomeBoardPath/);
+assert.match(homeSource, /location\.hash==="#board"/);
+assert.doesNotMatch(homeSource, /<DockBoard/);
+assert.doesNotMatch(homeSource, /data-testid="landing"/);
+assert.doesNotMatch(homeSource, /data-testid="board"/);
+assert.doesNotMatch(homeSource, /id="board"/);
+
+const fuelPageSource = readFileSync(path.join(process.cwd(), "src/app/board/page.tsx"), "utf8");
+assert.match(fuelPageSource, /data-testid="landing"/);
+assert.match(fuelPageSource, /data-testid="hero-kicker"/);
+assert.match(fuelPageSource, /data-testid="hero-headline"/);
+assert.match(fuelPageSource, /data-testid="hero-deck"/);
+assert.match(fuelPageSource, /data-testid="hero-geo"/);
+assert.match(fuelPageSource, /Marina fuel/);
+assert.match(fuelPageSource, /What they wrote on the pump/);
 assert.match(
-  homeSource,
+  fuelPageSource,
   /Diesel and gas from the dock\. If they didn.t put a number up, we leave it blank\. Call the dock\./,
 );
-assert.match(homeSource, /data-testid="hero-geo"[\s\S]*Sabine to Key West\./);
-assert.match(homeSource, /Then the rest of the saltwater coast\./);
-assert.match(homeSource, /<Masthead/);
+assert.match(fuelPageSource, /data-testid="hero-geo"[\s\S]*Sabine to Key West\./);
+assert.match(fuelPageSource, /Then the rest of the saltwater coast\./);
+assert.match(fuelPageSource, /<Masthead/);
 const wordmarkSource = readFileSync(path.join(process.cwd(), "src/components/wordmark.tsx"), "utf8");
 assert.match(wordmarkSource, /data-testid="masthead"/);
 assert.match(wordmarkSource, /\/logo\.svg/);
-assert.match(homeSource, /heroCountLine\(tally\.postedThisWeek, docks\.length\)/);
-assert.doesNotMatch(homeSource, /That.s normal\. That.s why the phone is on the\s+card\./);
+assert.match(fuelPageSource, /heroCountLine\(tally\.postedThisWeek, docks\.length\)/);
+assert.doesNotMatch(fuelPageSource, /That.s normal\. That.s why the phone is on the\s+card\./);
 assert.doesNotMatch(
-  homeSource,
+  fuelPageSource,
   /data-testid="hero-headline"[\s\S]*Sabine to Key West[\s\S]*data-testid="hero-deck"/,
 );
-assert.doesNotMatch(homeSource, /What the dock posted/);
-assert.doesNotMatch(homeSource, /The last number they wrote on the board/);
-assert.doesNotMatch(homeSource, /FREEZE|HOME_TRIO_LOCKED|copyLock/);
-assert.match(homeSource, /We don.t sell fuel\. We don.t pull your boat\./);
-assert.match(homeSource, /data-testid="hero-extra"/);
-assert.match(homeSource, /See today.s docks/);
-assert.match(homeSource, /data-testid="see-the-board"[\s\S]*href="#board"/);
-assert.match(homeSource, /data-testid="landing-report"[\s\S]*href="\/report"/);
-assert.match(homeSource, /id="board"/);
-assert.match(homeSource, /data-testid="board"/);
-assert.match(homeSource, /<DockBoard/);
-assert.match(homeSource, /Who writes this\./);
-assert.match(homeSource, /href="\/about"/);
-assert.match(homeSource, /data-testid="who-writes-this"/);
-assert.match(homeSource, /data-testid="landing-links"/);
-assert.match(homeSource, /data-testid="landing-link-board"[\s\S]*href="#board"/);
-assert.match(homeSource, /data-testid="landing-link-named-storm"[\s\S]*href="\/haul-out"/);
-assert.match(homeSource, />\s*Fuel Prices\s*</);
-assert.match(homeSource, />\s*Storm Haul-Out\s*</);
-assert.match(homeSource, />\s*For Marinas\s*</);
-assert.match(homeSource, />\s*Trip Fuel Cost\s*</);
-assert.doesNotMatch(homeSource, />\s*When they name it\s*</);
-assert.match(homeSource, /data-testid="landing-link-about"[\s\S]*href="\/about"/);
-assert.doesNotMatch(homeSource, /Twitter feed|social/i);
-assert.doesNotMatch(homeSource, /waterdog|Waterdog/i);
-assert.doesNotMatch(homeSource, /waitlist|stripe|email capture|newsletter/i);
-assert.doesNotMatch(homeSource, /four-door|campaign card|grid-cols-4/i);
-assert.doesNotMatch(homeSource, /href="\/board"/);
-assert.equal(existsSync(path.join(process.cwd(), "src/app/board/page.tsx")), false);
+assert.doesNotMatch(fuelPageSource, /What the dock posted/);
+assert.doesNotMatch(fuelPageSource, /The last number they wrote on the board/);
+assert.doesNotMatch(fuelPageSource, /FREEZE|HOME_TRIO_LOCKED|copyLock/);
+assert.match(fuelPageSource, /We don.t sell fuel\. We don.t pull your boat\./);
+assert.match(fuelPageSource, /data-testid="hero-extra"/);
+assert.match(fuelPageSource, /See today.s docks/);
+assert.match(fuelPageSource, /data-testid="see-the-board"[\s\S]*href="#board"/);
+assert.match(fuelPageSource, /data-testid="landing-report"[\s\S]*href="\/report"/);
+assert.match(fuelPageSource, /id="board"/);
+assert.match(fuelPageSource, /data-testid="board"/);
+assert.match(fuelPageSource, /<DockBoard/);
+assert.match(fuelPageSource, /Who writes this\./);
+assert.match(fuelPageSource, /href="\/about"/);
+assert.match(fuelPageSource, /data-testid="who-writes-this"/);
+assert.match(fuelPageSource, /data-testid="landing-links"/);
+assert.match(fuelPageSource, /data-testid="landing-link-board"[\s\S]*href="#board"/);
+assert.match(fuelPageSource, /data-testid="landing-link-named-storm"[\s\S]*href="\/haul-out"/);
+assert.match(fuelPageSource, />\s*Fuel Prices\s*</);
+assert.match(fuelPageSource, />\s*Storm Haul-Out\s*</);
+assert.match(fuelPageSource, />\s*For Marinas\s*</);
+assert.match(fuelPageSource, />\s*Trip Fuel Cost\s*</);
+assert.doesNotMatch(fuelPageSource, />\s*When they name it\s*</);
+assert.match(fuelPageSource, /data-testid="landing-link-about"[\s\S]*href="\/about"/);
+assert.doesNotMatch(fuelPageSource, /Twitter feed|social/i);
+assert.doesNotMatch(fuelPageSource, /waterdog|Waterdog/i);
+assert.doesNotMatch(fuelPageSource, /waitlist|stripe|email capture|newsletter/i);
+assert.doesNotMatch(fuelPageSource, /four-door|campaign card|grid-cols-4/i);
+assert.doesNotMatch(fuelPageSource, /href="\/board"/);
+assert.equal(existsSync(path.join(process.cwd(), "src/app/board/page.tsx")), true);
 assert.equal(existsSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx")), true);
 assert.equal(existsSync(path.join(process.cwd(), "public/brand/cover.jpg")), true);
-assert.doesNotMatch(homeSource, /cover\.jpg|BrandPhoto/);
-assert.match(homeSource, /lg:overflow-hidden/);
-assert.match(homeSource, /lg:h-\[calc\(100dvh-3\.6rem\)\]/);
-assert.doesNotMatch(homeSource, /flex-col overflow-hidden/);
-assert.doesNotMatch(homeSource, /flex min-h-0 flex-1 flex-col overflow-hidden/);
+assert.doesNotMatch(fuelPageSource, /cover\.jpg|BrandPhoto/);
+assert.match(fuelPageSource, /lg:overflow-hidden/);
+assert.match(fuelPageSource, /lg:h-\[calc\(100dvh-3\.6rem\)\]/);
+assert.doesNotMatch(fuelPageSource, /flex-col overflow-hidden/);
+assert.doesNotMatch(fuelPageSource, /flex min-h-0 flex-1 flex-col overflow-hidden/);
 
 assert.equal(
   boardHref({
@@ -1228,7 +1248,7 @@ assert.equal(
     dock: null,
     reported: null,
   }),
-  "/?corridor=galveston-bay#board",
+  "/board?corridor=galveston-bay#board",
 );
 assert.equal(
   boardHref({
@@ -1241,8 +1261,12 @@ assert.equal(
     dock: null,
     reported: null,
   }),
-  "/#board",
+  "/board#board",
 );
+assert.equal(legacyHomeBoardPath({}), null);
+assert.equal(legacyHomeBoardPath({ waters: "tampa-bay" } as { corridor?: string }), null);
+assert.equal(legacyHomeBoardPath({ corridor: "galveston-bay" }), "/board?corridor=galveston-bay");
+assert.equal(legacyHomeBoardPath({ q: "key largo", e0: "1" }), "/board?q=key+largo&e0=1");
 assert.equal(dockPath("marina-bay-harbor"), "/docks/marina-bay-harbor");
 assert.equal(dockPath("galveston-yacht-marina"), "/docks/galveston-yacht-marina");
 
@@ -1270,6 +1294,12 @@ function linkLabels(source: string): Map<string, string> {
     const href = (match[1] ?? "").match(/href="([^"]+)"/)?.[1];
     const text = (match[2] ?? "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
     if (!href || !text) continue;
+    labels.set(href, text);
+  }
+  for (const match of source.matchAll(/\{\s*href:\s*"([^"]+)",\s*label:\s*"([^"]+)"/g)) {
+    const href = match[1];
+    const text = match[2];
+    if (!href || !text || labels.has(href)) continue;
     labels.set(href, text);
   }
   return labels;
@@ -1419,7 +1449,7 @@ assert.doesNotMatch(fuelMapSource, /status|trust level|map key|legend title/i);
 assert.doesNotMatch(fuelMapSource, /leaflet|mapbox|webgl/i);
 
 const boardSource = readFileSync(path.join(process.cwd(), "src/components/dock-board.tsx"), "utf8");
-assert.match(boardSource, /action="\/#board"/);
+assert.match(boardSource, /action="\/board#board"/);
 assert.match(boardSource, /A blank is a fact\. Silence is not a price\./);
 assert.match(boardSource, /dockPath\(dock\.id\)/);
 assert.match(boardSource, /pin-legend/);

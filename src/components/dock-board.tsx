@@ -88,7 +88,7 @@ export function DockBoard({
             </a>
           </div>
 
-          <form action="/#board" method="get" className="mt-3 flex gap-2">
+          <form action="/board#board" method="get" className="mt-3 flex gap-2">
             {query.corridor ? <input type="hidden" name="corridor" value={query.corridor} /> : null}
             {query.state ? <input type="hidden" name="state" value={query.state} /> : null}
             {query.region ? <input type="hidden" name="region" value={query.region} /> : null}

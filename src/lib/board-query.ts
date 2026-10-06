@@ -68,7 +68,7 @@ export function parseBoardQuery(params: {
   };
 }
 
-export type BoardHref = "/#board" | `/?${string}#board`;
+export type BoardHref = "/board#board" | `/board?${string}#board`;
 
 export type DockHref = `/docks/${string}`;
 
@@ -87,7 +87,30 @@ export function boardHref(query: BoardQuery): BoardHref {
   if (query.dock) params.set("dock", query.dock);
   if (query.reported) params.set("reported", query.reported);
   const qs = params.toString();
-  return qs ? `/?${qs}#board` : "/#board";
+  return qs ? `/board?${qs}#board` : "/board#board";
+}
+
+const LEGACY_BOARD_KEYS = ["corridor", "state", "region", "q", "e0", "fresh", "dock", "reported"] as const;
+
+/** Old home URLs that filtered the coast board. `waters` stays on the home page. */
+export function legacyHomeBoardPath(params: {
+  corridor?: string;
+  state?: string;
+  region?: string;
+  q?: string;
+  e0?: string;
+  fresh?: string;
+  dock?: string;
+  reported?: string;
+}): `/board?${string}` | null {
+  const next = new URLSearchParams();
+  for (const key of LEGACY_BOARD_KEYS) {
+    const value = params[key]?.trim();
+    if (!value) continue;
+    next.set(key, value);
+  }
+  const qs = next.toString();
+  return qs ? `/board?${qs}` : null;
 }
 
 export function matchesSearch(dock: Dock, q: string): boolean {
