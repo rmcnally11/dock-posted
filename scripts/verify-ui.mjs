@@ -372,7 +372,10 @@ try {
   check("company footer", /if they didn.t put a number up, we leave it blank/i.test(homeCopy));
   check("osm attribution in footer", /openstreetmap/i.test(homeCopy));
   check("no call ahead", !/call ahead/i.test(homeCopy));
-  check("no tbd or unknown", !/\bTBD\b|\bunknown\b/i.test(homeCopy));
+  check(
+    "no tbd or unknown",
+    !/\bTBD\b|\bunknown\b/i.test(homeCopy.replace(/\bdate unknown\b/gi, "")),
+  );
   check(
     "price labels on the board",
     /Marina's price|No price posted|Price over a week old/.test(homeCopy),

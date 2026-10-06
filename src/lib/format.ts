@@ -127,6 +127,32 @@ export function formatShortDate(iso: string | null, now = Date.now()): string {
   }).format(date);
 }
 
+/** Civil calendar day in a zone. en-CA is YYYY-MM-DD. */
+export function civilDate(instant: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(instant);
+}
+
+export function chicagoCivilDate(now = new Date()): string {
+  return civilDate(now, "America/Chicago");
+}
+
+/**
+ * Date-only values are the stored calendar day, not an instant.
+ * Noon UTC stays on that day in Chicago and New York.
+ * A real timestamp is the instant, formatted in the dock's zone.
+ */
+export function sourceInstant(iso: string): Date | null {
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(iso);
+  const date = new Date(dateOnly ? `${iso}T12:00:00Z` : iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return date;
+}
+
 export function sourceLabel(source: SourceLabel | null): string {
   return source ?? "Unverified";
 }
