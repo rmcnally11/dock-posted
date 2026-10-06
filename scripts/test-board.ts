@@ -65,6 +65,46 @@ assert.match(
 );
 
 assert.ok(docks.length >= 90, `expected a coastal set, got ${docks.length}`);
+
+const chicagoToday = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Chicago",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(new Date());
+const readMonths: Record<string, string> = {
+  Jan: "01",
+  Feb: "02",
+  Mar: "03",
+  Apr: "04",
+  May: "05",
+  Jun: "06",
+  Jul: "07",
+  Aug: "08",
+  Sep: "09",
+  Oct: "10",
+  Nov: "11",
+  Dec: "12",
+};
+for (const dock of docks) {
+  if (dock.lastVerifiedAt) {
+    assert.match(dock.lastVerifiedAt, /^\d{4}-\d{2}-\d{2}$/, `${dock.id} date is not YYYY-MM-DD`);
+    assert.ok(
+      dock.lastVerifiedAt <= chicagoToday,
+      `${dock.id} lastVerifiedAt ${dock.lastVerifiedAt} is after ${chicagoToday} in America/Chicago`,
+    );
+  }
+  for (const match of (dock.notes ?? "").matchAll(/read (\d{1,2}) ([A-Z][a-z]{2}) (\d{4})/g)) {
+    const month = readMonths[match[2] ?? ""];
+    assert.ok(month, `${dock.id} read date has an unknown month ${match[2]}`);
+    const iso = `${match[3]}-${month}-${(match[1] ?? "").padStart(2, "0")}`;
+    assert.ok(
+      iso <= chicagoToday,
+      `${dock.id} read date ${iso} is after ${chicagoToday} in America/Chicago`,
+    );
+  }
+}
+
 assert.ok(docks.every((dock) => dock.region && dock.state && dock.city));
 assert.ok(docks.every((dock) => Number.isFinite(dock.lat) && Number.isFinite(dock.lng)));
 assert.ok(!docks.some((dock) => dock.id === "kemah-boardwalk-marina"));
@@ -519,6 +559,155 @@ assert.ok(
     (dock) => dock.id === "lambs-yacht-center",
   ),
 );
+
+const arlington = docks.find((dock) => dock.id === "arlington-marina");
+assert.ok(arlington);
+assert.equal(arlington.name, "Arlington Marina");
+assert.equal(arlington.region, "east-florida");
+assert.equal(arlington.corridor, null);
+assert.equal(arlington.city, "Jacksonville");
+assert.equal(arlington.state, "FL");
+assert.equal(arlington.lat, 30.333893);
+assert.equal(arlington.lng, -81.611545);
+assert.equal(arlington.phone, "(904) 743-2628");
+assert.equal(arlington.website, "https://arlingtonmarina.com/");
+assert.equal(arlington.sourceUrl, "https://arlingtonmarina.com/");
+assert.equal(arlington.lastVerifiedAt, "2026-10-05");
+assert.equal(arlington.lastVerifiedSource, "marina site");
+assert.equal(arlington.ethanol, "unknown");
+assert.equal(arlington.hours, "Daily 8:00 am–6:00 pm.");
+assert.match(arlington.notes ?? "", /read 5 Oct 2026/);
+assert.match(arlington.notes ?? "", /Unleaded \$6\.399/);
+assert.match(arlington.notes ?? "", /Diesel \$5\.999/);
+assert.match(arlington.notes ?? "", /did not date the price/);
+assert.doesNotMatch(arlington.notes ?? "", /as of/i);
+assert.doesNotMatch(arlington.notes ?? "", /as-of/i);
+assert.deepEqual(
+  arlington.quotes.map((quote) => [
+    quote.product,
+    quote.pricePerGallon,
+    quote.ethanol,
+    quote.taxIncluded,
+    quote.status,
+  ]),
+  [
+    ["gasoline", 6.399, "unknown", null, "posted"],
+    ["diesel", 5.999, "unknown", null, "posted"],
+  ],
+);
+assert.ok(!arlington.quotes.some((quote) => quote.product === "87" || quote.product === "90" || quote.product === "93"));
+assert.ok(arlington.quotes.every((quote) => quote.taxIncluded == null));
+assert.equal(pinTrust(arlington), "verified");
+const arlingtonRead = Date.parse("2026-10-05T22:00:00Z");
+assert.equal(freshness(arlington, arlingtonRead), "fresh");
+const arlingtonSlots = pinQuoteSlots(arlington, arlingtonRead);
+assert.deepEqual(
+  arlingtonSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon]),
+  [
+    ["gas-gasoline", "Gas, octane and ethanol not stated", "gasoline", 6.399],
+    ["diesel", "Diesel", "diesel", 5.999],
+  ],
+);
+assert.equal(
+  formatQuote(arlingtonSlots[0]?.quote ?? null),
+  "$6.399 a gallon. Gas, octane and ethanol not stated, tax not stated",
+);
+assert.equal(formatQuote(arlingtonSlots[1]?.quote ?? null), "$5.999 a gallon. Diesel, tax not stated");
+assert.equal(freshness(arlington, Date.parse("2026-10-19T00:00:00Z")), "fresh");
+assert.equal(freshness(arlington, Date.parse("2026-10-20T00:00:00Z")), "stale");
+assert.equal(freshness(gym, Date.parse("2026-10-11T00:00:00Z")), "stale");
+const withoutArlington = docks.filter((dock) => dock.id !== "arlington-marina");
+assert.equal(
+  boardTally(docks, arlingtonRead).postedThisWeek,
+  boardTally(withoutArlington, arlingtonRead).postedThisWeek + 1,
+);
+assert.ok(
+  filterDocks(docks, parseBoardQuery({ region: "east-florida" })).visible.some(
+    (dock) => dock.id === "arlington-marina",
+  ),
+);
+
+const coverageCallIds = [
+  "stingaree-marina",
+  "marjorie-park-yacht-basin",
+  "port-tarpon-marina",
+  "anclote-village-marina",
+  "belle-harbour-marina",
+  "lands-end-marina",
+  "marker-1-marina",
+  "mariners-cove-marina",
+  "shell-point-marina",
+  "beach-marine",
+  "morningstar-mayport",
+  "palm-cove-marina",
+  "doctors-lake-marina",
+  "camachee-cove-yacht-harbor",
+  "cats-paw-marina",
+  "met-park-marina",
+  "amelia-island-marina",
+] as const;
+for (const id of coverageCallIds) {
+  const dock = docks.find((row) => row.id === id);
+  assert.ok(dock, `missing coverage dock ${id}`);
+  assert.equal(dock.access, "public", `${id} fuel dock stays public`);
+  assert.equal(dock.lastVerifiedAt, null, `${id} has no dated price`);
+  assert.equal(dock.lastVerifiedSource, "marina site");
+  assert.ok(dock.sourceUrl, `${id} needs the page that proves the hose`);
+  assert.ok(dock.quotes.every((quote) => quote.pricePerGallon == null && quote.taxIncluded == null));
+  assert.equal(freshness(dock, arlingtonRead), "never");
+  assert.equal(freshnessLabel(dock, arlingtonRead), "No price posted");
+}
+
+const stingaree = docks.find((dock) => dock.id === "stingaree-marina");
+assert.ok(stingaree);
+assert.equal(stingaree.corridor, "galveston-bay");
+assert.equal(stingaree.city, "Crystal Beach");
+assert.equal(stingaree.lead, 12);
+assert.equal(gym.lead, 13);
+assert.equal(stingaree.quotes.find((quote) => quote.product === "gasoline")?.status, "call");
+assert.equal(stingaree.quotes.find((quote) => quote.product === "diesel")?.status, "not-sold");
+assert.ok(texas.visible.some((dock) => dock.id === "stingaree-marina"));
+assert.equal(texas.visible.at(-1)?.id, "galveston-yacht-marina");
+assert.notEqual(texas.visible.at(-2)?.id, "galveston-yacht-marina");
+
+const stPete = docks.find((dock) => dock.id === "st-pete-municipal-marina");
+assert.ok(stPete);
+assert.equal(stPete.ethanol, "E0");
+assert.equal(stPete.sourceUrl, "https://www.stpete.org/residents/parking___transportation/marina.php");
+assert.deepEqual(
+  stPete.quotes.map((quote) => [quote.product, quote.pricePerGallon, quote.ethanol, quote.status]),
+  [
+    ["90", null, "E0", "call"],
+    ["diesel", null, "unknown", "call"],
+  ],
+);
+assert.ok(!stPete.quotes.some((quote) => quote.product === "87"));
+
+const fernandina = docks.find((dock) => dock.id === "fernandina-harbor-marina");
+assert.ok(fernandina);
+assert.equal(fernandina.phone, "(904) 310-3300");
+assert.equal(fernandina.website, "https://www.fernandinaharbormarina.com/");
+assert.equal(fernandina.lastVerifiedAt, null);
+assert.deepEqual(
+  fernandina.quotes.map((quote) => [quote.product, quote.pricePerGallon, quote.status]),
+  [
+    ["gasoline", null, "call"],
+    ["diesel", null, "call"],
+  ],
+);
+assert.ok(!fernandina.quotes.some((quote) => quote.product === "87"));
+
+const anclote = docks.find((dock) => dock.id === "anclote-village-marina");
+assert.ok(anclote);
+assert.equal(anclote.ethanol, "E0");
+assert.equal(anclote.quotes.find((quote) => quote.product === "90")?.ethanol, "E0");
+const beachMarine = docks.find((dock) => dock.id === "beach-marine");
+assert.ok(beachMarine);
+assert.equal(beachMarine.quotes.find((quote) => quote.product === "90")?.ethanol, "E0");
+assert.ok(!beachMarine.quotes.some((quote) => quote.product === "87"));
+const shellPoint = docks.find((dock) => dock.id === "shell-point-marina");
+assert.ok(shellPoint);
+assert.equal(shellPoint.access, "public");
 
 const blueMarlin = docks.find((dock) => dock.id === "blue-marlin-seabrook");
 assert.ok(blueMarlin);
