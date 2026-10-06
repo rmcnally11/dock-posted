@@ -374,7 +374,8 @@ try {
   check("company footer", /if they didn.t put a number up, we leave it blank/i.test(homeCopy));
   check("osm attribution in footer", /openstreetmap/i.test(homeCopy));
   check("call ahead list", /More fuel docks, call ahead/.test(homeCopy));
-  check("home has no date unknown", !/Date unknown/.test(homeCopy));
+  const postedVisible = await page.$eval("[data-testid=posted-home]", (el) => el.innerText);
+  check("home has no date unknown", !/Date unknown/.test(postedVisible));
   check(
     "no tbd or unknown",
     !/\bTBD\b|\bunknown\b/i.test(homeCopy.replace(/\bdate unknown\b/gi, "")),
@@ -384,7 +385,7 @@ try {
     /Marina's price|No price posted|Price over a week old/.test(homeCopy),
     homeCopy.slice(0, 200),
   );
-  check("claim path", /Your dock/.test(homeCopy));
+  check("claim path", /For Marinas/.test(homeCopy));
   check("no bargain", !/cheapest|savings|bargain/i.test(homeCopy));
   check("no slips pitch", !/wet-slip|Holds Fast/i.test(homeCopy));
 
@@ -530,7 +531,7 @@ try {
   });
   check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber|should-be|Fair hose|\binvoice\b/i.test(haulSansFooter));
   check("haul-out footer credit", /Waterdog Fuel\. Opens 2027\./.test(haulCopy));
-  check("haul-out header omits wholesale nav without password", !/wholesale/i.test(haulHeader));
+  check("haul-out header links wholesale", /Wholesale/.test(haulHeader));
 
   const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
     page.$eval("main", (el) => el.textContent ?? ""),

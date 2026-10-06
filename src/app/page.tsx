@@ -3,10 +3,19 @@ import { PostedHome } from "@/components/posted-home";
 import { Masthead } from "@/components/wordmark";
 import { filterDocks, parseBoardQuery } from "@/lib/board-query";
 import { boardTally, heroCountLine } from "@/lib/freshness";
-import { HOME_AREAS, homeAreaHref, homeCards, parseHomeArea } from "@/lib/posted";
+import { DATE_UNKNOWN, HOME_AREAS, homeAreaHref, homeCards, parseHomeArea, type PostedCard } from "@/lib/posted";
 import { readDocks } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
+
+/** Unpriced docks are a name and a phone. Do not ship grade rows or "Date unknown". */
+function cardForHome(card: PostedCard): PostedCard {
+  if (!card.hasPrice) return { ...card, lines: [] };
+  return {
+    ...card,
+    lines: card.lines.map((line) => (line.asOf === DATE_UNKNOWN ? { ...line, asOf: "" } : line)),
+  };
+}
 
 export default async function Home({
   searchParams,
@@ -27,7 +36,7 @@ export default async function Home({
   const params = await searchParams;
   const query = parseBoardQuery(params);
   const area = parseHomeArea(params.waters);
-  const cards = homeCards(docks);
+  const cards = homeCards(docks).map(cardForHome);
   const areaLinks = [
     { id: "all" as const, label: "All", href: homeAreaHref(null, params) },
     ...HOME_AREAS.map((item) => ({
