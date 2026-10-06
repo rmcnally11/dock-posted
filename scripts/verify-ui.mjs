@@ -82,13 +82,23 @@ try {
   check("five quiet links", landingLinks.length === 5, JSON.stringify(landingLinks));
   check(
     "link the board",
-    landingLinks[0]?.text === "Today" && landingLinks[0]?.href === "#board",
+    landingLinks[0]?.text === "Fuel Prices" && landingLinks[0]?.href === "#board",
     JSON.stringify(landingLinks[0]),
   );
   check(
-    "link when they name it",
-    landingLinks[1]?.text === "When they name it" && landingLinks[1]?.href === "/haul-out",
+    "link storm haul-out",
+    landingLinks[1]?.text === "Storm Haul-Out" && landingLinks[1]?.href === "/haul-out",
     JSON.stringify(landingLinks[1]),
+  );
+  check(
+    "link for marinas",
+    landingLinks[2]?.text === "For Marinas" && landingLinks[2]?.href === "/pin",
+    JSON.stringify(landingLinks[2]),
+  );
+  check(
+    "link trip fuel cost",
+    landingLinks[3]?.text === "Trip Fuel Cost" && landingLinks[3]?.href === "/run",
+    JSON.stringify(landingLinks[3]),
   );
   check(
     "link about",
@@ -98,9 +108,17 @@ try {
   const landingMarkup = await page.$eval("[data-testid=landing]", (el) => el.innerHTML);
   check("no campaign cards", !/grid-cols-4|four doors/i.test(landingMarkup));
   const tally = await page.$eval("[data-testid=board-tally]", (el) => el.textContent?.trim());
-  check("count under deck", /wrote a\s+number this week/i.test(tally ?? "") && !deck?.includes("posted this week"));
-  check("week line is human", /docks wrote a\s+number this week\. Most still haven.t\./.test(tally ?? ""), tally);
-  check("proof is live counts", /That.s normal\. That.s why the phone is on the\s+card\./.test(tally ?? ""), tally);
+  check(
+    "count under deck",
+    /of \d+ docks (?:has|have) a current posted price/i.test(tally ?? "") && !deck?.includes("posted this week"),
+    tally,
+  );
+  check(
+    "week line is human",
+    /\d+ of \d+ docks (?:has|have) a current posted price\. For the rest, call the dock\./.test(tally ?? ""),
+    tally,
+  );
+  check("proof is live counts", /For the rest, call the dock\./.test(tally ?? ""), tally);
   check("no invent compliance", !/never invent a price/i.test(homeCopy));
   check(
     "no campaign nouns",
@@ -143,11 +161,11 @@ try {
   check("paper pages are cream", paperBg === "rgb(251, 248, 243)", paperBg);
   const boardFact = await page.$eval("[data-testid=board-fact]", (el) => el.textContent?.trim());
   check("board fact line", boardFact === "A blank is a fact. Silence is not a price.", boardFact);
-  check("nav today", /Today/.test(headerCopy));
-  check("nav yard seats", /Yard seats/.test(headerCopy) && !/Haul-out/.test(headerCopy));
-  check("nav I was there", /I was there/.test(headerCopy));
-  check("nav hose", /hose/.test(headerCopy));
-  check("nav who writes this", /Who writes this/.test(headerCopy) && !/Wholesale/.test(headerCopy));
+  check("nav fuel prices", /Fuel Prices/.test(headerCopy));
+  check("nav storm haul-out", /Storm Haul-Out/.test(headerCopy));
+  check("nav report a price", /Report a Price/.test(headerCopy));
+  check("nav ethanol guide", /Ethanol Guide/.test(headerCopy));
+  check("nav about", /About/.test(headerCopy) && !/Wholesale/.test(headerCopy));
   const whoWrites = await page.$eval("[data-testid=who-writes-this] a", (el) => ({
     text: el.textContent?.trim(),
     href: el.getAttribute("href"),
@@ -178,19 +196,25 @@ try {
     "[data-testid=pin-trust-marina-bay-harbor]",
     (el) => el.textContent ?? "",
   );
-  check("card regular", cardFields.includes("Regular"), cardFields.join(","));
+  check("card gas", cardFields.includes("Gas"), cardFields.join(","));
   check("card diesel", cardFields.includes("Diesel"), cardFields.join(","));
-  check("card blend", cardFields.includes("Blend"), cardFields.join(","));
+  check("card has no blend tile", !cardFields.includes("Blend"), cardFields.join(","));
   check("card hours", cardFields.includes("Hours"), cardFields.join(","));
-  check("card date", dateLine.includes("Date"), dateLine);
-  check("marina bay stays blank", /Call the dock/.test(marinaBayCard) && marinaBayCard.includes("—"));
+  check("card names waterway guide", /Waterway Guide/.test(dateLine), dateLine);
+  check(
+    "marina bay stays blank",
+    /Gas: no price posted\. Call the dock\./.test(marinaBayCard) &&
+      /No diesel here/.test(marinaBayCard) &&
+      !/\$\d/.test(marinaBayCard),
+    marinaBayCard.slice(0, 400),
+  );
   const regularTone = await page.$eval(
-    "[data-testid=quote-regular-marina-bay-harbor]",
+    "[data-testid=quote-gas-marina-bay-harbor]",
     (el) => ({ text: el.textContent?.trim(), color: getComputedStyle(el).color }),
   );
   check(
     "call badge is signal red",
-    regularTone.text === "—" && regularTone.color === "rgb(226, 59, 59)",
+    regularTone.text === "Gas: no price posted. Call the dock." && regularTone.color === "rgb(226, 59, 59)",
     JSON.stringify(regularTone),
   );
   const dieselTone = await page.$eval(
@@ -213,8 +237,15 @@ try {
   );
   check("card opens dock page", marinaBayHref === "/docks/marina-bay-harbor", marinaBayHref);
   const pinLegend = await page.$eval("[data-testid=pin-legend]", (el) => el.textContent ?? "");
-  check("pin legend posted vs call", /No number/.test(pinLegend) && /On the hose/.test(pinLegend), pinLegend);
-  check("pin legend diesel vs gas", /Diesel/.test(pinLegend) && /Gas/.test(pinLegend), pinLegend);
+  check(
+    "pin legend posted vs call",
+    /Marina's price/.test(pinLegend) &&
+      /Waterway Guide or a report/.test(pinLegend) &&
+      /Price over a week old/.test(pinLegend) &&
+      /No price posted/.test(pinLegend),
+    pinLegend,
+  );
+  check("pin legend drops diesel and gas swatches", !/Diesel/.test(pinLegend) && !/\bGas\b/.test(pinLegend), pinLegend);
   check(
     "pin legend is dock talk",
     !/status|trust|map key|unverified|should-be|invoice|nymex|\bTCN\b|platts|waterdog/i.test(pinLegend),
@@ -240,7 +271,7 @@ try {
   const attribution = await page.$eval("[data-testid=fuel-map]", (el) => el.textContent ?? "");
   check("no carto attribution", !/carto/i.test(attribution), attribution);
   check("coast map is not the lake frame", !/29\.56N 95\.03W · z11/.test(attribution), attribution);
-  check("coast map zoomed out", / · z5 · © OpenStreetMap/.test(attribution), attribution);
+  check("coast map zoomed out", /Map © OpenStreetMap/.test(attribution) && !/z5/.test(attribution), attribution);
   const tileSrcs = await page.$$eval('img[src*="/api/tiles/"]', (tiles) =>
     tiles.map((img) => img.getAttribute("src") ?? ""),
   );
@@ -255,7 +286,7 @@ try {
   const corridorMap = await page.$eval("[data-testid=fuel-map]", (el) => el.textContent ?? "");
   check(
     "corridor query same bay frame",
-    /29\.56N 95\.03W · z11 · © OpenStreetMap/.test(corridorMap),
+    /Map © OpenStreetMap/.test(corridorMap) && !/z11/.test(corridorMap),
     corridorMap,
   );
   const bayHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
@@ -297,7 +328,7 @@ try {
   check("island is not the poster", texasNames[0] !== "Galveston Yacht Marina");
   check("no kemah boardwalk", !texasNames.some((name) => name?.includes("Kemah Boardwalk")));
 
-  check("today is the board", /\bToday\b/.test(headerCopy), headerCopy);
+  check("fuel prices is the board", /\bFuel Prices\b/.test(headerCopy), headerCopy);
   check("no last-posted hero", !/what the dock last posted/i.test(homeCopy));
   check("no instrument family", !/instrument family/i.test(homeCopy));
   check("no sister page", !/sister page/i.test(homeCopy));
@@ -337,7 +368,11 @@ try {
   check("osm attribution in footer", /openstreetmap/i.test(homeCopy));
   check("no call ahead", !/call ahead/i.test(homeCopy));
   check("no tbd or unknown", !/\bTBD\b|\bunknown\b/i.test(homeCopy));
-  check("verified vs last seen", /verified|last seen/i.test(homeCopy));
+  check(
+    "price labels on the board",
+    /Marina's price|No price posted|Price over a week old/.test(homeCopy),
+    homeCopy.slice(0, 200),
+  );
   check("claim path", /Your dock/.test(homeCopy));
   check("no bargain", !/cheapest|savings|bargain/i.test(homeCopy));
   check("no slips pitch", !/wet-slip|Holds Fast/i.test(homeCopy));
@@ -542,7 +577,7 @@ try {
     /Nothing on X yet\./.test(fallback.text) && fallback.href === "https://x.com/DockPosted",
     JSON.stringify(fallback),
   );
-  check("about nav has who writes this", /Who writes this/.test(aboutHeader));
+  check("about nav has about", /About/.test(aboutHeader));
   const waterdogBlock = await page.$eval("[data-testid=waterdog-fuel]", (el) => el.textContent ?? "");
   const waterdogMail = await page.$eval(
     "[data-testid=waterdog-fuel] a[href='mailto:orders@coastalcavaliers.com']",
@@ -708,6 +743,36 @@ try {
     check(`phone ${phone.width} header no overflow`, !headerBox.overflow, JSON.stringify(headerBox));
     check(`phone ${phone.width} header one row`, headerBox.oneRow && headerBox.height < 80, JSON.stringify(headerBox));
 
+    const navReach = await page.$eval("[data-testid=site-nav]", (nav) => {
+      const about = nav.querySelector("[data-testid=nav-about]");
+      const hintBefore = Boolean(document.querySelector("[data-testid=nav-scroll-hint]"));
+      const overflows = nav.scrollWidth > nav.clientWidth + 1;
+      nav.scrollLeft = nav.scrollWidth;
+      const navBox = nav.getBoundingClientRect();
+      const aboutBox = about?.getBoundingClientRect();
+      const aboutVisible = Boolean(
+        aboutBox && aboutBox.right <= navBox.right + 2 && aboutBox.left < navBox.right,
+      );
+      const labels = [...nav.querySelectorAll("a:not(.sr-only)")].map((el) => el.textContent?.trim());
+      return { overflows, hintBefore, aboutVisible, labels };
+    });
+    check(
+      `phone ${phone.width} nav reaches about`,
+      navReach.aboutVisible && navReach.labels.at(-1) === "About",
+      JSON.stringify(navReach),
+    );
+    check(
+      `phone ${phone.width} nav scroll hint`,
+      !navReach.overflows || navReach.hintBefore,
+      JSON.stringify(navReach),
+    );
+    check(
+      `phone ${phone.width} nav order`,
+      navReach.labels.join("|") ===
+        "Fuel Prices|Report a Price|Trip Fuel Cost|Ethanol Guide|Storm Haul-Out|For Marinas|About",
+      JSON.stringify(navReach.labels),
+    );
+
     const chipTops = await page.$$eval("[data-testid=coast-jumps] a", (els) =>
       els.map((el) => el.getBoundingClientRect().top),
     );
@@ -726,7 +791,7 @@ try {
     const hours = await page.$eval("[data-testid=dock-card-marina-bay-harbor]", (el) => {
       const dts = [...el.querySelectorAll("dt")];
       const hoursDt = dts.find((dt) => dt.textContent?.trim() === "Hours");
-      const regularDt = dts.find((dt) => dt.textContent?.trim() === "Regular");
+      const regularDt = dts.find((dt) => dt.textContent?.trim() === "Gas");
       if (!hoursDt?.parentElement || !regularDt?.parentElement) return null;
       return {
         hoursW: hoursDt.parentElement.getBoundingClientRect().width,
@@ -758,19 +823,19 @@ try {
   const dockName = await page.$eval("[data-testid=dock-page-name]", (el) => el.textContent?.trim());
   check("dock page name", dockName === "Marina Bay Harbor", dockName);
   const dockRegular = await page.$eval(
-    "[data-testid=quote-regular-marina-bay-harbor]",
+    "[data-testid=quote-gas-marina-bay-harbor]",
     (el) => ({ text: el.textContent?.trim(), color: getComputedStyle(el).color }),
   );
   check(
     "dock page blank stays call",
-    dockRegular.text === "—" && dockRegular.color === "rgb(226, 59, 59)",
+    dockRegular.text === "Gas: no price posted. Call the dock." && dockRegular.color === "rgb(226, 59, 59)",
     JSON.stringify(dockRegular),
   );
   const dockDiesel = await page.$eval(
     "[data-testid=quote-diesel-marina-bay-harbor]",
     (el) => el.textContent?.trim(),
   );
-  check("dock page diesel not sold", dockDiesel === "Not sold", dockDiesel);
+  check("dock page diesel not sold", dockDiesel === "No diesel here", dockDiesel);
   const dockCopy = await page.$eval("[data-testid=dock-page]", (el) => el.textContent ?? "");
   check("dock page hose", /\(281\)\s*535-2222/.test(dockCopy) && !/549-4772/.test(dockCopy), dockCopy.slice(0, 240));
   check("dock page blank is a fact", /A blank is a fact/.test(dockCopy), dockCopy.slice(0, 200));

@@ -1,4 +1,4 @@
-import { freshness } from "@/lib/freshness";
+import { freshness, hasEthanolFreeGas } from "@/lib/freshness";
 import {
   CORRIDORS,
   REGIONS,
@@ -132,7 +132,7 @@ export function filterDocks(
   const inCorridor = sortDocks(geographicSet(docks, query));
   const visible = sortDocks(
     inCorridor
-      .filter((dock) => (query.e0Only ? dock.ethanol === "E0" : true))
+      .filter((dock) => (query.e0Only ? hasEthanolFreeGas(dock) : true))
       .filter((dock) => (query.freshOnly ? freshness(dock) === "fresh" : true)),
   );
   return { inCorridor, visible };

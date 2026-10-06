@@ -1,8 +1,14 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
-import { ethanolCopy, formatDate, formatQuote, isBlankPrice, quoteParts, sourceLabel, telHref } from "@/lib/format";
-import { hasPostedPrice, pinQuoteSlots, pinTrust } from "@/lib/freshness";
+import { quoteParts, telHref } from "@/lib/format";
+import {
+  pinQuoteSlots,
+  publicCallLine,
+  publicSource,
+  reportLinkLabel,
+  type PinQuoteSlot,
+} from "@/lib/freshness";
 import type { DockHref } from "@/lib/board-query";
-import type { Dock, FuelQuote } from "@/lib/types";
+import type { Dock } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function accessLabel(dock: Dock): string | null {
@@ -17,11 +23,12 @@ function payLabel(dock: Dock): string | null {
   return null;
 }
 
-function quoteTone(quote: FuelQuote | null, kind: "gas" | "diesel"): string {
-  const text = formatQuote(quote);
-  if (isBlankPrice(text)) return "text-[color:var(--signal)]";
-  if (text === "Not sold") return "text-[color:var(--ink)]/55";
-  return kind === "diesel" ? "text-[color:var(--diesel)]" : "text-[color:var(--signal)]";
+function quoteTone(slot: PinQuoteSlot): string {
+  if (slot.suppressed) return "text-[color:var(--stale)]";
+  const quote = slot.quote;
+  if (!quote || quote.status === "not-sold") return "text-[color:var(--ink)]/55";
+  if (quote.status !== "posted" || quote.pricePerGallon == null) return "text-[color:var(--signal)]";
+  return slot.kind === "diesel" ? "text-[color:var(--diesel)]" : "text-[color:var(--signal)]";
 }
 
 function dieselOnly(dock: Dock): boolean {
@@ -29,8 +36,11 @@ function dieselOnly(dock: Dock): boolean {
   return gas.length > 0 && gas.every((quote) => quote.status === "not-sold");
 }
 
-export function QuoteFigure({ quote }: { quote: FuelQuote | null }) {
-  const parts = quoteParts(quote);
+export function QuoteFigure({ slot }: { slot: PinQuoteSlot }) {
+  if (slot.suppressed) {
+    return <span className="price-blank">Too old to show</span>;
+  }
+  const parts = quoteParts(slot.quote, slot.kind);
   if (parts.blank) {
     return <span className="price-blank">{parts.figure}</span>;
   }
@@ -70,24 +80,45 @@ export function DockQuoteGrid({
     <>
       {slots.map((slot) => (
         <div key={slot.id} className={tileClassName}>
-          <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">
-            {slot.label}
-          </dt>
+          <dt className="sr-only">{slot.kind === "diesel" ? "Diesel" : "Gas"}</dt>
           <dd
             data-testid={`quote-${slot.id}-${dock.id}`}
-            className={cn("mt-1", quoteTone(slot.quote, slot.kind))}
+            className={cn("mt-1", quoteTone(slot))}
           >
-            <QuoteFigure quote={slot.quote} />
+            <QuoteFigure slot={slot} />
           </dd>
         </div>
       ))}
-      <div className={tileClassName}>
-        <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Blend</dt>
-        <dd className="font-mono text-[15px] font-medium tabular-nums text-[color:var(--navy)]">
-          {ethanolCopy(dock.ethanol)}
-        </dd>
-      </div>
     </>
+  );
+}
+
+export function DockProvenance({ dock, className }: { dock: Dock; className?: string }) {
+  const line = publicSource(dock);
+  if (!line) return null;
+  return (
+    <p className={cn("text-xs text-[color:var(--ink)]/50", className)} data-testid={`pin-trust-${dock.id}`}>
+      {line}
+    </p>
+  );
+}
+
+export function DockPhone({ dock, className }: { dock: Dock; className?: string }) {
+  const line = publicCallLine(dock);
+  if (!line || !dock.phone) return null;
+  const callHref = telHref(dock.phone);
+  if (!callHref) {
+    return <p className={cn("text-sm text-[color:var(--ink)]/70", className)}>{line}</p>;
+  }
+  return (
+    <p className={className}>
+      <a
+        href={callHref}
+        className="inline-flex min-h-11 items-center text-sm font-medium text-[color:var(--diesel)] underline-offset-2 hover:underline"
+      >
+        {line}
+      </a>
+    </p>
   );
 }
 
@@ -100,9 +131,7 @@ export function DockCard({
   selected?: boolean;
   href: DockHref;
 }) {
-  const trust = pinTrust(dock);
   const flags = flagLabels(dock);
-  const callHref = dock.phone ? telHref(dock.phone) : null;
 
   return (
     <article
@@ -118,7 +147,7 @@ export function DockCard({
         className="block p-5 hover:bg-white/40"
       >
         <div className="flex items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <h3 className="font-heading text-lg leading-tight text-[color:var(--navy)]">
               {dock.name}
             </h3>
@@ -146,35 +175,12 @@ export function DockCard({
           </div>
         </dl>
 
-        <p className="mt-3 text-xs text-[color:var(--ink)]/50" data-testid={`pin-trust-${dock.id}`}>
-          <span className="mr-2 text-[11px] text-[color:var(--ink)]/50">Date</span>
-          {formatDate(dock.lastVerifiedAt)}
-          {trust === "verified"
-            ? ` · Verified · ${sourceLabel(dock.lastVerifiedSource)}`
-            : hasPostedPrice(dock)
-              ? " · Last seen · Unverified"
-              : dock.lastVerifiedAt
-                ? " · Unverified"
-                : ""}
-        </p>
+        <DockProvenance dock={dock} className="mt-3" />
       </a>
-      {callHref && dock.phone ? (
-        <p className="px-5 pb-3">
-          <a
-            href={callHref}
-            className="inline-flex min-h-11 items-center text-sm font-medium text-[color:var(--diesel)] underline-offset-2 hover:underline"
-          >
-            {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
-          </a>
-        </p>
-      ) : dock.phone ? (
-        <p className="px-5 pb-3 text-xs text-[color:var(--ink)]/70">
-          {hasPostedPrice(dock) ? dock.phone : `Call the dock · ${dock.phone}`}
-        </p>
-      ) : null}
+      <DockPhone dock={dock} className="px-5 pb-3" />
       <p className="border-t border-[color:var(--line)] px-3.5 py-2 text-[11px] text-[color:var(--ink)]/50">
         <a href={`/report?dock=${dock.id}`} className="underline-offset-2 hover:underline">
-          {trust === "verified" ? "Update the number" : "I was there"}
+          {reportLinkLabel(dock)}
         </a>
       </p>
     </article>

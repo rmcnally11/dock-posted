@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { NavScroll } from "@/components/nav-scroll";
 import { BrandSpine, Wordmark } from "@/components/wordmark";
 import { wholesalePasswordConfigured } from "@/lib/wholesale-auth";
 
@@ -15,43 +16,34 @@ export async function SiteHeader() {
         <a href="/" className="flex min-w-0 shrink-0 items-baseline gap-2" aria-label="Dock Posted">
           <Wordmark />
         </a>
-        <nav
-          className="chip-scroll flex min-w-0 flex-1 items-center justify-start gap-x-0.5 overflow-x-auto md:justify-end"
-          aria-label="Dock Posted"
-        >
-          <a className={navLink} href="/#board" aria-label="Today">
-            Today
+        <NavScroll>
+          <a className={navLink} href="/#board">
+            Fuel Prices
           </a>
-          {" "}
-          <a className={navLink} href="/haul-out" aria-label="Yard seats">
-            Yard seats
+          <a className={navLink} href="/report">
+            Report a Price
           </a>
-          {" "}
-          <a className={navLink} href="/pin" data-testid="nav-pin" aria-label="Your dock">
-            Your dock
+          <a className={navLink} href="/run" data-testid="nav-run">
+            Trip Fuel Cost
           </a>
-          {" "}
-          <a className={navLink} href="/run" data-testid="nav-run" aria-label="This trip">
-            This trip
+          <a className={navLink} href="/safe-fuel">
+            Ethanol Guide
           </a>
-          {" "}
-          <a className={navLink} href="/report" aria-label="I was there">
-            I was there
+          <a className={navLink} href="/haul-out">
+            Storm Haul-Out
           </a>
-          {" "}
-          <a className={navLink} href="/safe-fuel" aria-label="What’s in the hose">
-            What’s in the hose
+          <a className={navLink} href="/pin" data-testid="nav-pin">
+            For Marinas
           </a>
-          {" "}
-          <a className={navLink} href="/about" data-testid="nav-about" aria-label="Who writes this">
-            Who writes this
+          <a className={navLink} href="/about" data-testid="nav-about">
+            About
           </a>
           {wholesaleOpen ? (
             <a className="sr-only" href="/wholesale" data-testid="nav-wholesale">
               Locked door
             </a>
           ) : null}
-        </nav>
+        </NavScroll>
       </div>
       <BrandSpine />
     </header>
