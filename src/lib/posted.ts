@@ -1,6 +1,6 @@
 import { dockPath } from "@/lib/board-query";
 import { chicagoCivilDate, civilDate, formatPrice, sourceInstant, telHref } from "@/lib/format";
-import { freshness, isMarinaOwned } from "@/lib/freshness";
+import { freshness } from "@/lib/freshness";
 import type { Dock, FuelQuote } from "@/lib/types";
 
 export const DATE_UNKNOWN = "Date unknown";
@@ -138,6 +138,11 @@ export function postedIsStale(dock: Dock, now = Date.now()): boolean {
   return freshness(dock, now) === "stale";
 }
 
+/** A dollar stays up only when the source is the marina. A user report is dropped. */
+function marinaSourced(dock: Dock): boolean {
+  return dock.lastVerifiedSource === "marina site" || dock.lastVerifiedSource === "marina";
+}
+
 /** A dollar stays up only when a marina page is the source. Anything else is dropped. */
 export function quotesOnHome(dock: Dock): FuelQuote[] {
   return dock.quotes.filter((quote) => {
@@ -146,7 +151,7 @@ export function quotesOnHome(dock: Dock): FuelQuote[] {
       quote.pricePerGallon != null &&
       !Number.isNaN(quote.pricePerGallon);
     if (!priced) return true;
-    return isMarinaOwned(dock);
+    return marinaSourced(dock);
   });
 }
 

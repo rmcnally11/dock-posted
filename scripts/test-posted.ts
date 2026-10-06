@@ -140,39 +140,54 @@ for (const file of ["src/lib/posted.ts", "src/components/posted-home.tsx", "src/
 
 assert.equal(cardsInArea(cards, "galveston-bay")[0]?.id, "galveston-yacht-marina");
 assert.equal(cardsInArea(cards, "tampa-bay")[0]?.id, "madeira-beach-municipal-marina");
-assert.equal(cardsInArea(cards, "northeast-florida")[0]?.id, "lambs-yacht-center");
-assert.equal(cardsInArea(cards, "northeast-florida").at(-1)?.id, "fernandina-harbor-marina");
+assert.equal(cardsInArea(cards, "northeast-florida")[0]?.id, "arlington-marina");
+assert.equal(cardsInArea(cards, "northeast-florida").at(-1)?.id, "palm-cove-marina");
+assert.ok(cardsInArea(cards, "northeast-florida").some((card) => card.id === "lambs-yacht-center"));
+assert.ok(cardsInArea(cards, "northeast-florida").some((card) => card.id === "fernandina-harbor-marina"));
 assert.ok(cardsInArea(cards, "galveston-bay").every((card, index, list) => index === 0 || !card.hasPrice || list[index - 1]?.hasPrice));
 
 const gym = line("galveston-yacht-marina", "87");
 assert.equal(gym.match.label, "87");
-assert.equal(gym.match.figure, "$4.830");
+assert.equal(gym.match.figure, "$4.83");
 assert.equal(gym.match.asOf, "Oct 3, 2026");
 assert.equal(gym.card.stale, false);
 const gymE0 = line("galveston-yacht-marina", "93");
 assert.equal(gymE0.match.label, "93 E0");
-assert.equal(gymE0.match.figure, "$6.270");
+assert.equal(gymE0.match.figure, "$6.27");
 assert.doesNotMatch(gymE0.match.label, /regular/i);
 assert.equal(line("galveston-yacht-marina", "diesel").match.label, "Diesel");
-assert.equal(line("galveston-yacht-marina", "diesel").match.figure, "$6.330");
+assert.equal(line("galveston-yacht-marina", "diesel").match.figure, "$6.33");
 
 const lambs = line("lambs-yacht-center", "90");
 assert.equal(lambs.match.label, "90 E0");
-assert.equal(lambs.match.figure, "$5.150");
+assert.equal(lambs.match.figure, "$5.15");
 assert.doesNotMatch(lambs.match.label, /regular/i);
 assert.equal(lambs.card.stale, false);
 
 const madeira = line("madeira-beach-municipal-marina", "gasoline");
 assert.equal(madeira.match.label, "Gasoline E0");
-assert.equal(madeira.match.figure, "$6.050");
+assert.equal(madeira.match.figure, "$6.05");
 assert.doesNotMatch(madeira.match.label, /regular/i);
 assert.equal(madeira.card.stale, false);
 
 const stAugustine = line("st-augustine-municipal-marina", "gasoline");
 assert.equal(stAugustine.match.label, "Gasoline");
-assert.equal(stAugustine.match.figure, "$6.590");
+assert.equal(stAugustine.match.figure, "$6.59");
 assert.equal(stAugustine.match.asOf, "Sep 25, 2026");
 assert.doesNotMatch(stAugustine.match.label, /regular/i);
+
+const beforeArlington = line("arlington-marina", "gasoline");
+assert.equal(beforeArlington.match.figure, "$6.399");
+assert.equal(beforeArlington.match.asOf, DATE_UNKNOWN);
+assert.equal(beforeArlington.card.stale, true);
+const arlingtonOn = Date.parse("2026-10-05T22:00:00Z");
+const arlington = line("arlington-marina", "gasoline", arlingtonOn);
+assert.equal(arlington.match.label, "Gasoline");
+assert.equal(arlington.match.figure, "$6.399");
+assert.equal(arlington.match.asOf, "Oct 5, 2026");
+assert.equal(arlington.card.stale, false);
+assert.equal(line("arlington-marina", "diesel", arlingtonOn).match.figure, "$5.999");
+assert.equal(line("arlington-marina", "diesel", arlingtonOn).match.asOf, "Oct 5, 2026");
 
 const hyC = line("houston-yacht-club", "89");
 assert.equal(hyC.match.label, "89 E10");
@@ -225,17 +240,17 @@ for (const now of [eightDays, fourteenDays, pastFourteen, octNine, octTen]) {
 
 const gymStale = line("galveston-yacht-marina", "87", eightDays);
 assert.equal(gymStale.card.stale, true);
-assert.equal(gymStale.match.figure, "$4.830");
+assert.equal(gymStale.match.figure, "$4.83");
 assert.equal(line("lambs-yacht-center", "90", eightDays).card.stale, true);
-assert.equal(line("lambs-yacht-center", "90", eightDays).match.figure, "$5.150");
+assert.equal(line("lambs-yacht-center", "90", eightDays).match.figure, "$5.15");
 assert.equal(line("madeira-beach-municipal-marina", "gasoline", eightDays).card.stale, false);
 assert.equal(line("madeira-beach-municipal-marina", "gasoline", fourteenDays).card.stale, false);
-assert.equal(line("madeira-beach-municipal-marina", "gasoline", fourteenDays).match.figure, "$6.050");
+assert.equal(line("madeira-beach-municipal-marina", "gasoline", fourteenDays).match.figure, "$6.05");
 assert.equal(line("madeira-beach-municipal-marina", "gasoline", pastFourteen).card.stale, true);
-assert.equal(line("madeira-beach-municipal-marina", "gasoline", pastFourteen).match.figure, "$6.050");
+assert.equal(line("madeira-beach-municipal-marina", "gasoline", pastFourteen).match.figure, "$6.05");
 assert.equal(line("st-augustine-municipal-marina", "gasoline", octNine).card.stale, false);
 assert.equal(line("st-augustine-municipal-marina", "gasoline", octTen).card.stale, true);
-assert.equal(line("st-augustine-municipal-marina", "gasoline", octTen).match.figure, "$6.590");
+assert.equal(line("st-augustine-municipal-marina", "gasoline", octTen).match.figure, "$6.59");
 
 const blue = line("blue-marlin-seabrook", "93");
 assert.equal(blue.match.label, "93 E0");
@@ -276,7 +291,7 @@ const mixed = toPostedCard(
   readOn,
 );
 assert.ok(mixed);
-assert.equal(mixed.lines[0]?.figure, "$5.150");
+assert.equal(mixed.lines[0]?.figure, "$5.15");
 assert.equal(mixed.lines[0]?.label, "90 E0");
 assert.equal(mixed.lines[1]?.figure, CALL_FIGURE);
 assert.notEqual(mixed.lines[1]?.figure, mixed.lines[0]?.figure);
@@ -374,12 +389,12 @@ assert.equal(gymNow.lines.length, 3);
 for (const row of gymNow.lines) {
   assert.equal(row.asOf, "Oct 3, 2026");
   assert.equal(row.asOf, asOfText(gymDock, new Date()));
-  assert.notEqual(row.figure, "$5.280");
+  assert.notEqual(row.figure, "$5.28");
   assert.notEqual(row.label, "90 E0");
 }
 assert.deepEqual(
   gymNow.lines.map((row) => `${row.label} ${row.figure}`),
-  ["87 $4.830", "93 E0 $6.270", "Diesel $6.330"],
+  ["87 $4.83", "93 E0 $6.27", "Diesel $6.33"],
 );
 
 const noon = sourceInstant("2026-10-03");
@@ -425,7 +440,7 @@ const undated = toPostedCard(
 assert.ok(undated);
 assert.equal(undated.stale, true);
 assert.ok(undated.lines.every((row) => row.asOf === DATE_UNKNOWN));
-assert.equal(undated.lines[0]?.figure, "$4.830");
+assert.equal(undated.lines[0]?.figure, "$4.83");
 
 const laterDay = "2099-01-01";
 assert.ok(laterDay > chicagoToday);
@@ -459,7 +474,7 @@ assert.equal(stray.lines[0]?.figure, CALL_FIGURE);
 assert.equal(stray.lines[0]?.asOf, DATE_UNKNOWN);
 assert.equal(stray.stale, true);
 assert.equal(
-  stray.lines.some((row) => row.label === "90 E0" || row.figure === "$5.280"),
+  stray.lines.some((row) => row.label === "90 E0" || row.figure === "$5.28"),
   false,
 );
 
@@ -478,7 +493,7 @@ readDocks()
     assert.ok(liveCard);
     for (const row of liveCard.lines) {
       assert.equal(row.asOf, "Oct 3, 2026");
-      assert.notEqual(row.figure, "$5.280");
+      assert.notEqual(row.figure, "$5.28");
     }
     console.log(`posted ok — ${cards.length} docks on the home list`);
   })
