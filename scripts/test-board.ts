@@ -50,6 +50,46 @@ assert.match(
 );
 
 assert.ok(docks.length >= 90, `expected a coastal set, got ${docks.length}`);
+
+const chicagoToday = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Chicago",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(new Date());
+const readMonths: Record<string, string> = {
+  Jan: "01",
+  Feb: "02",
+  Mar: "03",
+  Apr: "04",
+  May: "05",
+  Jun: "06",
+  Jul: "07",
+  Aug: "08",
+  Sep: "09",
+  Oct: "10",
+  Nov: "11",
+  Dec: "12",
+};
+for (const dock of docks) {
+  if (dock.lastVerifiedAt) {
+    assert.match(dock.lastVerifiedAt, /^\d{4}-\d{2}-\d{2}$/, `${dock.id} date is not YYYY-MM-DD`);
+    assert.ok(
+      dock.lastVerifiedAt <= chicagoToday,
+      `${dock.id} lastVerifiedAt ${dock.lastVerifiedAt} is after ${chicagoToday} in America/Chicago`,
+    );
+  }
+  for (const match of (dock.notes ?? "").matchAll(/read (\d{1,2}) ([A-Z][a-z]{2}) (\d{4})/g)) {
+    const month = readMonths[match[2] ?? ""];
+    assert.ok(month, `${dock.id} read date has an unknown month ${match[2]}`);
+    const iso = `${match[3]}-${month}-${(match[1] ?? "").padStart(2, "0")}`;
+    assert.ok(
+      iso <= chicagoToday,
+      `${dock.id} read date ${iso} is after ${chicagoToday} in America/Chicago`,
+    );
+  }
+}
+
 assert.ok(docks.every((dock) => dock.region && dock.state && dock.city));
 assert.ok(docks.every((dock) => Number.isFinite(dock.lat) && Number.isFinite(dock.lng)));
 assert.ok(!docks.some((dock) => dock.id === "kemah-boardwalk-marina"));
@@ -480,11 +520,11 @@ assert.equal(arlington.lng, -81.611545);
 assert.equal(arlington.phone, "(904) 743-2628");
 assert.equal(arlington.website, "https://arlingtonmarina.com/");
 assert.equal(arlington.sourceUrl, "https://arlingtonmarina.com/");
-assert.equal(arlington.lastVerifiedAt, "2026-10-06");
+assert.equal(arlington.lastVerifiedAt, "2026-10-05");
 assert.equal(arlington.lastVerifiedSource, "marina site");
 assert.equal(arlington.ethanol, "unknown");
 assert.equal(arlington.hours, "Daily 8:00 am–6:00 pm.");
-assert.match(arlington.notes ?? "", /read 6 Oct 2026/);
+assert.match(arlington.notes ?? "", /read 5 Oct 2026/);
 assert.match(arlington.notes ?? "", /Unleaded \$6\.399/);
 assert.match(arlington.notes ?? "", /Diesel \$5\.999/);
 assert.match(arlington.notes ?? "", /did not date the price/);
@@ -506,7 +546,7 @@ assert.deepEqual(
 assert.ok(!arlington.quotes.some((quote) => quote.product === "87" || quote.product === "90" || quote.product === "93"));
 assert.ok(arlington.quotes.every((quote) => quote.taxIncluded == null));
 assert.equal(pinTrust(arlington), "verified");
-const arlingtonRead = Date.parse("2026-10-06T18:00:00Z");
+const arlingtonRead = Date.parse("2026-10-05T22:00:00Z");
 assert.equal(freshness(arlington, arlingtonRead), "fresh");
 const arlingtonSlots = pinQuoteSlots(arlington, arlingtonRead);
 assert.deepEqual(
@@ -518,8 +558,8 @@ assert.deepEqual(
 );
 assert.equal(formatQuote(arlingtonSlots[0]?.quote ?? null), "$6.399 Gasoline");
 assert.equal(formatQuote(arlingtonSlots[1]?.quote ?? null), "$5.999 diesel");
-assert.equal(freshness(arlington, Date.parse("2026-10-20T00:00:00Z")), "fresh");
-assert.equal(freshness(arlington, Date.parse("2026-10-21T00:00:00Z")), "stale");
+assert.equal(freshness(arlington, Date.parse("2026-10-19T00:00:00Z")), "fresh");
+assert.equal(freshness(arlington, Date.parse("2026-10-20T00:00:00Z")), "stale");
 assert.equal(freshness(gym, Date.parse("2026-10-11T00:00:00Z")), "stale");
 const withoutArlington = docks.filter((dock) => dock.id !== "arlington-marina");
 assert.equal(
