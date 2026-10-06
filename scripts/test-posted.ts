@@ -382,12 +382,14 @@ assert.deepEqual(
   ["87 $4.830", "93 E0 $6.270", "Diesel $6.330"],
 );
 
+const noon = sourceInstant("2026-10-03");
+assert.ok(noon);
 const noonChicago = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
   year: "numeric",
   timeZone: "America/Chicago",
-}).format(sourceInstant("2026-10-03"));
+}).format(noon);
 assert.equal(noonChicago, "Oct 3, 2026");
 const utcMidnightInChicago = new Intl.DateTimeFormat("en-US", {
   month: "short",
