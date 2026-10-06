@@ -1,7 +1,30 @@
 import { dockPath } from "@/lib/board-query";
-import { formatDate, formatPrice, telHref } from "@/lib/format";
-import { freshness } from "@/lib/freshness";
+import { chicagoCivilDate, civilDate, formatPrice, sourceInstant, telHref } from "@/lib/format";
+import { freshness, isMarinaOwned } from "@/lib/freshness";
 import type { Dock, FuelQuote } from "@/lib/types";
+
+export const DATE_UNKNOWN = "Date unknown";
+
+const CHICAGO = "America/Chicago";
+const NEW_YORK = "America/New_York";
+
+const EASTERN_STATES = new Set([
+  "FL",
+  "GA",
+  "SC",
+  "NC",
+  "VA",
+  "MD",
+  "DE",
+  "NJ",
+  "NY",
+  "CT",
+  "RI",
+  "MA",
+  "PA",
+  "NH",
+  "ME",
+]);
 
 export type HomeAreaId = "galveston-bay" | "tampa-bay" | "northeast-florida";
 
@@ -81,8 +104,50 @@ export function postedFigure(quote: FuelQuote): string {
   return formatPrice(quote.pricePerGallon);
 }
 
+/** Texas and the Florida panhandle are Central. The peninsula is Eastern. */
+export function dockTimeZone(dock: Pick<Dock, "state" | "lng">): string {
+  if (dock.state === "FL" && Number.isFinite(dock.lng) && dock.lng <= -85.2) return CHICAGO;
+  if (EASTERN_STATES.has(dock.state)) return NEW_YORK;
+  return CHICAGO;
+}
+
+/**
+ * The as-of line is the stored source day, in the dock's zone.
+ * A missing day, or a day after today in Chicago, is not a source date.
+ */
+export function asOfText(
+  dock: Pick<Dock, "lastVerifiedAt" | "state" | "lng">,
+  now = new Date(),
+): string {
+  if (!dock.lastVerifiedAt) return DATE_UNKNOWN;
+  const zone = dockTimeZone(dock);
+  const instant = sourceInstant(dock.lastVerifiedAt);
+  if (!instant) return DATE_UNKNOWN;
+  const day = civilDate(instant, zone);
+  if (day > chicagoCivilDate(now)) return DATE_UNKNOWN;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: zone,
+  }).format(instant);
+}
+
 export function postedIsStale(dock: Dock, now = Date.now()): boolean {
+  if (asOfText(dock, new Date(now)) === DATE_UNKNOWN) return true;
   return freshness(dock, now) === "stale";
+}
+
+/** A dollar stays up only when a marina page is the source. Anything else is dropped. */
+export function quotesOnHome(dock: Dock): FuelQuote[] {
+  return dock.quotes.filter((quote) => {
+    const priced =
+      quote.status === "posted" &&
+      quote.pricePerGallon != null &&
+      !Number.isNaN(quote.pricePerGallon);
+    if (!priced) return true;
+    return isMarinaOwned(dock);
+  });
 }
 
 export function callHref(phone: string | null): string | null {
@@ -155,9 +220,10 @@ function cardNote(dock: Dock): string | null {
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 
-function linesFor(dock: Dock): PostedLine[] {
-  const asOf = formatDate(dock.lastVerifiedAt);
-  if (dock.quotes.length === 0) {
+function linesFor(dock: Dock, now: number): PostedLine[] {
+  const asOf = asOfText(dock, new Date(now));
+  const quotes = quotesOnHome(dock);
+  if (quotes.length === 0) {
     return [
       {
         key: "none",
@@ -168,7 +234,7 @@ function linesFor(dock: Dock): PostedLine[] {
       },
     ];
   }
-  return dock.quotes.map((quote, index) => ({
+  return quotes.map((quote, index) => ({
     key: `${quote.product}-${index}`,
     label: gradeLabel(quote),
     figure: postedFigure(quote),
@@ -181,7 +247,7 @@ export function toPostedCard(dock: Dock, now = Date.now()): PostedCard | null {
   const areaId = homeArea(dock);
   if (!areaId) return null;
   const phoneLink = callHref(dock.phone);
-  const lines = linesFor(dock);
+  const lines = linesFor(dock, now);
   return {
     id: dock.id,
     name: dock.name,

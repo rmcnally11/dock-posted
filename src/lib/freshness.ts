@@ -62,6 +62,11 @@ export function isMarinaSite(dock: Dock): boolean {
   return dock.lastVerifiedSource === "marina site";
 }
 
+/** Home-page dollars: the marina's page, or a marina filing. A user report is not this. */
+export function isMarinaOwned(dock: Dock): boolean {
+  return dock.lastVerifiedSource === "marina site" || dock.lastVerifiedSource === "marina";
+}
+
 export type PinTrust = "verified" | "last-seen" | "unverified";
 
 export function pinTrust(dock: Dock): PinTrust {

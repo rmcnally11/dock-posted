@@ -2,16 +2,19 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import seed from "../data/docks.seed.json";
-import { formatDate, formatPrice, telHref } from "../src/lib/format";
+import { chicagoCivilDate, civilDate, formatPrice, sourceInstant, telHref } from "../src/lib/format";
 import { freshness } from "../src/lib/freshness";
 import {
   CALL_FIGURE,
+  DATE_UNKNOWN,
   HOME_AREAS,
   NOT_SOLD_FIGURE,
+  asOfText,
   callHref,
   cardsInArea,
   cardsNearest,
   directionsHref,
+  dockTimeZone,
   gradeLabel,
   homeArea,
   homeAreaHref,
@@ -19,8 +22,10 @@ import {
   milesBetween,
   parseHomeArea,
   postedFigure,
+  quotesOnHome,
   toPostedCard,
 } from "../src/lib/posted";
+import { readDocks } from "../src/lib/store";
 import type { Dock, FuelQuote } from "../src/lib/types";
 
 const docks = seed.docks as Dock[];
@@ -172,9 +177,9 @@ assert.doesNotMatch(stAugustine.match.label, /regular/i);
 const hyC = line("houston-yacht-club", "89");
 assert.equal(hyC.match.label, "89 E10");
 assert.equal(hyC.match.figure, CALL_FIGURE);
-assert.equal(hyC.match.asOf, "—");
+assert.equal(hyC.match.asOf, DATE_UNKNOWN);
 assert.equal(hyC.card.note, "Members’ dock");
-assert.equal(hyC.card.stale, false);
+assert.equal(hyC.card.stale, true);
 assert.doesNotMatch(JSON.stringify(hyC.card), /reciprocal|Waterway Guide/i);
 
 for (const dock of docks) {
@@ -194,7 +199,7 @@ for (const dock of docks) {
     assert.ok(row);
     assert.equal(row.label, gradeLabel(quote));
     assert.equal(row.figure, postedFigure(quote));
-    assert.equal(row.asOf, formatDate(dock.lastVerifiedAt));
+    assert.equal(row.asOf, asOfText(dock, new Date(readOn)));
     if (quote.status !== "posted" || quote.pricePerGallon == null) {
       assert.doesNotMatch(row.figure, /\$/);
       assert.notEqual(row.figure, formatPrice(quote.pricePerGallon));
@@ -202,15 +207,17 @@ for (const dock of docks) {
       assert.equal(row.figure, formatPrice(quote.pricePerGallon));
     }
   });
-  assert.equal(card.stale, freshness(dock, readOn) === "stale");
+  const dated = asOfText(dock, new Date(readOn)) !== DATE_UNKNOWN;
+  assert.equal(card.stale, !dated || freshness(dock, readOn) === "stale");
 }
 
 for (const now of [eightDays, fourteenDays, pastFourteen, octNine, octTen]) {
   for (const dock of docks) {
     const card = toPostedCard(dock, now);
     if (!card) continue;
-    assert.equal(card.stale, freshness(dock, now) === "stale", `${dock.id} stale mark drifted`);
-    if (card.stale) {
+    const dated = asOfText(dock, new Date(now)) !== DATE_UNKNOWN;
+    assert.equal(card.stale, !dated || freshness(dock, now) === "stale", `${dock.id} stale mark drifted`);
+    if (freshness(dock, now) === "stale") {
       assert.ok(card.lines.some((item) => item.figure.startsWith("$")), `${dock.id} hid a stale price`);
     }
   }
@@ -351,4 +358,129 @@ assert.match(homeSource, /data-testid="landing"/);
 assert.match(homeSource, /data-testid="hero-headline"/);
 assert.doesNotMatch(homeSource, LEAK);
 
-console.log(`posted ok — ${cards.length} docks on the home list`);
+const reportForm = readFileSync(path.join(process.cwd(), "src/components/report-form.tsx"), "utf8");
+assert.match(reportForm, /America\/Chicago/);
+assert.doesNotMatch(reportForm, /getDate\(\)/);
+
+const gymDock = dockById("galveston-yacht-marina");
+assert.equal(gymDock.lastVerifiedAt, "2026-10-03");
+assert.equal(gymDock.lastVerifiedSource, "marina site");
+assert.equal(gymDock.sourceUrl, "https://galvestonyachtbasin.com/");
+assert.equal(dockTimeZone(gymDock), "America/Chicago");
+assert.equal(asOfText(gymDock, new Date()), "Oct 3, 2026");
+const gymNow = toPostedCard(gymDock, Date.now());
+assert.ok(gymNow);
+assert.equal(gymNow.lines.length, 3);
+for (const row of gymNow.lines) {
+  assert.equal(row.asOf, "Oct 3, 2026");
+  assert.equal(row.asOf, asOfText(gymDock, new Date()));
+  assert.notEqual(row.figure, "$5.280");
+  assert.notEqual(row.label, "90 E0");
+}
+assert.deepEqual(
+  gymNow.lines.map((row) => `${row.label} ${row.figure}`),
+  ["87 $4.830", "93 E0 $6.270", "Diesel $6.330"],
+);
+
+const noonChicago = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "America/Chicago",
+}).format(sourceInstant("2026-10-03"));
+assert.equal(noonChicago, "Oct 3, 2026");
+const utcMidnightInChicago = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "America/Chicago",
+}).format(new Date("2026-10-03T00:00:00Z"));
+assert.equal(utcMidnightInChicago, "Oct 2, 2026");
+assert.notEqual(asOfText(gymDock, new Date()), utcMidnightInChicago);
+assert.equal(
+  civilDate(new Date("2026-10-06T02:43:20.452Z"), "America/Chicago"),
+  "2026-10-05",
+);
+
+const chicagoToday = chicagoCivilDate(new Date());
+for (const dock of docks) {
+  const card = toPostedCard(dock, Date.now());
+  if (!card) continue;
+  for (const row of card.lines) {
+    if (row.asOf === DATE_UNKNOWN) continue;
+    const instant = sourceInstant(dock.lastVerifiedAt ?? "");
+    assert.ok(instant, `${dock.id} rendered ${row.asOf} without a stored date`);
+    const day = civilDate(instant, dockTimeZone(dock));
+    assert.ok(day <= chicagoToday, `${dock.id} ${row.label} ${row.asOf} is after ${chicagoToday}`);
+    assert.equal(row.asOf, asOfText(dock, new Date()));
+  }
+}
+
+const undated = toPostedCard(
+  { ...gymDock, id: "missing-source-date", lastVerifiedAt: null },
+  Date.now(),
+);
+assert.ok(undated);
+assert.equal(undated.stale, true);
+assert.ok(undated.lines.every((row) => row.asOf === DATE_UNKNOWN));
+assert.equal(undated.lines[0]?.figure, "$4.830");
+
+const laterDay = "2099-01-01";
+assert.ok(laterDay > chicagoToday);
+const futureDated = toPostedCard(
+  { ...gymDock, id: "future-source-date", lastVerifiedAt: laterDay },
+  Date.now(),
+);
+assert.ok(futureDated);
+assert.equal(futureDated.stale, true);
+for (const row of futureDated.lines) {
+  assert.equal(row.asOf, DATE_UNKNOWN);
+  assert.notEqual(row.asOf, "Jan 1, 2099");
+}
+
+const strayDock: Dock = {
+  ...gymDock,
+  id: "stray-rec-90",
+  lastVerifiedSource: "user report",
+  lastVerifiedAt: "2026-10-06",
+  sourceUrl: null,
+  quotes: [
+    ...gymDock.quotes,
+    { product: "90", pricePerGallon: 5.28, ethanol: "E0", status: "posted", taxIncluded: null },
+  ],
+};
+assert.equal(quotesOnHome(strayDock).length, 0);
+const stray = toPostedCard(strayDock, Date.now());
+assert.ok(stray);
+assert.equal(stray.lines.length, 1);
+assert.equal(stray.lines[0]?.figure, CALL_FIGURE);
+assert.equal(stray.lines[0]?.asOf, DATE_UNKNOWN);
+assert.equal(stray.stale, true);
+assert.equal(
+  stray.lines.some((row) => row.label === "90 E0" || row.figure === "$5.280"),
+  false,
+);
+
+readDocks()
+  .then((live) => {
+    const liveGym = live.find((dock) => dock.id === "galveston-yacht-marina");
+    assert.ok(liveGym);
+    assert.equal(liveGym.lastVerifiedSource, "marina site");
+    assert.equal(liveGym.lastVerifiedAt, "2026-10-03");
+    assert.equal(liveGym.sourceUrl, "https://galvestonyachtbasin.com/");
+    assert.equal(
+      liveGym.quotes.some((quote) => quote.product === "90" || quote.pricePerGallon === 5.28),
+      false,
+    );
+    const liveCard = toPostedCard(liveGym, Date.now());
+    assert.ok(liveCard);
+    for (const row of liveCard.lines) {
+      assert.equal(row.asOf, "Oct 3, 2026");
+      assert.notEqual(row.figure, "$5.280");
+    }
+    console.log(`posted ok — ${cards.length} docks on the home list`);
+  })
+  .catch((error: unknown) => {
+    console.error(error);
+    process.exitCode = 1;
+  });

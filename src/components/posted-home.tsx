@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   CALL_FIGURE,
+  DATE_UNKNOWN,
   HOME_AREAS,
   cardsInArea,
   cardsNearest,
@@ -90,7 +91,7 @@ function PriceCard({ card, miles }: { card: PostedCard; miles: number | null }) 
                 data-testid={`posted-asof-${card.id}-${line.key}`}
                 className="mt-1 block text-xs text-[color:var(--ink)]/55"
               >
-                As of {line.asOf}
+                {line.asOf === DATE_UNKNOWN ? DATE_UNKNOWN : `As of ${line.asOf}`}
               </span>
             </dd>
           </div>
