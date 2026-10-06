@@ -43,6 +43,10 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         <a href="/haul-out" className="underline-offset-2 hover:underline">
           Yard seats
         </a>
+        {" · "}
+        <a href="/wholesale" className="underline-offset-2 hover:underline">
+          Wholesale
+        </a>
       </p>
       <p
         data-testid="sister-credit"
