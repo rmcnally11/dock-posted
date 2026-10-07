@@ -401,9 +401,14 @@ assert.match(homeHtml, /Seen a price\? Report it/);
 assert.match(homeHtml, /id="dock-prices"/);
 assert.match(homeHtml, /Fuel prices by dock/);
 assert.match(homeHtml, /href="\/report"/);
-assert.match(homeHtml, /Galveston Bay · 12 docks/);
-assert.match(homeHtml, /Tampa Bay · 6 docks/);
-assert.match(homeHtml, /Northeast Florida · 9 docks/);
+assert.match(homeHtml, /Galveston Bay<\/a> · 12 docks/);
+assert.match(homeHtml, /href="\/area\/galveston-bay"/);
+assert.match(homeHtml, /Tampa Bay<\/a> · 6 docks/);
+assert.match(homeHtml, /href="\/area\/tampa-bay"/);
+assert.match(homeHtml, /Northeast Florida<\/a> · 9 docks/);
+assert.match(homeHtml, /href="\/area\/northeast-florida"/);
+assert.match(client, /areaPath\(group\.id\)/);
+assert.match(client, /stopPropagation/);
 
 function sliceBetween(html: string, start: string, end: string): string {
   const from = html.indexOf(start);
