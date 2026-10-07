@@ -9,6 +9,7 @@ import WeeklyFuelPreviewPage from "../src/app/review/fuel/[slug]/page";
 import sitemap from "../src/app/sitemap";
 import { WeeklyFuelPreview } from "../src/components/weekly-fuel-preview";
 import {
+  AREA_CALL_HEADING,
   AREA_EMPTY_PRICES,
   AREA_PRICES_HEADING,
   buildAreaPage,
@@ -20,11 +21,14 @@ import { HOME_AREAS, homeArea } from "../src/lib/posted";
 import { writeReviewFile } from "../src/lib/persist";
 import type { Dock, FuelQuote } from "../src/lib/types";
 import {
+  WEEKLY_FUEL_FOOTER,
+  WEEKLY_FUEL_GUIDE_SOURCE,
+  WEEKLY_FUEL_MARINA_SOURCE,
   WEEKLY_FUEL_PREVIEW_GATE,
   WEEKLY_FUEL_PREVIEW_NOTE,
   WEEKLY_FUEL_PREVIEW_TITLE,
+  WEEKLY_FUEL_STALE,
   WEEKLY_FUEL_SUBJECT_LEAD,
-  WEEKLY_FUEL_TAGLINE,
   WEEKLY_FUEL_UNSUBSCRIBE_HREF,
   WEEKLY_FUEL_UNSUBSCRIBE_LABEL,
   buildWeeklyFuelMail,
@@ -37,7 +41,9 @@ import {
   weeklyFuelAsOf,
   weeklyFuelCheckedOn,
   weeklyFuelRecipients,
+  weeklyFuelSource,
   weeklyFuelSubject,
+  weeklyFuelTitle,
 } from "../src/lib/weekly-fuel";
 
 const docks = seed.docks as Dock[];
@@ -59,6 +65,18 @@ function quote(partial: Partial<FuelQuote> & Pick<FuelQuote, "product" | "priceP
   return { ethanol: "unknown", taxIncluded: null, ...partial };
 }
 
+function mailDockSlice(html: string, id: string): string {
+  const marker = `data-testid="weekly-dock-${id}"`;
+  const start = html.indexOf(marker);
+  const from = start + marker.length;
+  const marks = [
+    html.indexOf('data-testid="weekly-dock-', from),
+    html.indexOf('data-testid="weekly-call-', from),
+    html.indexOf(AREA_CALL_HEADING, from),
+  ].filter((at) => at >= 0);
+  return html.slice(start, marks.length === 0 ? undefined : Math.min(...marks));
+}
+
 function isNotFound(error: unknown): boolean {
   return String(error).includes("404");
 }
@@ -68,15 +86,25 @@ assert.equal(weeklyDockHref("galveston-yacht-marina"), "https://www.dockposted.c
 assert.equal(weeklyAreaHref("galveston-bay"), "/area/galveston-bay");
 assert.equal(weeklyAreaHref("tampa-bay"), "/area/tampa-bay");
 assert.equal(weeklyAreaHref("northeast-florida"), "/area/northeast-florida");
-assert.equal(weeklyFuelSubject("Galveston Bay / Clear Lake"), "Cheapest posted fuel, Galveston Bay / Clear Lake");
+assert.equal(weeklyFuelTitle("galveston-bay"), "Galveston Bay and Clear Lake");
+assert.equal(weeklyFuelTitle("tampa-bay"), "Tampa Bay");
+assert.equal(weeklyFuelTitle("northeast-florida"), "Northeast Florida");
+assert.equal(weeklyFuelSubject("Galveston Bay and Clear Lake"), "Cheapest posted fuel, Galveston Bay and Clear Lake");
 assert.equal(
-  weeklyFuelIntro("Galveston Bay / Clear Lake"),
-  "Fuel docks in Galveston Bay / Clear Lake, cheapest posted price first. Call before you go.",
+  weeklyFuelIntro("Galveston Bay and Clear Lake"),
+  "Fuel docks in Galveston Bay and Clear Lake, cheapest posted price first. Call before you go.",
 );
+assert.equal(
+  WEEKLY_FUEL_FOOTER,
+  "Dock Posted · Prices exactly as each marina posted them. No price posted? Call the dock.",
+);
+assert.equal(WEEKLY_FUEL_STALE, "Price over a week old. Call the dock.");
+assert.equal(WEEKLY_FUEL_MARINA_SOURCE, "Marina's website");
+assert.equal(WEEKLY_FUEL_GUIDE_SOURCE, "Waterway Guide");
 assert.equal(WEEKLY_FUEL_UNSUBSCRIBE_HREF, "{{unsubscribe_url}}");
 assert.equal(WEEKLY_FUEL_UNSUBSCRIBE_LABEL, "Unsubscribe");
 
-const titles = ["Galveston Bay / Clear Lake", "Tampa Bay", "Northeast Florida"] as const;
+const titles = ["Galveston Bay and Clear Lake", "Tampa Bay", "Northeast Florida"] as const;
 const mails = buildWeeklyFuelMails(docks, readOn);
 assert.deepEqual(
   mails.map((mail) => mail.title),
@@ -91,8 +119,9 @@ for (const now of [readOn, eightDays, octTen, beforeArlingtonRead]) {
   for (const area of HOME_AREAS) {
     const page = buildAreaPage(docks, area.id, now);
     const mail = buildWeeklyFuelMail(docks, area.id, now);
-    assert.equal(mail.subject, `${WEEKLY_FUEL_SUBJECT_LEAD}, ${page.title}`);
-    assert.equal(mail.intro, weeklyFuelIntro(page.title));
+    assert.equal(mail.subject, `${WEEKLY_FUEL_SUBJECT_LEAD}, ${weeklyFuelTitle(area.id)}`);
+    assert.equal(mail.intro, weeklyFuelIntro(weeklyFuelTitle(area.id)));
+    assert.equal(mail.title, weeklyFuelTitle(area.id));
     assert.match(mail.html, new RegExp(`href="${weeklyAreaHref(area.id)}"`));
     assert.match(mail.text, new RegExp(`^${weeklyAreaHref(area.id)}$`, "m"));
     assert.ok(mail.html.includes(AREA_PRICES_HEADING));
@@ -102,12 +131,14 @@ for (const now of [readOn, eightDays, octTen, beforeArlingtonRead]) {
     assert.ok(mail.html.includes(WEEKLY_FUEL_UNSUBSCRIBE_LABEL));
     assert.match(mail.text, new RegExp(`^${WEEKLY_FUEL_UNSUBSCRIBE_LABEL}$`, "m"));
     assert.ok(mail.text.includes(WEEKLY_FUEL_UNSUBSCRIBE_HREF));
-    assert.ok(mail.html.includes(WEEKLY_FUEL_TAGLINE));
-    assert.ok(mail.text.includes(WEEKLY_FUEL_TAGLINE));
+    assert.ok(mail.html.includes(WEEKLY_FUEL_FOOTER));
+    assert.ok(mail.text.includes(WEEKLY_FUEL_FOOTER));
+    assert.doesNotMatch(mail.html, /What they wrote on the pump|Galveston Bay \/ Clear Lake|>Stale</);
+    assert.doesNotMatch(mail.text, /What they wrote on the pump|Galveston Bay \/ Clear Lake|^Stale$/m);
     assert.doesNotMatch(mail.html, LEAK);
     assert.doesNotMatch(mail.text, LEAK);
-    assert.doesNotMatch(mail.html, /Date unknown|your weekly digest|93 E0|Marina staff report, not checked|Boater report/i);
-    assert.doesNotMatch(mail.text, /Date unknown|your weekly digest|93 E0|Marina staff report, not checked|Boater report/i);
+    assert.doesNotMatch(mail.html, /Date unknown|your weekly digest|93 E0|Marina staff report, not checked|Boater report|Waterway Guide/i);
+    assert.doesNotMatch(mail.text, /Date unknown|your weekly digest|93 E0|Marina staff report, not checked|Boater report|Waterway Guide/i);
     assert.doesNotMatch(mail.text, /\bGasoline\b/);
 
     if (page.priced.length === 0) {
@@ -115,25 +146,23 @@ for (const now of [readOn, eightDays, octTen, beforeArlingtonRead]) {
       assert.match(mail.text, new RegExp(AREA_EMPTY_PRICES));
     }
 
-    let last = -1;
+    const headingAt = mail.html.indexOf(AREA_CALL_HEADING);
+    let lastFresh = -1;
     for (const dock of page.priced) {
       const source = docks.find((item) => item.id === dock.id);
       assert.ok(source, dock.id);
-      if (source.lastVerifiedSource !== "marina site") {
-        assert.equal(mail.html.includes(`weekly-dock-${dock.id}`), false, `${dock.id} is not a marina site post`);
-        assert.equal(mail.text.includes(dock.name), false, `${dock.name} is not a marina site post`);
-        continue;
-      }
+      assert.equal(weeklyFuelSource(source), WEEKLY_FUEL_MARINA_SOURCE);
       const href = weeklyDockHref(dock.id);
       const at = mail.html.indexOf(`href="${href}"`);
-      assert.ok(at > last, `${dock.id} left the area order`);
-      last = at;
+      assert.ok(at > 0, dock.id);
       const blockEnd = mail.html.indexOf("weekly-dock-", at + 10);
       const block = mail.html.slice(at, blockEnd === -1 ? undefined : blockEnd);
       assert.ok(mail.html.includes(`data-testid="weekly-dock-${dock.id}"`));
       assert.ok(mail.html.includes(`data-stale="${dock.stale ? "true" : "false"}"`));
       assert.ok(mail.text.includes(href));
       assert.ok(mail.text.includes(dock.name));
+      assert.ok(block.includes(WEEKLY_FUEL_MARINA_SOURCE), dock.id);
+      assert.equal(block.includes(WEEKLY_FUEL_GUIDE_SOURCE), false, dock.id);
       for (const quote of postedQuotes(source)) {
         const label = statedHose(gasWords(quote));
         const figure = formatPrice(quote.pricePerGallon);
@@ -153,11 +182,6 @@ for (const now of [readOn, eightDays, octTen, beforeArlingtonRead]) {
           assert.equal(block.includes(`>${line.label}<`), false, `${dock.id} still uses ${line.label}`);
         }
       }
-      if (dock.stale) {
-        assert.ok(mail.html.includes(`data-testid="weekly-stale-${dock.id}"`));
-        assert.match(mail.html, />Stale</);
-        assert.match(mail.text, /^Stale$/m);
-      }
       const asOf = weeklyFuelAsOf(source, new Date(now));
       if (asOf) {
         assert.ok(block.includes(`As of ${asOf}`), `${dock.id} as of ${asOf}`);
@@ -165,13 +189,29 @@ for (const now of [readOn, eightDays, octTen, beforeArlingtonRead]) {
       } else {
         assert.equal(block.includes("As of "), false, `${dock.id} has no stored day yet`);
       }
-      assert.ok(mail.html.includes("Marina's website"));
-      assert.ok(mail.text.includes("Marina's website"));
-      assert.equal(source.lastVerifiedSource, "marina site");
+      if (dock.stale) {
+        assert.ok(headingAt > 0, "stale docks sit under the call-ahead list");
+        assert.ok(at > headingAt, `${dock.id} stayed in the cheapest list`);
+        assert.ok(block.includes(WEEKLY_FUEL_STALE), dock.id);
+        assert.ok(mail.text.includes(WEEKLY_FUEL_STALE));
+      } else {
+        assert.ok(headingAt === -1 || at < headingAt, `${dock.id} left the cheapest list`);
+        assert.ok(at > lastFresh, `${dock.id} left the cheapest order`);
+        lastFresh = at;
+        assert.equal(block.includes(WEEKLY_FUEL_STALE), false, dock.id);
+      }
     }
     for (const dock of page.callAhead) {
-      assert.equal(mail.html.includes(`/docks/${dock.id}`), false, `${dock.id} has no posted price`);
-      assert.equal(mail.text.includes(dock.name), false, `${dock.name} has no posted price`);
+      const href = weeklyDockHref(dock.id);
+      const at = mail.html.indexOf(`href="${href}"`);
+      assert.ok(at > headingAt, `${dock.id} is missing from the call-ahead list`);
+      assert.ok(mail.html.includes(`data-testid="weekly-call-${dock.id}"`), dock.id);
+      assert.equal(mail.html.includes(`weekly-dock-${dock.id}`), false, `${dock.id} has no posted price`);
+      const callEnd = mail.html.indexOf("weekly-call-", at + 10);
+      const callBlock = mail.html.slice(at, callEnd === -1 ? undefined : callEnd);
+      assert.equal(callBlock.includes("$"), false, `${dock.name} has no posted price`);
+      assert.equal(callBlock.includes(WEEKLY_FUEL_MARINA_SOURCE), false, dock.id);
+      assert.equal(callBlock.includes(WEEKLY_FUEL_GUIDE_SOURCE), false, dock.id);
     }
   }
 }
@@ -188,11 +228,17 @@ assert.match(galveston.html, />Diesel</);
 assert.match(galveston.html, /Marina(?:'|&#x27;)s website/);
 assert.doesNotMatch(galveston.html, />Stale</);
 assert.doesNotMatch(galveston.html, /93 E0|>87</);
+assert.match(galveston.html, /Galveston Bay and Clear Lake/);
+assert.doesNotMatch(galveston.html, /Galveston Bay \/ Clear Lake/);
 assert.match(galveston.text, /Regular gas, 87 octane \$4\.83/);
 assert.match(galveston.text, /Gas, no ethanol, 93 octane \$6\.27/);
 assert.match(galveston.text, /Diesel \$6\.33/);
 assert.doesNotMatch(galveston.text, /93 E0|^87 \$/m);
 assert.doesNotMatch(galveston.text, /^Stale$/m);
+const galvestonHeading = galveston.html.indexOf(AREA_CALL_HEADING);
+assert.ok(galveston.html.indexOf("galveston-yacht-marina") < galvestonHeading);
+assert.ok(galveston.html.indexOf("bayland-marina") > galvestonHeading);
+assert.equal(galveston.html.slice(galvestonHeading).includes("$4.83"), false);
 assert.doesNotMatch(galveston.html, /9AM|fuel dock Daily/);
 
 const history = JSON.parse(readFileSync(path.join(process.cwd(), "data/price-history.json"), "utf8")) as Record<
@@ -248,14 +294,17 @@ const tampaOnRead = buildWeeklyFuelMail(docks, "tampa-bay", readOn);
 assert.match(tampaOnRead.text, /Gas, no ethanol, octane not stated \$6\.05/);
 
 const galvestonLater = buildWeeklyFuelMail(docks, "galveston-bay", eightDays);
+const laterParts = galvestonLater.html.split(AREA_CALL_HEADING);
+assert.equal(laterParts.length, 2);
+assert.equal(laterParts[0]?.includes("$4.83"), false);
+assert.equal(laterParts[0]?.includes("galveston-yacht-marina"), false);
+assert.match(laterParts[1] ?? "", /\$4\.83/);
+assert.match(laterParts[1] ?? "", /Price over a week old\. Call the dock\./);
 assert.match(galvestonLater.html, /data-testid="weekly-stale-galveston-yacht-marina"/);
-assert.match(galvestonLater.html, />Stale</);
-assert.match(galvestonLater.text, /^Stale$/m);
-assert.match(galvestonLater.html, /\$4\.83/);
-assert.equal(
-  galvestonLater.html.includes("Stale"),
-  buildAreaPage(docks, "galveston-bay", eightDays).priced[0]?.stale,
-);
+assert.match(galvestonLater.text, /Price over a week old\. Call the dock\./);
+assert.doesNotMatch(galvestonLater.html, />Stale</);
+assert.doesNotMatch(galvestonLater.text, /^Stale$/m);
+assert.equal(laterParts[0]?.includes(AREA_EMPTY_PRICES), false);
 
 const earlyNorth = buildWeeklyFuelMail(docks, "northeast-florida", beforeArlingtonRead);
 assert.match(earlyNorth.html, /data-testid="weekly-stale-arlington-marina"/);
@@ -263,7 +312,11 @@ assert.match(earlyNorth.html, /\$6\.399/);
 const arlingtonAt = earlyNorth.html.indexOf('data-testid="weekly-dock-arlington-marina"');
 const arlingtonHtml = earlyNorth.html.slice(arlingtonAt, earlyNorth.html.indexOf("weekly-dock-", arlingtonAt + 10));
 assert.doesNotMatch(arlingtonHtml, /As of /);
-assert.match(earlyNorth.text, /Arlington Marina\nJacksonville, FL\nhttps:\/\/www\.dockposted\.com\/docks\/arlington-marina\nStale\n/);
+assert.match(
+  earlyNorth.text,
+  /Arlington Marina\nJacksonville, FL\nhttps:\/\/www\.dockposted\.com\/docks\/arlington-marina\nPrice over a week old\. Call the dock\.\n/,
+);
+assert.ok(earlyNorth.html.indexOf("arlington-marina") > earlyNorth.html.indexOf(AREA_CALL_HEADING));
 assert.doesNotMatch(
   earlyNorth.text.slice(earlyNorth.text.indexOf("Arlington Marina"), earlyNorth.text.indexOf("St. Augustine")),
   /As of /,
@@ -292,7 +345,16 @@ const guide: Dock = {
   id: "guide-priced",
   name: "Guide Priced Dock",
   lastVerifiedSource: "Waterway Guide",
+  lastVerifiedAt: "2026-10-07",
   quotes: [quote({ product: "87", pricePerGallon: 1.11, status: "posted" })],
+};
+const oldGuide: Dock = {
+  ...dockById("blue-marlin-seabrook"),
+  id: "guide-old",
+  name: "Old Guide Dock",
+  lastVerifiedSource: "Waterway Guide",
+  lastVerifiedAt: "2026-08-28",
+  quotes: [quote({ product: "87", pricePerGallon: 1.55, status: "posted" })],
 };
 const boater: Dock = {
   ...dockById("blue-marlin-seabrook"),
@@ -322,7 +384,7 @@ const nasty: Dock = {
   name: `</iframe><script>alert(1)</script>`,
   quotes: [quote({ product: "87", pricePerGallon: 4.5, status: "posted" })],
 };
-const withReports = [...docks, leaked, guide, boater, rawUser, staff, nasty];
+const withReports = [...docks, leaked, guide, oldGuide, boater, rawUser, staff, nasty];
 const staffOnArea = buildAreaPage(withReports, "galveston-bay", readOn).priced.find((dock) => dock.id === "staff-priced");
 assert.equal(staffOnArea?.source, "Marina staff report, not checked");
 const mixed = buildWeeklyFuelMail(withReports, "galveston-bay", readOn);
@@ -330,11 +392,29 @@ assert.match(mixed.html, /Leaky Notes Dock/);
 assert.doesNotMatch(`${mixed.html}\n${mixed.text}`, LEAK);
 assert.doesNotMatch(
   `${mixed.html}\n${mixed.text}`,
-  /\$1\.11|\$1\.22|\$1\.33|\$1\.44|Guide Priced Dock|Boater Priced Dock|User Priced Dock|Staff Priced Dock|Marina staff report, not checked|Boater report/,
+  /\$1\.22|\$1\.33|\$1\.44|Boater Priced Dock|User Priced Dock|Staff Priced Dock|Marina staff report, not checked|Boater report/,
 );
+const mixedHeading = mixed.html.indexOf(AREA_CALL_HEADING);
+const guideAt = mixed.html.indexOf('data-testid="weekly-dock-guide-priced"');
+const guideBlock = mailDockSlice(mixed.html, "guide-priced");
+assert.ok(guideAt > 0 && guideAt < mixedHeading);
+assert.match(guideBlock, /Guide Priced Dock/);
+assert.match(guideBlock, /\$1\.11/);
+assert.match(guideBlock, /Waterway Guide/);
+assert.doesNotMatch(guideBlock, /Marina/);
+assert.equal(guideBlock.includes(WEEKLY_FUEL_STALE), false);
+const oldAt = mixed.html.indexOf('data-testid="weekly-dock-guide-old"');
+const oldBlock = mailDockSlice(mixed.html, "guide-old");
+assert.ok(oldAt > mixedHeading);
+assert.match(oldBlock, /Old Guide Dock/);
+assert.match(oldBlock, /\$1\.55/);
+assert.match(oldBlock, /Waterway Guide/);
+assert.match(oldBlock, /Price over a week old\. Call the dock\./);
+assert.doesNotMatch(oldBlock, /Marina/);
+assert.equal(mixed.html.slice(0, mixedHeading).includes("$1.55"), false);
 assert.match(mixed.html, /&lt;\/iframe&gt;&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
 assert.doesNotMatch(mixed.html, /<script>alert\(1\)<\/script>/);
-assert.equal(mixed.html.includes("/docks/guide-priced"), false);
+assert.ok(mixed.html.includes("/docks/guide-priced"));
 assert.equal(mixed.html.includes("/docks/boater-priced"), false);
 assert.equal(mixed.html.includes("/docks/user-priced"), false);
 assert.equal(mixed.html.includes("/docks/staff-priced"), false);
@@ -396,7 +476,7 @@ const previewHtml = renderToStaticMarkup(
   }),
 );
 assert.match(previewHtml, new RegExp(WEEKLY_FUEL_PREVIEW_NOTE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-assert.match(previewHtml, /Cheapest posted fuel, Galveston Bay \/ Clear Lake/);
+assert.match(previewHtml, /Cheapest posted fuel, Galveston Bay and Clear Lake/);
 assert.match(previewHtml, /srcDoc=|srcdoc=/);
 assert.match(previewHtml, /\$4\.83/);
 assert.match(previewHtml, /https:\/\/www\.dockposted\.com\/docks\/galveston-yacht-marina/);

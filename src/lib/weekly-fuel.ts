@@ -1,9 +1,11 @@
 import {
+  AREA_CALL_HEADING,
   AREA_EMPTY_PRICES,
   AREA_PRICES_HEADING,
   areaTitle,
   buildAreaPage,
   type AreaDock,
+  type AreaPageModel,
   type AreaPriceLine,
 } from "@/lib/area";
 import { DOCK_ORIGIN, priceChecks } from "@/lib/dock-page";
@@ -18,18 +20,24 @@ import {
   sourceInstant,
   statedHose,
 } from "@/lib/format";
+import { plainAreaName } from "@/lib/income";
 import { HOME_AREAS, areaPath, dockTimeZone, homeArea, type HomeAreaId } from "@/lib/posted";
 import { readDocks, readReviewQueue } from "@/lib/store";
 import type { Dock, DockPriceAlert, FuelQuote } from "@/lib/types";
 
-/** Envelope line. The place name is the area page title. */
+/** Envelope line. The place name is the mail's area name, with the slash read as "and". */
 export const WEEKLY_FUEL_SUBJECT_LEAD = "Cheapest posted fuel";
+
+/** "Galveston Bay / Clear Lake" reads as "Galveston Bay and Clear Lake", the same as a dock page. */
+export function weeklyFuelTitle(id: HomeAreaId): string {
+  return plainAreaName(areaTitle(id));
+}
 
 export function weeklyFuelSubject(title: string): string {
   return `${WEEKLY_FUEL_SUBJECT_LEAD}, ${title}`;
 }
 
-/** The area intro, without the call-ahead sentence. This mail lists posted prices only. */
+/** The area intro. Fresh prices are listed cheapest first. A week-old price is not in that list. */
 export function weeklyFuelIntro(title: string): string {
   return `Fuel docks in ${title}, cheapest posted price first. Call before you go.`;
 }
@@ -39,7 +47,17 @@ export const WEEKLY_FUEL_UNSUBSCRIBE_LABEL = "Unsubscribe";
 /** Replaced later by a real unsubscribe URL. Nothing is sent from this build. */
 export const WEEKLY_FUEL_UNSUBSCRIBE_HREF = "{{unsubscribe_url}}";
 
-export const WEEKLY_FUEL_TAGLINE = "What they wrote on the pump. If they didn’t, ask the dock.";
+export const WEEKLY_FUEL_FOOTER =
+  "Dock Posted · Prices exactly as each marina posted them. No price posted? Call the dock.";
+
+/** Same sentence as the dock page when the stored price is past the fresh window. */
+export const WEEKLY_FUEL_STALE = "Price over a week old. Call the dock.";
+
+/** The marina's own page, or a city harbor page stored the same way, printed this price. */
+export const WEEKLY_FUEL_MARINA_SOURCE = "Marina's website";
+
+/** A Waterway Guide row. This is not the marina's own page. */
+export const WEEKLY_FUEL_GUIDE_SOURCE = "Waterway Guide";
 
 export const WEEKLY_FUEL_PREVIEW_TITLE = "Fuel mail preview";
 
@@ -88,7 +106,7 @@ export type WeeklyFuelPreviewLink = {
 export function weeklyFuelPreviewLinks(current: HomeAreaId): WeeklyFuelPreviewLink[] {
   return HOME_AREAS.map((area) => ({
     id: area.id,
-    title: areaTitle(area.id),
+    title: weeklyFuelTitle(area.id),
     href: `/review/fuel/${area.id}`,
     current: area.id === current,
   }));
@@ -114,7 +132,7 @@ function sourceLine(dock: AreaDock): string {
 function dockBlock(dock: AreaDock): string {
   const id = escapeHtml(dock.id);
   const stale = dock.stale
-    ? `<span data-testid="weekly-stale-${id}" style="font-family:${SANS};font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:${STALE};">Stale</span>`
+    ? `<p data-testid="weekly-stale-${id}" style="margin:8px 0 0;font-family:${SANS};font-size:13px;line-height:1.4;color:${STALE};">${escapeHtml(WEEKLY_FUEL_STALE)}</p>`
     : "";
   const lines = dock.lines
     .map((line) => {
@@ -134,14 +152,10 @@ function dockBlock(dock: AreaDock): string {
   return `<table role="presentation" data-testid="weekly-dock-${id}" data-stale="${dock.stale ? "true" : "false"}" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:12px;background-color:${FOG};border:1px solid ${LINE};border-radius:16px;">
     <tr>
       <td style="padding:14px 16px 12px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-          <tr>
-            <td style="font-family:${SERIF};font-size:20px;line-height:1.25;color:${NAVY};">
-              <a href="${escapeHtml(weeklyDockHref(dock.id))}" style="color:${NAVY};text-decoration:underline;">${escapeHtml(dock.name)}</a><span style="font-family:${SANS};font-size:14px;color:${INK};"> · ${escapeHtml(dock.city)}, ${escapeHtml(dock.state)}</span>
-            </td>
-            <td align="right" valign="top" style="padding-left:8px;white-space:nowrap;">${stale}</td>
-          </tr>
-        </table>
+        <p style="margin:0;font-family:${SERIF};font-size:20px;line-height:1.25;color:${NAVY};">
+          <a href="${escapeHtml(weeklyDockHref(dock.id))}" style="color:${NAVY};text-decoration:underline;">${escapeHtml(dock.name)}</a><span style="font-family:${SANS};font-size:14px;color:${INK};"> · ${escapeHtml(dock.city)}, ${escapeHtml(dock.state)}</span>
+        </p>
+        ${stale}
         ${note}
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:8px;">${lines}</table>
         ${asOf}
@@ -151,30 +165,45 @@ function dockBlock(dock: AreaDock): string {
   </table>`;
 }
 
+function plainDock(dock: AreaDock, lines: string[]): void {
+  lines.push(dock.name);
+  lines.push(`${dock.city}, ${dock.state}`);
+  lines.push(weeklyDockHref(dock.id));
+  if (dock.stale) lines.push(WEEKLY_FUEL_STALE);
+  if (dock.note) lines.push(dock.note);
+  for (const line of dock.lines) lines.push(`${line.label} ${line.figure}`);
+  if (dock.asOf) lines.push(`As of ${dock.asOf}`);
+  if (dock.source) lines.push(dock.source);
+  lines.push("");
+}
+
 function plainText(input: {
   subject: string;
   intro: string;
   title: string;
   areaHref: string;
-  priced: AreaDock[];
+  fresh: AreaDock[];
+  callAhead: AreaDock[];
 }): string {
   const lines: string[] = [input.subject, "", input.intro, ""];
-  if (input.priced.length === 0) {
+  const stalePriced = input.callAhead.some((dock) => dock.lines.length > 0);
+  if (input.fresh.length === 0 && !stalePriced) {
     lines.push(AREA_EMPTY_PRICES, "");
   }
-  for (const dock of input.priced) {
-    lines.push(dock.name);
-    lines.push(`${dock.city}, ${dock.state}`);
-    lines.push(weeklyDockHref(dock.id));
-    if (dock.stale) lines.push("Stale");
-    if (dock.note) lines.push(dock.note);
-    for (const line of dock.lines) lines.push(`${line.label} ${line.figure}`);
-    if (dock.asOf) lines.push(`As of ${dock.asOf}`);
-    if (dock.source) lines.push(dock.source);
-    lines.push("");
+  for (const dock of input.fresh) plainDock(dock, lines);
+  if (input.callAhead.length > 0) {
+    lines.push(AREA_CALL_HEADING, "");
+    for (const dock of input.callAhead) plainDock(dock, lines);
   }
-  lines.push(input.title, input.areaHref, "", WEEKLY_FUEL_UNSUBSCRIBE_LABEL, WEEKLY_FUEL_UNSUBSCRIBE_HREF, "", "Dock Posted", WEEKLY_FUEL_TAGLINE);
+  lines.push(input.title, input.areaHref, "", WEEKLY_FUEL_UNSUBSCRIBE_LABEL, WEEKLY_FUEL_UNSUBSCRIBE_HREF, "", WEEKLY_FUEL_FOOTER);
   return lines.join("\n");
+}
+
+function callRow(dock: AreaDock): string {
+  const id = escapeHtml(dock.id);
+  return `<p data-testid="weekly-call-${id}" style="margin:14px 0 0;font-family:${SERIF};font-size:18px;line-height:1.35;color:${NAVY};">
+    <a href="${escapeHtml(weeklyDockHref(dock.id))}" style="color:${NAVY};text-decoration:underline;">${escapeHtml(dock.name)}</a><span style="font-family:${SANS};font-size:14px;color:${INK};"> · ${escapeHtml(dock.city)}, ${escapeHtml(dock.state)}</span>
+  </p>`;
 }
 
 function htmlMail(input: {
@@ -182,14 +211,25 @@ function htmlMail(input: {
   intro: string;
   title: string;
   areaHref: string;
-  priced: AreaDock[];
+  fresh: AreaDock[];
+  callAhead: AreaDock[];
 }): string {
   const title = escapeHtml(input.title);
   const areaHref = escapeHtml(input.areaHref);
-  const body =
-    input.priced.length === 0
-      ? `<p data-testid="weekly-empty" style="margin:20px 0 0;font-family:${SANS};font-size:16px;line-height:1.5;color:${INK};">${escapeHtml(AREA_EMPTY_PRICES)}</p>`
-      : input.priced.map(dockBlock).join("");
+  const stalePriced = input.callAhead.some((dock) => dock.lines.length > 0);
+  const freshBody =
+    input.fresh.length === 0
+      ? stalePriced
+        ? ""
+        : `<p data-testid="weekly-empty" style="margin:20px 0 0;font-family:${SANS};font-size:16px;line-height:1.5;color:${INK};">${escapeHtml(AREA_EMPTY_PRICES)}</p>`
+      : input.fresh.map(dockBlock).join("");
+  const callBody =
+    input.callAhead.length === 0
+      ? ""
+      : `<h2 data-testid="weekly-call-heading" style="margin:28px 0 0;font-family:${SERIF};font-size:22px;line-height:1.25;font-weight:600;color:${NAVY};">${escapeHtml(AREA_CALL_HEADING)}</h2>${input.callAhead
+          .map((dock) => (dock.lines.length > 0 ? dockBlock(dock) : callRow(dock)))
+          .join("")}`;
+  const body = `${freshBody}${callBody}`;
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -219,7 +259,7 @@ function htmlMail(input: {
                 <p style="margin:28px 0 0;font-family:${SANS};font-size:13px;line-height:1.5;">
                   <a data-testid="weekly-unsubscribe" href="${WEEKLY_FUEL_UNSUBSCRIBE_HREF}" style="color:${INK};text-decoration:underline;">${WEEKLY_FUEL_UNSUBSCRIBE_LABEL}</a>
                 </p>
-                <p style="margin:18px 0 0;font-family:${SANS};font-size:13px;line-height:1.5;color:${NAVY};">Dock Posted · ${escapeHtml(WEEKLY_FUEL_TAGLINE)}</p>
+                <p style="margin:18px 0 0;font-family:${SANS};font-size:13px;line-height:1.5;color:${NAVY};">${escapeHtml(WEEKLY_FUEL_FOOTER)}</p>
               </td>
             </tr>
           </table>
@@ -265,13 +305,28 @@ function samePrices(left: number[], right: number[]): boolean {
  * When an earlier marina-site check already stored the same prices, that check is the source date.
  * A date-only value is that calendar day. It is not read as UTC midnight in Chicago.
  */
-export function weeklyFuelCheckedOn(dock: Dock): string | null {
-  if (dock.lastVerifiedSource !== "marina site") return null;
-  const prices = postedQuotes(dock)
+function postedPrices(dock: Dock): number[] {
+  return postedQuotes(dock)
     .map((quote) => quote.pricePerGallon)
     .filter((price): price is number => price != null)
     .sort((left, right) => left - right);
-  if (prices.length === 0) return null;
+}
+
+function storedDay(dock: Dock): string | null {
+  return dock.lastVerifiedAt && DATE_ONLY.test(dock.lastVerifiedAt) ? dock.lastVerifiedAt : null;
+}
+
+export function weeklyFuelSource(dock: Dock): string | null {
+  if (dock.lastVerifiedSource === "marina site") return WEEKLY_FUEL_MARINA_SOURCE;
+  if (dock.lastVerifiedSource === "Waterway Guide") return WEEKLY_FUEL_GUIDE_SOURCE;
+  return null;
+}
+
+export function weeklyFuelCheckedOn(dock: Dock): string | null {
+  if (!weeklyFuelSource(dock) || postedPrices(dock).length === 0) return null;
+  if (dock.lastVerifiedSource === "Waterway Guide") return storedDay(dock);
+  if (dock.lastVerifiedSource !== "marina site") return null;
+  const prices = postedPrices(dock);
   const matches = priceChecks(dock).filter((check) => {
     if (!DATE_ONLY.test(check.checkedOn)) return false;
     const checkPrices = check.lines.map((line) => line.pricePerGallon).sort((left, right) => left - right);
@@ -292,47 +347,107 @@ export function weeklyFuelAsOf(dock: Dock, now = new Date()): string | null {
   return formatDate(day);
 }
 
-/**
- * Cheapest posted prices, in the same order as the area page.
- * Marina and city website posts only. A staff report or a boater report stays off.
- * The as-of line is the stored check for these prices, not the re-read day and not today.
- * Does not send.
- */
-function mailPriced(docks: Dock[], rows: AreaDock[], now: number): AreaDock[] {
-  const byId = new Map(docks.map((dock) => [dock.id, dock]));
-  const priced: AreaDock[] = [];
-  for (const row of rows) {
-    const dock = byId.get(row.id);
-    if (!dock || dock.lastVerifiedSource !== "marina site") continue;
-    const lines = mailLines(dock);
-    if (lines.length === 0) continue;
-    priced.push({
-      ...row,
-      lines,
-      asOf: weeklyFuelAsOf(dock, new Date(now)),
-      source: "Marina's website",
-    });
+function sourceHref(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
+    return parsed.toString();
+  } catch {
+    return null;
   }
-  return priced;
+}
+
+/** 87 when they named it, otherwise unlabeled gasoline. A higher octane is not the sort key. */
+function cheapestGas(dock: Dock): number | null {
+  const priced = (product: FuelQuote["product"]) =>
+    dock.quotes
+      .filter((quote) => quote.product === product && quote.status === "posted" && quote.pricePerGallon != null)
+      .map((quote) => quote.pricePerGallon as number);
+  const eightySeven = priced("87");
+  if (eightySeven.length > 0) return Math.min(...eightySeven);
+  const gasoline = priced("gasoline");
+  if (gasoline.length > 0) return Math.min(...gasoline);
+  return null;
+}
+
+function byCheapestThenName(left: AreaDock, right: AreaDock, byId: Map<string, Dock>): number {
+  const a = byId.get(left.id);
+  const b = byId.get(right.id);
+  const aPrice = a ? cheapestGas(a) : null;
+  const bPrice = b ? cheapestGas(b) : null;
+  if (aPrice != null && bPrice != null && aPrice !== bPrice) return aPrice - bPrice;
+  if (aPrice != null && bPrice == null) return -1;
+  if (aPrice == null && bPrice != null) return 1;
+  return left.name.localeCompare(right.name, "en");
+}
+
+function pricedMailDock(dock: Dock, row: AreaDock, now: number): AreaDock | null {
+  const source = weeklyFuelSource(dock);
+  if (!source) return null;
+  const lines = mailLines(dock);
+  if (lines.length === 0) return null;
+  return {
+    ...row,
+    lines,
+    asOf: weeklyFuelAsOf(dock, new Date(now)),
+    source,
+    sourceHref: sourceHref(dock.sourceUrl),
+    stale: row.stale,
+  };
 }
 
 /**
- * One area's cheapest posted prices, in the same order as that area page.
- * Marina and city posts only. Does not send.
+ * Fresh marina, city, and Waterway Guide prices, cheapest first.
+ * A price over a week old leaves that ranking and sits with the call-ahead docks.
+ * A staff report or a boater report stays off. Does not send.
+ */
+function mailSections(
+  docks: Dock[],
+  page: AreaPageModel,
+  now: number,
+): { fresh: AreaDock[]; callAhead: AreaDock[] } {
+  const byId = new Map(docks.map((dock) => [dock.id, dock]));
+  const fresh: AreaDock[] = [];
+  const stale: AreaDock[] = [];
+  const seen = new Set<string>();
+  for (const row of [...page.priced, ...page.callAhead]) {
+    const dock = byId.get(row.id);
+    if (!dock || seen.has(row.id)) continue;
+    const priced = pricedMailDock(dock, row, now);
+    if (!priced) {
+      if (mailLines(dock).length > 0) seen.add(row.id);
+      continue;
+    }
+    seen.add(row.id);
+    if (row.stale) stale.push(priced);
+    else fresh.push(priced);
+  }
+  fresh.sort((left, right) => byCheapestThenName(left, right, byId));
+  stale.sort((left, right) => byCheapestThenName(left, right, byId));
+  const unpriced = page.callAhead
+    .filter((row) => !seen.has(row.id))
+    .map((row) => ({ ...row, lines: [], asOf: null, source: null, sourceHref: null, stale: false }));
+  return { fresh, callAhead: [...stale, ...unpriced] };
+}
+
+/**
+ * One area's mail. The heading uses the plain area name. Does not send.
  */
 export function buildWeeklyFuelMail(docks: Dock[], area: HomeAreaId, now = Date.now()): WeeklyFuelMail {
   const page = buildAreaPage(docks, area, now);
-  const subject = weeklyFuelSubject(page.title);
-  const intro = weeklyFuelIntro(page.title);
+  const title = weeklyFuelTitle(page.id);
+  const subject = weeklyFuelSubject(title);
+  const intro = weeklyFuelIntro(title);
   const areaHref = weeklyAreaHref(page.id);
-  const priced = mailPriced(docks, page.priced, now);
+  const { fresh, callAhead } = mailSections(docks, page, now);
   return {
     id: page.id,
-    title: page.title,
+    title,
     subject,
     intro,
-    text: plainText({ subject, intro, title: page.title, areaHref, priced }),
-    html: htmlMail({ subject, intro, title: page.title, areaHref, priced }),
+    text: plainText({ subject, intro, title, areaHref, fresh, callAhead }),
+    html: htmlMail({ subject, intro, title, areaHref, fresh, callAhead }),
   };
 }
 
