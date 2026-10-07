@@ -55,6 +55,13 @@ export type DockAccess = "public" | "private" | "members";
 
 export type DockFlag = "last-pump" | "still-open" | "west-of-146";
 
+/** Approach or dockside depth from the marina or city page. Omitted when they did not post one. */
+export interface PostedDepth {
+  text: string;
+  sourceUrl: string;
+  checkedOn: string;
+}
+
 export interface FuelQuote {
   product: Product;
   pricePerGallon: number | null;
@@ -86,6 +93,7 @@ export interface Dock {
   flags?: DockFlag[];
   pay?: PayKind | null;
   closed?: boolean;
+  depth?: PostedDepth | null;
 }
 
 export interface PriceReport {
