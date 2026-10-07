@@ -120,6 +120,11 @@ function PriceCard({ card, miles }: { card: PostedCard; miles: number | null }) 
           As of {asOf}
         </p>
       ) : null}
+      {card.stillPosted ? (
+        <p data-testid={`posted-still-${card.id}`} className="mt-0.5 text-[11px] text-[color:var(--ink)]/45">
+          {card.stillPosted}
+        </p>
+      ) : null}
 
       <div className="mt-2 flex gap-2">
         {card.callHref ? (

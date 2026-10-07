@@ -25,6 +25,7 @@ import {
   parseHomeArea,
   postedFigure,
   quotesOnHome,
+  stillPostedLine,
   toPostedCard,
 } from "../src/lib/posted";
 import { readDocks } from "../src/lib/store";
@@ -161,8 +162,9 @@ assert.ok(cardsInArea(cards, "galveston-bay").every((card, index, list) => index
 const gym = line("galveston-yacht-marina", "87");
 assert.equal(gym.match.label, "87");
 assert.equal(gym.match.figure, "$4.83");
-assert.equal(gym.match.asOf, "Oct 7, 2026");
+assert.equal(gym.match.asOf, "Oct 5, 2026");
 assert.equal(gym.card.stale, false);
+assert.equal(gym.card.stillPosted, "Still posted on the marina's page Oct 7.");
 const gymE0 = line("galveston-yacht-marina", "93");
 assert.equal(gymE0.match.label, "93 E0");
 assert.equal(gymE0.match.figure, "$6.27");
@@ -175,17 +177,20 @@ assert.equal(lambs.match.label, "90 E0");
 assert.equal(lambs.match.figure, "$5.15");
 assert.doesNotMatch(lambs.match.label, /regular/i);
 assert.equal(lambs.card.stale, false);
+assert.equal(lambs.card.stillPosted, null);
 
 const madeira = line("madeira-beach-municipal-marina", "gasoline");
 assert.equal(madeira.match.label, "Gasoline E0");
 assert.equal(madeira.match.figure, "$6.05");
 assert.doesNotMatch(madeira.match.label, /regular/i);
 assert.equal(madeira.card.stale, false);
+assert.equal(madeira.card.stillPosted, null);
 
 const stAugustine = line("st-augustine-municipal-marina", "gasoline");
 assert.equal(stAugustine.match.label, "Gasoline");
 assert.equal(stAugustine.match.figure, "$6.59");
 assert.equal(stAugustine.match.asOf, "Oct 7, 2026");
+assert.equal(stAugustine.card.stillPosted, null);
 assert.doesNotMatch(stAugustine.match.label, /regular/i);
 
 const beforeArlington = line("arlington-marina", "gasoline", Date.parse("2026-10-03T21:00:00Z"));
@@ -198,6 +203,7 @@ assert.equal(arlington.match.label, "Gasoline");
 assert.equal(arlington.match.figure, "$6.399");
 assert.equal(arlington.match.asOf, "Oct 5, 2026");
 assert.equal(arlington.card.stale, false);
+assert.equal(arlington.card.stillPosted, null);
 assert.equal(line("arlington-marina", "diesel", arlingtonOn).match.figure, "$5.999");
 assert.equal(line("arlington-marina", "diesel", arlingtonOn).match.asOf, "Oct 5, 2026");
 
@@ -253,6 +259,37 @@ for (const now of [eightDays, fourteenDays, pastFourteen, octNine, octTen]) {
 const gymStale = line("galveston-yacht-marina", "87", eightDays);
 assert.equal(gymStale.card.stale, true);
 assert.equal(gymStale.match.figure, "$4.83");
+assert.equal(gymStale.match.asOf, "Oct 5, 2026");
+assert.equal(gymStale.card.stillPosted, "Still posted on the marina's page Oct 7.");
+const gymFresh = line("galveston-yacht-marina", "87", Date.parse("2026-10-13T12:00:00Z"));
+assert.equal(gymFresh.card.stale, false);
+assert.equal(gymFresh.match.asOf, "Oct 5, 2026");
+assert.equal(gymFresh.card.stillPosted, "Still posted on the marina's page Oct 7.");
+const gymForLine = dockById("galveston-yacht-marina");
+assert.equal(stillPostedLine({ ...gymForLine, lastVerifiedAt: "2026-10-05" }, new Date(readOn)), null);
+assert.equal(
+  stillPostedLine(
+    {
+      ...gymForLine,
+      notes: "City rates page re-read with the same prices.",
+    },
+    new Date(readOn),
+  ),
+  "Still posted on the city's page Oct 7.",
+);
+assert.equal(
+  stillPostedLine(
+    {
+      ...gymForLine,
+      quotes: gymForLine.quotes.map((quote) =>
+        quote.product === "diesel" ? { ...quote, pricePerGallon: 7.1 } : quote,
+      ),
+    },
+    new Date(readOn),
+  ),
+  null,
+);
+assert.equal(stillPostedLine(gymForLine, new Date("2026-10-06T05:00:00Z")), null);
 assert.equal(line("lambs-yacht-center", "90", eightDays).card.stale, true);
 assert.equal(line("lambs-yacht-center", "90", eightDays).match.figure, "$5.15");
 assert.equal(line("madeira-beach-municipal-marina", "gasoline", eightDays).card.stale, false);
@@ -447,13 +484,19 @@ for (const [id, label] of [
 
 const gymHtml = sliceBetween(homeHtml, 'data-testid="posted-card-galveston-yacht-marina"', "</article>");
 assert.equal((gymHtml.match(/As of /g) ?? []).length, 1);
-assert.match(gymHtml, /As of Oct 7, 2026/);
+assert.match(gymHtml, /As of Oct 5, 2026/);
+assert.doesNotMatch(gymHtml, /As of Oct 7, 2026/);
+assert.match(gymHtml, /Still posted on the marina(?:'|&#x27;)s page Oct 7\./);
+assert.match(gymHtml, /data-testid="posted-still-galveston-yacht-marina"/);
+assert.ok(gymHtml.indexOf("posted-asof-galveston-yacht-marina") < gymHtml.indexOf("posted-still-galveston-yacht-marina"));
+assert.equal((homeHtml.match(/Still posted/g) ?? []).length, 1);
 assert.doesNotMatch(gymHtml, /posted-asof-galveston-yacht-marina-87/);
 const arlingtonHtml = sliceBetween(homeHtml, 'data-testid="posted-card-arlington-marina"', "</article>");
 assert.doesNotMatch(arlingtonHtml, />\s*Stale\s*</);
 assert.match(arlingtonHtml, /\$6\.399/);
 assert.match(arlingtonHtml, /As of Oct 5, 2026/);
 assert.doesNotMatch(arlingtonHtml, /Date unknown/);
+assert.doesNotMatch(arlingtonHtml, /Still posted/);
 
 const mixedDates = toPostedCard(dockById("galveston-yacht-marina"), readOn);
 assert.ok(mixedDates);
@@ -528,12 +571,12 @@ assert.equal(gymDock.lastVerifiedAt, "2026-10-07");
 assert.equal(gymDock.lastVerifiedSource, "marina site");
 assert.equal(gymDock.sourceUrl, "https://galvestonyachtbasin.com/");
 assert.equal(dockTimeZone(gymDock), "America/Chicago");
-assert.equal(asOfText(gymDock, new Date()), "Oct 7, 2026");
+assert.equal(asOfText(gymDock, new Date()), "Oct 5, 2026");
 const gymNow = toPostedCard(gymDock, Date.now());
 assert.ok(gymNow);
 assert.equal(gymNow.lines.length, 3);
 for (const row of gymNow.lines) {
-  assert.equal(row.asOf, "Oct 7, 2026");
+  assert.equal(row.asOf, "Oct 5, 2026");
   assert.equal(row.asOf, asOfText(gymDock, new Date()));
   assert.notEqual(row.figure, "$5.28");
   assert.notEqual(row.label, "90 E0");
@@ -653,7 +696,7 @@ readDocks()
     const liveCard = toPostedCard(liveGym, Date.now());
     assert.ok(liveCard);
     for (const row of liveCard.lines) {
-      assert.equal(row.asOf, "Oct 7, 2026");
+      assert.equal(row.asOf, "Oct 5, 2026");
       assert.notEqual(row.figure, "$5.28");
     }
     console.log(`posted ok — ${cards.length} docks on the home list`);

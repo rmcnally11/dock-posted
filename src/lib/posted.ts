@@ -1,6 +1,7 @@
 import { dockPath } from "@/lib/board-query";
 import { chicagoCivilDate, civilDate, formatPrice, sourceInstant, telHref } from "@/lib/format";
 import { freshness } from "@/lib/freshness";
+import { priceCheckIso, stillPostedCopy, unchangedRecheck } from "@/lib/price-check";
 import type { Dock, FuelQuote } from "@/lib/types";
 
 export const DATE_UNKNOWN = "Date unknown";
@@ -116,16 +117,18 @@ export function dockTimeZone(dock: Pick<Dock, "state" | "lng">): string {
 }
 
 /**
- * The as-of line is the stored source day, in the dock's zone.
- * A missing day, or a day after today in Chicago, is not a source date.
+ * The as-of line is the stored price check, in the dock's zone.
+ * A re-read of the same prices does not move it. A missing day, or a day
+ * after today in Chicago, is not a source date.
  */
 export function asOfText(
-  dock: Pick<Dock, "lastVerifiedAt" | "state" | "lng">,
+  dock: Pick<Dock, "id" | "quotes" | "lastVerifiedAt" | "lastVerifiedSource" | "state" | "lng">,
   now = new Date(),
 ): string {
-  if (!dock.lastVerifiedAt) return DATE_UNKNOWN;
+  const checkedOn = priceCheckIso(dock);
+  if (!checkedOn) return DATE_UNKNOWN;
   const zone = dockTimeZone(dock);
-  const instant = sourceInstant(dock.lastVerifiedAt);
+  const instant = sourceInstant(checkedOn);
   if (!instant) return DATE_UNKNOWN;
   const day = civilDate(instant, zone);
   if (day > chicagoCivilDate(now)) return DATE_UNKNOWN;
@@ -140,6 +143,24 @@ export function asOfText(
 export function postedIsStale(dock: Dock, now = Date.now()): boolean {
   if (asOfText(dock, new Date(now)) === DATE_UNKNOWN) return true;
   return freshness(dock, now) === "stale";
+}
+
+/**
+ * A later re-read of the same prices. The as-of date stays the stored check.
+ * Same dates, a new price, or a read after today in Chicago stay silent.
+ * The stale flag still uses the re-read.
+ */
+export function stillPostedLine(
+  dock: Pick<Dock, "id" | "quotes" | "lastVerifiedAt" | "lastVerifiedSource" | "notes" | "state" | "lng">,
+  now = new Date(),
+): string | null {
+  const recheck = unchangedRecheck(dock);
+  if (!recheck) return null;
+  if (asOfText(dock, now) === DATE_UNKNOWN) return null;
+  const instant = sourceInstant(recheck.readOn);
+  if (!instant) return null;
+  if (civilDate(instant, dockTimeZone(dock)) > chicagoCivilDate(now)) return null;
+  return stillPostedCopy(dock, recheck.readOn);
 }
 
 /** A dollar stays up only when the source is the marina. A user report is dropped. */
@@ -223,6 +244,8 @@ export type PostedCard = {
   stale: boolean;
   hasPrice: boolean;
   note: string | null;
+  /** Set when a later re-read kept the same prices. Absent when the dates match. */
+  stillPosted: string | null;
   lines: PostedLine[];
 };
 
@@ -265,6 +288,7 @@ export function toPostedCard(dock: Dock, now = Date.now()): PostedCard | null {
   if (!areaId) return null;
   const phoneLink = callHref(dock.phone);
   const lines = linesFor(dock, now);
+  const hasPrice = lines.some((line) => line.figure.startsWith("$"));
   return {
     id: dock.id,
     name: dock.name,
@@ -279,8 +303,9 @@ export function toPostedCard(dock: Dock, now = Date.now()): PostedCard | null {
     lat: dock.lat,
     lng: dock.lng,
     stale: postedIsStale(dock, now),
-    hasPrice: lines.some((line) => line.figure.startsWith("$")),
+    hasPrice,
     note: cardNote(dock),
+    stillPosted: hasPrice ? stillPostedLine(dock, new Date(now)) : null,
     lines,
   };
 }

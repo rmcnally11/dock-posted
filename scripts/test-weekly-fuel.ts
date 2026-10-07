@@ -226,6 +226,9 @@ assert.match(galveston.html, /Regular gas, 87 octane/);
 assert.match(galveston.html, /Gas, no ethanol, 93 octane/);
 assert.match(galveston.html, />Diesel</);
 assert.match(galveston.html, /Marina(?:'|&#x27;)s website/);
+assert.match(galveston.html, /Still posted on the marina's page Oct 7\./);
+assert.match(galveston.html, /data-testid="weekly-still-galveston-yacht-marina"/);
+assert.match(galveston.text, /As of Oct 5, 2026\nStill posted on the marina's page Oct 7\./);
 assert.doesNotMatch(galveston.html, />Stale</);
 assert.doesNotMatch(galveston.html, /93 E0|>87</);
 assert.match(galveston.html, /Galveston Bay and Clear Lake/);
@@ -256,6 +259,22 @@ assert.equal(gymMatches[0]?.checkedOn, "2026-10-05");
 assert.equal(dockById("galveston-yacht-marina").lastVerifiedAt, "2026-10-07");
 assert.equal(weeklyFuelCheckedOn(dockById("galveston-yacht-marina")), "2026-10-05");
 assert.equal(gymHistory.some((row) => row.checkedOn === "2026-10-07"), false);
+const changedGym: Dock = {
+  ...dockById("galveston-yacht-marina"),
+  quotes: dockById("galveston-yacht-marina").quotes.map((quote) =>
+    quote.product === "diesel" ? { ...quote, pricePerGallon: 7.1 } : quote,
+  ),
+};
+assert.equal(weeklyFuelCheckedOn(changedGym), "2026-10-07");
+assert.equal(weeklyFuelAsOf(changedGym, new Date(readOn)), "Oct 7, 2026");
+const changedMail = buildWeeklyFuelMail(
+  docks.map((dock) => (dock.id === changedGym.id ? changedGym : dock)),
+  "galveston-bay",
+  readOn,
+);
+assert.match(changedMail.text, /As of Oct 7, 2026/);
+assert.doesNotMatch(changedMail.text, /Still posted/);
+assert.doesNotMatch(changedMail.html, /Still posted/);
 
 const galvestonDays = [
   "2026-10-05T05:00:00Z",
@@ -272,26 +291,50 @@ for (const iso of galvestonDays) {
   assert.match(pinned.html, /As of Oct 5, 2026/, iso);
   assert.doesNotMatch(pinned.text, /As of Oct 4, 2026|As of Oct 6, 2026|As of Oct 7, 2026/, iso);
   assert.doesNotMatch(pinned.html, /As of Oct 4, 2026|As of Oct 6, 2026|As of Oct 7, 2026/, iso);
+  if (Date.parse(iso) >= Date.parse("2026-10-07T05:00:00Z")) {
+    assert.match(pinned.text, /Still posted on the marina's page Oct 7\./, iso);
+    assert.match(pinned.html, /Still posted on the marina's page Oct 7\./, iso);
+  } else {
+    assert.doesNotMatch(pinned.text, /Still posted/, iso);
+    assert.doesNotMatch(pinned.html, /Still posted/, iso);
+  }
 }
 const nightBefore = buildWeeklyFuelMail(docks, "galveston-bay", Date.parse("2026-10-05T04:00:00Z"));
 const nightAt = nightBefore.html.indexOf('data-testid="weekly-dock-galveston-yacht-marina"');
 const nightBlock = nightBefore.html.slice(nightAt, nightBefore.html.indexOf("weekly-dock-", nightAt + 10));
 assert.equal(nightBlock.includes("As of "), false);
+assert.equal(nightBlock.includes("Still posted"), false);
 assert.doesNotMatch(nightBefore.text, /As of Oct 4, 2026|As of Oct 5, 2026|As of Oct 7, 2026/);
+assert.doesNotMatch(nightBefore.text, /Still posted/);
 
 const stillFresh = Date.parse("2026-10-13T12:00:00Z");
 const galvestonFresh = buildWeeklyFuelMail(docks, "galveston-bay", stillFresh);
 assert.equal(galvestonFresh.html.includes("weekly-stale-galveston-yacht-marina"), false);
 assert.match(galvestonFresh.text, /As of Oct 5, 2026/);
+assert.match(galvestonFresh.text, /Still posted on the marina's page Oct 7\./);
 assert.equal(buildAreaPage(docks, "galveston-bay", stillFresh).priced[0]?.stale, false);
 
 assert.equal(weeklyFuelCheckedOn(dockById("st-augustine-municipal-marina")), "2026-10-07");
 const northOnRead = buildWeeklyFuelMail(docks, "northeast-florida", readOn);
 assert.match(northOnRead.text, /St\. Augustine Municipal Marina[\s\S]*As of Oct 7, 2026/);
+assert.doesNotMatch(northOnRead.text, /Still posted/);
 assert.match(northOnRead.text, /Gas, octane not stated \$6\.59/);
 assert.match(northOnRead.text, /Gas, no ethanol, 90 octane \$5\.15/);
 const tampaOnRead = buildWeeklyFuelMail(docks, "tampa-bay", readOn);
 assert.match(tampaOnRead.text, /Gas, no ethanol, octane not stated \$6\.05/);
+assert.doesNotMatch(tampaOnRead.text, /Still posted/);
+const cityMail = buildWeeklyFuelMail(
+  docks.map((dock) =>
+    dock.id === "galveston-yacht-marina"
+      ? { ...dock, notes: "City page re-read 7 Oct 2026 with the same prices." }
+      : dock,
+  ),
+  "galveston-bay",
+  readOn,
+);
+assert.match(cityMail.text, /Still posted on the city's page Oct 7\./);
+assert.match(cityMail.html, /Still posted on the city's page Oct 7\./);
+assert.doesNotMatch(cityMail.text, /marina's page/);
 
 const galvestonLater = buildWeeklyFuelMail(docks, "galveston-bay", eightDays);
 const laterParts = galvestonLater.html.split(AREA_CALL_HEADING);
@@ -302,6 +345,8 @@ assert.match(laterParts[1] ?? "", /\$4\.83/);
 assert.match(laterParts[1] ?? "", /Price over a week old\. Call the dock\./);
 assert.match(galvestonLater.html, /data-testid="weekly-stale-galveston-yacht-marina"/);
 assert.match(galvestonLater.text, /Price over a week old\. Call the dock\./);
+assert.match(galvestonLater.text, /Still posted on the marina's page Oct 7\./);
+assert.match(galvestonLater.html, /Still posted on the marina's page Oct 7\./);
 assert.doesNotMatch(galvestonLater.html, />Stale</);
 assert.doesNotMatch(galvestonLater.text, /^Stale$/m);
 assert.equal(laterParts[0]?.includes(AREA_EMPTY_PRICES), false);

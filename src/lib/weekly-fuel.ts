@@ -8,7 +8,8 @@ import {
   type AreaPageModel,
   type AreaPriceLine,
 } from "@/lib/area";
-import { DOCK_ORIGIN, priceChecks } from "@/lib/dock-page";
+import { DOCK_ORIGIN } from "@/lib/dock-page";
+import { priceCheckIso } from "@/lib/price-check";
 import { postedQuotes } from "@/lib/freshness";
 import {
   chicagoCivilDate,
@@ -149,6 +150,9 @@ function dockBlock(dock: AreaDock): string {
   const asOf = dock.asOf
     ? `<p data-testid="weekly-asof-${id}" style="margin:8px 0 0;font-family:${SANS};font-size:11px;line-height:1.4;color:${MUTED};">As of ${escapeHtml(dock.asOf)}</p>`
     : "";
+  const stillPosted = dock.stillPosted
+    ? `<p data-testid="weekly-still-${id}" style="margin:4px 0 0;font-family:${SANS};font-size:11px;line-height:1.4;color:${MUTED};">${escapeHtml(dock.stillPosted)}</p>`
+    : "";
   return `<table role="presentation" data-testid="weekly-dock-${id}" data-stale="${dock.stale ? "true" : "false"}" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:12px;background-color:${FOG};border:1px solid ${LINE};border-radius:16px;">
     <tr>
       <td style="padding:14px 16px 12px;">
@@ -159,6 +163,7 @@ function dockBlock(dock: AreaDock): string {
         ${note}
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:8px;">${lines}</table>
         ${asOf}
+        ${stillPosted}
         ${sourceLine(dock)}
       </td>
     </tr>
@@ -173,6 +178,7 @@ function plainDock(dock: AreaDock, lines: string[]): void {
   if (dock.note) lines.push(dock.note);
   for (const line of dock.lines) lines.push(`${line.label} ${line.figure}`);
   if (dock.asOf) lines.push(`As of ${dock.asOf}`);
+  if (dock.stillPosted) lines.push(dock.stillPosted);
   if (dock.source) lines.push(dock.source);
   lines.push("");
 }
@@ -294,11 +300,6 @@ function mailLines(dock: Dock): AreaPriceLine[] {
   return lines;
 }
 
-function samePrices(left: number[], right: number[]): boolean {
-  if (left.length !== right.length) return false;
-  return left.every((price, index) => price === right[index]);
-}
-
 /**
  * The stored day those posted dollars were checked.
  * lastVerifiedAt is often the morning the page was opened again, not a date the marina printed.
@@ -326,15 +327,8 @@ export function weeklyFuelCheckedOn(dock: Dock): string | null {
   if (!weeklyFuelSource(dock) || postedPrices(dock).length === 0) return null;
   if (dock.lastVerifiedSource === "Waterway Guide") return storedDay(dock);
   if (dock.lastVerifiedSource !== "marina site") return null;
-  const prices = postedPrices(dock);
-  const matches = priceChecks(dock).filter((check) => {
-    if (!DATE_ONLY.test(check.checkedOn)) return false;
-    const checkPrices = check.lines.map((line) => line.pricePerGallon).sort((left, right) => left - right);
-    return samePrices(prices, checkPrices);
-  });
-  const earlier = matches.find((check) => check.checkedOn !== dock.lastVerifiedAt);
-  const chosen = earlier ?? matches.find((check) => check.checkedOn === dock.lastVerifiedAt);
-  return chosen && DATE_ONLY.test(chosen.checkedOn) ? chosen.checkedOn : null;
+  const day = priceCheckIso(dock);
+  return day && DATE_ONLY.test(day) ? day : null;
 }
 
 /** Printed as-of for the mail. A day after today in Chicago is not a source date. */
@@ -427,7 +421,15 @@ function mailSections(
   stale.sort((left, right) => byCheapestThenName(left, right, byId));
   const unpriced = page.callAhead
     .filter((row) => !seen.has(row.id))
-    .map((row) => ({ ...row, lines: [], asOf: null, source: null, sourceHref: null, stale: false }));
+    .map((row) => ({
+      ...row,
+      lines: [],
+      asOf: null,
+      stillPosted: null,
+      source: null,
+      sourceHref: null,
+      stale: false,
+    }));
   return { fresh, callAhead: [...stale, ...unpriced] };
 }
 

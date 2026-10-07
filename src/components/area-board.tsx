@@ -61,6 +61,11 @@ function PricedDock({ dock }: { dock: AreaDock }) {
           As of {dock.asOf}
         </p>
       ) : null}
+      {dock.stillPosted ? (
+        <p data-testid={`area-still-${dock.id}`} className="mt-0.5 text-[11px] text-[color:var(--ink)]/45">
+          {dock.stillPosted}
+        </p>
+      ) : null}
       {dock.source ? (
         <p data-testid={`area-source-${dock.id}`} className="mt-0.5 text-[11px] text-[color:var(--ink)]/45">
           {dock.sourceHref ? (

@@ -1,30 +1,25 @@
-import rawHistory from "../../data/price-history.json";
 import { formatDate, formatGallonPrice, formatShortDate, gasWords, statedHose } from "./format";
 import { freshness, postedQuotes } from "./freshness";
 import { HOME_AREAS, homeArea } from "./posted";
+import {
+  historyFor,
+  isPriceCheck,
+  priceCheckIso,
+  recheckHistoryLabel,
+  unchangedRecheck,
+  type PriceCheck,
+  type PriceCheckLine,
+} from "./price-check";
 import type { Dock, FuelQuote, PostedDepth } from "./types";
 import { CORRIDORS, REGIONS } from "./types";
 
-export type { PostedDepth };
+export type { PostedDepth, PriceCheck, PriceCheckLine };
+export { priceCheckIso, recheckHistoryLabel, unchangedRecheck };
 
 /** Public canonical host. JSON-LD must use this, not the Vercel preview host. */
 export const DOCK_ORIGIN = "https://www.dockposted.com";
 
 export type EthanolFreeAnswer = "Yes" | "No" | "Not stated";
-
-export interface PriceCheckLine {
-  label: string;
-  pricePerGallon: number;
-}
-
-export interface PriceCheck {
-  checkedOn: string;
-  source: "marina site";
-  sourceUrl: string | null;
-  lines: PriceCheckLine[];
-}
-
-type HistoryFile = Record<string, unknown>;
 
 /**
  * Phrases already written down from a marina or city page.
@@ -229,37 +224,6 @@ export function hoursSourceLine(dock: Dock, now = Date.now()): string | null {
   return "Marina's website";
 }
 
-function isPriceCheck(value: unknown): value is PriceCheck {
-  if (!value || typeof value !== "object") return false;
-  const row = value as Partial<PriceCheck>;
-  if (row.source !== "marina site") return false;
-  if (typeof row.checkedOn !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(row.checkedOn)) return false;
-  if (!Array.isArray(row.lines) || row.lines.length === 0) return false;
-  return row.lines.every(
-    (line) =>
-      !!line &&
-      typeof line.label === "string" &&
-      line.label.trim().length > 0 &&
-      typeof line.pricePerGallon === "number" &&
-      Number.isFinite(line.pricePerGallon),
-  );
-}
-
-function historyFor(id: string): PriceCheck[] {
-  const file = rawHistory as HistoryFile;
-  const rows = file[id];
-  if (!Array.isArray(rows)) return [];
-  return rows.filter(isPriceCheck).map((check) => ({
-    checkedOn: check.checkedOn,
-    source: "marina site",
-    sourceUrl: typeof check.sourceUrl === "string" ? check.sourceUrl : null,
-    lines: check.lines.map((line) => ({
-      label: line.label,
-      pricePerGallon: line.pricePerGallon,
-    })),
-  }));
-}
-
 function currentMarinaCheck(dock: Dock): PriceCheck | null {
   if (dock.lastVerifiedSource !== "marina site" || !dock.lastVerifiedAt) return null;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dock.lastVerifiedAt)) return null;
@@ -276,16 +240,36 @@ function currentMarinaCheck(dock: Dock): PriceCheck | null {
   };
 }
 
-/** Newest first. Live quotes win on their own date. No filled-in days between checks. */
+/** Newest first. A matching re-read stays in the list, and it is not a new price date. */
 export function priceChecks(dock: Dock, earlier: PriceCheck[] = historyFor(dock.id)): PriceCheck[] {
   const byDate = new Map<string, PriceCheck>();
   for (const check of earlier) {
     if (!isPriceCheck(check)) continue;
     byDate.set(check.checkedOn, check);
   }
-  const current = currentMarinaCheck(dock);
-  if (current) byDate.set(current.checkedOn, current);
-  return [...byDate.values()].sort((a, b) => (a.checkedOn < b.checkedOn ? 1 : -1));
+  const recheck = unchangedRecheck(dock, earlier);
+  if (!recheck) {
+    const current = currentMarinaCheck(dock);
+    if (current) byDate.set(current.checkedOn, current);
+  }
+  const checks = [...byDate.values()].sort((a, b) => (a.checkedOn < b.checkedOn ? 1 : -1));
+  if (!recheck) return checks;
+  const lines = currentMarinaCheck(dock)?.lines ?? [];
+  return [
+    {
+      checkedOn: recheck.readOn,
+      source: "marina site",
+      sourceUrl: dock.sourceUrl,
+      lines,
+      unchanged: true,
+    },
+    ...checks,
+  ];
+}
+
+export function priceHistoryHeading(check: PriceCheck): string {
+  if (check.unchanged) return recheckHistoryLabel(check.checkedOn);
+  return formatDate(check.checkedOn);
 }
 
 export function priceHistoryLead(count: number, checkedOn: string | null = null): string | null {
@@ -308,7 +292,7 @@ function priceClause(dock: Dock, quotes: FuelQuote[]): string {
   const bits = quotes
     .map((quote) => `${statedHose(gasWords(quote))} ${formatGallonPrice(quote.pricePerGallon as number)}`)
     .join(", ");
-  const date = formatDate(dock.lastVerifiedAt);
+  const date = formatDate(priceCheckIso(dock));
   if (dock.lastVerifiedSource === "marina site") {
     return `Fuel prices on the marina's website, checked ${date}: ${bits}.`;
   }
@@ -321,9 +305,10 @@ function priceClause(dock: Dock, quotes: FuelQuote[]): string {
 export function dockPageTitle(dock: Dock, now = Date.now()): string {
   const place = `${dock.name} fuel prices, ${dock.city}, ${dockAreaLabel(dock)}`;
   const quotes = freshPrices(dock, now);
-  if (quotes.length === 0 || !dock.lastVerifiedAt) return place;
+  const checkedOn = priceCheckIso(dock);
+  if (quotes.length === 0 || !checkedOn) return place;
   const dollars = quotes.map((quote) => formatGallonPrice(quote.pricePerGallon as number)).join(", ");
-  return `${place} — ${dollars}, checked ${formatDate(dock.lastVerifiedAt)}`;
+  return `${place} — ${dollars}, checked ${formatDate(checkedOn)}`;
 }
 
 export function dockPageDescription(dock: Dock, now = Date.now()): string {
@@ -392,7 +377,7 @@ export function dockAnswerStats(docks: Dock[]): DockAnswerStats {
     else if (ethanol === "No") stats.ethanolNo += 1;
     else stats.ethanolNotStated += 1;
     if (postedDepth(dock)) stats.depth += 1;
-    const count = priceChecks(dock).length;
+    const count = priceChecks(dock).filter((check) => !check.unchanged).length;
     if (count > 1) stats.historyMany += 1;
     else if (count === 1) stats.historyOne += 1;
     if (fuelsPosted(dock).length > 0) stats.fuelsNamed += 1;

@@ -1,4 +1,5 @@
 import { formatShortDate, gasWords, quoteParts } from "./format";
+import { priceCheckIso } from "./price-check";
 import type { Dock, FuelQuote } from "./types";
 
 export const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
@@ -127,8 +128,13 @@ function withDate(lead: string, date: string): string {
   return date ? `${lead}, ${date}` : lead;
 }
 
+function shownDate(dock: Dock, now: number): string {
+  const iso = dock.lastVerifiedSource === "marina site" ? priceCheckIso(dock) : dock.lastVerifiedAt;
+  return formatShortDate(iso, now);
+}
+
 export function publicSource(dock: Dock, now = Date.now()): string {
-  const date = formatShortDate(dock.lastVerifiedAt, now);
+  const date = shownDate(dock, now);
   const state = freshness(dock, now);
   const source = dock.lastVerifiedSource;
 
@@ -175,7 +181,7 @@ export function publicCallLine(dock: Dock, now = Date.now()): string | null {
 
 export function pinAriaLabel(dock: Dock, now = Date.now()): string {
   const kind = pinKind(dock, now);
-  const date = formatShortDate(dock.lastVerifiedAt, now);
+  const date = shownDate(dock, now);
   if (kind === "marina-site") return `${dock.name}: marina's price, checked ${date}`;
   if (kind === "stale") return `${dock.name}: price over a week old, call the dock`;
   if (kind === "none") return `${dock.name}: no price posted, call the dock`;
