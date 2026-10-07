@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AreaBoard } from "@/components/area-board";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
-import { AREA_INTRO, areaCanonicalUrl, areaPageJsonLd, areaTitle, buildAreaPage, parseAreaSlug } from "@/lib/area";
+import { areaCanonicalUrl, areaIntro, areaPageJsonLd, areaTitle, buildAreaPage, parseAreaSlug } from "@/lib/area";
 import { readDocks } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -17,14 +17,15 @@ export async function generateMetadata({
   const area = parseAreaSlug(slug);
   if (!area) return { title: "Area" };
   const title = areaTitle(area);
+  const description = areaIntro(title);
   const url = areaCanonicalUrl(area);
   return {
     title,
-    description: AREA_INTRO,
+    description,
     alternates: { canonical: url },
     openGraph: {
       title,
-      description: AREA_INTRO,
+      description,
       url,
       type: "website",
       siteName: "Dock Posted",
@@ -32,7 +33,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title,
-      description: AREA_INTRO,
+      description,
     },
   };
 }

@@ -11,8 +11,8 @@ import { PostedHome } from "../src/components/posted-home";
 import {
   AREA_CALL_HEADING,
   AREA_EMPTY_PRICES,
-  AREA_INTRO,
   AREA_PRICES_HEADING,
+  areaIntro,
   areaCanonicalUrl,
   areaIndexJsonLd,
   areaPageJsonLd,
@@ -82,10 +82,26 @@ const north = buildAreaPage(docks, "northeast-florida", readOn);
 assert.equal(galveston.title, "Galveston Bay / Clear Lake");
 assert.equal(tampa.title, "Tampa Bay");
 assert.equal(north.title, "Northeast Florida");
-assert.equal(galveston.intro, AREA_INTRO);
-assert.doesNotMatch(AREA_INTRO, LEAK);
-assert.doesNotMatch(AREA_INTRO, /regular|octane|ethanol|corridor|slug/i);
-assert.ok(AREA_INTRO.length < 140, AREA_INTRO);
+assert.equal(
+  galveston.intro,
+  "Fuel docks in Galveston Bay / Clear Lake, cheapest posted price first. Docks with no posted price are listed below. Call before you go.",
+);
+assert.equal(
+  tampa.intro,
+  "Fuel docks in Tampa Bay, cheapest posted price first. Docks with no posted price are listed below. Call before you go.",
+);
+assert.equal(
+  north.intro,
+  "Fuel docks in Northeast Florida, cheapest posted price first. Docks with no posted price are listed below. Call before you go.",
+);
+assert.equal(AREA_PRICES_HEADING, "Posted fuel prices");
+assert.equal(AREA_EMPTY_PRICES, "No price posted yet. Call the dock.");
+assert.equal(AREA_CALL_HEADING, "More fuel docks, call ahead");
+for (const intro of [galveston.intro, tampa.intro, north.intro]) {
+  assert.equal(intro, areaIntro(intro.slice("Fuel docks in ".length, intro.indexOf(", cheapest"))));
+  assert.doesNotMatch(intro, LEAK);
+  assert.doesNotMatch(intro, /regular|octane|ethanol|corridor|slug/i);
+}
 
 assert.deepEqual(
   galveston.priced.map((dock) => dock.id),
@@ -282,7 +298,7 @@ assert.equal(JSON.stringify(mixed).includes("1.11"), false);
 const boardHtml = renderToStaticMarkup(createElement(AreaBoard, { page: north }));
 assert.match(boardHtml, /data-testid="area-title"/);
 assert.match(boardHtml, /Northeast Florida/);
-assert.match(boardHtml, new RegExp(AREA_INTRO.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+assert.match(boardHtml, new RegExp(north.intro.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 assert.match(boardHtml, new RegExp(AREA_PRICES_HEADING));
 assert.match(boardHtml, new RegExp(AREA_CALL_HEADING));
 assert.doesNotMatch(boardHtml, /Date unknown|Regular|wholesale/i);
@@ -383,7 +399,7 @@ async function renderPages() {
 
   const meta = await generateMetadata({ params: Promise.resolve({ slug: "galveston-bay" }) });
   assert.equal(meta.title, "Galveston Bay / Clear Lake");
-  assert.equal(meta.description, AREA_INTRO);
+  assert.equal(meta.description, galveston.intro);
   assert.equal(meta.alternates?.canonical, "https://www.dockposted.com/area/galveston-bay");
 
   const missing = await generateMetadata({ params: Promise.resolve({ slug: "nope" }) });

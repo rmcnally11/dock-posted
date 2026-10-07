@@ -15,15 +15,13 @@ import {
 } from "@/lib/posted";
 import { CORRIDORS, type Dock, type FuelQuote, type SourceLabel } from "@/lib/types";
 
-/**
- * One line under the area name. Place name stays in the heading.
- */
-export const AREA_INTRO =
-  "Fuel docks on this water. The number is what they posted. If they left it blank, call.";
+export function areaIntro(areaName: string): string {
+  return `Fuel docks in ${areaName}, cheapest posted price first. Docks with no posted price are listed below. Call before you go.`;
+}
 
-export const AREA_PRICES_HEADING = "Prices on the pump";
+export const AREA_PRICES_HEADING = "Posted fuel prices";
 
-export const AREA_EMPTY_PRICES = "No number up here yet.";
+export const AREA_EMPTY_PRICES = "No price posted yet. Call the dock.";
 
 /** Same sentence as the home list under the prices. */
 export const AREA_CALL_HEADING = "More fuel docks, call ahead";
@@ -188,10 +186,11 @@ export function buildAreaPage(docks: Dock[], id: HomeAreaId, now = Date.now()): 
   const inArea = docks.filter((dock) => homeArea(dock) === id);
   const pricedDocks = inArea.filter((dock) => priceLines(dock).length > 0).sort(byRegularThenName);
   const callDocks = inArea.filter((dock) => priceLines(dock).length === 0).sort(byName);
+  const title = areaTitle(id);
   return {
     id,
-    title: areaTitle(id),
-    intro: AREA_INTRO,
+    title,
+    intro: areaIntro(title),
     priced: pricedDocks.map((dock) => toAreaDock(dock, now)),
     callAhead: callDocks.map((dock) => toAreaDock(dock, now)),
   };
