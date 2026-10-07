@@ -14,10 +14,9 @@ export function WeeklyFuelFrame({ html, title }: { html: string; title: string }
       style={{ height: 880 }}
       onLoad={() => {
         const frame = ref.current;
-        const doc = frame?.contentDocument?.documentElement;
-        const body = frame?.contentDocument?.body;
-        if (!frame || !doc || !body) return;
-        frame.style.height = `${Math.max(doc.scrollHeight, body.scrollHeight)}px`;
+        const table = frame?.contentDocument?.querySelector("body > table");
+        if (!frame || !table) return;
+        frame.style.height = `${Math.ceil(table.getBoundingClientRect().height)}px`;
       }}
     />
   );
