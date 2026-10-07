@@ -88,6 +88,10 @@ export function homeAreaHref(
   return qs ? `/?${qs}` : "/";
 }
 
+export function areaPath(id: HomeAreaId): `/area/${HomeAreaId}` {
+  return `/area/${id}`;
+}
+
 /** Grade as stored. E0 stays E0. An octane stays the number. Never "Regular". */
 export function gradeLabel(quote: FuelQuote): string {
   const ethanol = quote.ethanol === "unknown" ? "" : ` ${quote.ethanol}`;

@@ -20,6 +20,7 @@
     "test:sister": "tsx scripts/test-sister.ts",
     "test:report": "tsx scripts/test-report.ts",
     "test:dock-page": "tsx scripts/test-dock-page.ts",
+    "test:area": "tsx scripts/test-area.ts",
     "test:ui": "node scripts/verify-ui.mjs"
   },
   "dependencies": {

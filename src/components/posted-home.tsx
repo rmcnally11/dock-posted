@@ -7,6 +7,7 @@ import {
   HOME_AREAS,
   NOT_SOLD_FIGURE,
   cardsInArea,
+  areaPath,
   cardsNearest,
   formatMiles,
   milesBetween,
@@ -339,7 +340,15 @@ export function PostedHome({
               {callGroups.map((group) => (
                 <details key={group.id} data-testid={`posted-call-area-${group.id}`}>
                   <summary className="cursor-pointer py-3 text-sm font-medium text-[color:var(--navy)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--diesel)]">
-                    {group.label} · {dockCount(group.cards.length)}
+                    <a
+                      href={areaPath(group.id)}
+                      data-testid={`area-page-link-${group.id}`}
+                      onClick={(event) => event.stopPropagation()}
+                      className="underline decoration-[color:var(--diesel)] decoration-2 underline-offset-4"
+                    >
+                      {group.label}
+                    </a>
+                    {` · ${dockCount(group.cards.length)}`}
                   </summary>
                   <ul className="pb-2">
                     {group.cards.map((card) => (

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
+import { areaIndexJsonLd } from "@/lib/area";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -88,6 +89,7 @@ const jsonLd = {
         },
       ],
     },
+    areaIndexJsonLd(),
   ],
 };
 
