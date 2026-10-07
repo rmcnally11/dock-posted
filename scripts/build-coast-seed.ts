@@ -174,7 +174,7 @@ const HOME_PATCHES: Record<
     hours:
       "Top of the page: Daily 9AM–7PM. Contact block: fuel dock Daily 6:00am–5:00pm; store and ramp 6:00am–5:00pm.",
     notes:
-      "Galveston Island, not the Clear Lake mouth. Marina homepage on 3 Oct 2026 posted Diesel $6.33, Regular 87 $4.83, Non-Ethanol 93 $6.27. That line doesn't say tax in or tax out. Hours on the same page don't agree. Top of the page says Daily 9AM–7PM. The contact block says the fuel dock is Daily 6:00am–5:00pm, and the store and ramp are 6:00am–5:00pm.",
+      "Galveston Island, not the Clear Lake mouth. Marina homepage re-read 7 Oct 2026 with the same three prices (first read 3 Oct 2026): Diesel $6.33, Regular 87 $4.83, Non-Ethanol 93 $6.27. That line doesn't say tax in or tax out. Hours on the same page don't agree. Top of the page says Daily 9AM–7PM. The contact block says the fuel dock is Daily 6:00am–5:00pm, and the store and ramp are 6:00am–5:00pm.",
   },
   "key-largo-harbor": {
     lead: 1,
@@ -1176,7 +1176,7 @@ const ADDITIONS: Addition[] = [
     hours:
       "Open 7 days. Monday–Thursday 7:00 AM–7:00 PM, Friday–Sunday 7:00 AM–8:00 PM. Closed Thanksgiving and Christmas Day.",
     notes:
-      "Madeira Beach municipal marina at 503 150th Ave, Madeira Beach, FL 33708. City page, read 3 Oct 2026: Gas Ethanol-Free $6.05, Diesel $6.65. The city page did not date the price. The line says Gas, not an octane. Ethanol-free. Tax not stated. Email bcrabtree@madeirabeachfl.gov. Hours on the page are the marina's operating hours; the page does not give a separate fuel-dock clock. Pin is the OpenStreetMap node named Madeira Beach Municipal Marina (27.803974, -82.795903) on Tom Stuart Causeway. The Census address-range match for 503 150th Ave is 27.804498, -82.797240, interpolated across 501–599, not a rooftop. Those two points are the same marina, so the named node is the pin.",
+      "Madeira Beach municipal marina at 503 150th Ave, Madeira Beach, FL 33708. City page re-read 7 Oct 2026 with the same prices (first read 3 Oct 2026): Gas Ethanol-Free $6.05, Diesel $6.65. The city page did not date the price. The line says Gas, not an octane. Ethanol-free. Tax not stated. Email bcrabtree@madeirabeachfl.gov. Hours on the page are the marina's operating hours; the page does not give a separate fuel-dock clock. Pin is the OpenStreetMap node named Madeira Beach Municipal Marina (27.803974, -82.795903) on Tom Stuart Causeway. The Census address-range match for 503 150th Ave is 27.804498, -82.797240, interpolated across 501–599, not a rooftop. Those two points are the same marina, so the named node is the pin.",
     ethanol: "E0",
     quotes: [
       {
@@ -1194,7 +1194,7 @@ const ADDITIONS: Addition[] = [
         taxIncluded: null,
       },
     ],
-    lastVerifiedAt: "2026-10-03",
+    lastVerifiedAt: "2026-10-07",
     sourceUrl: "https://madeirabeachfl.gov/departments/marina/",
   },
   {
@@ -1476,7 +1476,7 @@ const ADDITIONS: Addition[] = [
     phone: "(904) 825-1026",
     website: "https://www.citystaug.com/marina",
     notes:
-      "City marina under the Bridge of Lions. City rates page, fetched 3 Oct 2026: Gasoline $6.59, Diesel $7.39, as of 9/25/26. The line says Gasoline, not an octane. Ethanol not named. Tax not stated.",
+      "City marina under the Bridge of Lions. City rates page, read 7 Oct 2026: Gasoline $6.59, Diesel $6.99, as of 10/7/26. Diesel was $7.39 as of 9/25/26; the change to $6.99 was first seen 7 Oct 2026. The line says Gasoline, not an octane. Ethanol not named. Tax not stated.",
     quotes: [
       {
         product: "gasoline",
@@ -1487,13 +1487,13 @@ const ADDITIONS: Addition[] = [
       },
       {
         product: "diesel",
-        pricePerGallon: 7.39,
+        pricePerGallon: 6.99,
         ethanol: "unknown",
         status: "posted",
         taxIncluded: null,
       },
     ],
-    lastVerifiedAt: "2026-09-25",
+    lastVerifiedAt: "2026-10-07",
     sourceUrl: "https://www.citystaug.com/338/Rates",
   },
   {
@@ -1509,7 +1509,7 @@ const ADDITIONS: Addition[] = [
     hours:
       "Two clocks on their fuel page. One is Monday–Friday 8–5, Saturday and Sunday 8:30–4:30. The fuel dock says 7 days a week, 8:30 AM–4:30 PM.",
     notes:
-      "Lamb's Yacht Center, 3376 Lake Shore Boulevard, Jacksonville, FL 32210. Marina fuel page, read 3 Oct 2026: $5.15 Gas, $5.50 Diesel. The page did not date the price. It was read 3 Oct 2026. The price line says Gas. The same page names the gas Rec 90/non ethanol gas, Gate Petroleum. Diesel is ultra low sulfur diesel. Tax not stated. Discount, not the posted price: 10% off Diesel for MTOA and AGLCA members. Pump out $10 is not fuel. Office (904) 384-5577. Email murphy@lambsyachtcenter.com. Dockmaster VHF 16. The page gives both clocks and we did not choose. Near the price: Hours M-F 8-5 Saturday & Sunday 8:30-4:30. Lower on the page: Fuel Dock Hours 7 Days a week 8:30AM-4:30PM. The fuel page has no map embed with a coordinate. OpenStreetMap had no node named Lamb's Yacht Center when searched 3 Oct 2026. Pin is the US Census address-range match, 30.273784, -81.721019, interpolated across 3354–3480, not a rooftop.",
+      "Lamb's Yacht Center, 3376 Lake Shore Boulevard, Jacksonville, FL 32210. Marina fuel page re-read 7 Oct 2026 with the same prices (first read 3 Oct 2026): $5.15 Gas, $5.50 Diesel. The page did not date the price. It was re-read 7 Oct 2026 with the same prices (first read 3 Oct 2026). The price line says Gas. The same page names the gas Rec 90/non ethanol gas, Gate Petroleum. Diesel is ultra low sulfur diesel. Tax not stated. Discount, not the posted price: 10% off Diesel for MTOA and AGLCA members. Pump out $10 is not fuel. Office (904) 384-5577. Email murphy@lambsyachtcenter.com. Dockmaster VHF 16. The page gives both clocks and we did not choose. Near the price: Hours M-F 8-5 Saturday & Sunday 8:30-4:30. Lower on the page: Fuel Dock Hours 7 Days a week 8:30AM-4:30PM. The fuel page has no map embed with a coordinate. OpenStreetMap had no node named Lamb's Yacht Center when searched 3 Oct 2026. Pin is the US Census address-range match, 30.273784, -81.721019, interpolated across 3354–3480, not a rooftop.",
     ethanol: "E0",
     quotes: [
       {
@@ -1527,7 +1527,7 @@ const ADDITIONS: Addition[] = [
         taxIncluded: null,
       },
     ],
-    lastVerifiedAt: "2026-10-03",
+    lastVerifiedAt: "2026-10-07",
     sourceUrl: "https://www.lambsyachtcenter.com/fuel/",
   },
   {

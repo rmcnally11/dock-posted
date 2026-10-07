@@ -244,7 +244,7 @@ for (const id of hemingwayHome) {
 const gym = docks.find((dock) => dock.id === "galveston-yacht-marina");
 assert.ok(gym);
 assert.equal(pinTrust(gym), "verified");
-assert.equal(gym.lastVerifiedAt, "2026-10-03");
+assert.equal(gym.lastVerifiedAt, "2026-10-07");
 assert.equal(gym.lastVerifiedSource, "marina site");
 assert.equal(gym.sourceUrl, "https://galvestonyachtbasin.com/");
 assert.deepEqual(
@@ -302,7 +302,7 @@ assert.deepEqual(
 const stAugustine = docks.find((dock) => dock.id === "st-augustine-municipal-marina");
 assert.ok(stAugustine);
 assert.equal(stAugustine.region, "east-florida");
-assert.equal(stAugustine.lastVerifiedAt, "2026-09-25");
+assert.equal(stAugustine.lastVerifiedAt, "2026-10-07");
 assert.equal(stAugustine.lastVerifiedSource, "marina site");
 assert.equal(stAugustine.sourceUrl, "https://www.citystaug.com/338/Rates");
 assert.equal(stAugustine.website, "https://www.citystaug.com/marina");
@@ -317,7 +317,7 @@ assert.deepEqual(
   ]),
   [
     ["gasoline", 6.59, "unknown", null, "posted"],
-    ["diesel", 7.39, "unknown", null, "posted"],
+    ["diesel", 6.99, "unknown", null, "posted"],
   ],
 );
 assert.equal(formatDate("2026-09-25"), "Sep 25, 2026");
@@ -332,14 +332,14 @@ assert.deepEqual(
   stAugustineSlots.map((slot) => [slot.id, slot.label, slot.quote?.product, slot.quote?.pricePerGallon]),
   [
     ["gas-gasoline", "Gas, octane and ethanol not stated", "gasoline", 6.59],
-    ["diesel", "Diesel", "diesel", 7.39],
+    ["diesel", "Diesel", "diesel", 6.99],
   ],
 );
 assert.equal(
   formatQuote(stAugustineSlots[0]?.quote ?? null),
   "$6.59 a gallon. Gas, octane not stated",
 );
-assert.equal(formatQuote(stAugustineSlots[1]?.quote ?? null), "$7.39 a gallon. Diesel");
+assert.equal(formatQuote(stAugustineSlots[1]?.quote ?? null), "$6.99 a gallon. Diesel");
 assert.deepEqual(
   stAugustine.quotes.map((quote) => quote.product),
   ["gasoline", "diesel"],
@@ -350,12 +350,12 @@ assert.ok(
     (slot) => slot.label === "Gas, octane and ethanol not stated" || slot.label === "Diesel",
   ),
 );
-assert.equal(freshness(stAugustine, Date.parse("2026-10-10T00:00:00Z")), "stale");
+assert.equal(freshness(stAugustine, Date.parse("2026-10-22T00:00:00Z")), "stale");
 assert.equal(
-  boardQuote(stAugustine, stAugustine.quotes[0] ?? null, Date.parse("2026-10-10T00:00:00Z"))?.pricePerGallon,
+  boardQuote(stAugustine, stAugustine.quotes[0] ?? null, Date.parse("2026-10-22T00:00:00Z"))?.pricePerGallon,
   null,
 );
-assert.equal(freshness(gym, Date.parse("2026-10-11T00:00:00Z")), "stale");
+assert.equal(freshness(gym, Date.parse("2026-10-15T00:00:00Z")), "stale");
 const withoutStAugustine = docks.filter((dock) => dock.id !== "st-augustine-municipal-marina");
 assert.equal(
   boardTally(docks, readOn).postedThisWeek,
@@ -373,7 +373,7 @@ assert.equal(madeira.lng, -82.795903);
 assert.equal(madeira.phone, "(727) 399-2631");
 assert.equal(madeira.website, "https://madeirabeachfl.gov/departments/marina/");
 assert.equal(madeira.sourceUrl, "https://madeirabeachfl.gov/departments/marina/");
-assert.equal(madeira.lastVerifiedAt, "2026-10-03");
+assert.equal(madeira.lastVerifiedAt, "2026-10-07");
 assert.equal(madeira.lastVerifiedSource, "marina site");
 assert.equal(madeira.ethanol, "E0");
 assert.equal(
@@ -426,9 +426,9 @@ assert.ok(
   ),
 );
 assert.ok(!madeiraSlots.some((slot) => /87|89|90|93/.test(`${slot.label} ${slot.quote?.product ?? ""}`)));
-const eightDays = Date.parse("2026-10-11T00:00:00Z");
-const fourteenDays = Date.parse("2026-10-17T00:00:00Z");
-const pastFourteen = Date.parse("2026-10-18T00:00:00Z");
+const eightDays = Date.parse("2026-10-15T00:00:00Z");
+const fourteenDays = Date.parse("2026-10-21T00:00:00Z");
+const pastFourteen = Date.parse("2026-10-22T00:00:00Z");
 assert.equal(freshness(madeira, eightDays), "fresh");
 assert.equal(freshness(madeira, fourteenDays), "fresh");
 assert.equal(freshness(madeira, pastFourteen), "stale");
@@ -467,7 +467,7 @@ assert.equal(lambs.phone, "(904) 327-2285");
 assert.doesNotMatch(lambs.phone ?? "", /384-5577/);
 assert.equal(lambs.website, "https://www.lambsyachtcenter.com/fuel/");
 assert.equal(lambs.sourceUrl, "https://www.lambsyachtcenter.com/fuel/");
-assert.equal(lambs.lastVerifiedAt, "2026-10-03");
+assert.equal(lambs.lastVerifiedAt, "2026-10-07");
 assert.equal(lambs.lastVerifiedSource, "marina site");
 assert.equal(lambs.ethanol, "E0");
 assert.equal(
@@ -548,8 +548,8 @@ assert.equal(
 assert.equal(freshness(madeira, eightDays), "fresh");
 assert.equal(freshness(madeira, fourteenDays), "fresh");
 assert.equal(freshness(stAugustine, readOn), "fresh");
-assert.equal(freshness(stAugustine, Date.parse("2026-10-09T00:00:00Z")), "fresh");
-assert.equal(freshness(stAugustine, Date.parse("2026-10-10T00:00:00Z")), "stale");
+assert.equal(freshness(stAugustine, Date.parse("2026-10-21T00:00:00Z")), "fresh");
+assert.equal(freshness(stAugustine, Date.parse("2026-10-22T00:00:00Z")), "stale");
 const withoutLambs = docks.filter((dock) => dock.id !== "lambs-yacht-center");
 assert.equal(
   boardTally(docks, readOn).postedThisWeek,
@@ -616,7 +616,7 @@ assert.equal(
 assert.equal(formatQuote(arlingtonSlots[1]?.quote ?? null), "$5.999 a gallon. Diesel");
 assert.equal(freshness(arlington, Date.parse("2026-10-19T00:00:00Z")), "fresh");
 assert.equal(freshness(arlington, Date.parse("2026-10-20T00:00:00Z")), "stale");
-assert.equal(freshness(gym, Date.parse("2026-10-11T00:00:00Z")), "stale");
+assert.equal(freshness(gym, Date.parse("2026-10-15T00:00:00Z")), "stale");
 const withoutArlington = docks.filter((dock) => dock.id !== "arlington-marina");
 assert.equal(
   boardTally(docks, arlingtonRead).postedThisWeek,
@@ -860,25 +860,25 @@ assert.doesNotMatch(formatQuote({
 }), /\$5\.66/);
 
 assert.equal(publicBadge(gym, labelNow), "Marina's price");
-assert.equal(publicSource(gym, labelNow), "Posted on the marina's website, checked Oct 3");
+assert.equal(publicSource(gym, labelNow), "Posted on the marina's website, checked Oct 7");
 assert.equal(publicCallLine(gym, labelNow), "(409) 765-3000");
 assert.equal(pinKind(gym, labelNow), "marina-site");
-assert.equal(pinAriaLabel(gym, readOn), "Galveston Yacht Marina: marina's price, checked Oct 3");
+assert.equal(pinAriaLabel(gym, readOn), "Galveston Yacht Marina: marina's price, checked Oct 7");
 assert.equal(publicBadge(gym, readOn), "Marina's price");
-assert.equal(publicSource(gym, readOn), "Posted on the marina's website, checked Oct 3");
+assert.equal(publicSource(gym, readOn), "Posted on the marina's website, checked Oct 7");
 assert.equal(pinKind(gym, readOn), "marina-site");
 assert.notEqual(publicBadge(gym, readOn), "Verified");
-const gymStaleAt = Date.parse("2026-10-11T00:00:00Z");
+const gymStaleAt = Date.parse("2026-10-15T00:00:00Z");
 assert.equal(publicBadge(gym, gymStaleAt), "Price over a week old");
-assert.equal(publicSource(gym, gymStaleAt), "Posted on the marina's website, checked Oct 3");
+assert.equal(publicSource(gym, gymStaleAt), "Posted on the marina's website, checked Oct 7");
 assert.equal(publicCallLine(gym, gymStaleAt), "Price over a week old. Call the dock: (409) 765-3000");
 assert.equal(pinKind(gym, gymStaleAt), "stale");
 assert.equal(pinAriaLabel(gym, gymStaleAt), "Galveston Yacht Marina: price over a week old, call the dock");
 
 assert.equal(publicBadge(lambs, readOn), "Marina's price");
-assert.equal(publicSource(lambs, readOn), "Posted on the marina's website, checked Oct 3");
+assert.equal(publicSource(lambs, readOn), "Posted on the marina's website, checked Oct 7");
 assert.equal(publicBadge(madeira, readOn), "Marina's price");
-assert.equal(publicSource(stAugustine, readOn), "Posted on the marina's website, checked Sep 25");
+assert.equal(publicSource(stAugustine, readOn), "Posted on the marina's website, checked Oct 7");
 assert.equal(publicBadge(stAugustine, readOn), "Marina's price");
 
 assert.equal(publicBadge(marinaBay, labelNow), "No price posted");
