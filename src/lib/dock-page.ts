@@ -1,5 +1,5 @@
 import rawHistory from "../../data/price-history.json";
-import { formatDate, formatGallonPrice, formatShortDate, gasWords } from "./format";
+import { formatDate, formatGallonPrice, formatShortDate, gasWords, statedHose } from "./format";
 import { freshness, postedQuotes } from "./freshness";
 import { HOME_AREAS, homeArea } from "./posted";
 import type { Dock, FuelQuote, PostedDepth } from "./types";
@@ -294,11 +294,9 @@ export function priceHistoryLead(count: number, checkedOn: string | null = null)
   return null;
 }
 
-export function priceCheckText(check: PriceCheck): string {
-  const prices = check.lines
-    .map((line) => `${line.label} ${formatGallonPrice(line.pricePerGallon)}`)
-    .join(", ");
-  return `${formatDate(check.checkedOn)}, Marina's website. ${prices}`;
+/** One fuel and its price, for a history row. Unknown tax and ethanol stay off the line. */
+export function priceCheckLine(label: string, pricePerGallon: number): string {
+  return `${statedHose(label)} ${formatGallonPrice(pricePerGallon)}`;
 }
 
 function freshPrices(dock: Dock, now: number): FuelQuote[] {
@@ -308,7 +306,7 @@ function freshPrices(dock: Dock, now: number): FuelQuote[] {
 
 function priceClause(dock: Dock, quotes: FuelQuote[]): string {
   const bits = quotes
-    .map((quote) => `${gasWords(quote)} ${formatGallonPrice(quote.pricePerGallon as number)}`)
+    .map((quote) => `${statedHose(gasWords(quote))} ${formatGallonPrice(quote.pricePerGallon as number)}`)
     .join(", ");
   const date = formatDate(dock.lastVerifiedAt);
   if (dock.lastVerifiedSource === "marina site") {

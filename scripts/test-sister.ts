@@ -71,6 +71,16 @@ for (const file of [
 const footer = readFileSync(path.join(process.cwd(), "src/components/site-footer.tsx"), "utf8");
 assert.match(footer, /sisterHomeHref/);
 assert.match(footer, /On This Water/);
+assert.match(footer, /Tide and wind for this coast/);
+assert.doesNotMatch(footer, /This morning on the same coast/);
 assert.match(footer, /data-testid="sister-credit"/);
+
+const handoff = readFileSync(path.join(process.cwd(), "src/components/sister-handoff.tsx"), "utf8");
+assert.match(handoff, /Check tide and wind on/);
+assert.match(handoff, />\s*On This Water\s*</);
+assert.match(handoff, /href=\{next\.href\}/);
+assert.doesNotMatch(handoff, /Tide and wind before you leave/);
+assert.doesNotMatch(handoff, /Posted fuel lives here/);
+assert.doesNotMatch(handoff, /\{next\.label\}/);
 
 console.log("sister tests passed");

@@ -45,7 +45,7 @@ export function DockBoard({
                   : `${inCorridor.length} dock${inCorridor.length === 1 ? "" : "s"}`}
               </p>
               <p data-testid="board-fact" className="mt-1 text-xs text-[color:var(--ink)]/55">
-                A blank is a fact. Silence is not a price.
+                No price posted yet. Call the dock.
               </p>
               <p className="mt-1 text-xs text-[color:var(--ink)]/55">
                 <a

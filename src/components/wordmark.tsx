@@ -25,7 +25,7 @@ export function Wordmark({
           invert ? "text-[color:var(--cream)]/55" : "text-[color:var(--diesel)]",
         )}
       >
-        Sabine to Key West{" "}
+        Texas to Florida{" "}
       </span>
     </span>
   );
@@ -39,7 +39,7 @@ export function Masthead({ className = "" }: { className?: string }) {
     >
       <img
         src="/logo.svg"
-        alt="Dock Posted. Marina fuel. Sabine to Key West."
+        alt="Dock Posted. Marina fuel. Texas to Florida."
         width={720}
         height={280}
         className="h-24 w-auto md:h-32"

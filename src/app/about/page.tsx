@@ -36,7 +36,7 @@ export default function AboutPage() {
         className="mt-8 max-w-2xl space-y-3 text-sm leading-7 text-[color:var(--ink)]/80"
       >
         <p>
-          Dock Posted is the number on the pump. Sabine to Key West, then
+          Dock Posted is the number on the pump. Texas to Florida, then
           the rest of the saltwater coast.
         </p>
         <p>We don’t sell fuel. We don’t pull your boat. We just write down what we know. A blank stays blank.</p>

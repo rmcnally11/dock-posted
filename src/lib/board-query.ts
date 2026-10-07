@@ -166,7 +166,7 @@ export function viewLabel(query: BoardQuery): string {
   if (query.state) return STATE_VIEWS[query.state].label;
   if (query.region) return REGIONS[query.region].label;
   if (query.corridor) return CORRIDORS[query.corridor].label;
-  return "Sabine to Maine";
+  return "Texas to Florida";
 }
 
 export function isHomeView(query: BoardQuery): boolean {

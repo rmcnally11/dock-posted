@@ -25,7 +25,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         className={compact ? "mt-1" : "mt-2 text-xs leading-5 text-[color:var(--ink)]/50"}
       >
         <a href="https://coastalcavaliers.com" className="underline-offset-2 hover:underline">
-          Waterdog Fuel. Opens 2027.
+          Waterdog Fuel, our fuel delivery service, launches in 2027.
         </a>
         {" · "}
         <a href="/pin" className="underline-offset-2 hover:underline">
@@ -55,7 +55,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         <a href={sisterHomeHref()} className="underline-offset-2 hover:underline">
           On This Water
         </a>
-        . This morning on the same coast.
+        . Tide and wind for this coast.
       </p>
     </footer>
   );

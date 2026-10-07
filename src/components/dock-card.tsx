@@ -1,6 +1,6 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
 import { publicHours } from "@/lib/dock-page";
-import { quoteParts, telHref } from "@/lib/format";
+import { quoteParts, telHref, UNSTATED_PRICE_NOTE } from "@/lib/format";
 import {
   pinQuoteSlots,
   publicCallLine,
@@ -77,6 +77,10 @@ export function DockQuoteGrid({
   tileClassName: string;
 }) {
   const slots = pinQuoteSlots(dock);
+  const showPriceNote = slots.some((slot) => {
+    if (slot.suppressed) return false;
+    return !quoteParts(slot.quote, slot.kind).blank;
+  });
   return (
     <>
       {slots.map((slot) => (
@@ -90,6 +94,13 @@ export function DockQuoteGrid({
           </dd>
         </div>
       ))}
+      {showPriceNote ? (
+        <div className="col-span-2 px-1 pt-1">
+          <p data-testid={`price-note-${dock.id}`} className="text-[11px] leading-4 text-[color:var(--ink)]/55">
+            {UNSTATED_PRICE_NOTE}
+          </p>
+        </div>
+      ) : null}
     </>
   );
 }

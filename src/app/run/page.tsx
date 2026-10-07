@@ -84,7 +84,7 @@ export default async function RunPage({
               defaultValue={query.corridor ?? ""}
               className="h-11 w-full rounded-md border border-[color:var(--line)] bg-white px-3 text-base md:text-sm"
             >
-              <option value="">Sabine to Maine</option>
+              <option value="">Texas to Florida</option>
               {(Object.keys(CORRIDORS) as CorridorId[]).map((id) => (
                 <option key={id} value={id}>
                   {CORRIDORS[id].label}
@@ -232,7 +232,7 @@ export default async function RunPage({
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/pin"
         >
-          This is my dock
+          I run this dock
         </a>
         . Wrong hose?{" "}
         <a

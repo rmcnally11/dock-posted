@@ -37,6 +37,26 @@ export function taxPhrase(taxIncluded: boolean | null): string {
   return "tax not stated";
 }
 
+/** One note per card or dock page. Unknown tax and ethanol are not repeated on each hose. */
+export const UNSTATED_PRICE_NOTE =
+  "Prices are per gallon. Tax and ethanol aren’t stated unless shown.";
+
+/**
+ * Price-line words. "tax not stated" and "ethanol not stated" come off the hose.
+ * A stated blend, octane, or tax stays. This does not invent ethanol-free or tax-included.
+ */
+export function statedHose(words: string): string {
+  let text = words.replace(/,?\s*tax not stated\b/g, "");
+  text = text.replace(/\boctane and ethanol not stated\b/g, "octane not stated");
+  text = text.replace(/,?\s*ethanol not stated\b/g, "");
+  return text
+    .replace(/\s+,/g, ",")
+    .replace(/,\s*,/g, ",")
+    .replace(/,\s*$/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function ethanolPhrase(ethanol: Ethanol): string {
   switch (ethanol) {
     case "E0":
@@ -82,9 +102,11 @@ export function quoteParts(quote: FuelQuote | null, kind: "gas" | "diesel" = "ga
   if (quote.status === "no-report" || quote.status === "call" || quote.pricePerGallon == null) {
     return { figure: blankQuoteLine(lineKind), rest: "", blank: true };
   }
+  const hose = statedHose(gasWords(quote));
+  const tax = taxPhrase(quote.taxIncluded);
   return {
     figure: `${formatGallonPrice(quote.pricePerGallon)} a gallon`,
-    rest: `${gasWords(quote)}, ${taxPhrase(quote.taxIncluded)}`,
+    rest: tax === "tax not stated" ? hose : statedHose(`${hose}, ${tax}`),
     blank: false,
   };
 }

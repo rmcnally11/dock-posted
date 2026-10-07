@@ -52,7 +52,7 @@ export default async function PinPage({
       />
 
       <section className="mt-10 max-w-xl">
-        <h2 className="font-heading text-2xl text-[color:var(--navy)]">This is my dock</h2>
+        <h2 className="font-heading text-2xl text-[color:var(--navy)]">I run this dock</h2>
         <p className="mt-2 text-sm leading-6 text-[color:var(--ink)]/70">
           Takes a minute. We confirm it is you. Verified when you write the number.
         </p>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { NavScroll } from "@/components/nav-scroll";
 import { BrandSpine, Wordmark } from "@/components/wordmark";
@@ -33,9 +34,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 bg-[color:var(--cream)]/90 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden">
       <div className="mx-auto flex h-12 w-full max-w-7xl items-center justify-between gap-x-3 px-3 md:h-14 md:px-6">
-        <a href="/" className="flex min-w-0 shrink-0 items-baseline gap-2" aria-label="Dock Posted">
+        <Link href="/" className="flex min-w-0 shrink-0 items-baseline gap-2" aria-label="Dock Posted">
           <Wordmark />
-        </a>
+        </Link>
         <div className="hidden min-w-0 flex-1 md:flex">
           <NavScroll>
             {NAV_LINKS.map((item) => (
