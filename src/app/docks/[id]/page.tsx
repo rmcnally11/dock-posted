@@ -17,14 +17,14 @@ import {
   fuelsPosted,
   hoursSourceLine,
   postedDepth,
+  priceCheckLine,
   priceChecks,
-  priceCheckText,
   priceHistoryLead,
   publicHours,
 } from "@/lib/dock-page";
-import { telHref } from "@/lib/format";
-import { publicCallLine, reportLinkLabel } from "@/lib/freshness";
-import { dockWaterLabel, runWatchHref } from "@/lib/income";
+import { formatDate, statedHose, telHref } from "@/lib/format";
+import { hasPostedPrice, publicCallLine, reportLinkLabel } from "@/lib/freshness";
+import { dockWaterLabel, plainAreaName, runWatchHref } from "@/lib/income";
 import { readDocks } from "@/lib/store";
 import type { Dock } from "@/lib/types";
 
@@ -169,9 +169,11 @@ export default async function DockPage({
         <p className="mt-3 max-w-xl text-sm text-[color:var(--ink)]/70">{staleCall}</p>
       ) : null}
 
-      <p className="mt-3 max-w-2xl text-sm text-[color:var(--ink)]/55">
-        A blank is a fact. Silence is not a price.
-      </p>
+      {hasPostedPrice(dock) ? null : (
+        <p className="mt-3 max-w-2xl text-sm text-[color:var(--ink)]/55">
+          No price posted yet. Call the dock.
+        </p>
+      )}
       <Waterline className="mt-3" />
 
       <dl className="mt-8 grid max-w-xl grid-cols-2 gap-2 text-sm">
@@ -182,7 +184,7 @@ export default async function DockPage({
         <div className="col-span-2 rounded-lg bg-[color:var(--fog)] px-3 py-2" data-testid="dock-fuels">
           <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Fuels</dt>
           <dd className="font-medium text-[color:var(--navy)]">
-            {fuels.length > 0 ? fuels.join(" · ") : "Not stated"}
+            {fuels.length > 0 ? fuels.map((name) => statedHose(name)).join(" · ") : "Not stated"}
           </dd>
         </div>
         <div className="col-span-2 rounded-lg bg-[color:var(--fog)] px-3 py-2" data-testid="dock-ethanol">
@@ -229,7 +231,15 @@ export default async function DockPage({
           <ol className="mt-2 space-y-3">
             {checks.map((check) => (
               <li key={check.checkedOn} data-testid="price-check" data-date={check.checkedOn} className="text-sm text-[color:var(--navy)]">
-                {priceCheckText(check)}
+                <p className="font-medium">{formatDate(check.checkedOn)}</p>
+                <p className="text-xs text-[color:var(--ink)]/55">Marina’s website</p>
+                <ul className="mt-1 space-y-0.5">
+                  {check.lines.map((line, index) => (
+                    <li key={`${check.checkedOn}-${index}`} data-testid="price-check-line">
+                      {priceCheckLine(line.label, line.pricePerGallon)}
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ol>
@@ -289,9 +299,8 @@ export default async function DockPage({
           data-testid="run-this-dock"
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
         >
-          I run this dock
+          Run this dock? Send us your price when it changes.
         </a>
-        . Truck day, or when you change the board.
       </p>
       <p className="mt-2 max-w-xl text-sm text-[color:var(--ink)]/70">
         <a
@@ -299,7 +308,7 @@ export default async function DockPage({
           data-testid="own-this-pin"
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
         >
-          This is my dock
+          I run this dock
         </a>
         . Boats see your price before they leave.
       </p>
@@ -309,9 +318,9 @@ export default async function DockPage({
           data-testid="this-water"
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
         >
-          This water
+          {plainAreaName(dockWaterLabel(dock))}
         </a>
-        . {dockWaterLabel(dock)}. See what a tank costs before you leave.
+        . See what a tank of fuel costs before you leave.
       </p>
       <SisterHandoff
         corridor={dock.corridor}

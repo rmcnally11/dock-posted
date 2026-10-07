@@ -43,7 +43,7 @@ export function RunWatchForm({
         Watch this water
       </Button>
       <p className="text-xs text-[color:var(--ink)]/50">
-        {corridor ? CORRIDORS[corridor].label : region ? REGIONS[region].label : "Sabine to Maine"}.
+        {corridor ? CORRIDORS[corridor].label : region ? REGIONS[region].label : "Texas to Florida"}.
         A blank stays blank.
       </p>
     </form>

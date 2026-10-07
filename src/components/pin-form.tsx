@@ -71,7 +71,7 @@ export function PinForm({ docks, initialDockId }: { docks: Dock[]; initialDockId
       </div>
 
       <Button type="submit" data-testid="file-pin">
-        This is my dock
+        I run this dock
       </Button>
       <p className="text-xs text-[color:var(--ink)]/50">
         We don’t sell a gallon. A blank stays blank until you write it.

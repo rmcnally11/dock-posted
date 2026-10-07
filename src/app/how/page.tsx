@@ -41,7 +41,7 @@ export default function HowPage() {
             href="/pin"
             className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           >
-            This is my dock
+            I run this dock
           </a>
         </p>
       </section>

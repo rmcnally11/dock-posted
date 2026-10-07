@@ -42,7 +42,7 @@ export default async function FuelBoard({
               data-testid="hero-kicker"
               className="kicker text-[color:var(--signal)]"
             >
-              Marina fuel · Sabine to Key West
+              Marina fuel · Texas to Florida
             </p>
             <h2
               data-testid="hero-headline"
@@ -60,7 +60,7 @@ export default async function FuelBoard({
               data-testid="hero-geo"
               className="mt-3 max-w-xl text-sm leading-6 text-[color:var(--cream)]/55"
             >
-              Sabine to Key West. Then the rest of the saltwater coast.
+              Texas to Florida. Then the rest of the saltwater coast.
             </p>
             <p
               data-testid="hero-extra"

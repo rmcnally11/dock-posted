@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BrandPhoto } from "@/components/brand-photo";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
@@ -89,12 +90,12 @@ export default function SafeFuelPage() {
       </section>
 
       <p className="mt-8 text-sm">
-        <a
+        <Link
           className="text-[color:var(--diesel)] underline decoration-[color:var(--diesel)]/40 underline-offset-2"
           href="/"
         >
           See today’s docks
-        </a>
+        </Link>
       </p>
       <SiteFooter />
     </main>

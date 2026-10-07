@@ -36,7 +36,7 @@ try {
   }));
   check(
     "see every fuel dock",
-    seeEvery.text === "See every fuel dock from Sabine to Key West" && seeEvery.href === "/board",
+    seeEvery.text === "See every fuel dock from Texas to Florida" && seeEvery.href === "/board",
     JSON.stringify(seeEvery),
   );
   const postedVisible = await page.$eval("[data-testid=posted-home]", (el) => el.innerText);
@@ -62,7 +62,7 @@ try {
   const geo = await page.$eval("[data-testid=hero-geo]", (el) => el.textContent?.trim());
   const extra = await page.$eval("[data-testid=hero-extra]", (el) => el.textContent?.trim());
   const homeCopy = await page.$eval("body", (el) => el.textContent ?? "");
-  check("hero kicker present", kicker === "Marina fuel · Sabine to Key West", kicker);
+  check("hero kicker present", kicker === "Marina fuel · Texas to Florida", kicker);
   check("hero headline present", headline === "What they wrote on the pump.", headline);
   check(
     "hero deck present",
@@ -71,10 +71,10 @@ try {
   );
   check(
     "hero geo is quiet",
-    geo === "Sabine to Key West. Then the rest of the saltwater coast.",
+    geo === "Texas to Florida. Then the rest of the saltwater coast.",
     geo,
   );
-  check("headline is not the range", headline !== "Sabine to Key West", headline);
+  check("headline is not the range", headline !== "Texas to Florida", headline);
   const heroSizes = await page.$$eval(
     "[data-testid=hero-headline], [data-testid=hero-deck], [data-testid=hero-geo]",
     (els) => els.map((el) => Number.parseFloat(getComputedStyle(el).fontSize)),
@@ -84,7 +84,7 @@ try {
   const pageTitle = await page.title();
   const metaDescription = await page.$eval('meta[name="description"]', (el) => el.getAttribute("content"));
   check("title is marina fuel", pageTitle === "Dock Posted — Marina fuel", pageTitle);
-  check("title is not the range", !/Sabine to Key West/.test(pageTitle), pageTitle);
+  check("title is not the range", !/Texas to Florida/.test(pageTitle), pageTitle);
   check(
     "meta is posted prices",
     metaDescription ===
@@ -196,7 +196,7 @@ try {
   const paperBg = await page.$eval("body", (el) => getComputedStyle(el).backgroundColor);
   check("paper pages are cream", paperBg === "rgb(251, 248, 243)", paperBg);
   const boardFact = await page.$eval("[data-testid=board-fact]", (el) => el.textContent?.trim());
-  check("board fact line", boardFact === "A blank is a fact. Silence is not a price.", boardFact);
+  check("board fact line", boardFact === "No price posted yet. Call the dock.", boardFact);
   check("nav fuel prices", /Fuel Prices/.test(headerCopy));
   check("nav storm haul-out", /Storm Haul-Out/.test(headerCopy));
   check("nav report a price", /Report a Price/.test(headerCopy));
@@ -290,7 +290,7 @@ try {
   );
 
   const coastHeading = await page.$eval("[data-testid=corridor-heading]", (el) => el.textContent);
-  check("coast heading", coastHeading?.includes("Sabine to Maine"), coastHeading);
+  check("coast heading", coastHeading?.includes("Texas to Florida"), coastHeading);
   const coastCount = await page.$eval("[data-testid=dock-count]", (el) => el.textContent ?? "");
   const coastCountMatch = coastCount.match(/(\d+) docks/);
   check(
@@ -386,13 +386,13 @@ try {
   check("landing has no waitlist", !/waitlist|stripe|email capture/i.test(landingCopy));
   check("no on this water on landing", !/on this water/i.test(landingCopy));
   check("no field letter on landing", !/field letter|almanac/i.test(landingCopy));
-  check("waterdog footer credit", /Waterdog Fuel\. Opens 2027\./.test(footerCopy), footerCopy);
+  check("waterdog footer credit", /Waterdog Fuel, our fuel delivery service, launches in 2027\./.test(footerCopy), footerCopy);
   check("sister footer credit", /On This Water/.test(footerCopy), footerCopy);
   const sisterLink = await page.$eval("[data-testid=sister-handoff-link]", (el) => ({
     text: el.textContent ?? "",
     href: el.getAttribute("href") ?? "",
   }));
-  check("bay morning line", sisterLink.text === "This morning on Galveston", sisterLink.text);
+  check("bay morning line", sisterLink.text === "On This Water", sisterLink.text);
   check("bay morning href", /theater=texas/.test(sisterLink.href) && /area=galveston/.test(sisterLink.href), sisterLink.href);
   check("waterdog footer link", waterdogHref === "https://coastalcavaliers.com", waterdogHref);
   check("no invented waterdog domain", !/waterdogfuel\.com/i.test(homeCopy));
@@ -514,7 +514,7 @@ try {
   });
   check("safe fuel no waterdog on the warning", !/waterdog|opis|argus|platts|invoice/i.test(safeSansFooter));
   check("safe fuel no wholesale book", !/nymex|differential|\bTCN\b|jobber|should-be|Fair hose|\binvoice\b/i.test(safeSansFooter));
-  check("safe fuel footer credit", /Waterdog Fuel\. Opens 2027\./.test(safe));
+  check("safe fuel footer credit", /Waterdog Fuel, our fuel delivery service, launches in 2027\./.test(safe));
 
   await page.goto(`${base}/haul-out`, { waitUntil: "networkidle0" });
   const haulKicker = await page.$eval("[data-testid=haul-out-kicker]", (el) => el.textContent?.trim());
@@ -558,7 +558,7 @@ try {
     return clone.textContent ?? "";
   });
   check("haul-out no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber|should-be|Fair hose|\binvoice\b/i.test(haulSansFooter));
-  check("haul-out footer credit", /Waterdog Fuel\. Opens 2027\./.test(haulCopy));
+  check("haul-out footer credit", /Waterdog Fuel, our fuel delivery service, launches in 2027\./.test(haulCopy));
   check("haul-out header links wholesale", /Wholesale/.test(haulHeader));
 
   const reportCopy = await page.goto(`${base}/report`, { waitUntil: "networkidle0" }).then(async () =>
@@ -577,7 +577,7 @@ try {
     return clone.textContent ?? "";
   });
   check("report no wholesale book", !/nymex|platts|\bRIN\b|waterdog|differential|\bTCN\b|\brack\b|jobber|should-be|Fair hose|\binvoice\b/i.test(reportSansFooter));
-  check("report footer credit", /Waterdog Fuel\. Opens 2027\./.test(reportCopy));
+  check("report footer credit", /Waterdog Fuel, our fuel delivery service, launches in 2027\./.test(reportCopy));
 
   await page.setViewport({ width: 375, height: 812 });
   await page.goto(`${base}/about`, { waitUntil: "domcontentloaded" });
@@ -603,7 +603,7 @@ try {
   );
   check(
     "about dock board sentence",
-    /Dock Posted is the number on the pump\. Sabine to Key West, then the rest of the saltwater coast\./.test(
+    /Dock Posted is the number on the pump\. Texas to Florida, then the rest of the saltwater coast\./.test(
       aboutBody,
     ),
     aboutBody.slice(0, 200),
@@ -656,7 +656,7 @@ try {
   check("about no wholesale book", !/nymex|platts|differential|\bTCN\b|jobber|opis|should-be|Fair hose|\binvoice\b/i.test(aboutCopy));
   check("about no invented tweets", !/RJMtweets11|goodpiratesalma/i.test(aboutCopy));
   check("about no invented domain", !/waterdogfuel\.com/i.test(aboutCopy));
-  check("about footer credit", /Waterdog Fuel\. Opens 2027\./.test(aboutCopy));
+  check("about footer credit", /Waterdog Fuel, our fuel delivery service, launches in 2027\./.test(aboutCopy));
   const headerOverflow = await page.$eval("header", (el) => el.scrollWidth > el.clientWidth + 1);
   check("header does not overflow at 375", !headerOverflow);
   await page.waitForFunction(() =>
@@ -916,7 +916,7 @@ try {
   check("dock page diesel not sold", dockDiesel === "No diesel here", dockDiesel);
   const dockCopy = await page.$eval("[data-testid=dock-page]", (el) => el.textContent ?? "");
   check("dock page hose", /\(281\)\s*535-2222/.test(dockCopy) && !/549-4772/.test(dockCopy), dockCopy.slice(0, 240));
-  check("dock page blank is a fact", /A blank is a fact/.test(dockCopy), dockCopy.slice(0, 200));
+  check("dock page no price yet", /No price posted yet\. Call the dock\./.test(dockCopy), dockCopy.slice(0, 240));
   const dockSansFooter = await page.$eval("[data-testid=dock-page]", (el) => {
     const clone = el.cloneNode(true);
     clone.querySelectorAll("footer").forEach((node) => node.remove());

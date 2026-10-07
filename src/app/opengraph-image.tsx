@@ -55,7 +55,7 @@ export default function OpenGraphImage() {
             color: "rgba(251,248,243,0.45)",
           }}
         >
-          Sabine to Key West
+          Texas to Florida
         </div>
       </div>
     ),

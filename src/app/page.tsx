@@ -66,7 +66,7 @@ export default async function Home({
             href="/board"
             className="inline-flex min-h-12 items-center text-base font-medium text-[color:var(--navy)] underline decoration-[color:var(--diesel)] decoration-2 underline-offset-4"
           >
-            See every fuel dock from Sabine to Key West
+            See every fuel dock from Texas to Florida
           </a>
         </p>
       </div>

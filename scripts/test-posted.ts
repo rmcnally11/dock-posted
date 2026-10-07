@@ -499,7 +499,7 @@ assert.doesNotMatch(welcomeSource, LEAK);
 
 const homeSource = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
 assert.match(homeSource, /<PostedHome/);
-assert.match(homeSource, /See every fuel dock from Sabine to Key West/);
+assert.match(homeSource, /See every fuel dock from Texas to Florida/);
 assert.match(homeSource, /data-testid="see-every-dock"/);
 assert.doesNotMatch(homeSource, /<DockBoard/);
 assert.doesNotMatch(homeSource, /data-testid="landing"/);

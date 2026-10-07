@@ -90,7 +90,12 @@ export function emptyIncomeStore(): IncomeStoreFile {
 export function waterLabel(corridor: CorridorId | null, region: RegionId | null): string {
   if (corridor) return CORRIDORS[corridor].label;
   if (region) return REGIONS[region].label;
-  return "Sabine to Maine";
+  return "Texas to Florida";
+}
+
+/** "Galveston Bay / Clear Lake" reads as "Galveston Bay and Clear Lake". */
+export function plainAreaName(label: string): string {
+  return label.replace(/\s*\/\s*/g, " and ");
 }
 
 export function runWatchHref(input: {

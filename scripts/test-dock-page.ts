@@ -14,6 +14,7 @@ import {
   fuelsPosted,
   hoursSourceLine,
   postedDepth,
+  priceCheckLine,
   priceChecks,
   priceHistoryLead,
   publicHours,
@@ -158,6 +159,14 @@ const gymPrices = gymHistory.flatMap((check) => check.lines.map((line) => line.p
 assert.equal(gymPrices.includes(5.14), false);
 assert.equal(gymHistory[2]?.lines.some((line) => /89|tax included/i.test(line.label)), false);
 assert.equal(priceHistoryLead(gymHistory.length), null);
+assert.equal(
+  priceCheckLine("Regular gas, 87 octane, ethanol not stated", 4.83),
+  "Regular gas, 87 octane $4.83",
+);
+assert.equal(priceCheckLine("Gas, no ethanol, 93 octane", 6.27), "Gas, no ethanol, 93 octane $6.27");
+assert.equal(priceCheckLine("Diesel", 6.33), "Diesel $6.33");
+assert.doesNotMatch(dockPageDescription(gym, now), /ethanol not stated|tax not stated/);
+assert.match(dockPageDescription(gym, now), /Gas, no ethanol, 93 octane \$6\.27/);
 assert.equal(priceChecks(madeira).length, 1);
 assert.equal(
   priceHistoryLead(priceChecks(madeira).length, priceChecks(madeira)[0]?.checkedOn ?? null),
