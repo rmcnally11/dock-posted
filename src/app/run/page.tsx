@@ -5,6 +5,7 @@ import { SisterHandoff } from "@/components/sister-handoff";
 import { SiteFooter } from "@/components/site-footer";
 import { Waterline } from "@/components/waterline";
 import { filterDocks, parseBoardQuery, viewLabel } from "@/lib/board-query";
+import { publicHours } from "@/lib/dock-page";
 import { ethanolCopy } from "@/lib/format";
 import { parsePositive, WATCH_PRICE_LABEL } from "@/lib/income";
 import { runRows, runTally, tankGallons } from "@/lib/run-card";
@@ -181,7 +182,9 @@ export default async function RunPage({
                     </a>
                     <p className="text-xs text-[color:var(--ink)]/55">
                       {row.dock.city}, {row.dock.state}
-                      {row.dock.hours ? ` · ${row.dock.hours}` : ""}
+                      {publicHours(row.dock.hours).length > 0
+                        ? ` · ${publicHours(row.dock.hours).join(" · ")}`
+                        : ""}
                     </p>
                   </td>
                   <td className="px-3 py-2 font-mono tabular-nums">{row.gasLabel}</td>

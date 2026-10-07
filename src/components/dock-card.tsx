@@ -1,4 +1,5 @@
 import { FreshnessBadge } from "@/components/freshness-badge";
+import { publicHours } from "@/lib/dock-page";
 import { quoteParts, telHref } from "@/lib/format";
 import {
   pinQuoteSlots,
@@ -170,7 +171,13 @@ export function DockCard({
           <div className="rounded-lg bg-white px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wide text-[color:var(--ink)]/50">Hours</dt>
             <dd className="font-mono text-[15px] font-medium text-[color:var(--navy)]">
-              {dock.hours ?? "—"}
+              {publicHours(dock.hours).length > 0
+                ? publicHours(dock.hours).map((line) => (
+                    <span key={line} className="block">
+                      {line}
+                    </span>
+                  ))
+                : "—"}
             </dd>
           </div>
         </dl>
