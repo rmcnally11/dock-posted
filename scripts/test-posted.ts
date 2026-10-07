@@ -34,12 +34,12 @@ import { PostedHome } from "../src/components/posted-home";
 import { SiteHeader } from "../src/components/site-header";
 
 const docks = seed.docks as Dock[];
-const readOn = Date.parse("2026-10-03T21:00:00Z");
-const eightDays = Date.parse("2026-10-11T00:00:00Z");
-const fourteenDays = Date.parse("2026-10-17T00:00:00Z");
-const pastFourteen = Date.parse("2026-10-18T00:00:00Z");
-const octNine = Date.parse("2026-10-09T00:00:00Z");
-const octTen = Date.parse("2026-10-10T00:00:00Z");
+const readOn = Date.parse("2026-10-07T21:00:00Z");
+const eightDays = Date.parse("2026-10-15T00:00:00Z");
+const fourteenDays = Date.parse("2026-10-21T00:00:00Z");
+const pastFourteen = Date.parse("2026-10-22T00:00:00Z");
+const octNine = Date.parse("2026-10-21T00:00:00Z");
+const octTen = Date.parse("2026-10-22T00:00:00Z");
 
 const LEAK = /\brack\b|\binvoice\b|should-be|\bnymex\b|\bTCN\b|\bplatts\b|\bRIN\b/i;
 
@@ -161,7 +161,7 @@ assert.ok(cardsInArea(cards, "galveston-bay").every((card, index, list) => index
 const gym = line("galveston-yacht-marina", "87");
 assert.equal(gym.match.label, "87");
 assert.equal(gym.match.figure, "$4.83");
-assert.equal(gym.match.asOf, "Oct 3, 2026");
+assert.equal(gym.match.asOf, "Oct 7, 2026");
 assert.equal(gym.card.stale, false);
 const gymE0 = line("galveston-yacht-marina", "93");
 assert.equal(gymE0.match.label, "93 E0");
@@ -185,10 +185,10 @@ assert.equal(madeira.card.stale, false);
 const stAugustine = line("st-augustine-municipal-marina", "gasoline");
 assert.equal(stAugustine.match.label, "Gasoline");
 assert.equal(stAugustine.match.figure, "$6.59");
-assert.equal(stAugustine.match.asOf, "Sep 25, 2026");
+assert.equal(stAugustine.match.asOf, "Oct 7, 2026");
 assert.doesNotMatch(stAugustine.match.label, /regular/i);
 
-const beforeArlington = line("arlington-marina", "gasoline");
+const beforeArlington = line("arlington-marina", "gasoline", Date.parse("2026-10-03T21:00:00Z"));
 assert.equal(beforeArlington.match.figure, "$6.399");
 assert.equal(beforeArlington.match.asOf, DATE_UNKNOWN);
 assert.equal(beforeArlington.card.stale, true);
@@ -442,12 +442,13 @@ for (const [id, label] of [
 
 const gymHtml = sliceBetween(homeHtml, 'data-testid="posted-card-galveston-yacht-marina"', "</article>");
 assert.equal((gymHtml.match(/As of /g) ?? []).length, 1);
-assert.match(gymHtml, /As of Oct 3, 2026/);
+assert.match(gymHtml, /As of Oct 7, 2026/);
 assert.doesNotMatch(gymHtml, /posted-asof-galveston-yacht-marina-87/);
 const arlingtonHtml = sliceBetween(homeHtml, 'data-testid="posted-card-arlington-marina"', "</article>");
-assert.match(arlingtonHtml, />\s*Stale\s*</);
+assert.doesNotMatch(arlingtonHtml, />\s*Stale\s*</);
 assert.match(arlingtonHtml, /\$6\.399/);
-assert.doesNotMatch(arlingtonHtml, /Date unknown|As of /);
+assert.match(arlingtonHtml, /As of Oct 5, 2026/);
+assert.doesNotMatch(arlingtonHtml, /Date unknown/);
 
 const mixedDates = toPostedCard(dockById("galveston-yacht-marina"), readOn);
 assert.ok(mixedDates);
@@ -518,16 +519,16 @@ const priceReportSource = readFileSync(path.join(process.cwd(), "src/lib/price-r
 assert.match(priceReportSource, /America\/Chicago/);
 
 const gymDock = dockById("galveston-yacht-marina");
-assert.equal(gymDock.lastVerifiedAt, "2026-10-03");
+assert.equal(gymDock.lastVerifiedAt, "2026-10-07");
 assert.equal(gymDock.lastVerifiedSource, "marina site");
 assert.equal(gymDock.sourceUrl, "https://galvestonyachtbasin.com/");
 assert.equal(dockTimeZone(gymDock), "America/Chicago");
-assert.equal(asOfText(gymDock, new Date()), "Oct 3, 2026");
+assert.equal(asOfText(gymDock, new Date()), "Oct 7, 2026");
 const gymNow = toPostedCard(gymDock, Date.now());
 assert.ok(gymNow);
 assert.equal(gymNow.lines.length, 3);
 for (const row of gymNow.lines) {
-  assert.equal(row.asOf, "Oct 3, 2026");
+  assert.equal(row.asOf, "Oct 7, 2026");
   assert.equal(row.asOf, asOfText(gymDock, new Date()));
   assert.notEqual(row.figure, "$5.28");
   assert.notEqual(row.label, "90 E0");
@@ -638,7 +639,7 @@ readDocks()
     const liveGym = live.find((dock) => dock.id === "galveston-yacht-marina");
     assert.ok(liveGym);
     assert.equal(liveGym.lastVerifiedSource, "marina site");
-    assert.equal(liveGym.lastVerifiedAt, "2026-10-03");
+    assert.equal(liveGym.lastVerifiedAt, "2026-10-07");
     assert.equal(liveGym.sourceUrl, "https://galvestonyachtbasin.com/");
     assert.equal(
       liveGym.quotes.some((quote) => quote.product === "90" || quote.pricePerGallon === 5.28),
@@ -647,7 +648,7 @@ readDocks()
     const liveCard = toPostedCard(liveGym, Date.now());
     assert.ok(liveCard);
     for (const row of liveCard.lines) {
-      assert.equal(row.asOf, "Oct 3, 2026");
+      assert.equal(row.asOf, "Oct 7, 2026");
       assert.notEqual(row.figure, "$5.28");
     }
     console.log(`posted ok — ${cards.length} docks on the home list`);

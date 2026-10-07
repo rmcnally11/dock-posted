@@ -137,18 +137,18 @@ assert.equal(depthSourceLine(posted, now), "Marina's website, checked Oct 1");
 const gymHistory = priceChecks(gym);
 assert.deepEqual(
   gymHistory.map((check) => check.checkedOn),
-  ["2026-10-05", "2026-10-03", "2026-08-30"],
+  ["2026-10-07", "2026-10-05", "2026-10-03", "2026-08-30"],
 );
 assert.deepEqual(
-  gymHistory[1]?.lines.map((line) => line.pricePerGallon),
+  gymHistory[0]?.lines.map((line) => line.pricePerGallon),
   gym.quotes.map((quote) => quote.pricePerGallon),
 );
 assert.deepEqual(
-  gymHistory[1]?.lines.map((line) => line.label),
+  gymHistory[0]?.lines.map((line) => line.label),
   gym.quotes.map((quote) => gasWords(quote)),
 );
 assert.deepEqual(
-  gymHistory[2]?.lines.map((line) => [line.label, line.pricePerGallon]),
+  gymHistory[3]?.lines.map((line) => [line.label, line.pricePerGallon]),
   [
     ["Regular gas, 87 octane, ethanol not stated", 4.45],
     ["Gas, no ethanol, 93 octane", 5.79],
@@ -157,7 +157,7 @@ assert.deepEqual(
 );
 const gymPrices = gymHistory.flatMap((check) => check.lines.map((line) => line.pricePerGallon));
 assert.equal(gymPrices.includes(5.14), false);
-assert.equal(gymHistory[2]?.lines.some((line) => /89|tax included/i.test(line.label)), false);
+assert.equal(gymHistory[3]?.lines.some((line) => /89|tax included/i.test(line.label)), false);
 assert.equal(priceHistoryLead(gymHistory.length), null);
 assert.equal(
   priceCheckLine("Regular gas, 87 octane, ethanol not stated", 4.83),
@@ -170,7 +170,7 @@ assert.match(dockPageDescription(gym, now), /Gas, no ethanol, 93 octane \$6\.27/
 assert.equal(priceChecks(madeira).length, 1);
 assert.equal(
   priceHistoryLead(priceChecks(madeira).length, priceChecks(madeira)[0]?.checkedOn ?? null),
-  "Checked once, on Oct 3, 2026.",
+  "Checked once, on Oct 7, 2026.",
 );
 assert.equal(priceHistoryLead(priceChecks(bayland).length), "No posted price yet.");
 assert.equal(priceChecks(mangrove).length, 0);
@@ -200,7 +200,7 @@ assert.equal(publicHours(lambs.hours)[0], "Fuel dock: 7 days a week, 8:30 AM–4
 assert.doesNotMatch(publicHours(lambs.hours).join(" "), /Two clocks|The fuel dock says/);
 assert.equal(publicHours(landsEnd.hours)[0], "Open seven days.");
 assert.equal(publicHours("Daily 7am–6pm (club marina page)")[0], "Daily 7am–6pm");
-assert.equal(hoursSourceLine(gym, now), "Marina's website, checked Oct 3");
+assert.equal(hoursSourceLine(gym, now), "Marina's website, checked Oct 7");
 assert.equal(hoursSourceLine(bayland, now), "Marina's website");
 assert.equal(hoursSourceLine(pilot, now), "Marina's website");
 assert.doesNotMatch(hoursSourceLine(pilot, now) ?? "", /Aug 25|2026-08-25/);
@@ -230,10 +230,10 @@ assert.match(dockPageTitle(gym, now), /Galveston Yacht Marina fuel prices, Galve
 assert.match(dockPageTitle(gym, now), /\$4\.83/);
 assert.match(dockPageTitle(gym, now), /\$6\.27/);
 assert.match(dockPageTitle(gym, now), /\$6\.33/);
-assert.match(dockPageTitle(gym, now), /checked Oct 3, 2026/);
+assert.match(dockPageTitle(gym, now), /checked Oct 7, 2026/);
 assert.match(dockPageDescription(gym, now), /fuel prices/i);
 assert.match(dockPageDescription(gym, now), /Galveston Bay/);
-assert.match(dockPageDescription(gym, now), /checked Oct 3, 2026/);
+assert.match(dockPageDescription(gym, now), /checked Oct 7, 2026/);
 assert.equal(dockPageTitle(bayland, now), "Bayland Marina fuel prices, Baytown, Galveston Bay");
 assert.match(dockPageDescription(bayland, now), /Fuel prices are not posted\. Call the dock\./);
 assert.doesNotMatch(dockPageDescription(bayland, now), /\$\d/);
