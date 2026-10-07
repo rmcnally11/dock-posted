@@ -4,11 +4,23 @@ import {
   areaTitle,
   buildAreaPage,
   type AreaDock,
+  type AreaPriceLine,
 } from "@/lib/area";
-import { DOCK_ORIGIN } from "@/lib/dock-page";
-import { HOME_AREAS, areaPath, homeArea, type HomeAreaId } from "@/lib/posted";
+import { DOCK_ORIGIN, priceChecks } from "@/lib/dock-page";
+import { postedQuotes } from "@/lib/freshness";
+import {
+  chicagoCivilDate,
+  civilDate,
+  formatDate,
+  formatPrice,
+  gasWords,
+  quoteParts,
+  sourceInstant,
+  statedHose,
+} from "@/lib/format";
+import { HOME_AREAS, areaPath, dockTimeZone, homeArea, type HomeAreaId } from "@/lib/posted";
 import { readDocks, readReviewQueue } from "@/lib/store";
-import type { Dock, DockPriceAlert } from "@/lib/types";
+import type { Dock, DockPriceAlert, FuelQuote } from "@/lib/types";
 
 /** Envelope line. The place name is the area page title. */
 export const WEEKLY_FUEL_SUBJECT_LEAD = "Cheapest posted fuel";
@@ -218,6 +230,92 @@ function htmlMail(input: {
 </html>`;
 }
 
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Same words as the dock page and the price tile. Not the area page's "87" / "93 E0". */
+function mailLineLabel(quote: FuelQuote): string {
+  const kind = quote.product === "diesel" ? "diesel" : "gas";
+  return quoteParts(quote, kind).rest || statedHose(gasWords(quote));
+}
+
+function mailLines(dock: Dock): AreaPriceLine[] {
+  const lines: AreaPriceLine[] = [];
+  dock.quotes.forEach((quote, index) => {
+    if (quote.status !== "posted" || quote.pricePerGallon == null || Number.isNaN(quote.pricePerGallon)) {
+      return;
+    }
+    lines.push({
+      key: `${quote.product}-${index}`,
+      label: mailLineLabel(quote),
+      figure: formatPrice(quote.pricePerGallon),
+      kind: quote.product === "diesel" ? "diesel" : "gas",
+    });
+  });
+  return lines;
+}
+
+function samePrices(left: number[], right: number[]): boolean {
+  if (left.length !== right.length) return false;
+  return left.every((price, index) => price === right[index]);
+}
+
+/**
+ * The stored day those posted dollars were checked.
+ * lastVerifiedAt is often the morning the page was opened again, not a date the marina printed.
+ * When an earlier marina-site check already stored the same prices, that check is the source date.
+ * A date-only value is that calendar day. It is not read as UTC midnight in Chicago.
+ */
+export function weeklyFuelCheckedOn(dock: Dock): string | null {
+  if (dock.lastVerifiedSource !== "marina site") return null;
+  const prices = postedQuotes(dock)
+    .map((quote) => quote.pricePerGallon)
+    .filter((price): price is number => price != null)
+    .sort((left, right) => left - right);
+  if (prices.length === 0) return null;
+  const matches = priceChecks(dock).filter((check) => {
+    if (!DATE_ONLY.test(check.checkedOn)) return false;
+    const checkPrices = check.lines.map((line) => line.pricePerGallon).sort((left, right) => left - right);
+    return samePrices(prices, checkPrices);
+  });
+  const earlier = matches.find((check) => check.checkedOn !== dock.lastVerifiedAt);
+  const chosen = earlier ?? matches.find((check) => check.checkedOn === dock.lastVerifiedAt);
+  return chosen && DATE_ONLY.test(chosen.checkedOn) ? chosen.checkedOn : null;
+}
+
+/** Printed as-of for the mail. A day after today in Chicago is not a source date. */
+export function weeklyFuelAsOf(dock: Dock, now = new Date()): string | null {
+  const day = weeklyFuelCheckedOn(dock);
+  if (!day) return null;
+  const instant = sourceInstant(day);
+  if (!instant) return null;
+  if (civilDate(instant, dockTimeZone(dock)) > chicagoCivilDate(now)) return null;
+  return formatDate(day);
+}
+
+/**
+ * Cheapest posted prices, in the same order as the area page.
+ * Marina and city website posts only. A staff report or a boater report stays off.
+ * The as-of line is the stored check for these prices, not the re-read day and not today.
+ * Does not send.
+ */
+function mailPriced(docks: Dock[], rows: AreaDock[], now: number): AreaDock[] {
+  const byId = new Map(docks.map((dock) => [dock.id, dock]));
+  const priced: AreaDock[] = [];
+  for (const row of rows) {
+    const dock = byId.get(row.id);
+    if (!dock || dock.lastVerifiedSource !== "marina site") continue;
+    const lines = mailLines(dock);
+    if (lines.length === 0) continue;
+    priced.push({
+      ...row,
+      lines,
+      asOf: weeklyFuelAsOf(dock, new Date(now)),
+      source: "Marina's website",
+    });
+  }
+  return priced;
+}
+
 /**
  * One area's cheapest posted prices, in the same order as that area page.
  * Marina and city posts only. Does not send.
@@ -227,7 +325,7 @@ export function buildWeeklyFuelMail(docks: Dock[], area: HomeAreaId, now = Date.
   const subject = weeklyFuelSubject(page.title);
   const intro = weeklyFuelIntro(page.title);
   const areaHref = weeklyAreaHref(page.id);
-  const priced = page.priced;
+  const priced = mailPriced(docks, page.priced, now);
   return {
     id: page.id,
     title: page.title,
