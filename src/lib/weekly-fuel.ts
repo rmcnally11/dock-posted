@@ -8,7 +8,8 @@ import {
   type AreaPageModel,
   type AreaPriceLine,
 } from "@/lib/area";
-import { DOCK_ORIGIN, priceChecks } from "@/lib/dock-page";
+import { DOCK_ORIGIN } from "@/lib/dock-page";
+import { priceCheckIso } from "@/lib/price-check";
 import { postedQuotes } from "@/lib/freshness";
 import {
   chicagoCivilDate,
@@ -294,11 +295,6 @@ function mailLines(dock: Dock): AreaPriceLine[] {
   return lines;
 }
 
-function samePrices(left: number[], right: number[]): boolean {
-  if (left.length !== right.length) return false;
-  return left.every((price, index) => price === right[index]);
-}
-
 /**
  * The stored day those posted dollars were checked.
  * lastVerifiedAt is often the morning the page was opened again, not a date the marina printed.
@@ -326,15 +322,8 @@ export function weeklyFuelCheckedOn(dock: Dock): string | null {
   if (!weeklyFuelSource(dock) || postedPrices(dock).length === 0) return null;
   if (dock.lastVerifiedSource === "Waterway Guide") return storedDay(dock);
   if (dock.lastVerifiedSource !== "marina site") return null;
-  const prices = postedPrices(dock);
-  const matches = priceChecks(dock).filter((check) => {
-    if (!DATE_ONLY.test(check.checkedOn)) return false;
-    const checkPrices = check.lines.map((line) => line.pricePerGallon).sort((left, right) => left - right);
-    return samePrices(prices, checkPrices);
-  });
-  const earlier = matches.find((check) => check.checkedOn !== dock.lastVerifiedAt);
-  const chosen = earlier ?? matches.find((check) => check.checkedOn === dock.lastVerifiedAt);
-  return chosen && DATE_ONLY.test(chosen.checkedOn) ? chosen.checkedOn : null;
+  const day = priceCheckIso(dock);
+  return day && DATE_ONLY.test(day) ? day : null;
 }
 
 /** Printed as-of for the mail. A day after today in Chicago is not a source date. */

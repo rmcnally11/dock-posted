@@ -1,6 +1,7 @@
 import { dockPath } from "@/lib/board-query";
 import { chicagoCivilDate, civilDate, formatPrice, sourceInstant, telHref } from "@/lib/format";
 import { freshness } from "@/lib/freshness";
+import { priceCheckIso } from "@/lib/price-check";
 import type { Dock, FuelQuote } from "@/lib/types";
 
 export const DATE_UNKNOWN = "Date unknown";
@@ -116,16 +117,18 @@ export function dockTimeZone(dock: Pick<Dock, "state" | "lng">): string {
 }
 
 /**
- * The as-of line is the stored source day, in the dock's zone.
- * A missing day, or a day after today in Chicago, is not a source date.
+ * The as-of line is the stored price check, in the dock's zone.
+ * A re-read of the same prices does not move it. A missing day, or a day
+ * after today in Chicago, is not a source date.
  */
 export function asOfText(
-  dock: Pick<Dock, "lastVerifiedAt" | "state" | "lng">,
+  dock: Pick<Dock, "id" | "quotes" | "lastVerifiedAt" | "lastVerifiedSource" | "state" | "lng">,
   now = new Date(),
 ): string {
-  if (!dock.lastVerifiedAt) return DATE_UNKNOWN;
+  const checkedOn = priceCheckIso(dock);
+  if (!checkedOn) return DATE_UNKNOWN;
   const zone = dockTimeZone(dock);
-  const instant = sourceInstant(dock.lastVerifiedAt);
+  const instant = sourceInstant(checkedOn);
   if (!instant) return DATE_UNKNOWN;
   const day = civilDate(instant, zone);
   if (day > chicagoCivilDate(now)) return DATE_UNKNOWN;

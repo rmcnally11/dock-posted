@@ -19,10 +19,11 @@ import {
   postedDepth,
   priceCheckLine,
   priceChecks,
+  priceHistoryHeading,
   priceHistoryLead,
   publicHours,
 } from "@/lib/dock-page";
-import { formatDate, statedHose, telHref } from "@/lib/format";
+import { statedHose, telHref } from "@/lib/format";
 import { hasPostedPrice, publicCallLine, reportLinkLabel } from "@/lib/freshness";
 import { dockWaterLabel, plainAreaName, runWatchHref } from "@/lib/income";
 import { readDocks } from "@/lib/store";
@@ -114,7 +115,8 @@ export default async function DockPage({
   const hours = publicHours(dock.hours);
   const hoursSource = hoursSourceLine(dock);
   const checks = priceChecks(dock);
-  const historyLead = priceHistoryLead(checks.length, checks[0]?.checkedOn ?? null);
+  const priceRows = checks.filter((check) => !check.unchanged);
+  const historyLead = priceHistoryLead(priceRows.length, priceRows[0]?.checkedOn ?? null);
   const callLine = publicCallLine(dock);
   const staleCall = callLine?.startsWith("Price over a week old") ? callLine : null;
 
@@ -230,16 +232,26 @@ export default async function DockPage({
         {checks.length > 0 ? (
           <ol className="mt-2 space-y-3">
             {checks.map((check) => (
-              <li key={check.checkedOn} data-testid="price-check" data-date={check.checkedOn} className="text-sm text-[color:var(--navy)]">
-                <p className="font-medium">{formatDate(check.checkedOn)}</p>
-                <p className="text-xs text-[color:var(--ink)]/55">Marina’s website</p>
-                <ul className="mt-1 space-y-0.5">
-                  {check.lines.map((line, index) => (
-                    <li key={`${check.checkedOn}-${index}`} data-testid="price-check-line">
-                      {priceCheckLine(line.label, line.pricePerGallon)}
-                    </li>
-                  ))}
-                </ul>
+              <li
+                key={`${check.checkedOn}-${check.unchanged ? "recheck" : "check"}`}
+                data-testid="price-check"
+                data-date={check.checkedOn}
+                data-recheck={check.unchanged ? "true" : "false"}
+                className="text-sm text-[color:var(--navy)]"
+              >
+                <p className="font-medium">{priceHistoryHeading(check)}</p>
+                {check.unchanged ? null : (
+                  <>
+                    <p className="text-xs text-[color:var(--ink)]/55">Marina’s website</p>
+                    <ul className="mt-1 space-y-0.5">
+                      {check.lines.map((line, index) => (
+                        <li key={`${check.checkedOn}-${index}`} data-testid="price-check-line">
+                          {priceCheckLine(line.label, line.pricePerGallon)}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </li>
             ))}
           </ol>

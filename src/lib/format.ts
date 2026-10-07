@@ -117,7 +117,7 @@ export function formatQuote(quote: FuelQuote | null): string {
 }
 
 /**
- * lastVerifiedAt is a calendar date (YYYY-MM-DD), the day the price was checked.
+ * lastVerifiedAt is a calendar date (YYYY-MM-DD). A re-read of an undated page can be later than the stored price check.
  * Date-only ISO is UTC midnight; formatting that instant in Chicago shows the day before.
  */
 export function formatDate(iso: string | null): string {

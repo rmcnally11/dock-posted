@@ -161,7 +161,7 @@ assert.ok(cardsInArea(cards, "galveston-bay").every((card, index, list) => index
 const gym = line("galveston-yacht-marina", "87");
 assert.equal(gym.match.label, "87");
 assert.equal(gym.match.figure, "$4.83");
-assert.equal(gym.match.asOf, "Oct 7, 2026");
+assert.equal(gym.match.asOf, "Oct 5, 2026");
 assert.equal(gym.card.stale, false);
 const gymE0 = line("galveston-yacht-marina", "93");
 assert.equal(gymE0.match.label, "93 E0");
@@ -447,7 +447,8 @@ for (const [id, label] of [
 
 const gymHtml = sliceBetween(homeHtml, 'data-testid="posted-card-galveston-yacht-marina"', "</article>");
 assert.equal((gymHtml.match(/As of /g) ?? []).length, 1);
-assert.match(gymHtml, /As of Oct 7, 2026/);
+assert.match(gymHtml, /As of Oct 5, 2026/);
+assert.doesNotMatch(gymHtml, /As of Oct 7, 2026/);
 assert.doesNotMatch(gymHtml, /posted-asof-galveston-yacht-marina-87/);
 const arlingtonHtml = sliceBetween(homeHtml, 'data-testid="posted-card-arlington-marina"', "</article>");
 assert.doesNotMatch(arlingtonHtml, />\s*Stale\s*</);
@@ -528,12 +529,12 @@ assert.equal(gymDock.lastVerifiedAt, "2026-10-07");
 assert.equal(gymDock.lastVerifiedSource, "marina site");
 assert.equal(gymDock.sourceUrl, "https://galvestonyachtbasin.com/");
 assert.equal(dockTimeZone(gymDock), "America/Chicago");
-assert.equal(asOfText(gymDock, new Date()), "Oct 7, 2026");
+assert.equal(asOfText(gymDock, new Date()), "Oct 5, 2026");
 const gymNow = toPostedCard(gymDock, Date.now());
 assert.ok(gymNow);
 assert.equal(gymNow.lines.length, 3);
 for (const row of gymNow.lines) {
-  assert.equal(row.asOf, "Oct 7, 2026");
+  assert.equal(row.asOf, "Oct 5, 2026");
   assert.equal(row.asOf, asOfText(gymDock, new Date()));
   assert.notEqual(row.figure, "$5.28");
   assert.notEqual(row.label, "90 E0");
@@ -653,7 +654,7 @@ readDocks()
     const liveCard = toPostedCard(liveGym, Date.now());
     assert.ok(liveCard);
     for (const row of liveCard.lines) {
-      assert.equal(row.asOf, "Oct 7, 2026");
+      assert.equal(row.asOf, "Oct 5, 2026");
       assert.notEqual(row.figure, "$5.28");
     }
     console.log(`posted ok — ${cards.length} docks on the home list`);

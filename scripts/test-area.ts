@@ -137,7 +137,7 @@ assert.deepEqual(
   gym.lines.map((line) => `${line.label} ${line.figure}`),
   ["87 $4.83", "93 E0 $6.27", "Diesel $6.33"],
 );
-assert.equal(gym.asOf, "Oct 7, 2026");
+assert.equal(gym.asOf, "Oct 5, 2026");
 assert.equal(gym.source, "Marina's website");
 assert.equal(gym.sourceHref, "https://galvestonyachtbasin.com/");
 assert.equal(gym.stale, false);

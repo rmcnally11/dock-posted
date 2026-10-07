@@ -860,17 +860,17 @@ assert.doesNotMatch(formatQuote({
 }), /\$5\.66/);
 
 assert.equal(publicBadge(gym, labelNow), "Marina's price");
-assert.equal(publicSource(gym, labelNow), "Posted on the marina's website, checked Oct 7");
+assert.equal(publicSource(gym, labelNow), "Posted on the marina's website, checked Oct 5");
 assert.equal(publicCallLine(gym, labelNow), "(409) 765-3000");
 assert.equal(pinKind(gym, labelNow), "marina-site");
-assert.equal(pinAriaLabel(gym, readOn), "Galveston Yacht Marina: marina's price, checked Oct 7");
+assert.equal(pinAriaLabel(gym, readOn), "Galveston Yacht Marina: marina's price, checked Oct 5");
 assert.equal(publicBadge(gym, readOn), "Marina's price");
-assert.equal(publicSource(gym, readOn), "Posted on the marina's website, checked Oct 7");
+assert.equal(publicSource(gym, readOn), "Posted on the marina's website, checked Oct 5");
 assert.equal(pinKind(gym, readOn), "marina-site");
 assert.notEqual(publicBadge(gym, readOn), "Verified");
 const gymStaleAt = Date.parse("2026-10-15T00:00:00Z");
 assert.equal(publicBadge(gym, gymStaleAt), "Price over a week old");
-assert.equal(publicSource(gym, gymStaleAt), "Posted on the marina's website, checked Oct 7");
+assert.equal(publicSource(gym, gymStaleAt), "Posted on the marina's website, checked Oct 5");
 assert.equal(publicCallLine(gym, gymStaleAt), "Price over a week old. Call the dock: (409) 765-3000");
 assert.equal(pinKind(gym, gymStaleAt), "stale");
 assert.equal(pinAriaLabel(gym, gymStaleAt), "Galveston Yacht Marina: price over a week old, call the dock");

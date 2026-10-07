@@ -256,6 +256,14 @@ assert.equal(gymMatches[0]?.checkedOn, "2026-10-05");
 assert.equal(dockById("galveston-yacht-marina").lastVerifiedAt, "2026-10-07");
 assert.equal(weeklyFuelCheckedOn(dockById("galveston-yacht-marina")), "2026-10-05");
 assert.equal(gymHistory.some((row) => row.checkedOn === "2026-10-07"), false);
+const changedGym: Dock = {
+  ...dockById("galveston-yacht-marina"),
+  quotes: dockById("galveston-yacht-marina").quotes.map((quote) =>
+    quote.product === "diesel" ? { ...quote, pricePerGallon: 7.1 } : quote,
+  ),
+};
+assert.equal(weeklyFuelCheckedOn(changedGym), "2026-10-07");
+assert.equal(weeklyFuelAsOf(changedGym, new Date(readOn)), "Oct 7, 2026");
 
 const galvestonDays = [
   "2026-10-05T05:00:00Z",

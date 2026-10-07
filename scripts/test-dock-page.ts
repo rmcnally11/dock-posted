@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { renderToStaticMarkup } from "react-dom/server";
 import seed from "../data/docks.seed.json";
+import DockPage from "../src/app/docks/[id]/page";
 import {
   depthSourceLine,
   directionsHref,
@@ -14,9 +16,12 @@ import {
   fuelsPosted,
   hoursSourceLine,
   postedDepth,
+  priceCheckIso,
   priceCheckLine,
   priceChecks,
+  priceHistoryHeading,
   priceHistoryLead,
+  unchangedRecheck,
   publicHours,
   type PostedDepth,
   type PriceCheck,
@@ -158,7 +163,13 @@ assert.deepEqual(
 const gymPrices = gymHistory.flatMap((check) => check.lines.map((line) => line.pricePerGallon));
 assert.equal(gymPrices.includes(5.14), false);
 assert.equal(gymHistory[3]?.lines.some((line) => /89|tax included/i.test(line.label)), false);
-assert.equal(priceHistoryLead(gymHistory.length), null);
+assert.equal(gymHistory[0]?.unchanged, true);
+assert.equal(priceHistoryHeading(gymHistory[0]!), "Page re-checked Oct 7, price unchanged");
+assert.equal(gymHistory[1]?.checkedOn, "2026-10-05");
+assert.equal(gymHistory[1]?.unchanged, undefined);
+assert.equal(priceHistoryHeading(gymHistory[1]!), "Oct 5, 2026");
+assert.equal(priceCheckIso(gym), "2026-10-05");
+assert.equal(priceHistoryLead(gymHistory.filter((check) => !check.unchanged).length), null);
 assert.equal(
   priceCheckLine("Regular gas, 87 octane, ethanol not stated", 4.83),
   "Regular gas, 87 octane $4.83",
@@ -230,10 +241,12 @@ assert.match(dockPageTitle(gym, now), /Galveston Yacht Marina fuel prices, Galve
 assert.match(dockPageTitle(gym, now), /\$4\.83/);
 assert.match(dockPageTitle(gym, now), /\$6\.27/);
 assert.match(dockPageTitle(gym, now), /\$6\.33/);
-assert.match(dockPageTitle(gym, now), /checked Oct 7, 2026/);
+assert.match(dockPageTitle(gym, now), /checked Oct 5, 2026/);
+assert.doesNotMatch(dockPageTitle(gym, now), /checked Oct 7, 2026/);
 assert.match(dockPageDescription(gym, now), /fuel prices/i);
 assert.match(dockPageDescription(gym, now), /Galveston Bay/);
-assert.match(dockPageDescription(gym, now), /checked Oct 7, 2026/);
+assert.match(dockPageDescription(gym, now), /checked Oct 5, 2026/);
+assert.doesNotMatch(dockPageDescription(gym, now), /checked Oct 7, 2026/);
 assert.equal(dockPageTitle(bayland, now), "Bayland Marina fuel prices, Baytown, Galveston Bay");
 assert.match(dockPageDescription(bayland, now), /Fuel prices are not posted\. Call the dock\./);
 assert.doesNotMatch(dockPageDescription(bayland, now), /\$\d/);
@@ -246,8 +259,48 @@ assert.equal(JSON.stringify(baylandLd).includes("vercel.app"), false);
 assert.equal(baylandLd.telephone, bayland.phone);
 assert.match(baylandLd.openingHours ?? "", /Tue–Sun 8am–5pm/);
 
+const changedGym: Dock = {
+  ...gym,
+  quotes: gym.quotes.map((quote) =>
+    quote.product === "diesel" ? { ...quote, pricePerGallon: 7.1 } : quote,
+  ),
+};
+assert.equal(unchangedRecheck(changedGym), null);
+const changedHistory = priceChecks(changedGym);
+assert.equal(changedHistory[0]?.unchanged, undefined);
+assert.equal(changedHistory[0]?.checkedOn, "2026-10-07");
+assert.equal(priceHistoryHeading(changedHistory[0]!), "Oct 7, 2026");
+assert.equal(priceCheckIso(changedGym), "2026-10-07");
+assert.equal(
+  docks.filter((dock) => unchangedRecheck(dock)).map((dock) => dock.id).join(","),
+  "galveston-yacht-marina",
+);
+for (const id of [
+  "madeira-beach-municipal-marina",
+  "lambs-yacht-center",
+  "arlington-marina",
+  "st-augustine-municipal-marina",
+]) {
+  assert.equal(unchangedRecheck(dockById(id)), null, id);
+}
+
+async function renderGymPage() {
+  const gymHtml = renderToStaticMarkup(
+    await DockPage({ params: Promise.resolve({ id: "galveston-yacht-marina" }) }),
+  );
+  assert.match(gymHtml, /Page re-checked Oct 7, price unchanged/);
+  assert.match(gymHtml, /Oct 5, 2026/);
+  assert.doesNotMatch(gymHtml, /Oct 7, 2026/);
+  assert.match(gymHtml, /data-recheck="true"/);
+  const recheckAt = gymHtml.indexOf("Page re-checked Oct 7, price unchanged");
+  const checkAt = gymHtml.indexOf("Oct 5, 2026");
+  assert.ok(recheckAt > 0 && checkAt > recheckAt);
+}
+
 const pageSource = readFileSync(path.join(process.cwd(), "src/app/docks/[id]/page.tsx"), "utf8");
 assert.match(pageSource, /postedDepth/);
+assert.match(pageSource, /priceHistoryHeading/);
+assert.match(pageSource, /check\.unchanged/);
 assert.doesNotMatch(pageSource, /data-testid="dock-depth"[\s\S]*Not posted/);
 const sitemapSource = readFileSync(path.join(process.cwd(), "src/app/sitemap.ts"), "utf8");
 assert.match(sitemapSource, /\/docks\/\$\{dock\.id\}/);
@@ -266,4 +319,11 @@ assert.equal(stats.ethanolNotStated, 152);
 assert.equal(stats.depth, 0);
 assert.equal(stats.historyMany, 1);
 console.log(JSON.stringify(stats));
-console.log("dock page checks passed");
+renderGymPage()
+  .then(() => {
+    console.log("dock page checks passed");
+  })
+  .catch((error: unknown) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
