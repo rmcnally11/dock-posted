@@ -168,7 +168,7 @@ export function publicSource(dock: Dock, now = Date.now()): string {
 
 export function publicCallLine(dock: Dock, now = Date.now()): string | null {
   if (!dock.phone) return null;
-  if (freshness(dock, now) === "stale") return `Too old to show. Call the dock: ${dock.phone}`;
+  if (freshness(dock, now) === "stale") return `Price over a week old. Call the dock: ${dock.phone}`;
   if (!hasPostedPrice(dock)) return `Call the dock · ${dock.phone}`;
   return dock.phone;
 }

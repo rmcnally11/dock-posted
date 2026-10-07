@@ -114,9 +114,9 @@ export default async function DockPage({
   const hours = publicHours(dock.hours);
   const hoursSource = hoursSourceLine(dock);
   const checks = priceChecks(dock);
-  const historyLead = priceHistoryLead(checks.length);
+  const historyLead = priceHistoryLead(checks.length, checks[0]?.checkedOn ?? null);
   const callLine = publicCallLine(dock);
-  const staleCall = callLine?.startsWith("Too old") ? callLine : null;
+  const staleCall = callLine?.startsWith("Price over a week old") ? callLine : null;
 
   return (
     <main

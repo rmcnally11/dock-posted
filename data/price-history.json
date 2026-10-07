@@ -25,11 +25,11 @@
       "sourceUrl": "https://galvestonyachtbasin.com/",
       "lines": [
         {
-          "label": "Unleaded",
+          "label": "Regular gas, 87 octane, ethanol not stated",
           "pricePerGallon": 4.45
         },
         {
-          "label": "Gas, no ethanol",
+          "label": "Gas, no ethanol, 93 octane",
           "pricePerGallon": 5.79
         },
         {

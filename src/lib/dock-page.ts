@@ -33,7 +33,7 @@ type HistoryFile = Record<string, unknown>;
 const NOTE_FUELS: Array<{ pattern: RegExp; fuels: string[] }> = [
   {
     pattern: /Fuel-dock page \([^)]*\) lists regular, supreme, diesel/i,
-    fuels: ["Regular gas", "Supreme", "Diesel"],
+    fuels: ["Regular gas", "Premium gas (Supreme), 93 octane", "Diesel"],
   },
   {
     pattern: /marine-grade diesel and regular gasoline/i,
@@ -53,7 +53,7 @@ const NOTE_FUELS: Array<{ pattern: RegExp; fuels: string[] }> = [
   },
   {
     pattern: /off-road diesel and mid-grade rec gasoline/i,
-    fuels: ["Mid-grade gas", "Off-road diesel"],
+    fuels: ["Mid-grade gas", "Off-road diesel (red dyed)"],
   },
   {
     pattern: /Site confirms gas and diesel/i,
@@ -65,7 +65,7 @@ const NOTE_FUELS: Array<{ pattern: RegExp; fuels: string[] }> = [
   },
   {
     pattern: /Rec 90 Non-Ethanol Gasoline and Red Dyed Diesel/i,
-    fuels: ["Gas, no ethanol, 90 octane", "Red dyed diesel"],
+    fuels: ["Gas, no ethanol, 90 octane", "Off-road diesel (red dyed)"],
   },
   {
     pattern: /Gate Gas and Diesel/i,
@@ -288,9 +288,9 @@ export function priceChecks(dock: Dock, earlier: PriceCheck[] = historyFor(dock.
   return [...byDate.values()].sort((a, b) => (a.checkedOn < b.checkedOn ? 1 : -1));
 }
 
-export function priceHistoryLead(count: number): string | null {
+export function priceHistoryLead(count: number, checkedOn: string | null = null): string | null {
   if (count <= 0) return "No posted price yet.";
-  if (count === 1) return "One check.";
+  if (count === 1) return `Checked once, on ${formatDate(checkedOn)}.`;
   return null;
 }
 

@@ -94,6 +94,30 @@ assert.deepEqual(fuelsPosted(mangrove), []);
 assert.ok(fuelsPosted(blueMarlin).includes("Diesel"));
 assert.ok(fuelsPosted(southShore).includes("Gas"));
 assert.equal(fuelsPosted(eagle).includes("Diesel"), false);
+assert.deepEqual(fuelsPosted(blueMarlin), [
+  "Regular gas",
+  "Premium gas (Supreme), 93 octane",
+  "Diesel",
+]);
+assert.deepEqual(fuelsPosted(dockById("beach-marine")), [
+  "Gas, no ethanol, 90 octane",
+  "Off-road diesel (red dyed)",
+]);
+assert.deepEqual(fuelsPosted(dockById("marjorie-park-yacht-basin")), [
+  "Mid-grade gas",
+  "Off-road diesel (red dyed)",
+]);
+for (const dock of docks) {
+  for (const name of fuelsPosted(dock)) {
+    assert.equal(name.includes("Unleaded"), false, `${dock.id} ${name}`);
+    assert.notEqual(name, "Supreme", dock.id);
+    assert.notEqual(name, "Red dyed diesel", dock.id);
+    assert.notEqual(name, "Off-road diesel", dock.id);
+    if (name.includes("Supreme")) {
+      assert.equal(name, "Premium gas (Supreme), 93 octane", dock.id);
+    }
+  }
+}
 
 assert.equal(postedDepth(gym), null);
 assert.equal(postedDepth(bayland), null);
@@ -125,8 +149,8 @@ assert.deepEqual(
 assert.deepEqual(
   gymHistory[2]?.lines.map((line) => [line.label, line.pricePerGallon]),
   [
-    ["Unleaded", 4.45],
-    ["Gas, no ethanol", 5.79],
+    ["Regular gas, 87 octane, ethanol not stated", 4.45],
+    ["Gas, no ethanol, 93 octane", 5.79],
     ["Diesel", 5.28],
   ],
 );
@@ -134,8 +158,11 @@ const gymPrices = gymHistory.flatMap((check) => check.lines.map((line) => line.p
 assert.equal(gymPrices.includes(5.14), false);
 assert.equal(gymHistory[2]?.lines.some((line) => /89|tax included/i.test(line.label)), false);
 assert.equal(priceHistoryLead(gymHistory.length), null);
-assert.equal(priceHistoryLead(priceChecks(madeira).length), "One check.");
 assert.equal(priceChecks(madeira).length, 1);
+assert.equal(
+  priceHistoryLead(priceChecks(madeira).length, priceChecks(madeira)[0]?.checkedOn ?? null),
+  "Checked once, on Oct 3, 2026.",
+);
 assert.equal(priceHistoryLead(priceChecks(bayland).length), "No posted price yet.");
 assert.equal(priceChecks(mangrove).length, 0);
 
