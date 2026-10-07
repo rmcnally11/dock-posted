@@ -947,6 +947,14 @@ try {
   check("review 404 without password", reviewRes?.status() === 404, String(reviewRes?.status()));
   const reviewRobots = await page.$eval('meta[name="robots"]', (el) => el.getAttribute("content") ?? "").catch(() => "");
   check("review 404 is noindex", /noindex/.test(reviewRobots), reviewRobots);
+  const fuelPreviewRes = await page.goto(`${base}/review/fuel/galveston-bay`, { waitUntil: "domcontentloaded" });
+  check("fuel preview 404 without password", fuelPreviewRes?.status() === 404, String(fuelPreviewRes?.status()));
+  const fuelPreviewCopy = await page.$eval("body", (el) => el.textContent ?? "");
+  check(
+    "fuel preview 404 shows no mail",
+    !/Cheapest posted fuel|Galveston Yacht Marina|\$4\.83/.test(fuelPreviewCopy),
+    fuelPreviewCopy.slice(0, 240),
+  );
 
   const wholesaleRes = await page.goto(`${base}/wholesale`, { waitUntil: "domcontentloaded" });
   check("wholesale 404 without password", wholesaleRes?.status() === 404, String(wholesaleRes?.status()));

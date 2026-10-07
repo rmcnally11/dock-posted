@@ -121,6 +121,8 @@ npm start             # same port as dev: 43123
 
 `/review` is a separate password-gated queue for reported pump prices. Set `REVIEW_PASSWORD`. If it is unset, the route is 404. It is not in the public nav or the sitemap, and the page is `noindex`. Each waiting report shows the dock, the hose, the price, the day, and the photo. Approve puts it on the board. Reject leaves it off.
 
+`/review/fuel/<area>` previews that area's weekly cheapest-posted-fuel mail in the browser. Same password. If `REVIEW_PASSWORD` is unset, the page is 404. The page does not send mail.
+
 The desk default is a terminal→retail waterfall (RB and HO side by side). Tax is a first-class take: federal and state rungs from published IRS/EIA tables in `data/wholesale-tax.json`, always overrideable. Market cells (NYMEX, diff, rack, jobber) start blank. Freight stays blank unless typed.
 
 Differentials and per-terminal inputs persist next to haul-out: `DATA_DIR` / `data/runtime/wholesale.json`, or Blob `dock-posted/wholesale.json`. Terminal TCNs are in `data/wholesale-terminals.json` (IRS directory + Buckeye / KM pages). Blank TCN stays blank.
