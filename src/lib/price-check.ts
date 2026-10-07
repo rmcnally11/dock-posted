@@ -90,15 +90,37 @@ export function priceCheckIso(dock: DatedDock): string | null {
   return unchangedRecheck(dock)?.checkedOn ?? dock.lastVerifiedAt;
 }
 
+/** Month and day, no year. "Oct 7". */
+function monthDay(iso: string): string {
+  const date = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
 /** "Page re-checked Oct 7, price unchanged". Month and day, no year. */
 export function recheckHistoryLabel(readOn: string): string {
-  const date = new Date(`${readOn}T00:00:00Z`);
-  const day = Number.isNaN(date.getTime())
-    ? readOn
-    : new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        timeZone: "UTC",
-      }).format(date);
-  return `Page re-checked ${day}, price unchanged`;
+  return `Page re-checked ${monthDay(readOn)}, price unchanged`;
+}
+
+/**
+ * A city harbor page is stored as "marina site".
+ * The notes name it a city page or a city rates page.
+ */
+export function cityPostedPage(notes: string | null | undefined): boolean {
+  return /city (?:rates )?page/i.test(notes ?? "");
+}
+
+/** "Still posted on the marina's page Oct 7." A city page says "city's page". */
+export function stillPostedSentence(readOn: string, cityPage: boolean): string {
+  const page = cityPage ? "city's page" : "marina's page";
+  return `Still posted on the ${page} ${monthDay(readOn)}.`;
+}
+
+/** The confirmation line for one dock. City pages are named in the notes. */
+export function stillPostedCopy(dock: { notes?: string | null }, readOn: string): string {
+  return stillPostedSentence(readOn, cityPostedPage(dock.notes));
 }

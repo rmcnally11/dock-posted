@@ -150,6 +150,9 @@ function dockBlock(dock: AreaDock): string {
   const asOf = dock.asOf
     ? `<p data-testid="weekly-asof-${id}" style="margin:8px 0 0;font-family:${SANS};font-size:11px;line-height:1.4;color:${MUTED};">As of ${escapeHtml(dock.asOf)}</p>`
     : "";
+  const stillPosted = dock.stillPosted
+    ? `<p data-testid="weekly-still-${id}" style="margin:4px 0 0;font-family:${SANS};font-size:11px;line-height:1.4;color:${MUTED};">${escapeHtml(dock.stillPosted)}</p>`
+    : "";
   return `<table role="presentation" data-testid="weekly-dock-${id}" data-stale="${dock.stale ? "true" : "false"}" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:12px;background-color:${FOG};border:1px solid ${LINE};border-radius:16px;">
     <tr>
       <td style="padding:14px 16px 12px;">
@@ -160,6 +163,7 @@ function dockBlock(dock: AreaDock): string {
         ${note}
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:8px;">${lines}</table>
         ${asOf}
+        ${stillPosted}
         ${sourceLine(dock)}
       </td>
     </tr>
@@ -174,6 +178,7 @@ function plainDock(dock: AreaDock, lines: string[]): void {
   if (dock.note) lines.push(dock.note);
   for (const line of dock.lines) lines.push(`${line.label} ${line.figure}`);
   if (dock.asOf) lines.push(`As of ${dock.asOf}`);
+  if (dock.stillPosted) lines.push(dock.stillPosted);
   if (dock.source) lines.push(dock.source);
   lines.push("");
 }
@@ -416,7 +421,15 @@ function mailSections(
   stale.sort((left, right) => byCheapestThenName(left, right, byId));
   const unpriced = page.callAhead
     .filter((row) => !seen.has(row.id))
-    .map((row) => ({ ...row, lines: [], asOf: null, source: null, sourceHref: null, stale: false }));
+    .map((row) => ({
+      ...row,
+      lines: [],
+      asOf: null,
+      stillPosted: null,
+      source: null,
+      sourceHref: null,
+      stale: false,
+    }));
   return { fresh, callAhead: [...stale, ...unpriced] };
 }
 

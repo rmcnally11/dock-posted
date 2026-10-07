@@ -138,6 +138,7 @@ assert.deepEqual(
   ["87 $4.83", "93 E0 $6.27", "Diesel $6.33"],
 );
 assert.equal(gym.asOf, "Oct 5, 2026");
+assert.equal(gym.stillPosted, "Still posted on the marina's page Oct 7.");
 assert.equal(gym.source, "Marina's website");
 assert.equal(gym.sourceHref, "https://galvestonyachtbasin.com/");
 assert.equal(gym.stale, false);
@@ -146,6 +147,7 @@ assert.equal(gym.stale, toPostedCard(dockById("galveston-yacht-marina"), readOn)
 const madeira = tampa.priced[0];
 assert.ok(madeira);
 assert.equal(madeira.source, "Marina's website");
+assert.equal(madeira.stillPosted, null);
 assert.equal(madeira.lines[0]?.figure, "$6.05");
 assert.equal(madeira.lines[0]?.label, "Gasoline E0");
 assert.doesNotMatch(madeira.lines[0]?.label ?? "", /regular/i);
@@ -155,6 +157,7 @@ assert.ok(arlington);
 assert.equal(arlington.id, "arlington-marina");
 assert.equal(arlington.stale, false);
 assert.equal(arlington.asOf, "Oct 5, 2026");
+assert.equal(arlington.stillPosted, null);
 assert.equal(arlington.lines[0]?.figure, "$6.399");
 assert.equal(arlington.lines[1]?.figure, "$5.999");
 assert.equal(arlington.source, "Marina's website");
@@ -164,6 +167,7 @@ const augustine = north.priced.find((row) => row.id === "st-augustine-municipal-
 assert.ok(augustine);
 assert.equal(augustine.stale, false);
 assert.equal(augustine.asOf, "Oct 7, 2026");
+assert.equal(augustine.stillPosted, null);
 assert.equal(augustine.source, "Marina's website");
 assert.equal(augustine.lines.find((line) => line.label === "Gasoline")?.figure, "$6.59");
 assert.equal(augustine.lines.find((line) => line.label === "Diesel")?.figure, "$6.99");
@@ -173,6 +177,7 @@ const earlyArlington = buildAreaPage(docks, "northeast-florida", beforeArlington
 );
 assert.equal(earlyArlington?.stale, true);
 assert.equal(earlyArlington?.asOf, null);
+assert.equal(earlyArlington?.stillPosted, null);
 assert.equal(earlyArlington?.lines[0]?.figure, "$6.399");
 
 for (const now of [readOn, eightDays, octTen, Date.now()]) {
@@ -181,6 +186,7 @@ for (const now of [readOn, eightDays, octTen, Date.now()]) {
     for (const row of page.priced) {
       const card = toPostedCard(dockById(row.id), now);
       assert.equal(row.stale, card?.stale, `${row.id} stale flag drifted`);
+      assert.equal(row.stillPosted, card?.stillPosted ?? null, `${row.id} still-posted line drifted`);
       assert.equal(row.href, `/docks/${row.id}`);
       assert.ok(row.lines.length > 0);
       assert.ok(row.lines.every((line) => line.figure.startsWith("$")));
@@ -199,6 +205,20 @@ for (const now of [readOn, eightDays, octTen, Date.now()]) {
 const gymLater = buildAreaPage(docks, "galveston-bay", eightDays).priced[0];
 assert.equal(gymLater?.stale, true);
 assert.equal(gymLater?.lines[0]?.figure, "$4.83");
+assert.equal(gymLater?.asOf, "Oct 5, 2026");
+assert.equal(gymLater?.stillPosted, "Still posted on the marina's page Oct 7.");
+const cityGalveston = buildAreaPage(
+  docks.map((dock) =>
+    dock.id === "galveston-yacht-marina"
+      ? { ...dock, notes: "City page re-read 7 Oct 2026 with the same prices." }
+      : dock,
+  ),
+  "galveston-bay",
+  readOn,
+).priced[0];
+assert.equal(cityGalveston?.stillPosted, "Still posted on the city's page Oct 7.");
+assert.equal(cityGalveston?.asOf, "Oct 5, 2026");
+assert.equal(cityGalveston?.stale, false);
 const augustineLater = buildAreaPage(docks, "northeast-florida", octTen).priced.find(
   (row) => row.id === "st-augustine-municipal-marina",
 );
@@ -336,6 +356,12 @@ assert.match(boardHtml, /\$5\.999/);
 assert.match(boardHtml, /\$6\.99/);
 assert.match(boardHtml, /As of Oct 5, 2026/);
 assert.match(boardHtml, /As of Oct 7, 2026/);
+assert.doesNotMatch(boardHtml, /Still posted/);
+const galvestonHtml = renderToStaticMarkup(createElement(AreaBoard, { page: galveston }));
+assert.match(galvestonHtml, /As of Oct 5, 2026/);
+assert.doesNotMatch(galvestonHtml, /As of Oct 7, 2026/);
+assert.match(galvestonHtml, /Still posted on the marina(?:'|&#x27;)s page Oct 7\./);
+assert.match(galvestonHtml, /data-testid="area-still-galveston-yacht-marina"/);
 assert.doesNotMatch(boardHtml, /As of Sep 25, 2026/);
 const earlyHtml = renderToStaticMarkup(
   createElement(AreaBoard, { page: buildAreaPage(docks, "northeast-florida", beforeArlingtonRead) }),

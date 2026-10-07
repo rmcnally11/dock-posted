@@ -10,6 +10,7 @@ import {
   homeArea,
   parseHomeArea,
   postedIsStale,
+  stillPostedLine,
   toPostedCard,
   type HomeAreaId,
 } from "@/lib/posted";
@@ -48,6 +49,8 @@ export type AreaDock = {
   callHref: string | null;
   stale: boolean;
   asOf: string | null;
+  /** Set when a later re-read kept the same prices. Absent when the dates match. */
+  stillPosted: string | null;
   source: string | null;
   sourceHref: string | null;
   note: string | null;
@@ -162,6 +165,7 @@ function toAreaDock(dock: Dock, now: number): AreaDock {
     callHref: card?.callHref ?? callHref(dock.phone),
     stale: card?.stale ?? postedIsStale(dock, now),
     asOf: asOf === DATE_UNKNOWN ? null : asOf,
+    stillPosted: lines.length > 0 ? stillPostedLine(dock, new Date(now)) : null,
     source,
     sourceHref: source ? sourceHref(dock.sourceUrl) : null,
     note: lines.length > 0 ? (card?.note ?? null) : null,
